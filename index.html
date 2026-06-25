@@ -162,6 +162,7 @@ tr:last-child td{border-bottom:none;}
   <div class="nav">
     <button class="active" data-sec="resumen">Resumen</button>
     <button data-sec="prioridad">Salud</button>
+    <button data-sec="priorizar">PRIORIZAR - KAM</button>
     <button data-sec="cuentas">Cuentas</button>
     <button data-sec="fuga">Fuga</button>
     <button data-sec="cross">Cross-sell</button>
@@ -170,6 +171,7 @@ tr:last-child td{border-bottom:none;}
 
   <div id="resumen" class="section active"></div>
   <div id="prioridad" class="section"></div>
+  <div id="priorizar" class="section"></div>
   <div id="cuentas" class="section"></div>
   <div id="fuga" class="section"></div>
   <div id="cross" class="section"></div>
@@ -453,31 +455,37 @@ function renderPrioridad(){
   const sanas=ACCOUNTS.filter(a=>!isCritica(a)&&!isRiesgo(a));
   const sinCS=atRisk.filter(a=>!hasCS(a));
   const sinCSmonto=sinCS.reduce((s,a)=>s+(a.mrr||0),0);
-  const sel=e=>`prState.estado==='${e}'`;
   $('prioridad').innerHTML=`
-  <div class="note-box"><strong>Salud por KAM.</strong> Cada lunes carga el <strong>modelo de salud</strong> en Datos. Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Toca una tarjeta de abajo para filtrar. ${HEALTH.loaded?`<span style="color:#3B6D11">Salud aplicada: ${HEALTH.matched}/${HEALTH.total} emparejadas.</span>`:`Sin salud cargada se usa la señal base (fuga + estado MARE).`}</div>
+  <div class="note-box"><strong>Estado de salud de la cartera.</strong> Cada lunes carga el <strong>modelo de salud</strong> en Datos para refrescar el semáforo. Toca una tarjeta para abrir la lista <strong>PRIORIZAR - KAM</strong> ya filtrada. ${HEALTH.loaded?`<span style="color:#3B6D11">Salud aplicada: ${HEALTH.matched}/${HEALTH.total} emparejadas.</span>`:`Sin salud cargada se usa la señal base (fuga + estado MARE).`}</div>
   <div class="metrics">
-    <div class="metric mclick ${prState.estado==='critica'?'msel':''}" onclick="prSet('critica',prState.cs)"><div class="label">Críticas</div><div class="value" style="color:#E24B4A">${criticas.length}</div><div class="sub">salud / fuga baja · filtrar</div></div>
-    <div class="metric mclick ${prState.estado==='riesgo'?'msel':''}" onclick="prSet('riesgo',prState.cs)"><div class="label">En riesgo</div><div class="value" style="color:#EF9F27">${enRiesgo.length}</div><div class="sub">disminución / atención · filtrar</div></div>
-    <div class="metric mclick ${prState.estado==='sano'?'msel':''}" onclick="prSet('sano',prState.cs)"><div class="label">Saludables</div><div class="value" style="color:#3B6D11">${sanas.length}</div><div class="sub">estables · filtrar</div></div>
-    <div class="metric mclick ${prState.estado==='atrisk'?'msel':''}" onclick="prSet('atrisk',prState.cs)"><div class="label">Críticas + riesgo</div><div class="value">${atRisk.length}</div><div class="sub">vista combinada · filtrar</div></div>
-    <div class="metric"><div class="label">En riesgo SIN CS</div><div class="value" style="color:#E24B4A">${sinCS.length}</div><div class="sub">${fmtUSD(sinCSmonto)}/mes expuesto</div></div>
+    <div class="metric mclick" onclick="prSet('critica',prState.cs)"><div class="label">Críticas</div><div class="value" style="color:#E24B4A">${criticas.length}</div><div class="sub">salud / fuga baja · priorizar →</div></div>
+    <div class="metric mclick" onclick="prSet('riesgo',prState.cs)"><div class="label">En riesgo</div><div class="value" style="color:#EF9F27">${enRiesgo.length}</div><div class="sub">disminución / atención · priorizar →</div></div>
+    <div class="metric mclick" onclick="prSet('sano',prState.cs)"><div class="label">Saludables</div><div class="value" style="color:#3B6D11">${sanas.length}</div><div class="sub">estables · priorizar →</div></div>
+    <div class="metric mclick" onclick="prSet('atrisk',prState.cs)"><div class="label">Críticas + riesgo</div><div class="value">${atRisk.length}</div><div class="sub">vista combinada · priorizar →</div></div>
+    <div class="metric mclick" onclick="prSet('atrisk','sin')"><div class="label">En riesgo SIN CS</div><div class="value" style="color:#E24B4A">${sinCS.length}</div><div class="sub">${fmtUSD(sinCSmonto)}/mes · priorizar →</div></div>
   </div>
-  ${sinCS.length?`<div class="callout"><strong>${sinCS.length} cuentas en riesgo o críticas no tienen Customer Success</strong> y representan <strong>${fmtUSD(sinCSmonto)}/mes</strong>. Son la prioridad de prevención de churn: asignar gestión antes de que la facturación caiga.<br><button onclick="prSet('atrisk','sin')">Ver solo sin CS →</button></div>`:''}
+  ${sinCS.length?`<div class="callout"><strong>${sinCS.length} cuentas en riesgo o críticas no tienen Customer Success</strong> y representan <strong>${fmtUSD(sinCSmonto)}/mes</strong>. Son la prioridad de prevención de churn: asignar gestión antes de que la facturación caiga.<br><button onclick="prSet('atrisk','sin')">Ver solo sin CS en PRIORIZAR - KAM →</button></div>`:''}
+  <div class="card"><h3>Ponderación del índice de prioridad</h3><p class="legend">MRR (hasta ${WEIGHTS.mrr}) · Fuga baja (+${WEIGHTS.fugaBaja}) / disminución (+${WEIGHTS.fugaDism}) · Salud crítica MARE (+${WEIGHTS.saludCritico}) · Salud semanal crítico (+${WEIGHTS.healthCritico}) / atención (+${WEIGHTS.healthAtencion}) · <strong>En riesgo y sin CS (+${WEIGHTS.churnGap})</strong> · Retener (+${WEIGHTS.cuadRetener}) / Expandir (+${WEIGHTS.cuadExpandir}) · cada oportunidad cross (+${WEIGHTS.upside}).</p>
+  <div class="sec-title">Playbooks CSS aplicados (T2 2026)</div>
+  <p class="legend"><span class="badge b-amber">PB-01</span> Adopción/marcaje cayendo (&lt;60% o caída &gt;20pp) · SLA 5 días · diagnóstico con admin del sistema y plan por causa raíz.<br><span class="badge b-red">PB-03</span> Riesgo de fuga (2+ señales: sin marcaje 14d, NPS detractor, ticket &gt;7d) · SLA 24h · contacto con decisor y plan de recuperación en 72h.<br><span class="badge b-gray">PB-02</span> Detractor NPS (0–6) · SLA 48h. Cada cuenta muestra su acción concreta en PRIORIZAR - KAM.</p></div>`;
+}
+
+// ---------- Priorizar por KAM ----------
+function renderPriorizar(){
+  ACCOUNTS.forEach(priority);
+  $('priorizar').innerHTML=`
+  <div class="note-box"><strong>Lista a priorizar por KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Los KAM con más críticas suben al tope. Usa los filtros para acotar.</div>
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
     <select id="prCS"><option value="">Toda cobertura CS</option><option value="sin">Sin CS</option><option value="con">Con CS</option></select>
   </div>
-  <div class="card"><h3 id="prTitle"></h3><div id="prList"></div></div>
-  <div class="card"><h3>Ponderación del índice</h3><p class="legend">MRR (hasta ${WEIGHTS.mrr}) · Fuga baja (+${WEIGHTS.fugaBaja}) / disminución (+${WEIGHTS.fugaDism}) · Salud crítica MARE (+${WEIGHTS.saludCritico}) · Salud semanal crítico (+${WEIGHTS.healthCritico}) / atención (+${WEIGHTS.healthAtencion}) · <strong>En riesgo y sin CS (+${WEIGHTS.churnGap})</strong> · Retener (+${WEIGHTS.cuadRetener}) / Expandir (+${WEIGHTS.cuadExpandir}) · cada oportunidad cross (+${WEIGHTS.upside}).</p>
-  <div class="sec-title">Playbooks CSS aplicados (T2 2026)</div>
-  <p class="legend"><span class="badge b-amber">PB-01</span> Adopción/marcaje cayendo (&lt;60% o caída &gt;20pp) · SLA 5 días · diagnóstico con admin del sistema y plan por causa raíz.<br><span class="badge b-red">PB-03</span> Riesgo de fuga (2+ señales: sin marcaje 14d, NPS detractor, ticket &gt;7d) · SLA 24h · contacto con decisor y plan de recuperación en 72h.<br><span class="badge b-gray">PB-02</span> Detractor NPS (0–6) · SLA 48h. Cada cuenta muestra su acción concreta arriba.</p></div>`;
+  <div class="card"><h3 id="prTitle"></h3><div id="prList"></div></div>`;
   $('prEstado').value=prState.estado;$('prCS').value=prState.cs;
-  $('prEstado').onchange=e=>{prState.estado=e.target.value;renderPrioridad();};
+  $('prEstado').onchange=e=>{prState.estado=e.target.value;drawPrList();};
   $('prCS').onchange=e=>{prState.cs=e.target.value;drawPrList();};
   drawPrList();
 }
-function prSet(estado,cs){prState.estado=estado;prState.cs=cs;renderPrioridad();}
+function prSet(estado,cs){prState.estado=estado;prState.cs=cs;show('priorizar');}
 function drawPrList(){
   let rows=ACCOUNTS.slice();
   if(prState.estado==='atrisk')rows=rows.filter(a=>isCritica(a)||isRiesgo(a));
@@ -735,7 +743,7 @@ function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');
 
 // ---------- navegación / init ----------
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
-const RENDER={resumen:renderResumen,prioridad:renderPrioridad,cuentas:renderCuentas,fuga:renderFuga,cross:renderCross,datos:renderDatos};
+const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,cuentas:renderCuentas,fuga:renderFuga,cross:renderCross,datos:renderDatos};
 function renderAll(){Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11">salud activa</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 function show(sec){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));$(sec).classList.add('active');document.querySelector(`.nav button[data-sec="${sec}"]`).classList.add('active');RENDER[sec]();}
