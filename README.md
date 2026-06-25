@@ -25,6 +25,7 @@ Estructura:
   - `accion: "congelar"` — La cuenta no se cuenta como crítica (ej. va a freeze y se retoma después).
   - `accion: "ajustar_marcaje"` con `marcaje_maximo` — Reescala la adopción sobre ese tope (ej. usuarios de solo-acceso que nunca marcan). Si tras el ajuste el marcaje es sano, deja de ser crítica por marcaje, pero se conservan otras señales reales (p. ej. caída de facturación → queda En riesgo).
   - `accion: "cambio_razon_social"` — La cuenta **no se cuenta como fuga ni como crítica** (la caída de facturación es re-facturación bajo una nueva entidad, no churn). También se detecta automáticamente cualquier cuenta cuyo **comentario** en la cartera mencione "cambio de razón social".
+  - `accion: "no_fuga"` — **Saca la cuenta de la marca de fuga** (no entra en "En fuga" ni en la pestaña Fuga, y la fuga deja de empujarla a Crítica/En riesgo), pero conserva otras señales de salud. Además, si tu `cartera.xlsx` trae una hoja llamada **"detalle fuga"** (con una columna de cliente/empresa o ID Geo), esas cuentas se excluyen de fuga automáticamente.
 
 Detalles de presentación derivados de las consideraciones: el tag de criticidad muestra el motivo (`Crítico-marcaje`, `Crítico-sinuso`, `Crítico-nps`, `Crítico-ticket`, `Crítico-fuga`), y la acción del playbook aparece separada con el rótulo **"Acción a realizar:"**.
 

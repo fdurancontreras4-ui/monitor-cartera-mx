@@ -1,7 +1,7 @@
 {
   "version": "2026-06-25",
-  "_ayuda": "Reglas y excepciones que el Monitor de Cartera aplica al calcular salud y criticidad. Edita este archivo y vuelve a publicarlo en el repo; el dashboard lo carga solo y se actualiza con el boton Recargar datos. 'id' es el ID Geo (mas fiable); si no lo tienes, usa 'nombre'. Acciones por cuenta: 'congelar' (no cuenta como critica), 'ajustar_marcaje' (reescala la adopcion sobre 'marcaje_maximo') y 'cambio_razon_social' (no se cuenta como fuga ni como critica).",
-  "_como_marcar_cambio_razon_social": "Opcion A: agrega un objeto a 'cuentas' con {id o nombre, accion: 'cambio_razon_social', razon: '...'}. Opcion B (automatica): escribe 'cambio de razon social' en el comentario de esa cuenta en la cartera y el monitor la detecta solo.",
+  "_ayuda": "Reglas y excepciones que el Monitor de Cartera aplica al calcular salud y criticidad. Edita este archivo y vuelve a publicarlo en el repo; el dashboard lo carga solo y se actualiza con el boton Recargar datos. 'id' es el ID Geo (mas fiable); si no lo tienes, usa 'nombre'. Acciones por cuenta: 'congelar' (no cuenta como critica), 'ajustar_marcaje' (reescala adopcion sobre 'marcaje_maximo'), 'cambio_razon_social' (no cuenta como fuga ni critica) y 'no_fuga' (solo la saca de la marca de fuga, conserva senales de salud).",
+  "_como_excluir_de_fuga": "Opcion A: agrega objetos a 'cuentas' con accion 'no_fuga'. Opcion B (automatica): pon esas cuentas en una hoja llamada 'detalle fuga' dentro de cartera.xlsx, con una columna de cliente/empresa (o ID Geo); el dashboard las saca de fuga solo.",
   "reglas_globales": {
     "critico_solo_por_ticket": {
       "activo": true,
@@ -24,6 +24,12 @@
       "accion": "ajustar_marcaje",
       "marcaje_maximo": 0.60,
       "razon": "221 usuarios son de control de acceso y nunca marcaran; el marcaje maximo alcanzable es 60%. Se reescala la adopcion sobre ese tope."
+    },
+    {
+      "id": "23927",
+      "nombre": "QUALIS TECHNOLOGIES",
+      "accion": "no_fuga",
+      "razon": "Marcada en la hoja detalle fuga: la disminucion no es fuga real; se excluye de la marca de fuga."
     }
   ]
 }

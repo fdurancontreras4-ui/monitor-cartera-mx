@@ -215,6 +215,8 @@ const CONSID_DEFAULT = {
   ]
 };
 let CONSID = CONSID_DEFAULT;
+// cuentas a excluir de fuga, leídas de la hoja "detalle fuga" de la cartera (ids y nombres normalizados)
+let FUGA_EXCL = {ids:{}, norms:{}};
 
 // ---------- salud por tamaño (resumen agregado, archivo resumen-tamano.csv) ----------
 const SALUD_TAMANO=[
@@ -266,8 +268,8 @@ function segOf(a){
   if(a.usuarios!=null)return a.usuarios>=100?'SMB medium':'SMB small';
   return'SMB small';
 }
-function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon)return false;const eS=(a.estadoSalud&&/[ií]tic/i.test(a.estadoSalud))&&!a._ignoreEstadoSaludCrit;return eS||(a.health&&a.health.flag==='critico')||a.fuga==='Baja';}
-function isRiesgo(a){if(a._congelada||a._forzarSano||a._cambioRazon)return false;return!isCritica(a)&&(a.fuga==='Disminución'||(a.health&&a.health.flag==='atencion')||(a.riesgo&&/medio/i.test(a.riesgo)));}
+function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon)return false;const eS=(a.estadoSalud&&/[ií]tic/i.test(a.estadoSalud))&&!a._ignoreEstadoSaludCrit;const fugaBaja=a.fuga==='Baja'&&!a._noFuga;return eS||(a.health&&a.health.flag==='critico')||fugaBaja;}
+function isRiesgo(a){if(a._congelada||a._forzarSano||a._cambioRazon)return false;const fugaDism=a.fuga==='Disminución'&&!a._noFuga;return!isCritica(a)&&(fugaDism||(a.health&&a.health.flag==='atencion')||(a.riesgo&&/medio/i.test(a.riesgo)));}
 // --- consideraciones de negocio ---
 function findConsid(a){
   const pid=cleanId(a.id),n=normName(a.cliente),list=CONSID.cuentas||[];
@@ -291,11 +293,14 @@ function applyConsideraciones(){
   const reg=(CONSID&&CONSID.reglas_globales)||{};
   const tk=reg.critico_solo_por_ticket||{};
   ACCOUNTS.forEach(a=>{
-    a._congelada=false;a._marcajeAjustado=null;a._reclasificado=null;a._razonCritico=null;a._consid=null;a._ignoreEstadoSaludCrit=false;a._forzarSano=false;a._cambioRazon=false;
+    a._congelada=false;a._marcajeAjustado=null;a._reclasificado=null;a._razonCritico=null;a._consid=null;a._ignoreEstadoSaludCrit=false;a._forzarSano=false;a._cambioRazon=false;a._noFuga=false;
     const h=a.health,c=findConsid(a);
     // cambio de razón social: no es fuga ni crítica (re-facturación bajo nueva entidad)
     const nb=[a.comentario,a.estado,a.estadoSalud].filter(Boolean).join(' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     if((c&&c.accion==='cambio_razon_social')||(/razon\s*social/.test(nb)&&/cambi/.test(nb)))a._cambioRazon=true;
+    // excluida de fuga: por acción no_fuga o por estar en la hoja "detalle fuga" de la cartera
+    const pid=cleanId(a.id),nn=normName(a.cliente);
+    if((c&&c.accion==='no_fuga')||(pid&&FUGA_EXCL.ids[pid])||(nn&&FUGA_EXCL.norms[nn]))a._noFuga=true;
     if(c){a._consid=c;
       if(c.accion==='congelar')a._congelada=true;
       if(c.accion==='ajustar_marcaje'&&h&&h.adopcion!=null&&c.marcaje_maximo){
@@ -398,6 +403,21 @@ function parseMareWorkbook(wb){
     out.push({id:txt(get(row,'id')),cliente:cli,grupo:txt(get(row,'grupo')),cartera:txt(get(row,'cartera'))||'Sin segmento',kam:txt(get(row,'kam'))||'No Asignado',css:txt(get(row,'css')),mrr,meses,fuga:fugaFromMonths(meses),estadoSalud:txt(get(row,'estadoSalud')),cuadrante:txt(get(row,'cuadrante')),riesgo:txt(get(row,'riesgo')),estado:txt(get(row,'estado')),rubro:txt(get(row,'rubro')),desc:txt(get(row,'desc')),usuarios:num(get(row,'usuarios')),escala:txt(get(row,'escala')),nomina:txt(get(row,'nomina')),arrienda:txt(get(row,'arrienda')),puntajeCross:num(get(row,'puntajeCross')),okCount:num(get(row,'okCount')),opCount:num(get(row,'opCount')),referido:txt(get(row,'referido')),comentario:txt(get(row,'comentario')),mods});
   }
   if(!out.length)throw new Error('Encabezado encontrado pero sin filas de CLIENTE.');
+  // leer hoja "detalle fuga" (si existe) → cuentas a excluir de la marca de fuga
+  try{
+    const fs=wb.SheetNames.find(n=>/fuga/i.test(n)&&n!==wb.SheetNames[0]);
+    const ids={},norms={};
+    if(fs){
+      const faoa=XLSX.utils.sheet_to_json(wb.Sheets[fs],{header:1,raw:true,defval:null});
+      let fh=-1,kcol=-1,icol=-1;
+      for(let i=0;i<Math.min(10,faoa.length);i++){const r=(faoa[i]||[]).map(c=>c==null?'':String(c).trim());
+        const kc=r.findIndex(x=>/cliente|empresa|cuenta|nombre|raz[oó]n/i.test(x));
+        if(kc>=0){fh=i;kcol=kc;icol=r.findIndex(x=>/id\s*geo|^id$/i.test(x));break;}}
+      if(fh>=0){for(let r=fh+1;r<faoa.length;r++){const row=faoa[r]||[];const nm=txt(row[kcol]);if(nm)norms[normName(nm)]=1;const iv=icol>=0?cleanId(row[icol]):null;if(iv)ids[iv]=1;}}
+      else{for(let r=0;r<faoa.length;r++){const v=txt((faoa[r]||[])[0]);if(v&&!/cliente|empresa|fuga|detalle|^id/i.test(v))norms[normName(v)]=1;}}
+    }
+    FUGA_EXCL={ids,norms};
+  }catch(e){FUGA_EXCL={ids:{},norms:{}};}
   return out;
 }
 
@@ -471,7 +491,7 @@ function priority(a){
 // ---------- render comunes ----------
 function carteraBadge(c){const map={'ENTERPRISE':'b-purple','SMB':'b-blue'};return`<span class="badge ${map[c]||'b-gray'}">${esc(c)}</span>`;}
 function fugaBadge(f){const m={'Baja':'b-red','Disminución':'b-amber','Estable':'b-gray','Crecimiento':'b-green','Sin datos':'b-gray'};return`<span class="badge ${m[f]||'b-gray'}">${esc(f)}</span>`;}
-function fugaCell(a){return a._cambioRazon?'<span class="badge b-blue">Cambio razón social</span>':fugaBadge(a.fuga);}
+function fugaCell(a){if(a._cambioRazon)return'<span class="badge b-blue">Cambio razón social</span>';if(a._noFuga&&(a.fuga==='Baja'||a.fuga==='Disminución'))return'<span class="badge b-gray" title="Excluida de la marca de fuga (detalle fuga / revisada)">No fuga · revisada</span>';return fugaBadge(a.fuga);}
 function csBadge(a){const cs=csOf(a);return cs?`<span class="badge b-teal">CS: ${esc(cs)}</span>`:'<span class="badge b-gray">Sin CS</span>';}
 function sparkline(meses){const p=meses.map(m=>m||0);const mx=Math.max(...p,1);return`<span class="spark">${meses.map(m=>{const h=m==null?2:Math.max(3,Math.round((m/mx)*22));const op=m==null?.25:.85;return`<span style="height:${h}px;opacity:${op}"></span>`;}).join('')}</span>`;}
 function crossCell(a){const ok=a.okCount||0,op=a.opCount||0;if(!ok&&!op)return'<span class="badge b-gray">Sin cross</span>';let h='';if(ok)h+=`<span class="badge b-green">${ok} OK</span> `;if(op)h+=`<span class="badge b-amber">${op} OP</span>`;return h;}
@@ -732,14 +752,14 @@ function renderDatos(){
       <p class="legend" style="margin-top:6px">Estas filas vienen del modelo de salud pero no encontraron su cuenta en la cartera MARE MX. El monitor empareja <strong>primero por ID Geo</strong> y, si falta, por <strong>nombre normalizado</strong> (quita S.A. de C.V., acentos, etc.). Para emparejarlas: <strong>(1)</strong> lo más efectivo — llena la columna <code>ID Geo</code> en la cartera (hoy solo ~110 de 453 la tienen); con el mismo ID en ambos archivos el match es exacto. <strong>(2)</strong> si no hay ID, usa el <strong>mismo nombre</strong> en cartera y salud, evitando sufijos de sucursal/alias que difieren ("GDL", "EDO MEX", "(RH MEDICAL)"). <strong>(3)</strong> ignora las de prueba (Demo, Piloto, GeoVictoria interno): no son clientes reales.</p></details>`:''}
   </div>
   <div class="card"><h3>3 · Consideraciones de negocio</h3>
-    <p class="status-line" style="margin-bottom:8px">Reglas y excepciones que el monitor aplica al calcular salud y criticidad. Viven en <code>consideraciones.json</code> en el repo (se carga solo) y puedes editarlas sin tocar el HTML. ${(function(){const n=ACCOUNTS.filter(a=>a._reclasificado==='solo-ticket').length;const c=ACCOUNTS.filter(a=>a._congelada).length;const m=ACCOUNTS.filter(a=>a._marcajeAjustado).length;const rs=ACCOUNTS.filter(a=>a._cambioRazon).length;return `<span style="color:#3B6D11">Aplicadas ahora:</span> ${n} reclasificadas por 1 ticket · ${c} congeladas · ${m} con marcaje ajustado · ${rs} cambio de razón social.`;})()}</p>
+    <p class="status-line" style="margin-bottom:8px">Reglas y excepciones que el monitor aplica al calcular salud y criticidad. Viven en <code>consideraciones.json</code> en el repo (se carga solo) y puedes editarlas sin tocar el HTML. ${(function(){const n=ACCOUNTS.filter(a=>a._reclasificado==='solo-ticket').length;const c=ACCOUNTS.filter(a=>a._congelada).length;const m=ACCOUNTS.filter(a=>a._marcajeAjustado).length;const rs=ACCOUNTS.filter(a=>a._cambioRazon).length;const nf=ACCOUNTS.filter(a=>a._noFuga).length;return `<span style="color:#3B6D11">Aplicadas ahora:</span> ${n} reclasificadas por 1 ticket · ${c} congeladas · ${m} con marcaje ajustado · ${rs} cambio de razón social · ${nf} excluidas de fuga.`;})()}</p>
     <div class="sec-title">Reglas globales</div>
     <ul class="steps">${(function(){const tk=(CONSID.reglas_globales&&CONSID.reglas_globales.critico_solo_por_ticket)||{};return tk.activo?`<li><strong>Crítico solo por ticket</strong> → Saludable: ${esc(tk.descripcion||'')}</li>`:'<li>Sin reglas globales activas.</li>';})()}</ul>
     <div class="sec-title">Excepciones por cuenta</div>
     <div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Acción</th><th class="nosort">Motivo</th></tr></thead><tbody>
-    ${(CONSID.cuentas||[]).map(c=>`<tr style="cursor:default"><td>${esc(c.nombre||c.id||'—')}</td><td><span class="badge ${c.accion==='congelar'?'b-gray':c.accion==='cambio_razon_social'?'b-blue':'b-blue'}">${c.accion==='congelar'?'Congelar':c.accion==='ajustar_marcaje'?('Marcaje máx '+Math.round((c.marcaje_maximo||0)*100)+'%'):c.accion==='cambio_razon_social'?'Cambio razón social':esc(c.accion||'')}</span></td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(c.razon||'')}</td></tr>`).join('')||'<tr><td colspan="3" class="legend">Sin excepciones por cuenta.</td></tr>'}
+    ${(CONSID.cuentas||[]).map(c=>`<tr style="cursor:default"><td>${esc(c.nombre||c.id||'—')}</td><td><span class="badge ${c.accion==='congelar'?'b-gray':'b-blue'}">${c.accion==='congelar'?'Congelar':c.accion==='ajustar_marcaje'?('Marcaje máx '+Math.round((c.marcaje_maximo||0)*100)+'%'):c.accion==='cambio_razon_social'?'Cambio razón social':c.accion==='no_fuga'?'Excluir de fuga':esc(c.accion||'')}</span></td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(c.razon||'')}</td></tr>`).join('')||'<tr><td colspan="3" class="legend">Sin excepciones por cuenta.</td></tr>'}
     </tbody></table></div>
-    <p class="legend" style="margin-top:8px">Además, cualquier cuenta cuyo <strong>comentario</strong> mencione "cambio de razón social" se detecta automáticamente: no se cuenta como fuga ni como crítica.</p>
+    <p class="legend" style="margin-top:8px">Detección automática: cuentas cuyo <strong>comentario</strong> diga "cambio de razón social" se excluyen de fuga y críticas. Y si tu <code>cartera.xlsx</code> trae una hoja <strong>"detalle fuga"</strong> (con una columna de cliente/empresa o ID Geo), esas cuentas se sacan de la marca de fuga automáticamente.</p>
     <div class="sec-title" style="margin-top:12px">Cargar / actualizar consideraciones</div>
     <div class="urlrow"><input type="text" id="consUrlIn" placeholder="https://…/consideraciones.json · ./consideraciones.json" value="${esc(LAST.consideracionesUrl||CONFIG.consideracionesUrl||'')}"><button class="btn btn-primary" id="consUrlBtn">Cargar</button></div>
     <div class="dropzone" id="dzCons">Arrastra aquí <strong>consideraciones.json</strong> o haz clic</div>
