@@ -24,6 +24,7 @@ Estructura:
 - **`cuentas`** — Excepciones por cuenta, identificadas por `id` (ID Geo, lo más fiable) o `nombre`:
   - `accion: "congelar"` — La cuenta no se cuenta como crítica (ej. va a freeze y se retoma después).
   - `accion: "ajustar_marcaje"` con `marcaje_maximo` — Reescala la adopción sobre ese tope (ej. usuarios de solo-acceso que nunca marcan). Si tras el ajuste el marcaje es sano, deja de ser crítica por marcaje, pero se conservan otras señales reales (p. ej. caída de facturación → queda En riesgo).
+  - `accion: "cambio_razon_social"` — La cuenta **no se cuenta como fuga ni como crítica** (la caída de facturación es re-facturación bajo una nueva entidad, no churn). También se detecta automáticamente cualquier cuenta cuyo **comentario** en la cartera mencione "cambio de razón social".
 
 Detalles de presentación derivados de las consideraciones: el tag de criticidad muestra el motivo (`Crítico-marcaje`, `Crítico-sinuso`, `Crítico-nps`, `Crítico-ticket`, `Crítico-fuga`), y la acción del playbook aparece separada con el rótulo **"Acción a realizar:"**.
 
