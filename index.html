@@ -128,6 +128,11 @@ tr:last-child td{border-bottom:none;}
 .head{align-items:center;}
 /* ---- Prioridad por KAM ---- */
 .kam-group{margin-bottom:1.1rem;}
+details.kam-group>summary{list-style:none;cursor:pointer;}
+details.kam-group>summary::-webkit-details-marker{display:none;}
+.kam-head .chev{display:inline-block;transition:transform .15s;color:var(--color-text-secondary);font-size:11px;flex:none;}
+details.kam-group[open]>summary .chev{transform:rotate(90deg);}
+.kam-body{padding-top:2px;}
 .kam-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-left:4px solid var(--gv-yellow);background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:9px 13px;margin-bottom:8px;}
 .kam-head .kam-name{font-size:14px;font-weight:600;color:var(--color-text-primary);}
 .kam-head .kam-stats{font-size:11.5px;color:var(--color-text-secondary);}
@@ -497,33 +502,38 @@ function drawPrList(){
   // agrupar por KAM
   const groups={};
   rows.forEach(a=>{const k=a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(a);});
+  const KAM_ORDER=['raul','dafne','karla','no asignado'];
+  const kamRank=name=>{const n=normName(name);for(let i=0;i<KAM_ORDER.length;i++){if(n.includes(KAM_ORDER[i]))return i;}return KAM_ORDER.length;};
   const ordered=Object.entries(groups).map(([kam,arr])=>{
     const crit=arr.filter(isCritica);
     const ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a));
     const resto=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));
     const montoRiesgo=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);
     return{kam,crit,ries,resto,montoRiesgo,total:arr.length};
-  }).sort((x,y)=> y.crit.length-x.crit.length || y.ries.length-x.ries.length || y.montoRiesgo-x.montoRiesgo || y.total-x.total);
+  }).sort((x,y)=> kamRank(x.kam)-kamRank(y.kam) || y.crit.length-x.crit.length || y.ries.length-x.ries.length || y.montoRiesgo-x.montoRiesgo || y.total-x.total);
   $('prTitle').textContent=`${rows.length} cuentas en ${ordered.length} KAM · críticas por marcaje ascendente`;
   if(!rows.length){$('prList').innerHTML='<p class="legend">No hay cuentas con estos filtros.</p>';return;}
   // marcaje ascendente: peor marcaje (menor adopción) primero; sin dato al final
   const marc=a=>(a.health&&a.health.adopcion!=null)?a.health.adopcion:Infinity;
   const byMarcaje=(a,b)=>marc(a)-marc(b) || (b._score-a._score);
   const byScore=(a,b)=>b._score-a._score;
-  $('prList').innerHTML=ordered.map(g=>{
+  const tools=`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(false)">Colapsar todo</button></div>`;
+  $('prList').innerHTML=tools+ordered.map(g=>{
     g.crit.sort(byMarcaje);g.ries.sort(byScore);g.resto.sort(byScore);
     const sinCSn=g.crit.concat(g.ries).filter(a=>!hasCS(a)).length;
     let rank=0;
     const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(a=>prCard(a,++rank)).join('')}`:'';
-    return`<div class="kam-group">
-      <div class="kam-head">
+    return`<details class="kam-group">
+      <summary class="kam-head">
+        <span class="chev">▸</span>
         <span class="kam-name">${esc(g.kam)}</span>
         <span class="kam-stats"><strong style="color:#E24B4A">${g.crit.length}</strong> críticas · <strong style="color:#EF9F27">${g.ries.length}</strong> en riesgo${g.resto.length?` · <strong style="color:#3B6D11">${g.resto.length}</strong> saludables`:''} · <strong>${fmtUSD(g.montoRiesgo)}/mes</strong> expuesto${sinCSn?` · <strong style="color:#E24B4A">${sinCSn} sin CS</strong>`:''}</span>
-      </div>
-      ${block(g.crit,'🔴 Críticas (marcaje ↑)')}${block(g.ries,'🟠 En riesgo')}${block(g.resto,'🟢 Saludables')}
-    </div>`;
+      </summary>
+      <div class="kam-body">${block(g.crit,'🔴 Críticas (marcaje ↑)')}${block(g.ries,'🟠 En riesgo')}${block(g.resto,'🟢 Saludables')}</div>
+    </details>`;
   }).join('');
 }
+function prToggleAll(open){document.querySelectorAll('#prList details.kam-group').forEach(d=>d.open=open);}
 
 // ---------- Cuentas ----------
 let cuState={q:'',cartera:'',kam:'',fuga:'',sort:'mrr',dir:-1};
