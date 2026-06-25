@@ -1,0 +1,28 @@
+{
+  "version": "2026-06-25",
+  "_ayuda": "Reglas y excepciones que el Monitor de Cartera aplica al calcular salud y criticidad. Edita este archivo y vuelve a publicarlo en el repo; el dashboard lo carga solo y se actualiza con el boton Recargar datos. 'id' es el ID Geo (mas fiable); si no lo tienes, usa 'nombre'. Acciones soportadas por cuenta: 'congelar' (no cuenta como critica) y 'ajustar_marcaje' (reescala la adopcion sobre 'marcaje_maximo').",
+  "reglas_globales": {
+    "critico_solo_por_ticket": {
+      "activo": true,
+      "max_tickets": 1,
+      "marcaje_minimo": 0.60,
+      "descripcion": "Cuentas marcadas criticas solo por 1 incidencia/ticket y por lo demas sanas (adopcion >= 60%, sin NPS detractor ni caida fuerte) pasan a Saludable."
+    }
+  },
+  "cuentas": [
+    {
+      "id": "1049",
+      "nombre": "TIENDAS ADITIVO, S.A. DE C.V",
+      "accion": "congelar",
+      "estado_visible": "Congelada",
+      "razon": "Se va a congelar y posiblemente retomar en enero; no contar como critica."
+    },
+    {
+      "id": "3455",
+      "nombre": "Puratos de Mexico SA de CV",
+      "accion": "ajustar_marcaje",
+      "marcaje_maximo": 0.60,
+      "razon": "221 usuarios son de control de acceso y nunca marcaran; el marcaje maximo alcanzable es 60%. Se reescala la adopcion sobre ese tope."
+    }
+  ]
+}

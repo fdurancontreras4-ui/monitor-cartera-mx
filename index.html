@@ -133,6 +133,7 @@ details.kam-group>summary::-webkit-details-marker{display:none;}
 .kam-head .chev{display:inline-block;transition:transform .15s;color:var(--color-text-secondary);font-size:11px;flex:none;}
 details.kam-group[open]>summary .chev{transform:rotate(90deg);}
 .kam-body{padding-top:2px;}
+.pr-accion{font-size:11.5px;color:var(--color-text-secondary);line-height:1.45;margin-top:8px;padding-top:7px;border-top:.5px solid var(--color-border-tertiary);}
 .kam-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-left:4px solid var(--gv-yellow);background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:9px 13px;margin-bottom:8px;}
 .kam-head .kam-name{font-size:14px;font-weight:600;color:var(--color-text-primary);}
 .kam-head .kam-stats{font-size:11.5px;color:var(--color-text-secondary);}
@@ -194,8 +195,26 @@ const HEALTH_SEED = [{"id":"21150","nombre":"ALIMENTOS CENTRALIZADOS DE MEXICO S
 const CONFIG = {
   portfolioUrl: '',   // vacío = auto-detecta ./cartera.xlsx · o pon una URL (Google Sheets publicado)
   healthUrl:    '',   // vacío = auto-detecta ./salud.xlsx
+  consideracionesUrl: '', // vacío = auto-detecta ./consideraciones.json
   autoTryFiles: ['./cartera.xlsx','./Cuentas_Postventa.xlsx']
 };
+
+// ===== CONSIDERACIONES DE NEGOCIO (editable en consideraciones.json del repo) =====
+// Reglas y excepciones que el monitor aplica al calcular salud/criticidad.
+const CONSID_DEFAULT = {
+  version: '2026-06-25',
+  reglas_globales: {
+    critico_solo_por_ticket: { activo: true, max_tickets: 1, marcaje_minimo: 0.60,
+      descripcion: 'Cuentas marcadas críticas solo por 1 incidencia/ticket y por lo demás sanas (adopción ≥ 60%, sin NPS detractor ni caída fuerte) pasan a Saludable.' }
+  },
+  cuentas: [
+    { id: '1049', nombre: 'TIENDAS ADITIVO, S.A. DE C.V', accion: 'congelar', estado_visible: 'Congelada',
+      razon: 'Se va a congelar y posiblemente retomar en enero; no contar como crítica.' },
+    { id: '3455', nombre: 'Puratos de México SA de CV', accion: 'ajustar_marcaje', marcaje_maximo: 0.60,
+      razon: '221 usuarios son de control de acceso y nunca marcarán; el marcaje máximo alcanzable es 60%. Se reescala la adopción sobre ese tope.' }
+  ]
+};
+let CONSID = CONSID_DEFAULT;
 
 // ---------- salud por tamaño (resumen agregado, archivo resumen-tamano.csv) ----------
 const SALUD_TAMANO=[
@@ -215,7 +234,7 @@ let ACCOUNTS=[];
 let SOURCE='Cartera base (cuentas0206.xlsx)';
 let HEALTH={loaded:false,matched:0,total:0,unmatched:[],keyHeader:'',signalHeaders:[]};
 let HEALTH_CACHE=null;
-let LAST={portfolioUrl:'',healthUrl:''};
+let LAST={portfolioUrl:'',healthUrl:'',consideracionesUrl:''};
 let LAST_RELOAD=null;
 function markReload(){LAST_RELOAD=new Date();try{persist('last_reload',LAST_RELOAD.toISOString());}catch(e){}}
 function fmtReload(){if(!LAST_RELOAD)return'—';try{return LAST_RELOAD.toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return LAST_RELOAD.toLocaleString();}}
@@ -238,8 +257,64 @@ function cleanId(v){if(v==null||v==='')return null;const f=parseFloat(v);return 
 function catFlag(c){if(!c)return null;const s=String(c).toLowerCase();if(s.includes('crít')||s.includes('crit')||s.includes('sin uso'))return'critico';if(s.includes('riesgo'))return'atencion';if(s.includes('salud'))return'ok';return null;}
 const csOf=a=>a.css||(a.health&&a.health.css)||null;
 const hasCS=a=>!!csOf(a);
-function isCritica(a){return(a.estadoSalud&&/[ií]tic/i.test(a.estadoSalud))||(a.health&&a.health.flag==='critico')||a.fuga==='Baja';}
-function isRiesgo(a){return!isCritica(a)&&(a.fuga==='Disminución'||(a.health&&a.health.flag==='atencion')||(a.riesgo&&/medio/i.test(a.riesgo)));}
+// segmento: Enterprise / SMB medium (>=100 usuarios) / SMB small (<100)
+const SEG_ORDER=['Enterprise','SMB medium','SMB small'];
+function segOf(a){
+  const s=a.health&&a.health.seg;
+  if(s){if(/enterprise/i.test(s))return'Enterprise';if(/</.test(s))return'SMB small';return'SMB medium';}
+  if(a.cartera==='ENTERPRISE')return'Enterprise';
+  if(a.usuarios!=null)return a.usuarios>=100?'SMB medium':'SMB small';
+  return'SMB small';
+}
+function isCritica(a){if(a._congelada||a._forzarSano)return false;const eS=(a.estadoSalud&&/[ií]tic/i.test(a.estadoSalud))&&!a._ignoreEstadoSaludCrit;return eS||(a.health&&a.health.flag==='critico')||a.fuga==='Baja';}
+function isRiesgo(a){if(a._congelada||a._forzarSano)return false;return!isCritica(a)&&(a.fuga==='Disminución'||(a.health&&a.health.flag==='atencion')||(a.riesgo&&/medio/i.test(a.riesgo)));}
+// --- consideraciones de negocio ---
+function findConsid(a){
+  const pid=cleanId(a.id),n=normName(a.cliente),list=CONSID.cuentas||[];
+  for(const c of list){if(c.id&&pid&&cleanId(c.id)===pid)return c;}
+  for(const c of list){if(c.nombre){const cn=normName(c.nombre);if(cn&&(cn===n||(cn.length>5&&(n.includes(cn)||cn.includes(n)))))return c;}}
+  return null;
+}
+// razón por la que una cuenta está crítica → sufijo del tag (critico-marcaje, etc.)
+function razonCritico(a){
+  const h=a.health,f=a.fuga;
+  const ad=h?h.adopcion:null,nps=h?h.nps:null,vr=h?h.variacion:null,ic=h?h.inc30:null,cat=h?h.categoria:null;
+  if((cat&&/sin\s*uso/i.test(cat))||ad===0)return 'sinuso';
+  if(ad!=null&&ad<0.60)return 'marcaje';
+  if(f==='Baja'||(vr!=null&&vr<=-0.20))return 'fuga';
+  if(nps!=null&&nps<=6)return 'nps';
+  if(ic!=null&&ic>=1)return 'ticket';
+  if(a.estadoSalud&&/marcaj/i.test(a.estadoSalud))return 'marcaje';
+  return null;
+}
+function applyConsideraciones(){
+  const reg=(CONSID&&CONSID.reglas_globales)||{};
+  const tk=reg.critico_solo_por_ticket||{};
+  ACCOUNTS.forEach(a=>{
+    a._congelada=false;a._marcajeAjustado=null;a._reclasificado=null;a._razonCritico=null;a._consid=null;a._ignoreEstadoSaludCrit=false;a._forzarSano=false;
+    const h=a.health,c=findConsid(a);
+    if(c){a._consid=c;
+      if(c.accion==='congelar')a._congelada=true;
+      if(c.accion==='ajustar_marcaje'&&h&&h.adopcion!=null&&c.marcaje_maximo){
+        const orig=h._origAd!=null?h._origAd:h.adopcion;const adj=Math.min(orig/c.marcaje_maximo,1);
+        h._origAd=orig;h.adopcion=adj;a._marcajeAjustado={orig,max:c.marcaje_maximo,adj};
+        if(adj>=0.60){const npsD=(h.nps!=null&&h.nps<=6),caida=(h.variacion!=null&&h.variacion<=-0.20),tickets=(h.inc30||0);
+          if(!npsD&&!caida&&tickets<2){h.flag='ok';h.categoria='Saludable';a._reclasificado='marcaje-ajustado';
+            // la criticidad base "Crítico-marcaje" proviene del mismo marcaje ya reescalado → se ignora
+            a._ignoreEstadoSaludCrit=true;}}
+      }
+    }
+    // regla global: crítico SOLO por ≤N tickets y por lo demás sano (sin fuga ni otra señal) → Saludable
+    if(tk.activo&&h&&h.flag==='critico'){
+      const ad=h.adopcion,npsD=(h.nps!=null&&h.nps<=6),caida=(h.variacion!=null&&h.variacion<=-0.20),tickets=(h.inc30!=null?h.inc30:0),cat=h.categoria||'';
+      const marcajeOk=(ad==null||ad>=(tk.marcaje_minimo!=null?tk.marcaje_minimo:0.6));
+      const fugaOk=(a.fuga!=='Baja'&&a.fuga!=='Disminución');
+      if(!/sin\s*uso/i.test(cat)&&marcajeOk&&!npsD&&!caida&&fugaOk&&tickets>=1&&tickets<=(tk.max_tickets!=null?tk.max_tickets:1)){
+        h.flag='ok';h.categoria='Saludable';a._reclasificado='solo-ticket';a._ignoreEstadoSaludCrit=true;a._forzarSano=true;}
+    }
+  });
+  ACCOUNTS.forEach(a=>{if(!a._congelada&&isCritica(a))a._razonCritico=razonCritico(a);});
+}
 function riesgoState(a){return isCritica(a)?'critica':isRiesgo(a)?'riesgo':'estable';}
 const MONTHS_FULL=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const MONTHS_SHORT=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -336,14 +411,14 @@ function parseHealthWorkbook(wb){
   const catCol=find(/categor/i);
   const structured=catCol>=0&&(find(/adopci/i)>=0||find(/score/i)>=0||find(/nombre/i)>=0);
   if(structured){
-    const c={id:find(/id\s*empresa|^id$/i),nombre:find(/nombre/i),cat:catCol,ad:find(/adopci/i),vari:find(/variaci/i),nps:find(/^nps$|\bnps\b/i),inc30:find(/incidencias?\s*30/i),score:find(/score/i),css:find(/^css$|customer success/i)};
+    const c={id:find(/id\s*empresa|^id$/i),nombre:find(/nombre/i),cat:catCol,ad:find(/adopci/i),vari:find(/variaci/i),nps:find(/^nps$|\bnps\b/i),inc30:find(/incidencias?\s*30/i),score:find(/score/i),css:find(/^css$|customer success/i),seg:find(/segmento|segment|^seg$|tama[ñn]o/i)};
     if(c.nombre<0)c.nombre=find(RE_KEY);
     const rows=[];
     for(let r=hdr+1;r<aoa.length;r++){const row=aoa[r]||[];const key=txt(row[c.nombre]);if(!key)continue;
       const cat=txt(row[c.cat]);
       rows.push({key,keyNorm:normName(key),id:cleanId(c.id>=0?row[c.id]:null),flag:catFlag(cat),cat,
         ad:c.ad>=0?num(row[c.ad]):null,vari:c.vari>=0?num(row[c.vari]):null,nps:c.nps>=0?num(row[c.nps]):null,
-        inc30:c.inc30>=0?num(row[c.inc30]):null,score:c.score>=0?num(row[c.score]):null,css:c.css>=0?txt(row[c.css]):null,raw:null});}
+        inc30:c.inc30>=0?num(row[c.inc30]):null,score:c.score>=0?num(row[c.score]):null,css:c.css>=0?txt(row[c.css]):null,seg:c.seg>=0?txt(row[c.seg]):null,raw:null});}
     return{headers,keyHeader:headers[c.nombre],signalHeaders:['Categoría','% Adopción','NPS','Incidencias','Score'],rows,structured:true};
   }
   // genérico
@@ -356,7 +431,7 @@ function parseHealthWorkbook(wb){
 }
 function seedToParsed(seed){
   return{keyHeader:'Nombre Empresa',signalHeaders:['Categoría','% Adopción','NPS','Incidencias','Score'],structured:true,
-    rows:seed.map(r=>({key:r.nombre,keyNorm:normName(r.nombre),id:cleanId(r.id),flag:catFlag(r.cat),cat:r.cat,ad:r.ad,vari:r.var,nps:r.nps,inc30:r.inc30,score:r.score,css:r.css,raw:null}))};
+    rows:seed.map(r=>({key:r.nombre,keyNorm:normName(r.nombre),id:cleanId(r.id),flag:catFlag(r.cat),cat:r.cat,ad:r.ad,vari:r.var,nps:r.nps,inc30:r.inc30,score:r.score,css:r.css,seg:r.seg,raw:null}))};
 }
 function applyHealth(parsed){
   const byNorm={},byId={};parsed.rows.forEach(r=>{if(r.keyNorm)(byNorm[r.keyNorm]=byNorm[r.keyNorm]||[]).push(r);if(r.id)byId[r.id]=r;});
@@ -365,11 +440,12 @@ function applyHealth(parsed){
     let hit=null;const pid=cleanId(a.id);
     if(pid&&byId[pid])hit=byId[pid];
     if(!hit){const n=normName(a.cliente);if(n){hit=byNorm[n]&&byNorm[n][0];if(!hit){const key=Object.keys(byNorm).find(k=>(k.length>4&&(k.includes(n)||n.includes(k))));if(key)hit=byNorm[key][0];}}}
-    if(hit){a.health={flag:hit.flag,categoria:hit.cat,adopcion:hit.ad,variacion:hit.vari,nps:hit.nps,inc30:hit.inc30,score:hit.score,css:hit.css,raw:hit.raw};matched++;used.add(hit.keyNorm||hit.id);}
+    if(hit){a.health={flag:hit.flag,categoria:hit.cat,adopcion:hit.ad,variacion:hit.vari,nps:hit.nps,inc30:hit.inc30,score:hit.score,css:hit.css,seg:hit.seg,raw:hit.raw};matched++;used.add(hit.keyNorm||hit.id);}
   });
   const unmatched=parsed.rows.filter(r=>!used.has(r.keyNorm)&&!used.has(r.id)).map(r=>({key:r.key,flag:r.flag,cat:r.cat||null}));
   HEALTH={loaded:true,matched,total:parsed.rows.length,unmatched,keyHeader:parsed.keyHeader,signalHeaders:parsed.signalHeaders};
   HEALTH_CACHE=parsed;persist('mare_health',parsed);
+  applyConsideraciones();
 }
 
 // ---------- prioridad ----------
@@ -398,12 +474,13 @@ function crossCell(a){const ok=a.okCount||0,op=a.opCount||0;if(!ok&&!op)return'<
 
 function prCard(a,rank){
   const st=riesgoState(a);
-  const stBadge=st==='critica'?'<span class="badge b-red">Crítica</span> ':st==='riesgo'?'<span class="badge b-amber">En riesgo</span> ':'';
+  const razon=a._razonCritico||razonCritico(a);
+  const stBadge=st==='critica'?`<span class="badge b-red">Crítico${razon?'-'+razon:''}</span> `:st==='riesgo'?'<span class="badge b-amber">En riesgo</span> ':a._congelada?'<span class="badge b-gray">Congelada</span> ':'';
   const gap=(st!=='estable'&&!hasCS(a))?'gap':'';
   const pb=playbookFor(a);
   const ad=a.health&&a.health.adopcion!=null?a.health.adopcion:null;
-  const marc=ad!=null?` · <strong style="color:${ad<0.3?'#A32D2D':ad<0.6?'#854F0B':'inherit'}">Marcaje ${Math.round(ad*100)}%</strong>`:'';
-  const accion=pb?`<div style="font-size:11.5px;color:var(--color-text-secondary);margin-top:4px;line-height:1.4">${pbBadge(pb)} ${!hasCS(a)?'<strong style="color:#A32D2D">Asignar CSS · </strong>':''}${esc(pb.first)} <span style="opacity:.7">(${pb.sla})</span></div>`:'';
+  const marc=ad!=null?` · <strong style="color:${ad<0.3?'#A32D2D':ad<0.6?'#854F0B':'inherit'}">Marcaje ${Math.round(ad*100)}%${a._marcajeAjustado?' (ajustado)':''}</strong>`:'';
+  const accion=pb?`<div class="pr-accion">${pbBadge(pb)} <strong>Acción a realizar:</strong> ${!hasCS(a)?'<strong style="color:#A32D2D">Asignar CSS · </strong>':''}${esc(pb.first)} <span style="opacity:.7">(${pb.sla})</span></div>`:'';
   return`<div class="pr-card ${gap}" onclick="openDetail('${a._uid}')">
     <div class="pr-rank">${rank}</div>
     <div class="pr-main"><div class="pr-name">${esc(a.cliente)}</div>
@@ -431,7 +508,7 @@ function renderResumen(){
     <div class="metric"><div class="label">Cuentas activas</div><div class="value">${A.length}</div><div class="sub">${A.filter(a=>a.cartera==='ENTERPRISE').length} Ent · ${A.filter(a=>a.cartera==='SMB').length} SMB</div></div>
     <div class="metric"><div class="label">MRR cartera</div><div class="value">${fmtUSD(mrrTotal)}</div><div class="sub">facturación mensual USD</div></div>
     <div class="metric"><div class="label">Con cross activo</div><div class="value">${Math.round(conCross/N*100)}%</div><div class="sub">${conCross} con módulo OK</div></div>
-    <div class="metric"><div class="label">En fuga</div><div class="value" style="color:#E24B4A">${enFuga.length}</div><div class="sub">${fmtUSD(enFuga.reduce((s,a)=>s+(a.mrr||0),0))} en riesgo</div></div>
+    <div class="metric" title="Cuentas cuya facturación mensual cae ≥15% entre enero y el último mes cargado (Disminución), o se desploma a casi cero (Baja). Se calcula sobre la tendencia de los meses, no sobre la salud."><div class="label">En fuga ⓘ</div><div class="value" style="color:#E24B4A">${enFuga.length}</div><div class="sub">facturación ↓ ≥15% · ${fmtUSD(enFuga.reduce((s,a)=>s+(a.mrr||0),0))}/mes</div></div>
     <div class="metric"><div class="label">Críticas (salud)</div><div class="value" style="color:#E24B4A">${criticas}</div><div class="sub">semáforo en rojo</div></div>
     <div class="metric"><div class="label">En riesgo sin CS</div><div class="value" style="color:#EF9F27">${atRiskSinCS.length}</div><div class="sub">${fmtUSD(atRiskSinCS.reduce((s,a)=>s+(a.mrr||0),0))} sin cobertura</div></div>
     <div class="metric"><div class="label">Sin KAM</div><div class="value" style="color:#EF9F27">${sinKam}</div><div class="sub">${Math.round(sinKam/N*100)}% de la cartera</div></div>
@@ -470,6 +547,12 @@ function renderPrioridad(){
     <div class="metric mclick" onclick="prSet('atrisk','sin')"><div class="label">En riesgo SIN CS</div><div class="value" style="color:#E24B4A">${sinCS.length}</div><div class="sub">${fmtUSD(sinCSmonto)}/mes · priorizar →</div></div>
   </div>
   ${sinCS.length?`<div class="callout"><strong>${sinCS.length} cuentas en riesgo o críticas no tienen Customer Success</strong> y representan <strong>${fmtUSD(sinCSmonto)}/mes</strong>. Son la prioridad de prevención de churn: asignar gestión antes de que la facturación caiga.<br><button onclick="prSet('atrisk','sin')">Ver solo sin CS en PRIORIZAR - KAM →</button></div>`:''}
+  <div class="card"><h3>Indicadores por segmento</h3>
+    <div class="table-wrap"><table><thead><tr><th>Segmento</th><th class="nosort">Cuentas</th><th class="nosort">Críticas</th><th class="nosort">En riesgo</th><th class="nosort">Saludables</th><th class="nosort">En riesgo sin CS</th><th class="nosort">MRR expuesto</th></tr></thead><tbody>
+    ${SEG_ORDER.map(seg=>{const arr=ACCOUNTS.filter(a=>segOf(a)===seg);const crit=arr.filter(isCritica),ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a)),sano=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));const sinCSn=crit.concat(ries).filter(a=>!hasCS(a));const mrrExp=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);return `<tr style="cursor:default"><td style="font-weight:500">${seg}</td><td>${arr.length}</td><td><span class="badge b-red">${crit.length}</span></td><td><span class="badge b-amber">${ries.length}</span></td><td><span class="badge b-green">${sano.length}</span></td><td>${sinCSn.length}</td><td style="font-weight:500">${fmtUSD(mrrExp)}</td></tr>`;}).join('')}
+    </tbody></table></div>
+    <p class="legend" style="margin-top:8px">Segmento: <strong>Enterprise</strong>, <strong>SMB medium</strong> (≥100 usuarios) y <strong>SMB small</strong> (&lt;100). Tomado del modelo de salud; si una cuenta no tiene segmento en salud, se deduce de su cartera y usuarios.</p>
+  </div>
   <div class="card"><h3>Ponderación del índice de prioridad</h3><p class="legend">MRR (hasta ${WEIGHTS.mrr}) · Fuga baja (+${WEIGHTS.fugaBaja}) / disminución (+${WEIGHTS.fugaDism}) · Salud crítica MARE (+${WEIGHTS.saludCritico}) · Salud semanal crítico (+${WEIGHTS.healthCritico}) / atención (+${WEIGHTS.healthAtencion}) · <strong>En riesgo y sin CS (+${WEIGHTS.churnGap})</strong> · Retener (+${WEIGHTS.cuadRetener}) / Expandir (+${WEIGHTS.cuadExpandir}) · cada oportunidad cross (+${WEIGHTS.upside}).</p>
   <div class="sec-title">Playbooks CSS aplicados (T2 2026)</div>
   <p class="legend"><span class="badge b-amber">PB-01</span> Adopción/marcaje cayendo (&lt;60% o caída &gt;20pp) · SLA 5 días · diagnóstico con admin del sistema y plan por causa raíz.<br><span class="badge b-red">PB-03</span> Riesgo de fuga (2+ señales: sin marcaje 14d, NPS detractor, ticket &gt;7d) · SLA 24h · contacto con decisor y plan de recuperación en 72h.<br><span class="badge b-gray">PB-02</span> Detractor NPS (0–6) · SLA 48h. Cada cuenta muestra su acción concreta en PRIORIZAR - KAM.</p></div>`;
@@ -642,15 +725,29 @@ function renderDatos(){
       <div class="table-wrap" style="margin-top:8px"><table><thead><tr><th>Empresa (archivo de salud)</th><th class="nosort">Estado de salud</th></tr></thead><tbody>
       ${HEALTH.unmatched.slice(0,120).map(u=>{const fl=u.flag==='critico'?'b-red':u.flag==='atencion'?'b-amber':u.flag==='ok'?'b-green':'b-gray';const lbl=u.cat||(u.flag==='critico'?'Crítico':u.flag==='atencion'?'En riesgo':u.flag==='ok'?'Saludable':'Sin clasificar');return`<tr style="cursor:default"><td>${esc(u.key)}</td><td><span class="badge ${fl}">${esc(lbl)}</span></td></tr>`;}).join('')}
       </tbody></table></div>${HEALTH.unmatched.length>120?`<p class="legend" style="margin-top:6px">Mostrando 120 de ${HEALTH.unmatched.length}.</p>`:''}
-      <p class="legend" style="margin-top:6px">Estas filas vienen del archivo de salud pero no encontraron cuenta en la cartera (nombre/ID distinto o cuenta no presente). Revisa el nombre o el ID Geo para emparejarlas.</p></details>`:''}
+      <p class="legend" style="margin-top:6px">Estas filas vienen del modelo de salud pero no encontraron su cuenta en la cartera MARE MX. El monitor empareja <strong>primero por ID Geo</strong> y, si falta, por <strong>nombre normalizado</strong> (quita S.A. de C.V., acentos, etc.). Para emparejarlas: <strong>(1)</strong> lo más efectivo — llena la columna <code>ID Geo</code> en la cartera (hoy solo ~110 de 453 la tienen); con el mismo ID en ambos archivos el match es exacto. <strong>(2)</strong> si no hay ID, usa el <strong>mismo nombre</strong> en cartera y salud, evitando sufijos de sucursal/alias que difieren ("GDL", "EDO MEX", "(RH MEDICAL)"). <strong>(3)</strong> ignora las de prueba (Demo, Piloto, GeoVictoria interno): no son clientes reales.</p></details>`:''}
   </div>
-  <div class="card"><h3>3 · Publicar en GitHub Pages y actualizar</h3>
+  <div class="card"><h3>3 · Consideraciones de negocio</h3>
+    <p class="status-line" style="margin-bottom:8px">Reglas y excepciones que el monitor aplica al calcular salud y criticidad. Viven en <code>consideraciones.json</code> en el repo (se carga solo) y puedes editarlas sin tocar el HTML. ${(function(){const n=ACCOUNTS.filter(a=>a._reclasificado==='solo-ticket').length;const c=ACCOUNTS.filter(a=>a._congelada).length;const m=ACCOUNTS.filter(a=>a._marcajeAjustado).length;return `<span style="color:#3B6D11">Aplicadas ahora:</span> ${n} reclasificadas por 1 ticket · ${c} congeladas · ${m} con marcaje ajustado.`;})()}</p>
+    <div class="sec-title">Reglas globales</div>
+    <ul class="steps">${(function(){const tk=(CONSID.reglas_globales&&CONSID.reglas_globales.critico_solo_por_ticket)||{};return tk.activo?`<li><strong>Crítico solo por ticket</strong> → Saludable: ${esc(tk.descripcion||'')}</li>`:'<li>Sin reglas globales activas.</li>';})()}</ul>
+    <div class="sec-title">Excepciones por cuenta</div>
+    <div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Acción</th><th class="nosort">Motivo</th></tr></thead><tbody>
+    ${(CONSID.cuentas||[]).map(c=>`<tr style="cursor:default"><td>${esc(c.nombre||c.id||'—')}</td><td><span class="badge ${c.accion==='congelar'?'b-gray':'b-blue'}">${c.accion==='congelar'?'Congelar':c.accion==='ajustar_marcaje'?('Marcaje máx '+Math.round((c.marcaje_maximo||0)*100)+'%'):esc(c.accion||'')}</span></td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(c.razon||'')}</td></tr>`).join('')||'<tr><td colspan="3" class="legend">Sin excepciones por cuenta.</td></tr>'}
+    </tbody></table></div>
+    <div class="sec-title" style="margin-top:12px">Cargar / actualizar consideraciones</div>
+    <div class="urlrow"><input type="text" id="consUrlIn" placeholder="https://…/consideraciones.json · ./consideraciones.json" value="${esc(LAST.consideracionesUrl||CONFIG.consideracionesUrl||'')}"><button class="btn btn-primary" id="consUrlBtn">Cargar</button></div>
+    <div class="dropzone" id="dzCons">Arrastra aquí <strong>consideraciones.json</strong> o haz clic</div>
+    <input type="file" id="fileCons" accept=".json" style="display:none">
+    <p class="legend" id="consMsg" style="margin-top:8px">En GitHub Pages, sube <code>consideraciones.json</code> al repo junto al <code>index.html</code> y se aplica al abrir. Estructura: <code>reglas_globales</code> + lista <code>cuentas</code> (con <code>id</code> Geo o <code>nombre</code>, y <code>accion</code>: <code>congelar</code> o <code>ajustar_marcaje</code> con <code>marcaje_maximo</code>).</p>
+  </div>
+  <div class="card"><h3>4 · Publicar en GitHub Pages y actualizar</h3>
     <ol class="steps">
       <li>Crea un repositorio y sube este archivo como <code>index.html</code>.</li>
-      <li>Sube tu Excel al mismo repo con el nombre <code>cartera.xlsx</code> (y opcional <code>salud.xlsx</code>).</li>
+      <li>Sube al mismo repo: <code>cartera.xlsx</code>, opcional <code>salud.xlsx</code> y <code>consideraciones.json</code>.</li>
       <li>Activa Pages en <code>Settings · Pages · Branch: main</code>. Tu URL será <code>usuario.github.io/repo</code>.</li>
-      <li>El dashboard cargará <code>cartera.xlsx</code> automáticamente al abrir.</li>
-      <li><strong>Para actualizar:</strong> reemplaza el <code>.xlsx</code> en el repo (arrastrándolo en GitHub o con git) y pulsa <strong>↻ Recargar datos</strong>. No necesitas tocar el HTML.</li>
+      <li>El dashboard cargará esos archivos automáticamente al abrir.</li>
+      <li><strong>Para actualizar:</strong> reemplaza el archivo en el repo y pulsa <strong>↻ Recargar datos</strong>. No necesitas tocar el HTML.</li>
     </ol>
   </div>
   <div class="card"><h3>Reiniciar</h3><button class="btn" id="resetBtn">Volver a la cartera base</button></div>`;
@@ -659,6 +756,8 @@ function renderDatos(){
   $('healthUrlBtn').onclick=()=>loadHealthURL($('healthUrlIn').value.trim(),{});
   wireDrop('dzMare','fileMare',f=>loadFile(f,'mare'));
   wireDrop('dzHealth','fileHealth',f=>loadFile(f,'health'));
+  $('consUrlBtn').onclick=async()=>{const u=$('consUrlIn').value.trim();if(!u){$('consMsg').textContent='Pega primero un enlace o ruta.';return;}const ok=await loadConsideraciones(u,{});const m=$('consMsg');if(m){m.style.color=ok?'#3B6D11':'#A32D2D';m.textContent=ok?'✓ Consideraciones aplicadas.':'No se pudo cargar el JSON.';}renderDatos();};
+  wireDrop('dzCons','fileCons',f=>{const r=new FileReader();r.onload=e=>{try{CONSID=JSON.parse(e.target.result);LAST.consideracionesUrl='';if(HEALTH_CACHE)applyHealth(HEALTH_CACHE);else if(typeof HEALTH_SEED!=='undefined')applyHealth(seedToParsed(HEALTH_SEED));markReload();renderAll();show('datos');toast('Consideraciones aplicadas ✓');}catch(err){const m=$('consMsg');if(m){m.style.color='#A32D2D';m.textContent='JSON inválido: '+err.message;}}};r.onerror=()=>toast('No se pudo leer el archivo.',true);r.readAsText(f);});
   $('resetBtn').onclick=()=>{ACCOUNTS=hydrate(SEED);SOURCE='Cartera base (cuentas0206.xlsx)';HEALTH={loaded:false,matched:0,total:0,unmatched:[],keyHeader:'',signalHeaders:[]};if(typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length){try{applyHealth(seedToParsed(HEALTH_SEED));}catch(e){}}markReload();persistDel();renderAll();show('resumen');};
 }
 function wireDrop(dzId,inId,cb){const dz=$(dzId),inp=$(inId);dz.onclick=()=>inp.click();inp.onchange=e=>{if(e.target.files[0])cb(e.target.files[0]);};dz.ondragover=e=>{e.preventDefault();dz.classList.add('drag');};dz.ondragleave=()=>dz.classList.remove('drag');dz.ondrop=e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])cb(e.dataTransfer.files[0]);};}
@@ -701,6 +800,20 @@ async function loadHealthURL(url,opts){
   }catch(err){if(probe)return false;if(msg){msg.style.color='#A32D2D';msg.textContent='Error: '+err.message;}else toast('Salud: '+err.message,true);return false;}
 }
 async function refreshHealthAfterPortfolio(){const hurl=LAST.healthUrl||CONFIG.healthUrl;if(hurl){await loadHealthURL(hurl,{silent:true,probe:true});}else if(HEALTH_CACHE){applyHealth(HEALTH_CACHE);}}
+async function loadConsideraciones(url,opts){
+  opts=opts||{};const silent=opts.silent,probe=opts.probe;
+  if(!url)return false;
+  try{
+    const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
+    const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const json=await resp.json();
+    if(json&&typeof json==='object'){CONSID=json;LAST.consideracionesUrl=url;persist('last_consid_url',url);
+      // re-aplicar salud para que las consideraciones surtan efecto
+      if(HEALTH_CACHE)applyHealth(HEALTH_CACHE);else if(typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length)applyHealth(seedToParsed(HEALTH_SEED));
+      renderAll();}
+    return true;
+  }catch(err){if(!silent&&!probe)toast('Consideraciones: '+err.message,true);return false;}
+}
 async function reloadData(){
   const btn=$('reloadBtn');const old=btn.textContent;btn.disabled=true;btn.textContent='Recargando…';
   let ok=false;const url=CONFIG.portfolioUrl||LAST.portfolioUrl;
@@ -714,11 +827,11 @@ async function reloadData(){
 function dlRow(k,v){return v?`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`:'';}
 function openDetail(uid){
   const a=ACCOUNTS.find(x=>x._uid===uid);if(!a)return;priority(a);
-  const mx=Math.max(...a.meses.map(m=>m||0),1),labels=['Ene','Feb','Mar','Abr'];
-  const bars=a.meses.map((m,i)=>`<div class="bb"><div class="amt">${m==null?'—':Math.round(m)}</div><div class="bar" style="height:${m==null?2:Math.max(4,Math.round(m/mx*70))}px;${m==null?'opacity:.25':''}"></div><div class="lbl">${labels[i]}</div></div>`).join('');
-  const pres=a.meses.filter(m=>m!=null);let delta='';if(pres.length>=2&&pres[0]>0){const d=Math.round((pres[pres.length-1]-pres[0])/pres[0]*100);delta=`${d>0?'+':''}${d}% Ene→Abr`;}
+  const mx=Math.max(...a.meses.map(m=>m||0),1),labels=MONTHS_SHORT;
+  const bars=a.meses.map((m,i)=>`<div class="bb"><div class="amt">${m==null?'—':Math.round(m)}</div><div class="bar" style="height:${m==null?2:Math.max(4,Math.round(m/mx*70))}px;${m==null?'opacity:.25':''}"></div><div class="lbl">${labels[i]||('M'+(i+1))}</div></div>`).join('');
+  const pres=a.meses.filter(m=>m!=null);let delta='';if(pres.length>=2&&pres[0]>0){const d=Math.round((pres[pres.length-1]-pres[0])/pres[0]*100);delta=`${d>0?'+':''}${d}% ${MONTHS_SHORT[0]}→${MONTHS_SHORT[a.meses.length-1]||''}`;}
   const modsHtml=Object.keys(a.mods).length?`<div class="mod-grid">${Object.entries(a.mods).map(([m,v])=>`<div class="mod-item"><span>${esc(m)} ${v.raw&&v.raw!==v.s?`<span class="raw">${esc(v.raw)}</span>`:''}</span><span class="badge ${v.s==='OK'?'b-green':v.s==='OP'?'b-amber':'b-gray'}">${v.s}</span></div>`).join('')}</div>`:'<p class="legend">Sin módulos adicionales registrados.</p>';
-  const healthHtml=a.health?(function(){const h=a.health;const fb=`<span class="badge ${h.flag==='critico'?'b-red':h.flag==='atencion'?'b-amber':h.flag==='ok'?'b-green':'b-gray'}">${esc(h.categoria||h.flag||'sin clasificar')}</span>`;if(h.categoria){const tile=(lbl,val,col)=>`<div class="stat3-it"><div class="stat3-v" style="${col?`color:${col}`:''}">${val}</div><div class="stat3-l">${lbl}</div></div>`;const adv=h.adopcion!=null?Math.round(h.adopcion*100)+'%':'—';const adc=h.adopcion!=null?(h.adopcion<0.3?'#E24B4A':h.adopcion<0.6?'#EF9F27':'#3B6D11'):'';const npsv=h.nps!=null?h.nps:'—';const npc=h.nps!=null?(h.nps<=6?'#E24B4A':h.nps<=8?'#EF9F27':'#3B6D11'):'';const tkv=h.inc30!=null?h.inc30:'—';const tkc=h.inc30!=null&&h.inc30>0?'#EF9F27':'';return`<div style="margin-top:6px">${fb} ${h.score!=null?`<span class="chip">Score ${h.score}</span>`:''}</div><div class="stat3">${tile('% Adopción (marcaje)',adv,adc)}${tile('NPS',npsv,npc)}${tile('Tickets / inc. 30d',tkv,tkc)}</div><dl class="dl-grid" style="margin-top:8px">${dlRow('Variación adopción',h.variacion!=null?(h.variacion>0?'+':'')+Math.round(h.variacion*100)+'pp':null)}${dlRow('CS (tablero)',h.css)}</dl>`;}return`<div style="margin-top:6px">${fb}</div>`+(h.raw?`<dl class="dl-grid" style="margin-top:8px">${Object.entries(h.raw).map(([k,v])=>dlRow(k,v)).join('')}</dl>`:'');})():'<p class="legend">Sin datos del tablero de salud para esta cuenta.</p>';
+  const healthHtml=a.health?(function(){const h=a.health;const rz=a._razonCritico||razonCritico(a);const catBase=h.categoria||h.flag||'sin clasificar';const catLbl=(h.flag==='critico'&&rz&&!/sin\s*uso/i.test(catBase))?esc(catBase)+'-'+rz:esc(catBase);const fb=`<span class="badge ${h.flag==='critico'?'b-red':h.flag==='atencion'?'b-amber':h.flag==='ok'?'b-green':'b-gray'}">${catLbl}</span>`;const cnote=(function(){const n=[];if(a._congelada)n.push('❄️ <strong>Congelada</strong> — '+esc((a._consid&&a._consid.razon)||'no se cuenta como crítica.'));if(a._marcajeAjustado)n.push(`🔧 <strong>Marcaje ajustado</strong> — real ${Math.round(a._marcajeAjustado.orig*100)}% reescalado sobre tope ${Math.round(a._marcajeAjustado.max*100)}% → ${Math.round(a._marcajeAjustado.adj*100)}%. ${esc((a._consid&&a._consid.razon)||'')}`);if(a._reclasificado==='solo-ticket')n.push('✓ <strong>Reclasificada a Saludable</strong> — crítica solo por 1 ticket y por lo demás sana (regla de consideraciones).');return n.length?`<div class="note-box" style="margin-top:8px">${n.join('<br>')}</div>`:'';})();if(h.categoria){const tile=(lbl,val,col)=>`<div class="stat3-it"><div class="stat3-v" style="${col?`color:${col}`:''}">${val}</div><div class="stat3-l">${lbl}</div></div>`;const adv=h.adopcion!=null?Math.round(h.adopcion*100)+'%':'—';const adc=h.adopcion!=null?(h.adopcion<0.3?'#E24B4A':h.adopcion<0.6?'#EF9F27':'#3B6D11'):'';const npsv=h.nps!=null?h.nps:'—';const npc=h.nps!=null?(h.nps<=6?'#E24B4A':h.nps<=8?'#EF9F27':'#3B6D11'):'';const tkv=h.inc30!=null?h.inc30:'—';const tkc=h.inc30!=null&&h.inc30>0?'#EF9F27':'';return`<div style="margin-top:6px">${fb} ${h.score!=null?`<span class="chip">Score ${h.score}</span>`:''}</div>${cnote}<div class="stat3">${tile('% Adopción (marcaje)',adv,adc)}${tile('NPS',npsv,npc)}${tile('Tickets / inc. 30d',tkv,tkc)}</div><dl class="dl-grid" style="margin-top:8px">${dlRow('Variación adopción',h.variacion!=null?(h.variacion>0?'+':'')+Math.round(h.variacion*100)+'pp':null)}${a._marcajeAjustado?dlRow('Marcaje real (sin ajustar)',Math.round(a._marcajeAjustado.orig*100)+'%'):''}${dlRow('CS (tablero)',h.css)}</dl>`;}return`<div style="margin-top:6px">${fb}</div>${cnote}`+(h.raw?`<dl class="dl-grid" style="margin-top:8px">${Object.entries(h.raw).map(([k,v])=>dlRow(k,v)).join('')}</dl>`:'');})():'<p class="legend">Sin datos del tablero de salud para esta cuenta.</p>';
   const csLine=hasCS(a)?`<span class="badge b-teal">Customer Success: ${esc(a.css)}</span>`:'<span class="badge b-gray">Sin Customer Success</span>';
   $('modal').innerHTML=`
     <div class="modal-head"><h2>${esc(a.cliente)}</h2><button class="close-x" onclick="closeDetail()">×</button></div>
@@ -732,7 +845,7 @@ function openDetail(uid){
     </div>
     <div class="sec-title">Fuga</div><p style="font-size:13px">${fugaBadge(a.fuga)} <span class="legend">— derivada de la tendencia Ene→Abr.</span></p>
     <div class="sec-title">Acción recomendada · Playbook CSS</div>
-    ${(function(){const pb=playbookFor(a);if(!pb)return'<p class="legend">Sin señales de playbook con los datos actuales. PB-02 (Detractor NPS) requiere el dato de NPS, que no está en esta cartera.</p>';const noCS=!hasCS(a)?'<div class="callout" style="margin-bottom:8px"><strong>Sin CSS asignado.</strong> Primer paso: asignar gestión de Customer Success antes de ejecutar el playbook — toda alerta necesita un responsable de monitoreo.</div>':'';return`${noCS}<div class="rec-box"><div class="rec-title">${esc(pb.code)} — ${esc(pb.name)} · SLA primera acción ${esc(pb.sla)}</div><div class="rec-body">${a._signals.length?'<strong>Señales detectadas:</strong> '+a._signals.map(esc).join(' · ')+'<br>':''}<strong>Paso 1:</strong> ${esc(pb.first)}<br><strong>Plan:</strong> ${esc(pb.plan)}<br><strong>Escalación:</strong> ${esc(pb.escala)}</div></div>`;})()}
+    ${(function(){const pb=playbookFor(a);if(!pb)return'<p class="legend">Sin señales de playbook con los datos actuales. PB-02 (Detractor NPS) requiere el dato de NPS, que no está en esta cartera.</p>';const noCS=!hasCS(a)?'<div class="callout" style="margin-bottom:8px"><strong>Sin CSS asignado.</strong> Primer paso: asignar gestión de Customer Success antes de ejecutar el playbook — toda alerta necesita un responsable de monitoreo.</div>':'';return`${noCS}<div class="rec-box"><div class="rec-title">${esc(pb.code)} — ${esc(pb.name)} · SLA primera acción ${esc(pb.sla)}</div><div class="rec-body">${a._signals.length?'<strong>Señales detectadas:</strong> '+a._signals.map(esc).join(' · ')+'<br>':''}<strong>Acción a realizar:</strong> ${esc(pb.first)}<br><strong>Plan:</strong> ${esc(pb.plan)}<br><strong>Escalación:</strong> ${esc(pb.escala)}</div></div>`;})()}
     <div class="sec-title">Referidos</div><p style="font-size:13px">${a.referido?esc(a.referido):'<span class="legend">Sin referido/referencia registrado.</span>'}</p>
     <div class="sec-title">Módulos (cross / up-sell)</div>
     <p class="status-line" style="margin-bottom:8px">Puntaje cross <strong>${a.puntajeCross??'—'}</strong> · ${a.okCount||0} activos (OK) · ${a.opCount||0} oportunidades (OP)</p>
@@ -767,6 +880,8 @@ async function autoLoad(){
   const hurl=CONFIG.healthUrl||LAST.healthUrl;
   if(hurl){await loadHealthURL(hurl,{silent:true,probe:true});}
   else{await loadHealthURL('./salud.xlsx',{silent:true,probe:true});}
+  const curl=CONFIG.consideracionesUrl||LAST.consideracionesUrl||'./consideraciones.json';
+  await loadConsideraciones(curl,{silent:true,probe:true});
 }
 async function init(){
   try{if(window.storage&&window.storage.get){
@@ -774,6 +889,7 @@ async function init(){
     const h=await window.storage.get('last_health_url');if(h&&h.value)LAST.healthUrl=JSON.parse(h.value);
     const hc=await window.storage.get('mare_health');if(hc&&hc.value){HEALTH_CACHE=JSON.parse(hc.value);applyHealth(HEALTH_CACHE);}
     const lr=await window.storage.get('last_reload');if(lr&&lr.value){const d=new Date(JSON.parse(lr.value));if(!isNaN(d))LAST_RELOAD=d;}
+    const cu=await window.storage.get('last_consid_url');if(cu&&cu.value)LAST.consideracionesUrl=JSON.parse(cu.value);
   }}catch(e){}
   if(!HEALTH.loaded&&typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length){try{applyHealth(seedToParsed(HEALTH_SEED));}catch(e){}}
   if(!LAST_RELOAD)markReload();
