@@ -255,6 +255,8 @@ function txt(v){if(v==null)return null;const s=String(v).trim();return(s===''||s
 function modStatus(v){if(v==null)return null;const s=String(v).trim().toUpperCase();if(!s)return null;if(s.startsWith('OK'))return'OK';if(s.startsWith('OP'))return'OP';if(s.startsWith('NO'))return'NO';return'OP';}
 function fugaFromMonths(arr){const p=arr.filter(m=>m!=null);if(p.length===0)return'Sin datos';if(p.length===1)return'Estable';const a=p[0],b=p[p.length-1];if(a>0){if(b<1)return'Baja';const d=(b-a)/a;if(d<=-0.15)return'Disminución';if(d>=0.15)return'Crecimiento';return'Estable';}return'Estable';}
 function normName(s){if(!s)return'';let t=String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');t=t.replace(/\(.*?\)/g,' ');t=t.replace(/\b(s\.?a\.?\s*de\s*c\.?v\.?|sapi|s\.?a\.?|s\.?c\.?|de cv)\b/g,' ');t=t.replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();return t;}
+// claves de emparejamiento: nombre principal + cada alias entre paréntesis (en ambos lados)
+function nameKeys(s){if(!s)return[];const raw=String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');const keys=[];const add=x=>{const k=normName(x);if(k&&k.length>3&&keys.indexOf(k)<0)keys.push(k);};add(raw);(raw.match(/\(([^)]*)\)/g)||[]).forEach(p=>add(p.replace(/[()]/g,' ')));return keys;}
 function cleanId(v){if(v==null||v==='')return null;const f=parseFloat(v);return isNaN(f)?String(v).trim():String(Math.round(f));}
 function catFlag(c){if(!c)return null;const s=String(c).toLowerCase();if(s.includes('crít')||s.includes('crit')||s.includes('sin uso'))return'critico';if(s.includes('riesgo'))return'atencion';if(s.includes('salud'))return'ok';return null;}
 const csOf=a=>a.css||(a.health&&a.health.css)||null;
@@ -457,15 +459,18 @@ function seedToParsed(seed){
     rows:seed.map(r=>({key:r.nombre,keyNorm:normName(r.nombre),id:cleanId(r.id),flag:catFlag(r.cat),cat:r.cat,ad:r.ad,vari:r.var,nps:r.nps,inc30:r.inc30,score:r.score,css:r.css,seg:r.seg,raw:null}))};
 }
 function applyHealth(parsed){
-  const byNorm={},byId={};parsed.rows.forEach(r=>{if(r.keyNorm)(byNorm[r.keyNorm]=byNorm[r.keyNorm]||[]).push(r);if(r.id)byId[r.id]=r;});
+  const byNorm={},byId={};parsed.rows.forEach(r=>{nameKeys(r.key).forEach(k=>{(byNorm[k]=byNorm[k]||[]).push(r);});if(r.id)byId[r.id]=r;});
   let matched=0;const used=new Set();ACCOUNTS.forEach(a=>{a.health=null;});
   ACCOUNTS.forEach(a=>{
     let hit=null;const pid=cleanId(a.id);
     if(pid&&byId[pid])hit=byId[pid];
-    if(!hit){const n=normName(a.cliente);if(n){hit=byNorm[n]&&byNorm[n][0];if(!hit){const key=Object.keys(byNorm).find(k=>(k.length>4&&(k.includes(n)||n.includes(k))));if(key)hit=byNorm[key][0];}}}
+    if(!hit){const keys=nameKeys(a.cliente);
+      for(const n of keys){if(byNorm[n]){hit=byNorm[n][0];break;}}
+      if(!hit){for(const n of keys){const key=Object.keys(byNorm).find(k=>k.length>4&&(k.includes(n)||n.includes(k)));if(key){hit=byNorm[key][0];break;}}}
+    }
     if(hit){a.health={flag:hit.flag,categoria:hit.cat,adopcion:hit.ad,variacion:hit.vari,nps:hit.nps,inc30:hit.inc30,score:hit.score,css:hit.css,seg:hit.seg,raw:hit.raw};matched++;used.add(hit.keyNorm||hit.id);}
   });
-  const unmatched=parsed.rows.filter(r=>!used.has(r.keyNorm)&&!used.has(r.id)).map(r=>({key:r.key,flag:r.flag,cat:r.cat||null}));
+  const unmatched=parsed.rows.filter(r=>!used.has(r.keyNorm)&&!used.has(r.id)).map(r=>({key:r.key,flag:r.flag,cat:r.cat||null,ad:r.ad,nps:r.nps,inc30:r.inc30,score:r.score,css:r.css,seg:r.seg,id:r.id}));
   HEALTH={loaded:true,matched,total:parsed.rows.length,unmatched,keyHeader:parsed.keyHeader,signalHeaders:parsed.signalHeaders};
   HEALTH_CACHE=parsed;persist('mare_health',parsed);
   applyConsideraciones();
@@ -586,7 +591,7 @@ function renderPrioridad(){
 function renderPriorizar(){
   ACCOUNTS.forEach(priority);
   $('priorizar').innerHTML=`
-  <div class="note-box"><strong>Lista a priorizar por KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Los KAM con más críticas suben al tope. Usa los filtros para acotar.</div>
+  <div class="note-box"><strong>Lista a priorizar por KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Los KAM con más críticas suben al tope. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong> con las cuentas críticas del modelo de salud que aún no cruzan con la cartera, para que no se pierdan de vista.</div>
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
     <select id="prCS"><option value="">Toda cobertura CS</option><option value="sin">Sin CS</option><option value="con">Con CS</option></select>
@@ -625,7 +630,7 @@ function drawPrList(){
   const byMarcaje=(a,b)=>marc(a)-marc(b) || (b._score-a._score);
   const byScore=(a,b)=>b._score-a._score;
   const tools=`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(false)">Colapsar todo</button></div>`;
-  $('prList').innerHTML=tools+ordered.map(g=>{
+  const groupsHtml=ordered.map(g=>{
     g.crit.sort(byMarcaje);g.ries.sort(byScore);g.resto.sort(byScore);
     const sinCSn=g.crit.concat(g.ries).filter(a=>!hasCS(a)).length;
     let rank=0;
@@ -639,6 +644,40 @@ function drawPrList(){
       <div class="kam-body">${block(g.crit,'🔴 Críticas (marcaje ↑)')}${block(g.ries,'🟠 En riesgo')}${block(g.resto,'🟢 Saludables')}</div>
     </details>`;
   }).join('');
+  // críticas del modelo de salud que no emparejan con ninguna cuenta de la cartera (sin KAM)
+  let extra='';
+  const showCrit=['atrisk','critica','all'].includes(prState.estado);
+  if(showCrit&&HEALTH.loaded&&HEALTH.unmatched.length){
+    const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;
+    let uc=HEALTH.unmatched.filter(u=>u.flag==='critico'&&!testRe.test(u.key));
+    if(prState.cs==='sin')uc=uc.filter(u=>!u.css);else if(prState.cs==='con')uc=uc.filter(u=>!!u.css);
+    uc.sort((x,y)=>((x.ad==null?Infinity:x.ad)-(y.ad==null?Infinity:y.ad)));
+    if(uc.length){let rank=0;
+      extra=`<details class="kam-group">
+        <summary class="kam-head" style="border-left-color:#A32D2D">
+          <span class="chev">▸</span>
+          <span class="kam-name">⚠ Sin emparejar en cartera</span>
+          <span class="kam-stats"><strong style="color:#E24B4A">${uc.length}</strong> críticas del modelo de salud sin cuenta en la cartera (sin KAM)</span>
+        </summary>
+        <div class="kam-body"><div class="kam-sub">🔴 Críticas (marcaje ↑) · ${uc.length}</div>${uc.map(u=>prCardUnmatched(u,++rank)).join('')}</div>
+      </details>`;}
+  }
+  $('prList').innerHTML=tools+groupsHtml+extra;
+}
+function razonHealth(h){const ad=h.ad,nps=h.nps,ic=h.inc30,cat=h.cat;if((cat&&/sin\s*uso/i.test(cat))||ad===0)return'sinuso';if(ad!=null&&ad<0.60)return'marcaje';if(nps!=null&&nps<=6)return'nps';if(ic!=null&&ic>=1)return'ticket';return null;}
+function prCardUnmatched(u,rank){
+  const rz=razonHealth(u);const ad=u.ad!=null?u.ad:null;
+  const marc=ad!=null?` · <strong style="color:${ad<0.3?'#A32D2D':ad<0.6?'#854F0B':'inherit'}">Marcaje ${Math.round(ad*100)}%</strong>`:'';
+  const seg=u.seg?` · ${esc(u.seg)}`:'';
+  const cs=u.css?`<span class="badge b-green">CS: ${esc(u.css)}</span>`:'<span class="badge b-red">Sin CS</span>';
+  return`<div class="pr-card" style="cursor:default">
+    <div class="pr-rank">${rank}</div>
+    <div class="pr-main"><div class="pr-name">${esc(u.key)}</div>
+    <div class="pr-meta"><span class="badge b-gray">Sin emparejar</span>${marc}${seg} · ${cs}</div>
+    <div style="margin-top:5px"><span class="badge b-red">Crítico${rz?'-'+rz:''}</span> ${u.nps!=null&&u.nps<=6?'<span class="badge b-amber">NPS '+u.nps+'</span> ':''}${u.inc30?'<span class="badge b-amber">'+u.inc30+' inc.</span> ':''}${u.score!=null?'<span class="chip">Score '+u.score+'</span>':''}</div>
+    <div class="pr-accion">Identificar esta cuenta en la cartera (nombre o ID Geo) para asignarle KAM y gestionarla. Aparece en el modelo de salud pero no cruza con la cartera.</div></div>
+    <div class="pr-score" style="color:var(--color-text-secondary)">—</div>
+  </div>`;
 }
 function prToggleAll(open){document.querySelectorAll('#prList details.kam-group').forEach(d=>d.open=open);}
 
