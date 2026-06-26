@@ -207,6 +207,9 @@ const CONSID_DEFAULT = {
     critico_solo_por_ticket: { activo: true, max_tickets: 1, marcaje_minimo: 0.60,
       descripcion: 'Cuentas marcadas críticas solo por 1 incidencia/ticket y por lo demás sanas (adopción ≥ 60%, sin NPS detractor ni caída fuerte) pasan a Saludable.' }
   },
+  asignaciones_kam: [
+    { patron: 'J&T', kam: 'Dafne de la Rosa', razon: 'Todas las cuentas de J&T quedan asociadas a Dafne.' }
+  ],
   cuentas: [
     { id: '1049', nombre: 'TIENDAS ADITIVO, S.A. DE C.V', accion: 'congelar', estado_visible: 'Congelada',
       razon: 'Se va a congelar y posiblemente retomar en enero; no contar como crítica.' },
@@ -273,6 +276,18 @@ function segOf(a){
 function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon)return false;const eS=(a.estadoSalud&&/[ií]tic/i.test(a.estadoSalud))&&!a._ignoreEstadoSaludCrit;const fugaBaja=a.fuga==='Baja'&&!a._noFuga;return eS||(a.health&&a.health.flag==='critico')||fugaBaja;}
 function isRiesgo(a){if(a._congelada||a._forzarSano||a._cambioRazon)return false;const fugaDism=a.fuga==='Disminución'&&!a._noFuga;return!isCritica(a)&&(fugaDism||(a.health&&a.health.flag==='atencion')||(a.riesgo&&/medio/i.test(a.riesgo)));}
 // --- consideraciones de negocio ---
+// coincidencia por patrón de nombre; cubre "J&T" y "J & T" sin falsos positivos
+function matchPattern(name,patron){
+  const acc=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const N=' '+acc(name).replace(/[^a-z0-9]+/g,' ').trim()+' ';
+  const Nt=' '+acc(name).replace(/&/g,'').replace(/[^a-z0-9]+/g,' ').trim()+' ';
+  const pTight=acc(patron).replace(/&/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+  const pSpaced=acc(patron).replace(/&/g,' ').replace(/[^a-z0-9]+/g,' ').trim();
+  if(!pTight)return false;
+  if(Nt.indexOf(' '+pTight+' ')>=0)return true;
+  if(pSpaced&&N.indexOf(' '+pSpaced+' ')>=0)return true;
+  return false;
+}
 function findConsid(a){
   const pid=cleanId(a.id),n=normName(a.cliente),list=CONSID.cuentas||[];
   for(const c of list){if(c.id&&pid&&cleanId(c.id)===pid)return c;}
@@ -322,6 +337,15 @@ function applyConsideraciones(){
       if(!/sin\s*uso/i.test(cat)&&marcajeOk&&!npsD&&!caida&&fugaOk&&tickets>=1&&tickets<=(tk.max_tickets!=null?tk.max_tickets:1)){
         h.flag='ok';h.categoria='Saludable';a._reclasificado='solo-ticket';a._ignoreEstadoSaludCrit=true;a._forzarSano=true;}
     }
+  });
+  // reasignación de KAM por patrón (ej. todas las de J&T → Dafne)
+  const asign=CONSID.asignaciones_kam||[];
+  ACCOUNTS.forEach(a=>{
+    if(a._kamOrig===undefined)a._kamOrig=a.kam;
+    let target=null;
+    asign.forEach(r=>{if(r.kam&&matchPattern(a.cliente,r.patron))target=r.kam;});
+    if(target){a.kam=target;a._kamReasignado=(target!==a._kamOrig);}
+    else{a.kam=a._kamOrig;a._kamReasignado=false;}
   });
   ACCOUNTS.forEach(a=>{if(!a._congelada&&isCritica(a))a._razonCritico=razonCritico(a);});
 }
@@ -791,7 +815,8 @@ function renderDatos(){
       <p class="legend" style="margin-top:6px">Estas filas vienen del modelo de salud pero no encontraron su cuenta en la cartera MARE MX. El monitor empareja <strong>primero por ID Geo</strong> y, si falta, por <strong>nombre normalizado</strong> (quita S.A. de C.V., acentos, etc.). Para emparejarlas: <strong>(1)</strong> lo más efectivo — llena la columna <code>ID Geo</code> en la cartera (hoy solo ~110 de 453 la tienen); con el mismo ID en ambos archivos el match es exacto. <strong>(2)</strong> si no hay ID, usa el <strong>mismo nombre</strong> en cartera y salud, evitando sufijos de sucursal/alias que difieren ("GDL", "EDO MEX", "(RH MEDICAL)"). <strong>(3)</strong> ignora las de prueba (Demo, Piloto, GeoVictoria interno): no son clientes reales.</p></details>`:''}
   </div>
   <div class="card"><h3>3 · Consideraciones de negocio</h3>
-    <p class="status-line" style="margin-bottom:8px">Reglas y excepciones que el monitor aplica al calcular salud y criticidad. Viven en <code>consideraciones.json</code> en el repo (se carga solo) y puedes editarlas sin tocar el HTML. ${(function(){const n=ACCOUNTS.filter(a=>a._reclasificado==='solo-ticket').length;const c=ACCOUNTS.filter(a=>a._congelada).length;const m=ACCOUNTS.filter(a=>a._marcajeAjustado).length;const rs=ACCOUNTS.filter(a=>a._cambioRazon).length;const nf=ACCOUNTS.filter(a=>a._noFuga).length;return `<span style="color:#3B6D11">Aplicadas ahora:</span> ${n} reclasificadas por 1 ticket · ${c} congeladas · ${m} con marcaje ajustado · ${rs} cambio de razón social · ${nf} excluidas de fuga.`;})()}</p>
+    <p class="status-line" style="margin-bottom:8px">Reglas y excepciones que el monitor aplica al calcular salud y criticidad. Viven en <code>consideraciones.json</code> en el repo (se carga solo) y puedes editarlas sin tocar el HTML. ${(function(){const n=ACCOUNTS.filter(a=>a._reclasificado==='solo-ticket').length;const c=ACCOUNTS.filter(a=>a._congelada).length;const m=ACCOUNTS.filter(a=>a._marcajeAjustado).length;const rs=ACCOUNTS.filter(a=>a._cambioRazon).length;const nf=ACCOUNTS.filter(a=>a._noFuga).length;const rk=ACCOUNTS.filter(a=>a._kamReasignado).length;return `<span style="color:#3B6D11">Aplicadas ahora:</span> ${n} reclasificadas por 1 ticket · ${c} congeladas · ${m} con marcaje ajustado · ${rs} cambio de razón social · ${nf} excluidas de fuga · ${rk} reasignadas de KAM.`;})()}</p>
+    ${(CONSID.asignaciones_kam&&CONSID.asignaciones_kam.length)?`<div class="sec-title">Asignaciones de KAM por patrón</div><div class="table-wrap"><table><thead><tr><th>Patrón en el nombre</th><th class="nosort">KAM asignado</th><th class="nosort">Cuentas</th><th class="nosort">Motivo</th></tr></thead><tbody>${CONSID.asignaciones_kam.map(r=>{const cnt=ACCOUNTS.filter(a=>matchPattern(a.cliente,r.patron)).length;return `<tr style="cursor:default"><td><strong>${esc(r.patron)}</strong></td><td><span class="badge b-blue">${esc(r.kam)}</span></td><td>${cnt}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.razon||'')}</td></tr>`;}).join('')}</tbody></table></div>`:''}
     <div class="sec-title">Reglas globales</div>
     <ul class="steps">${(function(){const tk=(CONSID.reglas_globales&&CONSID.reglas_globales.critico_solo_por_ticket)||{};return tk.activo?`<li><strong>Crítico solo por ticket</strong> → Saludable: ${esc(tk.descripcion||'')}</li>`:'<li>Sin reglas globales activas.</li>';})()}</ul>
     <div class="sec-title">Excepciones por cuenta</div>
@@ -899,7 +924,7 @@ function openDetail(uid){
   const csLine=hasCS(a)?`<span class="badge b-teal">Customer Success: ${esc(a.css)}</span>`:'<span class="badge b-gray">Sin Customer Success</span>';
   $('modal').innerHTML=`
     <div class="modal-head"><h2>${esc(a.cliente)}</h2><button class="close-x" onclick="closeDetail()">×</button></div>
-    <div style="margin-bottom:6px">${carteraBadge(a.cartera)} ${fugaCell(a)} <span class="badge b-gray">${esc(a.kam)}</span> ${csLine} ${a.estado?`<span class="chip">${esc(a.estado)}</span>`:''} ${a.rubro?`<span class="chip">${esc(a.rubro)}</span>`:''}</div>
+    <div style="margin-bottom:6px">${carteraBadge(a.cartera)} ${fugaCell(a)} <span class="badge b-gray">${esc(a.kam)}${a._kamReasignado?' · reasignado':''}</span> ${csLine} ${a.estado?`<span class="chip">${esc(a.estado)}</span>`:''} ${a.rubro?`<span class="chip">${esc(a.rubro)}</span>`:''}</div>
     ${a.desc?`<p style="font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:6px">${esc(a.desc)}</p>`:''}
     <div class="sec-title">Prioridad</div>
     <div style="display:flex;align-items:center;gap:14px"><div style="font-size:30px;font-weight:600;color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-primary)'}">${a._score}</div><div>${(a._drivers||[]).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')||'<span class="legend">Sin factores destacados.</span>'}</div></div>

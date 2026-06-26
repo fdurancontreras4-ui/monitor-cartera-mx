@@ -6,7 +6,7 @@
     "critico_solo_por_ticket": {
       "activo": true,
       "max_tickets": 1,
-      "marcaje_minimo": 0.60,
+      "marcaje_minimo": 0.6,
       "descripcion": "Cuentas marcadas criticas solo por 1 incidencia/ticket y por lo demas sanas (adopcion >= 60%, sin NPS detractor ni caida fuerte) pasan a Saludable."
     }
   },
@@ -22,7 +22,7 @@
       "id": "3455",
       "nombre": "Puratos de Mexico SA de CV",
       "accion": "ajustar_marcaje",
-      "marcaje_maximo": 0.60,
+      "marcaje_maximo": 0.6,
       "razon": "221 usuarios son de control de acceso y nunca marcaran; el marcaje maximo alcanzable es 60%. Se reescala la adopcion sobre ese tope."
     },
     {
@@ -31,5 +31,13 @@
       "accion": "no_fuga",
       "razon": "Marcada en la hoja detalle fuga: la disminucion no es fuga real; se excluye de la marca de fuga."
     }
-  ]
+  ],
+  "asignaciones_kam": [
+    {
+      "patron": "J&T",
+      "kam": "Dafne de la Rosa",
+      "razon": "Todas las cuentas de J&T quedan asociadas a Dafne."
+    }
+  ],
+  "_como_asignar_kam": "En 'asignaciones_kam' agrega {patron, kam}: cualquier cuenta cuyo nombre contenga ese patron (ej. 'J&T') queda asociada a ese KAM, sin importar sucursal."
 }
