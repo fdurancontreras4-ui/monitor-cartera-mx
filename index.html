@@ -615,7 +615,7 @@ function renderPrioridad(){
 function renderPriorizar(){
   ACCOUNTS.forEach(priority);
   $('priorizar').innerHTML=`
-  <div class="note-box"><strong>Lista a priorizar por KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Los KAM con más críticas suben al tope. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong> con las cuentas críticas del modelo de salud que aún no cruzan con la cartera, para que no se pierdan de vista.</div>
+  <div class="note-box"><strong>Lista a priorizar por KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Los KAM con más críticas suben al tope. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong> con las cuentas críticas del modelo de salud que aún no cruzan, y el despliegue <strong>"⛔ SIN USO"</strong> que reúne todas las cuentas sin uso del sistema (las de la cartera y las no emparejadas), sin sacarlas de su grupo de KAM.</div>
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
     <select id="prCS"><option value="">Toda cobertura CS</option><option value="sin">Sin CS</option><option value="con">Con CS</option></select>
@@ -686,7 +686,31 @@ function drawPrList(){
         <div class="kam-body"><div class="kam-sub">🔴 Críticas (marcaje ↑) · ${uc.length}</div>${uc.map(u=>prCardUnmatched(u,++rank)).join('')}</div>
       </details>`;}
   }
-  $('prList').innerHTML=tools+groupsHtml+extra;
+  $('prList').innerHTML=tools+groupsHtml+extra+sinUsoBlock();
+}
+function isSinUso(a){const h=a.health;return !!(h&&((h.categoria&&/sin\s*uso/i.test(h.categoria))||h.adopcion===0));}
+function sinUsoBlock(){
+  if(!HEALTH.loaded)return'';
+  const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;
+  let mu=ACCOUNTS.filter(isSinUso);
+  let uu=HEALTH.unmatched.filter(u=>(!testRe.test(u.key))&&((u.cat&&/sin\s*uso/i.test(u.cat))||u.ad===0));
+  if(prState.cs==='sin'){mu=mu.filter(a=>!hasCS(a));uu=uu.filter(u=>!u.css);}
+  else if(prState.cs==='con'){mu=mu.filter(hasCS);uu=uu.filter(u=>!!u.css);}
+  mu.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
+  uu.sort((x,y)=>((y.score==null?-1:y.score)-(x.score==null?-1:x.score)));
+  const tot=mu.length+uu.length;if(!tot)return'';
+  let rank=0;
+  return`<details class="kam-group">
+    <summary class="kam-head" style="border-left-color:#7F77DD">
+      <span class="chev">▸</span>
+      <span class="kam-name">⛔ SIN USO</span>
+      <span class="kam-stats"><strong>${tot}</strong> cuentas sin uso del sistema · ${mu.length} en cartera · ${uu.length} sin emparejar</span>
+    </summary>
+    <div class="kam-body">
+      ${mu.length?`<div class="kam-sub">En cartera · ${mu.length}</div>${mu.map(a=>prCard(a,++rank)).join('')}`:''}
+      ${uu.length?`<div class="kam-sub">Sin emparejar (modelo de salud) · ${uu.length}</div>${uu.map(u=>prCardUnmatched(u,++rank)).join('')}`:''}
+    </div>
+  </details>`;
 }
 function razonHealth(h){const ad=h.ad,nps=h.nps,ic=h.inc30,cat=h.cat;if((cat&&/sin\s*uso/i.test(cat))||ad===0)return'sinuso';if(ad!=null&&ad<0.60)return'marcaje';if(nps!=null&&nps<=6)return'nps';if(ic!=null&&ic>=1)return'ticket';return null;}
 function prCardUnmatched(u,rank){
