@@ -134,6 +134,19 @@ details.kam-group>summary::-webkit-details-marker{display:none;}
 details.kam-group[open]>summary .chev{transform:rotate(90deg);}
 .kam-body{padding-top:2px;}
 .pr-accion{font-size:11.5px;color:var(--color-text-secondary);line-height:1.45;margin-top:8px;padding-top:7px;border-top:.5px solid var(--color-border-tertiary);}
+.hm-wrap{overflow:auto;max-height:72vh;}
+table.hm{border-collapse:separate;border-spacing:0;}
+table.hm th, table.hm td{padding:0;}
+table.hm .hm-emp{position:sticky;left:0;background:var(--color-background-primary);text-align:left;font-size:11px;padding:3px 10px;white-space:nowrap;max-width:300px;overflow:hidden;text-overflow:ellipsis;border-bottom:0.5px solid var(--color-border-tertiary);z-index:1;}
+table.hm thead th{position:sticky;top:0;background:var(--color-background-primary);z-index:2;border-bottom:0.5px solid var(--color-border-secondary);}
+table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
+.hm-date{height:66px;width:22px;min-width:22px;vertical-align:bottom;}
+.hm-datelbl{transform:rotate(-50deg);transform-origin:left bottom;white-space:nowrap;font-size:10px;width:22px;position:relative;left:13px;bottom:2px;color:var(--color-text-secondary);}
+.hm-x{cursor:pointer;color:#C0392B;opacity:.55;}
+.hm-x:hover{opacity:1;}
+.hm-cell{width:20px;min-width:20px;height:18px;text-align:center;font-size:10px;font-weight:700;color:#fff;border:1px solid var(--color-background-primary);}
+.hm-empty{background:var(--color-background-secondary);}
+.c-ok{background:#63BE7B;} .c-aten{background:#FFC83D;} .c-crit{background:#E24B4A;}
 .kam-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-left:4px solid var(--gv-yellow);background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:9px 13px;margin-bottom:8px;}
 .kam-head .kam-name{font-size:14px;font-weight:600;color:var(--color-text-primary);}
 .kam-head .kam-stats{font-size:11.5px;color:var(--color-text-secondary);}
@@ -169,6 +182,7 @@ details.kam-group[open]>summary .chev{transform:rotate(90deg);}
     <button class="active" data-sec="resumen">Resumen</button>
     <button data-sec="prioridad">Salud</button>
     <button data-sec="priorizar">PRIORIZAR - KAM</button>
+    <button data-sec="semanal">Salud semanal</button>
     <button data-sec="cuentas">Cuentas</button>
     <button data-sec="fuga">Fuga</button>
     <button data-sec="cross">Cross-sell</button>
@@ -178,6 +192,7 @@ details.kam-group[open]>summary .chev{transform:rotate(90deg);}
   <div id="resumen" class="section active"></div>
   <div id="prioridad" class="section"></div>
   <div id="priorizar" class="section"></div>
+  <div id="semanal" class="section"></div>
   <div id="cuentas" class="section"></div>
   <div id="fuga" class="section"></div>
   <div id="cross" class="section"></div>
@@ -220,6 +235,8 @@ const CONSID_DEFAULT = {
 let CONSID = CONSID_DEFAULT;
 // cuentas a excluir de fuga, leídas de la hoja "detalle fuga" de la cartera (ids y nombres normalizados)
 let FUGA_EXCL = {ids:{}, norms:{}};
+// historial de salud semanal: [{date:'YYYY-MM-DD', snap:{empresa:'ok'|'aten'|'A'|'N'|'T'}}]
+let WEEKS = [];
 
 // ---------- salud por tamaño (resumen agregado, archivo resumen-tamano.csv) ----------
 const SALUD_TAMANO=[
@@ -729,6 +746,55 @@ function prCardUnmatched(u,rank){
 }
 function prToggleAll(open){document.querySelectorAll('#prList details.kam-group').forEach(d=>d.open=open);}
 
+// ---------- Salud semanal (heatmap) ----------
+function todayISO(){return new Date().toISOString().slice(0,10);}
+function weekLetter(r){const cat=(r.cat||'').toLowerCase(),ad=r.ad,nps=r.nps,inc=r.inc30;
+  if(/sin\s*uso/.test(cat)||ad===0)return'A';if(ad!=null&&ad<0.60)return'A';if(nps!=null&&nps<=6)return'N';if(inc!=null&&inc>=1)return'T';return'A';}
+function snapshotFromHealth(){
+  const rows=(HEALTH_CACHE&&HEALTH_CACHE.rows)||[];const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;const snap={};
+  rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;snap[nm]=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);});
+  return snap;
+}
+function saveWeek(date){if(!date)return;const snap=snapshotFromHealth();if(!Object.keys(snap).length){toast('No hay salud cargada para guardar.',true);return;}
+  const i=WEEKS.findIndex(w=>w.date===date);if(i>=0)WEEKS[i]={date,snap};else WEEKS.push({date,snap});
+  WEEKS.sort((a,b)=>a.date<b.date?-1:1);if(WEEKS.length>40)WEEKS=WEEKS.slice(WEEKS.length-40);
+  persist('health_weeks',WEEKS);toast('Semana '+date+' guardada ✓');renderSemanal();}
+function delWeek(date){if(!confirm('¿Borrar la semana '+date+' del historial?'))return;WEEKS=WEEKS.filter(w=>w.date!==date);persist('health_weeks',WEEKS);renderSemanal();}
+function fmtWeek(d){try{const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('es-MX',{day:'2-digit',month:'short'});}catch(e){return d;}}
+let semQ='';
+function renderSemanal(){
+  let weeks=WEEKS.slice();let transient=false;
+  if(!weeks.length&&HEALTH.loaded){weeks=[{date:todayISO(),snap:snapshotFromHealth()}];transient=true;}
+  const set={};weeks.forEach(w=>Object.keys(w.snap).forEach(n=>set[n]=1));
+  let empresas=Object.keys(set).sort((a,b)=>a.toLowerCase()<b.toLowerCase()?-1:1);
+  if(semQ){const q=semQ.toLowerCase();empresas=empresas.filter(n=>n.toLowerCase().includes(q));}
+  const last=weeks[weeks.length-1];
+  const cnt={ok:0,aten:0,crit:0};
+  if(last)Object.values(last.snap).forEach(v=>{if(v==='ok')cnt.ok++;else if(v==='aten')cnt.aten++;else cnt.crit++;});
+  const cellHtml=(code)=>{if(!code)return'<td class="hm-cell hm-empty"></td>';if(code==='ok')return'<td class="hm-cell c-ok"></td>';if(code==='aten')return'<td class="hm-cell c-aten"></td>';return`<td class="hm-cell c-crit">${esc(code)}</td>`;};
+  const head=weeks.map(w=>`<th class="hm-date"><div class="hm-datelbl">${fmtWeek(w.date)}${!transient?` <span class="hm-x" title="Borrar semana" onclick="delWeek('${w.date}')">✕</span>`:''}</div></th>`).join('');
+  const body=empresas.map(nm=>`<tr><td class="hm-emp" title="${esc(nm)}">${esc(nm)}</td>${weeks.map(w=>cellHtml(w.snap[nm])).join('')}</tr>`).join('');
+  $('semanal').innerHTML=`
+  <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets. Carga la salud de la semana en <strong>Datos</strong> y pulsa <strong>Guardar semana</strong> para añadir su columna al historial.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''}</div>
+  <div class="metrics">
+    <div class="metric"><div class="label">Empresas</div><div class="value">${Object.keys(set).length}</div><div class="sub">en el historial</div></div>
+    <div class="metric"><div class="label">Semanas</div><div class="value">${transient?0:weeks.length}</div><div class="sub">guardadas</div></div>
+    <div class="metric"><div class="label">Saludables</div><div class="value" style="color:#3B6D11">${cnt.ok}</div><div class="sub">última semana</div></div>
+    <div class="metric"><div class="label">En riesgo</div><div class="value" style="color:#854F0B">${cnt.aten}</div><div class="sub">última semana</div></div>
+    <div class="metric"><div class="label">Críticas</div><div class="value" style="color:#A32D2D">${cnt.crit}</div><div class="sub">última semana</div></div>
+  </div>
+  <div class="controls" style="align-items:center">
+    <input type="date" id="semDate" value="${todayISO()}" style="font-family:var(--font-sans);font-size:13px;padding:5px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)">
+    <button class="btn btn-primary" id="semSave">Guardar semana</button>
+    <input type="text" id="semQ" placeholder="Buscar empresa…" value="${esc(semQ)}" style="flex:1;min-width:160px;font-size:13px;padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)">
+    <span class="legend">${empresas.length} empresas mostradas</span>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="hm-wrap"><table class="hm"><thead><tr><th class="hm-emp hm-corner">Empresa</th>${head}</tr></thead><tbody>${body||'<tr><td class="hm-emp">Sin datos de salud.</td></tr>'}</tbody></table></div>
+  </div>`;
+  $('semSave').onclick=()=>saveWeek($('semDate').value);
+  const qel=$('semQ');qel.oninput=e=>{semQ=e.target.value;const pos=e.target.selectionStart;renderSemanal();const n=$('semQ');if(n){n.focus();try{n.setSelectionRange(pos,pos);}catch(_){}}};
+}
 // ---------- Cuentas ----------
 let cuState={q:'',cartera:'',kam:'',fuga:'',sort:'mrr',dir:-1};
 function renderCuentas(){
@@ -973,13 +1039,14 @@ $('overlay').onclick=e=>{if(e.target.id==='overlay')closeDetail();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
 
 // ---------- persistencia + toast ----------
-async function persist(key,val){try{if(window.storage&&window.storage.set)await window.storage.set(key,JSON.stringify(val));}catch(e){}}
+async function persist(key,val){const s=JSON.stringify(val);try{if(window.storage&&window.storage.set)await window.storage.set(key,s);}catch(e){}try{if(window.localStorage)localStorage.setItem('gv_'+key,s);}catch(e){}}
+async function readStore(key){try{if(window.storage&&window.storage.get){const r=await window.storage.get(key);if(r&&r.value)return JSON.parse(r.value);}}catch(e){}try{if(window.localStorage){const v=localStorage.getItem('gv_'+key);if(v)return JSON.parse(v);}}catch(e){}return null;}
 async function persistDel(){HEALTH_CACHE=null;LAST.portfolioUrl='';LAST.healthUrl='';try{if(window.storage&&window.storage.delete){await window.storage.delete('mare_health');await window.storage.delete('last_portfolio_url');await window.storage.delete('last_health_url');}}catch(e){}}
 function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);padding:10px 16px;border-radius:8px;font-size:13px;z-index:99;max-width:90%;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:opacity .4s';document.body.appendChild(t);}t.textContent=msg;t.style.background=err?'#A32D2D':'var(--color-text-primary)';t.style.color=err?'#fff':'var(--color-background-primary)';t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity='0',4500);}
 
 // ---------- navegación / init ----------
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
-const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,cuentas:renderCuentas,fuga:renderFuga,cross:renderCross,datos:renderDatos};
+const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,cuentas:renderCuentas,fuga:renderFuga,cross:renderCross,datos:renderDatos};
 function renderAll(){Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11">salud activa</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 function show(sec){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));$(sec).classList.add('active');document.querySelector(`.nav button[data-sec="${sec}"]`).classList.add('active');RENDER[sec]();}
@@ -1004,6 +1071,7 @@ async function init(){
     const lr=await window.storage.get('last_reload');if(lr&&lr.value){const d=new Date(JSON.parse(lr.value));if(!isNaN(d))LAST_RELOAD=d;}
     const cu=await window.storage.get('last_consid_url');if(cu&&cu.value)LAST.consideracionesUrl=JSON.parse(cu.value);
   }}catch(e){}
+  try{const wk=await readStore('health_weeks');if(Array.isArray(wk))WEEKS=wk;}catch(e){}
   if(!HEALTH.loaded&&typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length){try{applyHealth(seedToParsed(HEALTH_SEED));}catch(e){}}
   if(!LAST_RELOAD)markReload();
   renderAll();autoLoad();
