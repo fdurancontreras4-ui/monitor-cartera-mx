@@ -180,8 +180,8 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
 
   <div class="nav">
     <button class="active" data-sec="resumen">Resumen</button>
-    <button data-sec="prioridad">Salud</button>
-    <button data-sec="priorizar">PRIORIZAR - KAM</button>
+    <button data-sec="prioridad">Salud - General</button>
+    <button data-sec="priorizar">Salud - Segmentos</button>
     <button data-sec="semanal">Salud semanal</button>
     <button data-sec="cuentas">Cuentas</button>
     <button data-sec="fuga">Fuga</button>
@@ -227,7 +227,7 @@ const CONSID_DEFAULT = {
   ],
   cuentas: [
     { id: '1049', nombre: 'TIENDAS ADITIVO, S.A. DE C.V', accion: 'congelar', estado_visible: 'Congelada',
-      razon: 'Se va a congelar y posiblemente retomar en enero; no contar como crítica.' },
+      razon: 'Cuenta congelada; intentar retomar en diciembre. No contar como crítica.' },
     { id: '3455', nombre: 'Puratos de México SA de CV', accion: 'ajustar_marcaje', marcaje_maximo: 0.60,
       razon: '221 usuarios son de control de acceso y nunca marcarán; el marcaje máximo alcanzable es 60%. Se reescala la adopción sobre ese tope.' }
   ]
@@ -597,8 +597,10 @@ function renderResumen(){
   </div>`;
 }
 
-// ---------- Salud ----------
+// ---------- Salud - General ----------
 let prState={estado:'atrisk',cs:''};
+let segSel={seg:'',estado:''};
+function segShow(seg,estado){segSel=(segSel.seg===seg&&segSel.estado===estado)?{seg:'',estado:''}:{seg,estado};renderPrioridad();const el=$('segList');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function renderPrioridad(){
   ACCOUNTS.forEach(priority);
   const atRisk=ACCOUNTS.filter(a=>isCritica(a)||isRiesgo(a));
@@ -607,8 +609,20 @@ function renderPrioridad(){
   const sanas=ACCOUNTS.filter(a=>!isCritica(a)&&!isRiesgo(a));
   const sinCS=atRisk.filter(a=>!hasCS(a));
   const sinCSmonto=sinCS.reduce((s,a)=>s+(a.mrr||0),0);
+  // lista inline por segmento (al clicar un indicador)
+  let segListHtml='';
+  if(segSel.seg){
+    let arr=ACCOUNTS.filter(a=>segOf(a)===segSel.seg);
+    if(segSel.estado==='critica')arr=arr.filter(isCritica);
+    else if(segSel.estado==='riesgo')arr=arr.filter(a=>isRiesgo(a)&&!isCritica(a));
+    else arr=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));
+    const marc=a=>(a.health&&a.health.adopcion!=null)?a.health.adopcion:Infinity;
+    arr.sort(segSel.estado==='critica'?((x,y)=>marc(x)-marc(y)||y._score-x._score):((x,y)=>(y._score||0)-(x._score||0)));
+    const lbl={critica:'críticas',riesgo:'en riesgo',sano:'saludables'}[segSel.estado];
+    segListHtml=`<div class="card" id="segList"><h3>${esc(segSel.seg)} · ${arr.length} ${lbl} <span style="font-weight:400;color:var(--color-text-secondary)">· clic de nuevo en el indicador para cerrar</span></h3>${arr.length?arr.map((a,i)=>prCard(a,i+1)).join(''):'<p class="legend">Sin cuentas en este grupo.</p>'}</div>`;
+  }
   $('prioridad').innerHTML=`
-  <div class="note-box"><strong>Estado de salud de la cartera.</strong> Cada lunes carga el <strong>modelo de salud</strong> en Datos para refrescar el semáforo. Toca una tarjeta para abrir la lista <strong>PRIORIZAR - KAM</strong> ya filtrada. ${HEALTH.loaded?`<span style="color:#3B6D11">Salud aplicada: ${HEALTH.matched}/${HEALTH.total} emparejadas.</span>`:`Sin salud cargada se usa la señal base (fuga + estado MARE).`}</div>
+  <div class="note-box"><strong>Estado de salud de la cartera.</strong> Cada lunes carga el <strong>modelo de salud</strong> en Datos para refrescar el semáforo. Toca una tarjeta para abrir la lista <strong>Salud - Segmentos</strong> ya filtrada, o toca un número en <strong>Indicadores por segmento</strong> para desplegar esas cuentas aquí mismo. ${HEALTH.loaded?`<span style="color:#3B6D11">Salud aplicada: ${HEALTH.matched}/${HEALTH.total} emparejadas.</span>`:`Sin salud cargada se usa la señal base (fuga + estado MARE).`}</div>
   <div class="metrics">
     <div class="metric mclick" onclick="prSet('critica',prState.cs)"><div class="label">Críticas</div><div class="value" style="color:#E24B4A">${criticas.length}</div><div class="sub">salud / fuga baja · priorizar →</div></div>
     <div class="metric mclick" onclick="prSet('riesgo',prState.cs)"><div class="label">En riesgo</div><div class="value" style="color:#EF9F27">${enRiesgo.length}</div><div class="sub">disminución / atención · priorizar →</div></div>
@@ -616,23 +630,36 @@ function renderPrioridad(){
     <div class="metric mclick" onclick="prSet('atrisk',prState.cs)"><div class="label">Críticas + riesgo</div><div class="value">${atRisk.length}</div><div class="sub">vista combinada · priorizar →</div></div>
     <div class="metric mclick" onclick="prSet('atrisk','sin')"><div class="label">En riesgo SIN CS</div><div class="value" style="color:#E24B4A">${sinCS.length}</div><div class="sub">${fmtUSD(sinCSmonto)}/mes · priorizar →</div></div>
   </div>
-  ${sinCS.length?`<div class="callout"><strong>${sinCS.length} cuentas en riesgo o críticas no tienen Customer Success</strong> y representan <strong>${fmtUSD(sinCSmonto)}/mes</strong>. Son la prioridad de prevención de churn: asignar gestión antes de que la facturación caiga.<br><button onclick="prSet('atrisk','sin')">Ver solo sin CS en PRIORIZAR - KAM →</button></div>`:''}
-  <div class="card"><h3>Indicadores por segmento</h3>
+  ${sinCS.length?`<div class="callout"><strong>${sinCS.length} cuentas en riesgo o críticas no tienen Customer Success</strong> y representan <strong>${fmtUSD(sinCSmonto)}/mes</strong>. Son la prioridad de prevención de churn: asignar gestión antes de que la facturación caiga.<br><button onclick="prSet('atrisk','sin')">Ver solo sin CS en Salud - Segmentos →</button></div>`:''}
+  <div class="card"><h3>Indicadores por segmento <span style="font-weight:400;color:var(--color-text-secondary);font-size:12px">· clic en un número para ver las cuentas</span></h3>
     <div class="table-wrap"><table><thead><tr><th>Segmento</th><th class="nosort">Cuentas</th><th class="nosort">Críticas</th><th class="nosort">En riesgo</th><th class="nosort">Saludables</th><th class="nosort">En riesgo sin CS</th><th class="nosort">MRR expuesto</th></tr></thead><tbody>
-    ${SEG_ORDER.map(seg=>{const arr=ACCOUNTS.filter(a=>segOf(a)===seg);const crit=arr.filter(isCritica),ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a)),sano=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));const sinCSn=crit.concat(ries).filter(a=>!hasCS(a));const mrrExp=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);return `<tr style="cursor:default"><td style="font-weight:500">${seg}</td><td>${arr.length}</td><td><span class="badge b-red">${crit.length}</span></td><td><span class="badge b-amber">${ries.length}</span></td><td><span class="badge b-green">${sano.length}</span></td><td>${sinCSn.length}</td><td style="font-weight:500">${fmtUSD(mrrExp)}</td></tr>`;}).join('')}
+    ${SEG_ORDER.map(seg=>{const arr=ACCOUNTS.filter(a=>segOf(a)===seg);const crit=arr.filter(isCritica),ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a)),sano=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));const sinCSn=crit.concat(ries).filter(a=>!hasCS(a));const mrrExp=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);const sel=e=>(segSel.seg===seg&&segSel.estado===e)?'outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px;':'';return `<tr><td style="font-weight:500">${seg}</td><td>${arr.length}</td><td style="cursor:pointer;${sel('critica')}" onclick="segShow('${seg}','critica')"><span class="badge b-red">${crit.length}</span></td><td style="cursor:pointer;${sel('riesgo')}" onclick="segShow('${seg}','riesgo')"><span class="badge b-amber">${ries.length}</span></td><td style="cursor:pointer;${sel('sano')}" onclick="segShow('${seg}','sano')"><span class="badge b-green">${sano.length}</span></td><td>${sinCSn.length}</td><td style="font-weight:500">${fmtUSD(mrrExp)}</td></tr>`;}).join('')}
     </tbody></table></div>
     <p class="legend" style="margin-top:8px">Segmento: <strong>Enterprise</strong>, <strong>SMB medium</strong> (≥100 usuarios) y <strong>SMB small</strong> (&lt;100). Tomado del modelo de salud; si una cuenta no tiene segmento en salud, se deduce de su cartera y usuarios.</p>
   </div>
+  ${segListHtml}
   <div class="card"><h3>Ponderación del índice de prioridad</h3><p class="legend">MRR (hasta ${WEIGHTS.mrr}) · Fuga baja (+${WEIGHTS.fugaBaja}) / disminución (+${WEIGHTS.fugaDism}) · Salud crítica MARE (+${WEIGHTS.saludCritico}) · Salud semanal crítico (+${WEIGHTS.healthCritico}) / atención (+${WEIGHTS.healthAtencion}) · <strong>En riesgo y sin CS (+${WEIGHTS.churnGap})</strong> · Retener (+${WEIGHTS.cuadRetener}) / Expandir (+${WEIGHTS.cuadExpandir}) · cada oportunidad cross (+${WEIGHTS.upside}).</p>
   <div class="sec-title">Playbooks CSS aplicados (T2 2026)</div>
-  <p class="legend"><span class="badge b-amber">PB-01</span> Adopción/marcaje cayendo (&lt;60% o caída &gt;20pp) · SLA 5 días · diagnóstico con admin del sistema y plan por causa raíz.<br><span class="badge b-red">PB-03</span> Riesgo de fuga (2+ señales: sin marcaje 14d, NPS detractor, ticket &gt;7d) · SLA 24h · contacto con decisor y plan de recuperación en 72h.<br><span class="badge b-gray">PB-02</span> Detractor NPS (0–6) · SLA 48h. Cada cuenta muestra su acción concreta en PRIORIZAR - KAM.</p></div>`;
+  <p class="legend"><span class="badge b-amber">PB-01</span> Adopción/marcaje cayendo (&lt;60% o caída &gt;20pp) · SLA 5 días · diagnóstico con admin del sistema y plan por causa raíz.<br><span class="badge b-red">PB-03</span> Riesgo de fuga (2+ señales: sin marcaje 14d, NPS detractor, ticket &gt;7d) · SLA 24h · contacto con decisor y plan de recuperación en 72h.<br><span class="badge b-gray">PB-02</span> Detractor NPS (0–6) · SLA 48h. Cada cuenta muestra su acción concreta en Salud - Segmentos.</p></div>`;
 }
 
 // ---------- Priorizar por KAM ----------
 function renderPriorizar(){
   ACCOUNTS.forEach(priority);
+  const exc=ACCOUNTS.filter(a=>a._congelada||a._marcajeAjustado||a._reclasificado||a._cambioRazon||a._noFuga||a._kamReasignado);
+  const excRow=a=>{const b=[];
+    if(a._congelada)b.push('<span class="badge b-gray">Congelada</span>');
+    if(a._marcajeAjustado)b.push('<span class="badge b-blue">Marcaje ajustado</span>');
+    if(a._reclasificado==='solo-ticket')b.push('<span class="badge b-green">Reclasificada · 1 ticket</span>');
+    if(a._cambioRazon)b.push('<span class="badge b-blue">Cambio razón social</span>');
+    if(a._noFuga)b.push('<span class="badge b-gray">Excluida de fuga</span>');
+    if(a._kamReasignado)b.push('<span class="badge b-purple">KAM → '+esc(a.kam)+'</span>');
+    const com=(a._consid&&a._consid.razon)||(a._marcajeAjustado?('Marcaje real '+Math.round(a._marcajeAjustado.orig*100)+'% reescalado a '+Math.round(a._marcajeAjustado.adj*100)+'% sobre tope '+Math.round(a._marcajeAjustado.max*100)+'%.'):'')||(a._reclasificado==='solo-ticket'?'Crítica solo por 1 ticket y por lo demás sana.':'');
+    return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500">${esc(a.cliente)}</td><td>${b.join(' ')}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(com)}</td></tr>`;};
+  const excHtml=`<details class="card" style="padding:0"><summary style="cursor:pointer;padding:1rem 1.25rem;font-size:14px;font-weight:500;color:var(--color-text-secondary)">Excepciones <span class="badge b-gray">${exc.length}</span> <span style="font-weight:400;font-size:12px">— cuentas con un ajuste de consideraciones aplicado</span></summary><div style="padding:0 1.25rem 1rem">${exc.length?`<div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Excepción</th><th class="nosort">Comentario</th></tr></thead><tbody>${exc.map(excRow).join('')}</tbody></table></div>`:'<p class="legend">Sin excepciones aplicadas. Se gestionan en <code>consideraciones.json</code> (pestaña Datos).</p>'}</div></details>`;
   $('priorizar').innerHTML=`
-  <div class="note-box"><strong>Lista a priorizar por KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Los KAM con más críticas suben al tope. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong> con las cuentas críticas del modelo de salud que aún no cruzan, y el despliegue <strong>"⛔ SIN USO"</strong> que reúne todas las cuentas sin uso del sistema (las de la cartera y las no emparejadas), sin sacarlas de su grupo de KAM.</div>
+  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong> y el despliegue <strong>"⛔ SIN USO"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.</div>
+  ${excHtml}
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
     <select id="prCS"><option value="">Toda cobertura CS</option><option value="sin">Sin CS</option><option value="con">Con CS</option></select>
