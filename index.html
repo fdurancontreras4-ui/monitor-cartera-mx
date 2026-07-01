@@ -778,18 +778,40 @@ function prCardUnmatched(u,rank){
 function prToggleAll(open){document.querySelectorAll('#prList details.kam-group').forEach(d=>d.open=open);}
 
 // ---------- Salud semanal (heatmap) ----------
+let CURRENT_HEALTH_DATE='';
 function todayISO(){return new Date().toISOString().slice(0,10);}
+function detectDateFromName(name){
+  if(!name)return null;
+  const s=String(name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  let m=s.match(/(20\d{2})[-_./]?(0[1-9]|1[0-2])[-_./]?(0[1-9]|[12]\d|3[01])/);
+  if(m)return `${m[1]}-${m[2]}-${m[3]}`;
+  const months={enero:1,ene:1,febrero:2,feb:2,marzo:3,mar:3,abril:4,abr:4,mayo:5,may:5,junio:6,jun:6,julio:7,jul:7,agosto:8,ago:8,septiembre:9,setiembre:9,sept:9,sep:9,octubre:10,oct:10,noviembre:11,nov:11,diciembre:12,dic:12};
+  const mre='(enero|ene|febrero|feb|marzo|mar|abril|abr|mayo|may|junio|jun|julio|jul|agosto|ago|septiembre|setiembre|sept|sep|octubre|oct|noviembre|nov|diciembre|dic)';
+  m=s.match(new RegExp('(\\d{1,2})\\s*(?:de\\s*)?[-_ ]?'+mre));
+  if(!m)m=s.match(new RegExp(mre+'\\s*[-_ ]?(\\d{1,2})'));
+  if(m){let day,mon;if(/^\d/.test(m[1])){day=+m[1];mon=months[m[2]];}else{mon=months[m[1]];day=+m[2];}
+    if(mon&&day>=1&&day<=31){const yr=(s.match(/20\d{2}/)||[])[0]||String(new Date().getFullYear());return `${yr}-${String(mon).padStart(2,'0')}-${String(day).padStart(2,'0')}`;}}
+  m=s.match(/(0?[1-9]|[12]\d|3[01])[-_./](0?[1-9]|1[0-2])(?:[-_./](20\d{2}))?/);
+  if(m){const yr=m[3]||String(new Date().getFullYear());return `${yr}-${String(+m[2]).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;}
+  return null;
+}
 function weekLetter(r){const cat=(r.cat||'').toLowerCase(),ad=r.ad,nps=r.nps,inc=r.inc30;
   if(/sin\s*uso/.test(cat)||ad===0)return'A';if(ad!=null&&ad<0.60)return'A';if(nps!=null&&nps<=6)return'N';if(inc!=null&&inc>=1)return'T';return'A';}
-function snapshotFromHealth(){
-  const rows=(HEALTH_CACHE&&HEALTH_CACHE.rows)||[];const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;const snap={};
+function snapshotFromHealth(parsed){
+  const rows=((parsed||HEALTH_CACHE)||{}).rows||[];const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;const snap={};
   rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;snap[nm]=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);});
   return snap;
 }
+function saveWeekSnap(date,snap){if(!date||!snap||!Object.keys(snap).length)return false;const i=WEEKS.findIndex(w=>w.date===date);if(i>=0)WEEKS[i]={date,snap};else WEEKS.push({date,snap});WEEKS.sort((a,b)=>a.date<b.date?-1:1);if(WEEKS.length>40)WEEKS=WEEKS.slice(WEEKS.length-40);persist('health_weeks',WEEKS);return true;}
+// aplica una salud fechada: siempre la guarda como semana; usa para métricas solo si es la más reciente
+function applyHealthDated(parsed,date){
+  date=date||todayISO();
+  saveWeekSnap(date,snapshotFromHealth(parsed));
+  if(!CURRENT_HEALTH_DATE||date>=CURRENT_HEALTH_DATE){applyHealth(parsed);CURRENT_HEALTH_DATE=date;persist('current_health_date',date);return{applied:true,date};}
+  return{applied:false,date,current:CURRENT_HEALTH_DATE};
+}
 function saveWeek(date){if(!date)return;const snap=snapshotFromHealth();if(!Object.keys(snap).length){toast('No hay salud cargada para guardar.',true);return;}
-  const i=WEEKS.findIndex(w=>w.date===date);if(i>=0)WEEKS[i]={date,snap};else WEEKS.push({date,snap});
-  WEEKS.sort((a,b)=>a.date<b.date?-1:1);if(WEEKS.length>40)WEEKS=WEEKS.slice(WEEKS.length-40);
-  persist('health_weeks',WEEKS);toast('Semana '+date+' guardada ✓');renderSemanal();}
+  saveWeekSnap(date,snap);toast('Semana '+date+' guardada ✓');renderSemanal();}
 function delWeek(date){if(!confirm('¿Borrar la semana '+date+' del historial?'))return;WEEKS=WEEKS.filter(w=>w.date!==date);persist('health_weeks',WEEKS);renderSemanal();}
 function fmtWeek(d){try{const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('es-MX',{day:'2-digit',month:'short'});}catch(e){return d;}}
 let semQ='';
@@ -806,7 +828,7 @@ function renderSemanal(){
   const head=weeks.map(w=>`<th class="hm-date"><div class="hm-datelbl">${fmtWeek(w.date)}${!transient?` <span class="hm-x" title="Borrar semana" onclick="delWeek('${w.date}')">✕</span>`:''}</div></th>`).join('');
   const body=empresas.map(nm=>`<tr><td class="hm-emp" title="${esc(nm)}">${esc(nm)}</td>${weeks.map(w=>cellHtml(w.snap[nm])).join('')}</tr>`).join('');
   $('semanal').innerHTML=`
-  <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets. Carga la salud de la semana en <strong>Datos</strong> y pulsa <strong>Guardar semana</strong> para añadir su columna al historial.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''}</div>
+  <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets.${CURRENT_HEALTH_DATE?` Las <strong>métricas del dashboard</strong> usan la salud más reciente (<strong>${CURRENT_HEALTH_DATE}</strong>); las fechas anteriores alimentan solo este historial.`:''} Carga la salud de la semana en <strong>Datos</strong> (con la fecha en el nombre, ej. <em>salud-30junio.xlsx</em>) y se añade sola; o usa <strong>Guardar semana</strong> para tomar la actual.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''}</div>
   <div class="metrics">
     <div class="metric"><div class="label">Empresas</div><div class="value">${Object.keys(set).length}</div><div class="sub">en el historial</div></div>
     <div class="metric"><div class="label">Semanas</div><div class="value">${transient?0:weeks.length}</div><div class="sub">guardadas</div></div>
@@ -979,7 +1001,11 @@ async function loadFile(file,kind){
     const wb=await readWB(file);
     markReload();
     if(kind==='mare'){const acc=parseMareWorkbook(wb);ACCOUNTS=acc.map((a,i)=>(a._uid='a'+i,a));SOURCE=file.name;LAST.portfolioUrl='';if(HEALTH_CACHE)applyHealth(HEALTH_CACHE);renderAll();if(msg){msg.style.color='#3B6D11';msg.textContent='✓ '+acc.length+' cuentas cargadas desde '+file.name+'.';}show('resumen');}
-    else{const parsed=parseHealthWorkbook(wb);applyHealth(parsed);LAST.healthUrl='';renderAll();if(msg){msg.style.color='#3B6D11';msg.textContent='✓ '+HEALTH.matched+' de '+HEALTH.total+' emparejadas. Llave: '+HEALTH.keyHeader+'.';}renderDatos();}
+    else{const parsed=parseHealthWorkbook(wb);const date=detectDateFromName(file.name);const res=applyHealthDated(parsed,date);LAST.healthUrl='';renderAll();renderSemanal();
+      if(msg){msg.style.color='#3B6D11';
+        if(res.applied)msg.textContent='✓ Salud '+res.date+' (la más reciente) aplicada a las métricas · '+HEALTH.matched+'/'+HEALTH.total+' emparejadas · semana agregada a Salud semanal.';
+        else msg.textContent='✓ Salud '+res.date+' agregada a Salud semanal. Las métricas siguen en '+res.current+' (más reciente).';}
+      renderDatos();}
   }catch(err){if(msg){msg.style.color='#A32D2D';msg.textContent='Error: '+err.message;}}
 }
 async function loadURL(url,opts){
@@ -1004,7 +1030,7 @@ async function loadHealthURL(url,opts){
     const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
     const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
     const wb=XLSX.read(new Uint8Array(await resp.arrayBuffer()),{type:'array'});
-    const parsed=parseHealthWorkbook(wb);applyHealth(parsed);LAST.healthUrl=url;persist('last_health_url',url);markReload();renderAll();
+    const parsed=parseHealthWorkbook(wb);const date=detectDateFromName(url.split('/').pop()||url);applyHealthDated(parsed,date);LAST.healthUrl=url;persist('last_health_url',url);markReload();renderAll();
     if(msg){msg.style.color='#3B6D11';msg.textContent='✓ '+HEALTH.matched+'/'+HEALTH.total+' emparejadas.';renderDatos();}
     return true;
   }catch(err){if(probe)return false;if(msg){msg.style.color='#A32D2D';msg.textContent='Error: '+err.message;}else toast('Salud: '+err.message,true);return false;}
@@ -1103,6 +1129,7 @@ async function init(){
     const cu=await window.storage.get('last_consid_url');if(cu&&cu.value)LAST.consideracionesUrl=JSON.parse(cu.value);
   }}catch(e){}
   try{const wk=await readStore('health_weeks');if(Array.isArray(wk))WEEKS=wk;}catch(e){}
+  try{const chd=await readStore('current_health_date');if(typeof chd==='string')CURRENT_HEALTH_DATE=chd;}catch(e){}
   if(!HEALTH.loaded&&typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length){try{applyHealth(seedToParsed(HEALTH_SEED));}catch(e){}}
   if(!LAST_RELOAD)markReload();
   renderAll();autoLoad();
