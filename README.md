@@ -42,6 +42,18 @@ Detalles de presentación derivados de las consideraciones: el tag de criticidad
 - **Cross-sell** — Penetración mensual; **Mayo** y meses siguientes aparecen solos al cargar un Excel con esas columnas.
 - **Datos** — Carga de cartera y salud (con listado de filas de salud sin emparejar y su estado), e instrucciones de publicación.
 
+### Salud semanal (heatmap histórico)
+
+Pestaña que acumula un **snapshot por semana** del modelo de salud: empresas en filas, semanas en columnas (fecha en diagonal), y un cuadrito **verde** (saludable), **amarillo** (en riesgo) o **rojo** (crítico) por celda. En las críticas, la letra indica el motivo: **A** adopción/marcaje (incluye Sin Uso), **N** NPS detractor, **T** tickets.
+
+Cargas de salud fechadas: nombra cada archivo con su fecha (ej. `salud-mx-30junio.xlsx`). El dashboard lee la fecha del nombre y usa **la más reciente para todas las métricas**; las anteriores alimentan solo el heatmap semanal. Para que se carguen solas desde GitHub, súbelas al repo y lístalas en **`salud_semanas.json`**:
+
+```
+{ "archivos": ["salud-mx-22junio.xlsx", "salud-mx-30junio.xlsx"] }
+```
+
+Cada semana: sube el nuevo Excel al repo y agrega su nombre a esa lista. También puedes cargar un archivo manual en Datos o usar **Guardar semana**. El historial se guarda además en el navegador (localStorage) y persiste entre recargas.
+
 La cabecera muestra la **última hora de recarga de datos** junto al nombre de la cartera.
 
 ## Marca

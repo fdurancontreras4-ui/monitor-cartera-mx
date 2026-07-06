@@ -210,6 +210,7 @@ const HEALTH_SEED = [{"id":"21150","nombre":"ALIMENTOS CENTRALIZADOS DE MEXICO S
 const CONFIG = {
   portfolioUrl: '',   // vacío = auto-detecta ./cartera.xlsx · o pon una URL (Google Sheets publicado)
   healthUrl:    '',   // vacío = auto-detecta ./salud.xlsx
+  healthManifest: '', // vacío = auto-detecta ./salud_semanas.json (lista de archivos de salud por semana)
   consideracionesUrl: '', // vacío = auto-detecta ./consideraciones.json
   autoTryFiles: ['./cartera.xlsx','./Cuentas_Postventa.xlsx']
 };
@@ -288,7 +289,10 @@ const hasCS=a=>!!csOf(a);
 const SEG_ORDER=['Enterprise','SMB medium','SMB small'];
 function segOf(a){
   const s=a.health&&a.health.seg;
-  if(s){if(/enterprise/i.test(s))return'Enterprise';if(/</.test(s))return'SMB small';return'SMB medium';}
+  if(s){if(/enterprise/i.test(s))return'Enterprise';
+    if(/small|peque|<\s*100|<100/i.test(s))return'SMB small';
+    if(/medium|median|>=?\s*100|>100/i.test(s))return'SMB medium';
+    return'SMB small';}
   if(a.cartera==='ENTERPRISE')return'Enterprise';
   if(a.usuarios!=null)return a.usuarios>=100?'SMB medium':'SMB small';
   return'SMB small';
@@ -1110,13 +1114,37 @@ function show(sec){document.querySelectorAll('.section').forEach(s=>s.classList.
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.sec));
 $('reloadBtn').onclick=reloadData;
 
+async function loadHealthManifest(url){
+  if(!url)return false;
+  try{
+    const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
+    const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)return false;
+    const j=await resp.json();
+    let files=Array.isArray(j)?j:(j.archivos||j.files||j.semanas||[]);
+    if(!files.length)return false;
+    const base=url.replace(/[^/]*$/,'');
+    const items=files.map(f=>({f,url:/^https?:|^\.?\//.test(f)?f:base+f,date:detectDateFromName(f)}));
+    items.sort((a,b)=>((a.date||'')<(b.date||'')?-1:1)); // más antiguo primero → el más reciente queda en métricas
+    let ok=0;
+    for(const it of items){try{
+      const b2=(it.url.includes('?')?'&':'?')+'t='+Date.now();
+      const r2=await fetch(it.url+b2,{cache:'no-store'});if(!r2.ok)continue;
+      const wb=XLSX.read(new Uint8Array(await r2.arrayBuffer()),{type:'array'});
+      const parsed=parseHealthWorkbook(wb);
+      applyHealthDated(parsed,it.date||detectDateFromName(it.url));ok++;
+    }catch(e){}}
+    if(ok){LAST.healthUrl='';markReload();renderAll();renderSemanal();return true;}
+    return false;
+  }catch(e){return false;}
+}
 async function autoLoad(){
   const url=CONFIG.portfolioUrl||LAST.portfolioUrl;
   if(url){await loadURL(url,{silent:true,probe:true});}
   else{for(const u of CONFIG.autoTryFiles){if(await loadURL(u,{silent:true,probe:true}))break;}}
-  const hurl=CONFIG.healthUrl||LAST.healthUrl;
-  if(hurl){await loadHealthURL(hurl,{silent:true,probe:true});}
-  else{await loadHealthURL('./salud.xlsx',{silent:true,probe:true});}
+  const man=await loadHealthManifest(CONFIG.healthManifest||'./salud_semanas.json');
+  if(!man){const hurl=CONFIG.healthUrl||LAST.healthUrl;
+    if(hurl){await loadHealthURL(hurl,{silent:true,probe:true});}
+    else{await loadHealthURL('./salud.xlsx',{silent:true,probe:true});}}
   const curl=CONFIG.consideracionesUrl||LAST.consideracionesUrl||'./consideraciones.json';
   await loadConsideraciones(curl,{silent:true,probe:true});
 }
