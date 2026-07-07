@@ -799,6 +799,7 @@ function prToggleAll(open){document.querySelectorAll('#prList details.kam-group'
 
 // ---------- Salud semanal (heatmap) ----------
 let CURRENT_HEALTH_DATE='';
+let CURRENT_HEALTH_FILE='';
 function todayISO(){return new Date().toISOString().slice(0,10);}
 function detectDateFromName(name){
   if(!name)return null;
@@ -824,10 +825,10 @@ function snapshotFromHealth(parsed){
 }
 function saveWeekSnap(date,snap){if(!date||!snap||!Object.keys(snap).length)return false;const i=WEEKS.findIndex(w=>w.date===date);if(i>=0)WEEKS[i]={date,snap};else WEEKS.push({date,snap});WEEKS.sort((a,b)=>a.date<b.date?-1:1);if(WEEKS.length>40)WEEKS=WEEKS.slice(WEEKS.length-40);persist('health_weeks',WEEKS);return true;}
 // aplica una salud fechada: siempre la guarda como semana; usa para métricas solo si es la más reciente
-function applyHealthDated(parsed,date){
+function applyHealthDated(parsed,date,file){
   date=date||todayISO();
   saveWeekSnap(date,snapshotFromHealth(parsed));
-  if(!CURRENT_HEALTH_DATE||date>=CURRENT_HEALTH_DATE){applyHealth(parsed);CURRENT_HEALTH_DATE=date;persist('current_health_date',date);return{applied:true,date};}
+  if(!CURRENT_HEALTH_DATE||date>=CURRENT_HEALTH_DATE){applyHealth(parsed);CURRENT_HEALTH_DATE=date;CURRENT_HEALTH_FILE=file||CURRENT_HEALTH_FILE;persist('current_health_date',date);persist('current_health_file',CURRENT_HEALTH_FILE);return{applied:true,date};}
   return{applied:false,date,current:CURRENT_HEALTH_DATE};
 }
 function saveWeek(date){if(!date)return;const snap=snapshotFromHealth();if(!Object.keys(snap).length){toast('No hay salud cargada para guardar.',true);return;}
@@ -848,7 +849,7 @@ function renderSemanal(){
   const head=weeks.map(w=>`<th class="hm-date"><div class="hm-datelbl">${fmtWeek(w.date)}${!transient?` <span class="hm-x" title="Borrar semana" onclick="delWeek('${w.date}')">✕</span>`:''}</div></th>`).join('');
   const body=empresas.map(nm=>`<tr><td class="hm-emp" title="${esc(nm)}">${esc(nm)}</td>${weeks.map(w=>cellHtml(w.snap[nm])).join('')}</tr>`).join('');
   $('semanal').innerHTML=`
-  <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets.${CURRENT_HEALTH_DATE?` Las <strong>métricas del dashboard</strong> usan la salud más reciente (<strong>${CURRENT_HEALTH_DATE}</strong>); las fechas anteriores alimentan solo este historial.`:''} Carga la salud de la semana en <strong>Datos</strong> (con la fecha en el nombre, ej. <em>salud-30junio.xlsx</em>) y se añade sola; o usa <strong>Guardar semana</strong> para tomar la actual.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''}</div>
+  <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets.${CURRENT_HEALTH_DATE?` Las <strong>métricas del dashboard</strong> usan la salud más reciente: <strong>${CURRENT_HEALTH_DATE}</strong>${CURRENT_HEALTH_FILE?' — archivo <strong>'+esc(CURRENT_HEALTH_FILE)+'</strong>':''}; las fechas anteriores alimentan solo este historial.`:''} Carga la salud de la semana en <strong>Datos</strong> (con la fecha en el nombre, ej. <em>salud-30junio.xlsx</em>) y se añade sola; o usa <strong>Guardar semana</strong> para tomar la actual.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''}</div>
   <div class="metrics">
     <div class="metric"><div class="label">Empresas</div><div class="value">${Object.keys(set).length}</div><div class="sub">en el historial</div></div>
     <div class="metric"><div class="label">Semanas</div><div class="value">${transient?0:weeks.length}</div><div class="sub">guardadas</div></div>
@@ -1048,7 +1049,7 @@ function renderDatos(){
     <p class="legend" id="mareMsg" style="margin-top:8px"></p>
   </div>
   <div class="card"><h3>2 · Cartera de salud (semanal)</h3>
-    <p class="status-line" style="margin-bottom:10px">${HEALTH.loaded?`<span style="color:#3B6D11">✓ Cargada · ${HEALTH.matched}/${HEALTH.total} emparejadas</span> · llave: <strong>${esc(HEALTH.keyHeader)}</strong> · señal: ${HEALTH.signalHeaders.map(esc).join(', ')||'(automática)'}`:'Aún no cargada. Súbela cada semana para refrescar el semáforo y empujar las cuentas críticas al tope de Salud.'}</p>
+    <p class="status-line" style="margin-bottom:10px">${HEALTH.loaded?`<span style="color:#3B6D11">✓ Cargada · ${HEALTH.matched}/${HEALTH.total} emparejadas</span> · llave: <strong>${esc(HEALTH.keyHeader)}</strong> · señal: ${HEALTH.signalHeaders.map(esc).join(', ')||'(automática)'}${CURRENT_HEALTH_DATE?` · <strong>salud vigente para las métricas: ${esc(CURRENT_HEALTH_DATE)}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</strong>`:''}`:'Aún no cargada. Súbela cada semana para refrescar el semáforo y empujar las cuentas críticas al tope de Salud.'}</p>
     <div class="urlrow"><input type="text" id="healthUrlIn" placeholder="https://…/salud.xlsx · ./salud.xlsx" value="${esc(LAST.healthUrl||CONFIG.healthUrl||'')}"><button class="btn btn-primary" id="healthUrlBtn">Cargar</button></div>
     <div class="dropzone" id="dzHealth">Arrastra aquí el <strong>archivo de salud</strong> o haz clic</div>
     <input type="file" id="fileHealth" accept=".xlsx,.xls,.csv" style="display:none">
@@ -1061,7 +1062,7 @@ function renderDatos(){
     <div class="sec-title" style="margin-top:14px">Salud semanal por manifest (GitHub Pages)</div>
     <div class="urlrow"><input type="text" id="manifestUrlIn" placeholder="./salud_semanas.json" value="${esc(CONFIG.healthManifest||'./salud_semanas.json')}"><button class="btn btn-primary" id="manifestTestBtn">Probar carga ahora</button></div>
     <p class="legend" style="margin-bottom:8px">Este botón repite exactamente lo que el dashboard intenta solo al abrir la página: lee el manifest y luego cada archivo de salud semanal que liste. Úsalo directo en la versión publicada en GitHub Pages para ver por qué no está tomando tus archivos.</p>
-    <div id="manifestLog">${HEALTH_MANIFEST_LOG.length?`<div class="table-wrap"><table><thead><tr><th>Archivo</th><th class="nosort">Fecha detectada</th><th class="nosort">Resultado</th></tr></thead><tbody>${HEALTH_MANIFEST_LOG.map(e=>`<tr style="cursor:default"><td style="font-size:12px">${esc(e.file)}</td><td style="font-size:12px">${esc(e.dateDetectada||'—')}</td><td style="font-size:12px;color:${e.status==='ok'?'#3B6D11':'#A32D2D'}">${esc(e.status)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="legend">Aún no se ha probado en esta sesión.</p>'}</div>
+    <div id="manifestLog">${HEALTH_MANIFEST_LOG.length?`<div class="table-wrap"><table><thead><tr><th>Archivo</th><th class="nosort">Fecha detectada</th><th class="nosort">Resultado</th><th class="nosort">Vigente</th></tr></thead><tbody>${HEALTH_MANIFEST_LOG.map(e=>`<tr style="cursor:default${e.vigente?';background:var(--color-background-secondary)':''}"><td style="font-size:12px;font-weight:${e.vigente?600:400}">${esc(e.file)}</td><td style="font-size:12px">${esc(e.dateDetectada||'—')}</td><td style="font-size:12px;color:${e.status==='ok'?'#3B6D11':'#A32D2D'}">${esc(e.status)}</td><td>${e.vigente?'<span class="badge b-green">✓ usada en métricas</span>':''}</td></tr>`).join('')}</tbody></table></div>`:'<p class="legend">Aún no se ha probado en esta sesión.</p>'}</div>
   </div>
   <div class="card"><h3>3 · Consideraciones de negocio</h3>
     <p class="status-line" style="margin-bottom:8px">Reglas y excepciones que el monitor aplica al calcular salud y criticidad. Viven en <code>consideraciones.json</code> en el repo (se carga solo) y puedes editarlas sin tocar el HTML. ${(function(){const n=ACCOUNTS.filter(a=>a._reclasificado==='solo-ticket').length;const c=ACCOUNTS.filter(a=>a._congelada).length;const m=ACCOUNTS.filter(a=>a._marcajeAjustado).length;const rs=ACCOUNTS.filter(a=>a._cambioRazon).length;const nf=ACCOUNTS.filter(a=>a._noFuga).length;const rk=ACCOUNTS.filter(a=>a._kamReasignado).length;return `<span style="color:#3B6D11">Aplicadas ahora:</span> ${n} reclasificadas por 1 ticket · ${c} congeladas · ${m} con marcaje ajustado · ${rs} cambio de razón social · ${nf} excluidas de fuga · ${rk} reasignadas de KAM.`;})()}</p>
@@ -1108,7 +1109,7 @@ async function loadFile(file,kind){
     const wb=await readWB(file);
     markReload();
     if(kind==='mare'){const acc=parseMareWorkbook(wb);ACCOUNTS=acc.map((a,i)=>(a._uid='a'+i,a));SOURCE=file.name;LAST.portfolioUrl='';if(HEALTH_CACHE)applyHealth(HEALTH_CACHE);renderAll();if(msg){msg.style.color='#3B6D11';msg.textContent='✓ '+acc.length+' cuentas cargadas desde '+file.name+'.';}show('resumen');}
-    else{const parsed=parseHealthWorkbook(wb);const date=detectDateFromName(file.name);const res=applyHealthDated(parsed,date);LAST.healthUrl='';renderAll();renderSemanal();
+    else{const parsed=parseHealthWorkbook(wb);const date=detectDateFromName(file.name);const res=applyHealthDated(parsed,date,file.name);LAST.healthUrl='';renderAll();renderSemanal();
       if(msg){msg.style.color='#3B6D11';
         if(res.applied)msg.textContent='✓ Salud '+res.date+' (la más reciente) aplicada a las métricas · '+HEALTH.matched+'/'+HEALTH.total+' emparejadas · semana agregada a Salud semanal.';
         else msg.textContent='✓ Salud '+res.date+' agregada a Salud semanal. Las métricas siguen en '+res.current+' (más reciente).';}
@@ -1137,7 +1138,7 @@ async function loadHealthURL(url,opts){
     const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
     const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
     const wb=XLSX.read(new Uint8Array(await resp.arrayBuffer()),{type:'array'});
-    const parsed=parseHealthWorkbook(wb);const date=detectDateFromName(url.split('/').pop()||url);applyHealthDated(parsed,date);LAST.healthUrl=url;persist('last_health_url',url);markReload();renderAll();
+    const parsed=parseHealthWorkbook(wb);const fname=url.split('/').pop()||url;const date=detectDateFromName(fname);applyHealthDated(parsed,date,fname);LAST.healthUrl=url;persist('last_health_url',url);markReload();renderAll();
     if(msg){msg.style.color='#3B6D11';msg.textContent='✓ '+HEALTH.matched+'/'+HEALTH.total+' emparejadas.';renderDatos();}
     return true;
   }catch(err){if(probe)return false;if(msg){msg.style.color='#A32D2D';msg.textContent='Error: '+err.message;}else toast('Salud: '+err.message,true);return false;}
@@ -1212,7 +1213,7 @@ function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
 const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,cuentas:renderCuentas,fuga:renderFuga,cross:renderCross,upsell:renderUpsell,datos:renderDatos};
 function renderAll(){Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
-function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11">salud activa</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
+function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11" title="${CURRENT_HEALTH_FILE?esc(CURRENT_HEALTH_FILE):''}">salud vigente: ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'activa'}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 function show(sec){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));$(sec).classList.add('active');document.querySelector(`.nav button[data-sec="${sec}"]`).classList.add('active');RENDER[sec]();}
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.sec));
 $('reloadBtn').onclick=reloadData;
@@ -1231,6 +1232,7 @@ async function loadHealthManifest(url){
     const base=url.replace(/[^/]*$/,'');
     const items=files.map(f=>({f,url:/^https?:|^\.?\//.test(f)?f:base+f,date:detectDateFromName(f)}));
     items.sort((a,b)=>((a.date||'')<(b.date||'')?-1:1)); // más antiguo primero → el más reciente queda en métricas
+    CURRENT_HEALTH_DATE='';CURRENT_HEALTH_FILE=''; // el manifest manda: no dejar que una fecha vieja guardada en este navegador bloquee el archivo más nuevo listado hoy
     let ok=0;
     for(const it of items){
       const entry={file:it.f,url:it.url,dateDetectada:it.date};
@@ -1242,10 +1244,11 @@ async function loadHealthManifest(url){
         const parsed=parseHealthWorkbook(wb);
         if(!it.date)entry.status='cargado, pero no se detectó fecha en el nombre del archivo (revisa "ej. salud-mx-30junio.xlsx")';
         else entry.status='ok';
-        applyHealthDated(parsed,it.date||detectDateFromName(it.url));ok++;
+        applyHealthDated(parsed,it.date||detectDateFromName(it.url),it.f);ok++;
       }catch(e){entry.status='error al leer/parsear: '+(e&&e.message||e);}
       HEALTH_MANIFEST_LOG.push(entry);
     }
+    HEALTH_MANIFEST_LOG.forEach(e=>{e.vigente=(e.file===CURRENT_HEALTH_FILE);});
     if(ok){LAST.healthUrl='';markReload();renderAll();renderSemanal();return true;}
     return false;
   }catch(e){HEALTH_MANIFEST_LOG.push({file:url,status:'error de red/CORS: '+(e&&e.message||e)});return false;}
@@ -1271,6 +1274,7 @@ async function init(){
   }}catch(e){}
   try{const wk=await readStore('health_weeks');if(Array.isArray(wk))WEEKS=wk;}catch(e){}
   try{const chd=await readStore('current_health_date');if(typeof chd==='string')CURRENT_HEALTH_DATE=chd;}catch(e){}
+  try{const chf=await readStore('current_health_file');if(typeof chf==='string')CURRENT_HEALTH_FILE=chf;}catch(e){}
   if(!HEALTH.loaded&&typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length){try{applyHealth(seedToParsed(HEALTH_SEED));}catch(e){}}
   if(!LAST_RELOAD)markReload();
   renderAll();autoLoad();
