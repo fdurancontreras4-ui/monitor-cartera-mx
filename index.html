@@ -1058,6 +1058,10 @@ function renderDatos(){
       ${HEALTH.unmatched.slice(0,120).map(u=>{const fl=u.flag==='critico'?'b-red':u.flag==='atencion'?'b-amber':u.flag==='ok'?'b-green':'b-gray';const lbl=u.cat||(u.flag==='critico'?'Crítico':u.flag==='atencion'?'En riesgo':u.flag==='ok'?'Saludable':'Sin clasificar');return`<tr style="cursor:default"><td>${esc(u.key)}</td><td><span class="badge ${fl}">${esc(lbl)}</span></td></tr>`;}).join('')}
       </tbody></table></div>${HEALTH.unmatched.length>120?`<p class="legend" style="margin-top:6px">Mostrando 120 de ${HEALTH.unmatched.length}.</p>`:''}
       <p class="legend" style="margin-top:6px">Estas filas vienen del modelo de salud pero no encontraron su cuenta en la cartera MARE MX. El monitor empareja <strong>primero por ID Geo</strong> y, si falta, por <strong>nombre normalizado</strong> (quita S.A. de C.V., acentos, etc.). Para emparejarlas: <strong>(1)</strong> lo más efectivo — llena la columna <code>ID Geo</code> en la cartera (hoy solo ~110 de 453 la tienen); con el mismo ID en ambos archivos el match es exacto. <strong>(2)</strong> si no hay ID, usa el <strong>mismo nombre</strong> en cartera y salud, evitando sufijos de sucursal/alias que difieren ("GDL", "EDO MEX", "(RH MEDICAL)"). <strong>(3)</strong> ignora las de prueba (Demo, Piloto, GeoVictoria interno): no son clientes reales.</p></details>`:''}
+    <div class="sec-title" style="margin-top:14px">Salud semanal por manifest (GitHub Pages)</div>
+    <div class="urlrow"><input type="text" id="manifestUrlIn" placeholder="./salud_semanas.json" value="${esc(CONFIG.healthManifest||'./salud_semanas.json')}"><button class="btn btn-primary" id="manifestTestBtn">Probar carga ahora</button></div>
+    <p class="legend" style="margin-bottom:8px">Este botón repite exactamente lo que el dashboard intenta solo al abrir la página: lee el manifest y luego cada archivo de salud semanal que liste. Úsalo directo en la versión publicada en GitHub Pages para ver por qué no está tomando tus archivos.</p>
+    <div id="manifestLog">${HEALTH_MANIFEST_LOG.length?`<div class="table-wrap"><table><thead><tr><th>Archivo</th><th class="nosort">Fecha detectada</th><th class="nosort">Resultado</th></tr></thead><tbody>${HEALTH_MANIFEST_LOG.map(e=>`<tr style="cursor:default"><td style="font-size:12px">${esc(e.file)}</td><td style="font-size:12px">${esc(e.dateDetectada||'—')}</td><td style="font-size:12px;color:${e.status==='ok'?'#3B6D11':'#A32D2D'}">${esc(e.status)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="legend">Aún no se ha probado en esta sesión.</p>'}</div>
   </div>
   <div class="card"><h3>3 · Consideraciones de negocio</h3>
     <p class="status-line" style="margin-bottom:8px">Reglas y excepciones que el monitor aplica al calcular salud y criticidad. Viven en <code>consideraciones.json</code> en el repo (se carga solo) y puedes editarlas sin tocar el HTML. ${(function(){const n=ACCOUNTS.filter(a=>a._reclasificado==='solo-ticket').length;const c=ACCOUNTS.filter(a=>a._congelada).length;const m=ACCOUNTS.filter(a=>a._marcajeAjustado).length;const rs=ACCOUNTS.filter(a=>a._cambioRazon).length;const nf=ACCOUNTS.filter(a=>a._noFuga).length;const rk=ACCOUNTS.filter(a=>a._kamReasignado).length;return `<span style="color:#3B6D11">Aplicadas ahora:</span> ${n} reclasificadas por 1 ticket · ${c} congeladas · ${m} con marcaje ajustado · ${rs} cambio de razón social · ${nf} excluidas de fuga · ${rk} reasignadas de KAM.`;})()}</p>
@@ -1088,6 +1092,7 @@ function renderDatos(){
   $('urlBtn').onclick=()=>loadURL($('urlIn').value.trim(),{});
   $('urlReload').onclick=()=>loadURL(($('urlIn').value.trim()||LAST.portfolioUrl),{});
   $('healthUrlBtn').onclick=()=>loadHealthURL($('healthUrlIn').value.trim(),{});
+  $('manifestTestBtn').onclick=async()=>{const btn=$('manifestTestBtn');btn.disabled=true;btn.textContent='Probando…';const u=$('manifestUrlIn').value.trim()||'./salud_semanas.json';await loadHealthManifest(u);renderDatos();show('datos');};
   wireDrop('dzMare','fileMare',f=>loadFile(f,'mare'));
   wireDrop('dzHealth','fileHealth',f=>loadFile(f,'health'));
   $('consUrlBtn').onclick=async()=>{const u=$('consUrlIn').value.trim();if(!u){$('consMsg').textContent='Pega primero un enlace o ruta.';return;}const ok=await loadConsideraciones(u,{});const m=$('consMsg');if(m){m.style.color=ok?'#3B6D11':'#A32D2D';m.textContent=ok?'✓ Consideraciones aplicadas.':'No se pudo cargar el JSON.';}renderDatos();};
@@ -1212,28 +1217,38 @@ function show(sec){document.querySelectorAll('.section').forEach(s=>s.classList.
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.sec));
 $('reloadBtn').onclick=reloadData;
 
+let HEALTH_MANIFEST_LOG=[];
 async function loadHealthManifest(url){
-  if(!url)return false;
+  HEALTH_MANIFEST_LOG=[];
+  if(!url){HEALTH_MANIFEST_LOG.push({file:'(manifest)',status:'sin URL configurada'});return false;}
   try{
     const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
-    const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)return false;
+    const resp=await fetch(url+bust,{cache:'no-store'});
+    if(!resp.ok){HEALTH_MANIFEST_LOG.push({file:url,status:`manifest no encontrado (HTTP ${resp.status})`});return false;}
     const j=await resp.json();
     let files=Array.isArray(j)?j:(j.archivos||j.files||j.semanas||[]);
-    if(!files.length)return false;
+    if(!files.length){HEALTH_MANIFEST_LOG.push({file:url,status:'manifest cargado pero sin archivos listados'});return false;}
     const base=url.replace(/[^/]*$/,'');
     const items=files.map(f=>({f,url:/^https?:|^\.?\//.test(f)?f:base+f,date:detectDateFromName(f)}));
     items.sort((a,b)=>((a.date||'')<(b.date||'')?-1:1)); // más antiguo primero → el más reciente queda en métricas
     let ok=0;
-    for(const it of items){try{
-      const b2=(it.url.includes('?')?'&':'?')+'t='+Date.now();
-      const r2=await fetch(it.url+b2,{cache:'no-store'});if(!r2.ok)continue;
-      const wb=XLSX.read(new Uint8Array(await r2.arrayBuffer()),{type:'array'});
-      const parsed=parseHealthWorkbook(wb);
-      applyHealthDated(parsed,it.date||detectDateFromName(it.url));ok++;
-    }catch(e){}}
+    for(const it of items){
+      const entry={file:it.f,url:it.url,dateDetectada:it.date};
+      try{
+        const b2=(it.url.includes('?')?'&':'?')+'t='+Date.now();
+        const r2=await fetch(it.url+b2,{cache:'no-store'});
+        if(!r2.ok){entry.status=`HTTP ${r2.status} (revisa mayúsculas/nombre exacto y que el archivo esté en el repo)`;HEALTH_MANIFEST_LOG.push(entry);continue;}
+        const wb=XLSX.read(new Uint8Array(await r2.arrayBuffer()),{type:'array'});
+        const parsed=parseHealthWorkbook(wb);
+        if(!it.date)entry.status='cargado, pero no se detectó fecha en el nombre del archivo (revisa "ej. salud-mx-30junio.xlsx")';
+        else entry.status='ok';
+        applyHealthDated(parsed,it.date||detectDateFromName(it.url));ok++;
+      }catch(e){entry.status='error al leer/parsear: '+(e&&e.message||e);}
+      HEALTH_MANIFEST_LOG.push(entry);
+    }
     if(ok){LAST.healthUrl='';markReload();renderAll();renderSemanal();return true;}
     return false;
-  }catch(e){return false;}
+  }catch(e){HEALTH_MANIFEST_LOG.push({file:url,status:'error de red/CORS: '+(e&&e.message||e)});return false;}
 }
 async function autoLoad(){
   const url=CONFIG.portfolioUrl||LAST.portfolioUrl;
