@@ -26,6 +26,20 @@
       "razon": "221 usuarios son de control de acceso y nunca marcaran; el marcaje maximo alcanzable es 60%. Se reescala la adopcion sobre ese tope."
     },
     {
+      "id": "17458",
+      "nombre": "BESTDAY - DESPEGAR MEXICO",
+      "accion": "ajustar_marcaje",
+      "marcaje_maximo": 0.25,
+      "razon": "De 930 usuarios, marca aprox un 25%"
+    },
+    {
+      "id": "31343",
+      "nombre": "CONSTRUCTORA E IMPULSORA CONDOR",
+      "accion": "ajustar_marcaje",
+      "marcaje_maximo": 0.62,
+      "razon": "De 8 usuarios, marcan máximo 5"
+    },
+    {
       "id": "23927",
       "nombre": "QUALIS TECHNOLOGIES",
       "accion": "no_fuga",
