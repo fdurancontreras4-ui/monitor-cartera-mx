@@ -1045,23 +1045,7 @@ function renderUpsell(){
 
 
 // ---------- Por KAM ----------
-const KAM_META={'Ra\u00fal Campos':{m1:26250,m2:32800,m3:39350},'Dafne de la Rosa':{m1:22750,m2:28400,m3:34100},'Karla Pati\u00f1o':{m1:15750,m2:19650,m3:24600}};
-const fmtMXN=n=>(n==null||isNaN(n))?'—':'$'+Math.round(n).toLocaleString('en-US')+' MXN';
-function metaTiersHTML(achieved,m1,m2,m3){
-  const cap=Math.max(m3,achieved)*1.02||1;
-  const pct=v=>Math.min(100,v/cap*100);
-  const color=achieved>=m3?'#639922':achieved>=m2?'#00AFF2':achieved>=m1?'#EF9F27':'#E24B4A';
-  const marks=[[m1,'Meta 1'],[m2,'Meta 2'],[m3,'Meta 3']];
-  const tierCell=(v,label)=>{const reached=achieved>=v;const p=v?Math.min(100,achieved/v*100):0;return `<div class="stat3-it"><div class="stat3-v" style="color:${reached?'#639922':'#E24B4A'}">${reached?'✓ '+p.toFixed(0)+'%':p.toFixed(0)+'%'}</div><div class="stat3-l">${label} · ${fmtMXN(v)}</div></div>`;};
-  return `<div style="margin-top:6px">
-    <div style="position:relative;height:26px;background:var(--color-background-secondary);border-radius:6px;margin-top:22px;margin-bottom:30px">
-      <div style="position:absolute;left:0;top:0;bottom:0;width:${pct(achieved)}%;background:${color};border-radius:6px;transition:width .3s"></div>
-      ${marks.map(([v,l])=>`<div style="position:absolute;left:${pct(v)}%;top:-6px;bottom:-6px;width:2px;background:var(--color-border-primary)"></div><div style="position:absolute;left:${pct(v)}%;top:-19px;transform:translateX(-50%);font-size:10px;color:var(--color-text-secondary);white-space:nowrap">${l}</div><div style="position:absolute;left:${pct(v)}%;bottom:-20px;transform:translateX(-50%);font-size:10px;color:var(--color-text-secondary);white-space:nowrap">${fmtMXN(v)}</div>`).join('')}
-      <div style="position:absolute;left:${pct(achieved)}%;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:600;color:${pct(achieved)>12?'#fff':'var(--color-text-primary)'};white-space:nowrap">${fmtMXN(achieved)}</div>
-    </div>
-    <div class="stat3">${tierCell(m1,'Meta 1')}${tierCell(m2,'Meta 2')}${tierCell(m3,'Meta 3')}</div>
-  </div>`;
-}
+const KAM_META={'Ra\u00fal Campos':1500,'Dafne de la Rosa':1300,'Karla Pati\u00f1o':900};
 function gaugeHTML(pct,sub,color){const p=Math.max(0,Math.min(100,pct));const real=Math.max(0,Math.round(pct));const c=p>=100?'#639922':p>=70?(color||'#00AFF2'):p>=40?'#EF9F27':'#E24B4A';return `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap"><div style="width:120px;height:120px;border-radius:50%;background:conic-gradient(${c} ${p*3.6}deg, var(--color-background-secondary) 0deg);display:flex;align-items:center;justify-content:center;flex:none"><div style="width:88px;height:88px;border-radius:50%;background:var(--color-background-primary);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:${c}">${real}%</div></div><div style="flex:1;min-width:200px;font-size:12px;color:var(--color-text-secondary);line-height:1.6">${sub}</div></div>`;}
 function renderKamTab(kam,sectionId){
   const cross=VENTAS_DATA.filter(r=>r.categoria==='cross'&&r.kam===kam&&r.estado==='Facturado');
@@ -1070,16 +1054,16 @@ function renderKamTab(kam,sectionId){
   const bajas=FUGA_DETALLE.filter(r=>r.tipo==='Baja'&&r.kam===kam);
   const referidos=ACCOUNTS.filter(a=>a.kam===kam&&a.referido);
   const sumUSD=rows=>rows.reduce((s,r)=>s+(r.usd||r.facturacionUSD||0),0);
-  const sumMXN=rows=>rows.reduce((s,r)=>s+(r.mxn||0),0);
   const mesesCM=monthSums(cross,'mes',r=>r.usd||0),mesesUM=monthSums(upsell,'mes',r=>r.usd||0),mesesAM=monthSums(arriendo,'mes',r=>r.usd||0),mesesBM=monthSums(bajas,'mesBaja',r=>r.facturacionUSD||0);
   const qC=qSum(cross,r=>r.usd||0),qU=qSum(upsell,r=>r.usd||0),qA=qSum(arriendo,r=>r.usd||0),qB=qSum(bajas,r=>r.facturacionUSD||0);
-  const meta=KAM_META[kam]||{m1:0,m2:0,m3:0};
-  const q3MXN=sumMXN(cross.filter(r=>r.q==='Q3'))+sumMXN(upsell.filter(r=>r.q==='Q3'))+sumMXN(arriendo.filter(r=>r.q==='Q3'));
+  const meta=KAM_META[kam]||0;const metaQ3=meta*3;
+  const q3USD=sumUSD(cross.filter(r=>r.q==='Q3'))+sumUSD(upsell.filter(r=>r.q==='Q3'))+sumUSD(arriendo.filter(r=>r.q==='Q3'));
+  const pct=metaQ3?(q3USD/metaQ3*100):0;
   const thMonths='<th class=\"nosort\">Ene</th><th class=\"nosort\">Feb</th><th class=\"nosort\">Mar</th><th class=\"nosort\">Abr</th><th class=\"nosort\">May</th><th class=\"nosort\">Jun</th><th class=\"nosort\">Jul</th><th class=\"nosort\">Ago</th>';
   const rowHTML=(label,vals)=>{const total=vals.reduce((a,b)=>a+b,0);return `<tr style="cursor:default"><td style="font-weight:500">`+label+`</td>`+vals.map(c=>`<td>`+fmtUSD(c)+`</td>`).join('')+`<td style="font-weight:600">`+fmtUSD(total)+`</td></tr>`;};
   const rowQHTML=(label,q)=>`<tr style="cursor:default"><td style="font-weight:500">`+label+`</td><td>`+fmtUSD(q.Q1)+`</td><td>`+fmtUSD(q.Q2)+`</td><td>`+fmtUSD(q.Q3)+`</td><td>`+fmtUSD(q.Q4)+`</td></tr>`;
   $(sectionId).innerHTML=`
-  <div class="note-box">Cross-selling, upselling y arriendo vienen de la hoja <strong>Ventas 2026</strong> (solo Estado = Facturado; se excluyen Proyectados); fuga (solo Baja) de <strong>Detalle Fuga 2026</strong>; referidos, de la columna "Referido/Referencia" de la cartera MARE MX (dato disponible en pocas cuentas). Las tablas de mes/Q van en USD; la meta Q3 va en MXN (moneda en la que se definió).</div>
+  <div class="note-box">Cross-selling, upselling y arriendo vienen de la hoja <strong>Ventas 2026</strong> (solo Estado = Facturado; se excluyen Proyectados); fuga (solo Baja) de <strong>Detalle Fuga 2026</strong>; referidos, de la columna "Referido/Referencia" de la cartera MARE MX (dato disponible en pocas cuentas). Todos los montos en USD.</div>
   <div class="metrics">
     <div class="metric"><div class="label">Cross-selling YTD</div><div class="value">${fmtUSD(sumUSD(cross))}</div><div class="sub">${cross.length} deals</div></div>
     <div class="metric"><div class="label">Upselling YTD</div><div class="value">${fmtUSD(sumUSD(upsell))}</div><div class="sub">${upsell.length} deals</div></div>
@@ -1093,10 +1077,7 @@ function renderKamTab(kam,sectionId){
   <div class="card"><h3>Por Q (USD facturado)</h3><div class="table-wrap"><table><thead><tr><th>Concepto</th><th class="nosort">Q1</th><th class="nosort">Q2</th><th class="nosort">Q3</th><th class="nosort">Q4</th></tr></thead><tbody>
   ${rowQHTML('Cross-selling',qC)}${rowQHTML('Upselling',qU)}${rowQHTML('Arriendo',qA)}${rowQHTML('Bajas',qB)}
   </tbody></table></div></div>
-  <div class="card"><h3>Avance a la meta · Q3 2026 (MXN)</h3>
-  <p class="legend">Cross-sell + upsell + arriendo facturados en Q3 (jul-ago-sep), en pesos. La meta de Q3 es un monto único del trimestre, con 3 niveles.</p>
-  ${metaTiersHTML(q3MXN,meta.m1,meta.m2,meta.m3)}
-  </div>`;
+  <div class="card"><h3>Avance a la meta · Q3 2026</h3>${gaugeHTML(pct,`<strong style="color:var(--color-text-primary)">Meta mensual de expansi\u00f3n (cross-sell + upsell + arriendo): ${fmtUSD(meta)}</strong>.<br>Meta Q3 (jul+ago+sep): <strong style="color:var(--color-text-primary)">${fmtUSD(metaQ3)}</strong>.<br>Llevas <strong style="color:var(--color-text-primary)">${fmtUSD(q3USD)}</strong> vendidos en Q3 (cross+upsell+arriendo).<br><span style="font-size:11px">Supuesto: la meta es mensual y se compara contra el trimestre completo (3x). Q3 reci\u00e9n empieza \u2014 el % subir\u00e1 con agosto y septiembre. Ajusta si tu meta considera solo cross-sell.</span>`)}</div>`;
 }
 function renderKamRaul(){renderKamTab('Ra\u00fal Campos','kam-raul');}
 function renderKamDafne(){renderKamTab('Dafne de la Rosa','kam-dafne');}
