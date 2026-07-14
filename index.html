@@ -606,7 +606,7 @@ function renderResumen(){
   const cuMap={};A.forEach(a=>{const k=a.cuadrante||'Sin clasificar';cuMap[k]=(cuMap[k]||0)+1;});
   const cus=Object.entries(cuMap).sort((x,y)=>y[1]-x[1]);const cuMax=Math.max(...cus.map(c=>c[1]),1);
   $('resumen').innerHTML=`
-  ${HEALTH.loaded?`<div class="note-box" style="font-size:13px"><strong>Salud vigente para todas las métricas:</strong> ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'(sin fecha detectada)'} ${CURRENT_HEALTH_FILE?`— archivo <strong>${esc(CURRENT_HEALTH_FILE)}</strong>`:'— archivo no identificado (salud cargada sin nombre de archivo con fecha)'}. Revisa/depura en <strong>Datos → Probar carga ahora</strong>.</div>`:''}
+  ${HEALTH.loaded?`<div class="note-box" style="font-size:13px"><strong>Salud vigente para todas las métricas:</strong> ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'(sin fecha detectada)'} ${CURRENT_HEALTH_FILE?`— archivo <strong>${esc(CURRENT_HEALTH_FILE)}</strong>`:'— archivo no identificado (salud cargada sin nombre de archivo con fecha)'}${CURRENT_HEALTH_SOURCE?` · elegido por: ${esc(CURRENT_HEALTH_SOURCE)}`:''}. Revisa/depura o cambia esto en <strong>Datos → Cartera de salud</strong>.</div>`:''}
   <div class="metrics">
     <div class="metric"><div class="label">Cuentas activas</div><div class="value">${A.length}</div><div class="sub">${A.filter(a=>a.cartera==='ENTERPRISE').length} Ent · ${A.filter(a=>a.cartera==='SMB').length} SMB</div></div>
     <div class="metric"><div class="label">MRR cartera</div><div class="value">${fmtUSD(mrrTotal)}</div><div class="sub">facturación mensual USD</div></div>
@@ -809,6 +809,8 @@ function prToggleAll(open){document.querySelectorAll('#prList details.kam-group'
 // ---------- Salud semanal (heatmap) ----------
 let CURRENT_HEALTH_DATE='';
 let CURRENT_HEALTH_FILE='';
+let CURRENT_HEALTH_SOURCE='';
+let FORCED_HEALTH_FILE='';
 function todayISO(){return new Date().toISOString().slice(0,10);}
 function detectDateFromName(name){
   if(!name)return null;
@@ -1043,7 +1045,23 @@ function renderUpsell(){
 
 
 // ---------- Por KAM ----------
-const KAM_META={'Ra\u00fal Campos':1500,'Dafne de la Rosa':1300,'Karla Pati\u00f1o':900};
+const KAM_META={'Ra\u00fal Campos':{m1:26250,m2:32800,m3:39350},'Dafne de la Rosa':{m1:22750,m2:28400,m3:34100},'Karla Pati\u00f1o':{m1:15750,m2:19650,m3:24600}};
+const fmtMXN=n=>(n==null||isNaN(n))?'—':'$'+Math.round(n).toLocaleString('en-US')+' MXN';
+function metaTiersHTML(achieved,m1,m2,m3){
+  const cap=Math.max(m3,achieved)*1.02||1;
+  const pct=v=>Math.min(100,v/cap*100);
+  const color=achieved>=m3?'#639922':achieved>=m2?'#00AFF2':achieved>=m1?'#EF9F27':'#E24B4A';
+  const marks=[[m1,'Meta 1'],[m2,'Meta 2'],[m3,'Meta 3']];
+  const tierCell=(v,label)=>{const reached=achieved>=v;const p=v?Math.min(100,achieved/v*100):0;return `<div class="stat3-it"><div class="stat3-v" style="color:${reached?'#639922':'#E24B4A'}">${reached?'✓ '+p.toFixed(0)+'%':p.toFixed(0)+'%'}</div><div class="stat3-l">${label} · ${fmtMXN(v)}</div></div>`;};
+  return `<div style="margin-top:6px">
+    <div style="position:relative;height:26px;background:var(--color-background-secondary);border-radius:6px;margin-top:22px;margin-bottom:30px">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:${pct(achieved)}%;background:${color};border-radius:6px;transition:width .3s"></div>
+      ${marks.map(([v,l])=>`<div style="position:absolute;left:${pct(v)}%;top:-6px;bottom:-6px;width:2px;background:var(--color-border-primary)"></div><div style="position:absolute;left:${pct(v)}%;top:-19px;transform:translateX(-50%);font-size:10px;color:var(--color-text-secondary);white-space:nowrap">${l}</div><div style="position:absolute;left:${pct(v)}%;bottom:-20px;transform:translateX(-50%);font-size:10px;color:var(--color-text-secondary);white-space:nowrap">${fmtMXN(v)}</div>`).join('')}
+      <div style="position:absolute;left:${pct(achieved)}%;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:600;color:${pct(achieved)>12?'#fff':'var(--color-text-primary)'};white-space:nowrap">${fmtMXN(achieved)}</div>
+    </div>
+    <div class="stat3">${tierCell(m1,'Meta 1')}${tierCell(m2,'Meta 2')}${tierCell(m3,'Meta 3')}</div>
+  </div>`;
+}
 function gaugeHTML(pct,sub,color){const p=Math.max(0,Math.min(100,pct));const real=Math.max(0,Math.round(pct));const c=p>=100?'#639922':p>=70?(color||'#00AFF2'):p>=40?'#EF9F27':'#E24B4A';return `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap"><div style="width:120px;height:120px;border-radius:50%;background:conic-gradient(${c} ${p*3.6}deg, var(--color-background-secondary) 0deg);display:flex;align-items:center;justify-content:center;flex:none"><div style="width:88px;height:88px;border-radius:50%;background:var(--color-background-primary);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:${c}">${real}%</div></div><div style="flex:1;min-width:200px;font-size:12px;color:var(--color-text-secondary);line-height:1.6">${sub}</div></div>`;}
 function renderKamTab(kam,sectionId){
   const cross=VENTAS_DATA.filter(r=>r.categoria==='cross'&&r.kam===kam&&r.estado==='Facturado');
@@ -1052,16 +1070,16 @@ function renderKamTab(kam,sectionId){
   const bajas=FUGA_DETALLE.filter(r=>r.tipo==='Baja'&&r.kam===kam);
   const referidos=ACCOUNTS.filter(a=>a.kam===kam&&a.referido);
   const sumUSD=rows=>rows.reduce((s,r)=>s+(r.usd||r.facturacionUSD||0),0);
+  const sumMXN=rows=>rows.reduce((s,r)=>s+(r.mxn||0),0);
   const mesesCM=monthSums(cross,'mes',r=>r.usd||0),mesesUM=monthSums(upsell,'mes',r=>r.usd||0),mesesAM=monthSums(arriendo,'mes',r=>r.usd||0),mesesBM=monthSums(bajas,'mesBaja',r=>r.facturacionUSD||0);
   const qC=qSum(cross,r=>r.usd||0),qU=qSum(upsell,r=>r.usd||0),qA=qSum(arriendo,r=>r.usd||0),qB=qSum(bajas,r=>r.facturacionUSD||0);
-  const meta=KAM_META[kam]||0;const metaQ3=meta*3;
-  const q3USD=sumUSD(cross.filter(r=>r.q==='Q3'))+sumUSD(upsell.filter(r=>r.q==='Q3'))+sumUSD(arriendo.filter(r=>r.q==='Q3'));
-  const pct=metaQ3?(q3USD/metaQ3*100):0;
+  const meta=KAM_META[kam]||{m1:0,m2:0,m3:0};
+  const q3MXN=sumMXN(cross.filter(r=>r.q==='Q3'))+sumMXN(upsell.filter(r=>r.q==='Q3'))+sumMXN(arriendo.filter(r=>r.q==='Q3'));
   const thMonths='<th class=\"nosort\">Ene</th><th class=\"nosort\">Feb</th><th class=\"nosort\">Mar</th><th class=\"nosort\">Abr</th><th class=\"nosort\">May</th><th class=\"nosort\">Jun</th><th class=\"nosort\">Jul</th><th class=\"nosort\">Ago</th>';
   const rowHTML=(label,vals)=>{const total=vals.reduce((a,b)=>a+b,0);return `<tr style="cursor:default"><td style="font-weight:500">`+label+`</td>`+vals.map(c=>`<td>`+fmtUSD(c)+`</td>`).join('')+`<td style="font-weight:600">`+fmtUSD(total)+`</td></tr>`;};
   const rowQHTML=(label,q)=>`<tr style="cursor:default"><td style="font-weight:500">`+label+`</td><td>`+fmtUSD(q.Q1)+`</td><td>`+fmtUSD(q.Q2)+`</td><td>`+fmtUSD(q.Q3)+`</td><td>`+fmtUSD(q.Q4)+`</td></tr>`;
   $(sectionId).innerHTML=`
-  <div class="note-box">Cross-selling, upselling y arriendo vienen de la hoja <strong>Ventas 2026</strong> (solo Estado = Facturado; se excluyen Proyectados); fuga (solo Baja) de <strong>Detalle Fuga 2026</strong>; referidos, de la columna "Referido/Referencia" de la cartera MARE MX (dato disponible en pocas cuentas). Todos los montos en USD.</div>
+  <div class="note-box">Cross-selling, upselling y arriendo vienen de la hoja <strong>Ventas 2026</strong> (solo Estado = Facturado; se excluyen Proyectados); fuga (solo Baja) de <strong>Detalle Fuga 2026</strong>; referidos, de la columna "Referido/Referencia" de la cartera MARE MX (dato disponible en pocas cuentas). Las tablas de mes/Q van en USD; la meta Q3 va en MXN (moneda en la que se definió).</div>
   <div class="metrics">
     <div class="metric"><div class="label">Cross-selling YTD</div><div class="value">${fmtUSD(sumUSD(cross))}</div><div class="sub">${cross.length} deals</div></div>
     <div class="metric"><div class="label">Upselling YTD</div><div class="value">${fmtUSD(sumUSD(upsell))}</div><div class="sub">${upsell.length} deals</div></div>
@@ -1075,7 +1093,10 @@ function renderKamTab(kam,sectionId){
   <div class="card"><h3>Por Q (USD facturado)</h3><div class="table-wrap"><table><thead><tr><th>Concepto</th><th class="nosort">Q1</th><th class="nosort">Q2</th><th class="nosort">Q3</th><th class="nosort">Q4</th></tr></thead><tbody>
   ${rowQHTML('Cross-selling',qC)}${rowQHTML('Upselling',qU)}${rowQHTML('Arriendo',qA)}${rowQHTML('Bajas',qB)}
   </tbody></table></div></div>
-  <div class="card"><h3>Avance a la meta · Q3 2026</h3>${gaugeHTML(pct,`<strong style="color:var(--color-text-primary)">Meta mensual de expansi\u00f3n (cross-sell + upsell + arriendo): ${fmtUSD(meta)}</strong>.<br>Meta Q3 (jul+ago+sep): <strong style="color:var(--color-text-primary)">${fmtUSD(metaQ3)}</strong>.<br>Llevas <strong style="color:var(--color-text-primary)">${fmtUSD(q3USD)}</strong> vendidos en Q3 (cross+upsell+arriendo).<br><span style="font-size:11px">Supuesto: la meta es mensual y se compara contra el trimestre completo (3x). Q3 reci\u00e9n empieza \u2014 el % subir\u00e1 con agosto y septiembre. Ajusta si tu meta considera solo cross-sell.</span>`)}</div>`;
+  <div class="card"><h3>Avance a la meta · Q3 2026 (MXN)</h3>
+  <p class="legend">Cross-sell + upsell + arriendo facturados en Q3 (jul-ago-sep), en pesos. La meta de Q3 es un monto único del trimestre, con 3 niveles.</p>
+  ${metaTiersHTML(q3MXN,meta.m1,meta.m2,meta.m3)}
+  </div>`;
 }
 function renderKamRaul(){renderKamTab('Ra\u00fal Campos','kam-raul');}
 function renderKamDafne(){renderKamTab('Dafne de la Rosa','kam-dafne');}
@@ -1096,7 +1117,7 @@ function renderDatos(){
     <p class="legend" id="mareMsg" style="margin-top:8px"></p>
   </div>
   <div class="card"><h3>2 · Cartera de salud (semanal)</h3>
-    <p class="status-line" style="margin-bottom:10px">${HEALTH.loaded?`<span style="color:#3B6D11">✓ Cargada · ${HEALTH.matched}/${HEALTH.total} emparejadas</span> · llave: <strong>${esc(HEALTH.keyHeader)}</strong> · señal: ${HEALTH.signalHeaders.map(esc).join(', ')||'(automática)'}${CURRENT_HEALTH_DATE?` · <strong>salud vigente para las métricas: ${esc(CURRENT_HEALTH_DATE)}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</strong>`:''}`:'Aún no cargada. Súbela cada semana para refrescar el semáforo y empujar las cuentas críticas al tope de Salud.'}</p>
+    <p class="status-line" style="margin-bottom:10px">${HEALTH.loaded?`<span style="color:#3B6D11">✓ Cargada · ${HEALTH.matched}/${HEALTH.total} emparejadas</span> · llave: <strong>${esc(HEALTH.keyHeader)}</strong> · señal: ${HEALTH.signalHeaders.map(esc).join(', ')||'(automática)'}${CURRENT_HEALTH_DATE?` · <strong>salud vigente para las métricas: ${esc(CURRENT_HEALTH_DATE)}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</strong>${CURRENT_HEALTH_SOURCE?' · elegido por: '+esc(CURRENT_HEALTH_SOURCE):''}`:''}`:'Aún no cargada. Súbela cada semana para refrescar el semáforo y empujar las cuentas críticas al tope de Salud.'}</p>
     <div class="urlrow"><input type="text" id="healthUrlIn" placeholder="https://…/salud.xlsx · ./salud.xlsx" value="${esc(LAST.healthUrl||CONFIG.healthUrl||'')}"><button class="btn btn-primary" id="healthUrlBtn">Cargar</button></div>
     <div class="dropzone" id="dzHealth">Arrastra aquí el <strong>archivo de salud</strong> o haz clic</div>
     <input type="file" id="fileHealth" accept=".xlsx,.xls,.csv" style="display:none">
@@ -1106,10 +1127,29 @@ function renderDatos(){
       ${HEALTH.unmatched.slice(0,120).map(u=>{const fl=u.flag==='critico'?'b-red':u.flag==='atencion'?'b-amber':u.flag==='ok'?'b-green':'b-gray';const lbl=u.cat||(u.flag==='critico'?'Crítico':u.flag==='atencion'?'En riesgo':u.flag==='ok'?'Saludable':'Sin clasificar');return`<tr style="cursor:default"><td>${esc(u.key)}</td><td><span class="badge ${fl}">${esc(lbl)}</span></td></tr>`;}).join('')}
       </tbody></table></div>${HEALTH.unmatched.length>120?`<p class="legend" style="margin-top:6px">Mostrando 120 de ${HEALTH.unmatched.length}.</p>`:''}
       <p class="legend" style="margin-top:6px">Estas filas vienen del modelo de salud pero no encontraron su cuenta en la cartera MARE MX. El monitor empareja <strong>primero por ID Geo</strong> y, si falta, por <strong>nombre normalizado</strong> (quita S.A. de C.V., acentos, etc.). Para emparejarlas: <strong>(1)</strong> lo más efectivo — llena la columna <code>ID Geo</code> en la cartera (hoy solo ~110 de 453 la tienen); con el mismo ID en ambos archivos el match es exacto. <strong>(2)</strong> si no hay ID, usa el <strong>mismo nombre</strong> en cartera y salud, evitando sufijos de sucursal/alias que difieren ("GDL", "EDO MEX", "(RH MEDICAL)"). <strong>(3)</strong> ignora las de prueba (Demo, Piloto, GeoVictoria interno): no son clientes reales.</p></details>`:''}
-    <div class="sec-title" style="margin-top:14px">Salud semanal por manifest (GitHub Pages)</div>
+    <div class="sec-title" style="margin-top:14px">Elegir el archivo vigente para TODOS (recomendado) — editar el repo</div>
+    <p class="legend" style="margin-bottom:8px">Esto es lo que ve cualquiera que abra el link publicado, sin importar su navegador o dispositivo. Agrega la clave <code>"vigente"</code> a tu <code>salud_semanas.json</code> en GitHub con el nombre exacto del archivo que quieres que mande:</p>
+    <pre style="font-size:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;overflow-x:auto;margin-bottom:8px">{
+  "vigente": "salud-mx-06julio.xlsx",
+  "archivos": [
+    "salud-mx-22junio.xlsx",
+    "salud-mx-30junio.xlsx",
+    "salud-mx-06julio.xlsx"
+  ]
+}</pre>
+    <p class="legend" style="margin-bottom:14px">Si no incluyes <code>"vigente"</code>, sigue aplicando el criterio automático (fecha más nueva en el nombre). ${CURRENT_HEALTH_SOURCE?`Ahora mismo, en <em>esta</em> sesión, el vigente se eligió por: <strong style="color:var(--color-text-primary)">${esc(CURRENT_HEALTH_SOURCE)}</strong>.`:''}</p>
+    <div class="sec-title">Probar/fijar solo en este navegador (para revisar, no para el equipo)</div>
     <div class="urlrow"><input type="text" id="manifestUrlIn" placeholder="./salud_semanas.json" value="${esc(CONFIG.healthManifest||'./salud_semanas.json')}"><button class="btn btn-primary" id="manifestTestBtn">Probar carga ahora</button></div>
     <p class="legend" style="margin-bottom:8px">Este botón repite exactamente lo que el dashboard intenta solo al abrir la página: lee el manifest y luego cada archivo de salud semanal que liste. Úsalo directo en la versión publicada en GitHub Pages para ver por qué no está tomando tus archivos.</p>
     <div id="manifestLog">${HEALTH_MANIFEST_LOG.length?`<div class="table-wrap"><table><thead><tr><th>Archivo</th><th class="nosort">Fecha detectada</th><th class="nosort">Resultado</th><th class="nosort">Vigente</th></tr></thead><tbody>${HEALTH_MANIFEST_LOG.map(e=>`<tr style="cursor:default${e.vigente?';background:var(--color-background-secondary)':''}"><td style="font-size:12px;font-weight:${e.vigente?600:400}">${esc(e.file)}</td><td style="font-size:12px">${esc(e.dateDetectada||'—')}</td><td style="font-size:12px;color:${e.status==='ok'?'#3B6D11':'#A32D2D'}">${esc(e.status)}</td><td>${e.vigente?'<span class="badge b-green">✓ usada en métricas</span>':''}</td></tr>`).join('')}</tbody></table></div>`:'<p class="legend">Aún no se ha probado en esta sesión.</p>'}</div>
+    <p class="legend" style="margin-top:10px;margin-bottom:4px">Esta opción solo cambia lo que <strong>tú</strong> ves en <strong>este navegador</strong> (queda guardado localmente) — no afecta a tus compañeros ni a otros dispositivos. Para que aplique a todos, usa la opción de arriba (editar el repo).</p>
+    <div class="urlrow">
+      ${(HEALTH_MANIFEST_LOG.filter(e=>e.status==='ok'||(e.status||'').startsWith('cargado')).length)?`<select id="healthPinSelect"><option value="">Automático / lo que diga el repo</option>${HEALTH_MANIFEST_LOG.filter(e=>e.status==='ok'||(e.status||'').startsWith('cargado')).map(e=>`<option value="${esc(e.file)}" ${FORCED_HEALTH_FILE===e.file?'selected':''}>${esc(e.file)}</option>`).join('')}</select>`:''}
+      <input type="text" id="healthPinIn" placeholder="o escribe el nombre exacto, ej. salud-mx-06julio.xlsx" value="${esc(FORCED_HEALTH_FILE)}">
+      <button class="btn btn-primary" id="healthPinBtn">Fijar solo para mí</button>
+      ${FORCED_HEALTH_FILE?'<button class="btn" id="healthPinClearBtn">Volver a automático</button>':''}
+    </div>
+    ${FORCED_HEALTH_FILE?`<p class="legend" style="margin-top:6px">📌 Fijado en este navegador: <strong style="color:var(--color-text-primary)">${esc(FORCED_HEALTH_FILE)}</strong>${CURRENT_HEALTH_FILE!==FORCED_HEALTH_FILE?' — <span style="color:#A32D2D">no se encontró en el último intento; revisa el nombre exacto en el manifest</span>':''}.</p>`:''}
   </div>
   <div class="card"><h3>3 · Consideraciones de negocio</h3>
     <p class="status-line" style="margin-bottom:8px">Reglas y excepciones que el monitor aplica al calcular salud y criticidad. Viven en <code>consideraciones.json</code> en el repo (se carga solo) y puedes editarlas sin tocar el HTML. ${(function(){const n=ACCOUNTS.filter(a=>a._reclasificado==='solo-ticket').length;const c=ACCOUNTS.filter(a=>a._congelada).length;const m=ACCOUNTS.filter(a=>a._marcajeAjustado).length;const rs=ACCOUNTS.filter(a=>a._cambioRazon).length;const nf=ACCOUNTS.filter(a=>a._noFuga).length;const rk=ACCOUNTS.filter(a=>a._kamReasignado).length;return `<span style="color:#3B6D11">Aplicadas ahora:</span> ${n} reclasificadas por 1 ticket · ${c} congeladas · ${m} con marcaje ajustado · ${rs} cambio de razón social · ${nf} excluidas de fuga · ${rk} reasignadas de KAM.`;})()}</p>
@@ -1141,6 +1181,9 @@ function renderDatos(){
   $('urlReload').onclick=()=>loadURL(($('urlIn').value.trim()||LAST.portfolioUrl),{});
   $('healthUrlBtn').onclick=()=>loadHealthURL($('healthUrlIn').value.trim(),{});
   $('manifestTestBtn').onclick=async()=>{const btn=$('manifestTestBtn');btn.disabled=true;btn.textContent='Probando…';const u=$('manifestUrlIn').value.trim()||'./salud_semanas.json';await loadHealthManifest(u);renderDatos();show('datos');};
+  const pinSelect=$('healthPinSelect');if(pinSelect)pinSelect.onchange=()=>{if(pinSelect.value)$('healthPinIn').value=pinSelect.value;};
+  $('healthPinBtn').onclick=async()=>{const v=$('healthPinIn').value.trim();if(!v){alert('Escribe o selecciona el nombre exacto del archivo.');return;}const btn=$('healthPinBtn');btn.disabled=true;btn.textContent='Fijando…';FORCED_HEALTH_FILE=v;await persist('forced_health_file',v);const u=$('manifestUrlIn').value.trim()||'./salud_semanas.json';await loadHealthManifest(u);renderDatos();show('datos');};
+  const pinClear=$('healthPinClearBtn');if(pinClear)pinClear.onclick=async()=>{FORCED_HEALTH_FILE='';await persist('forced_health_file','');const u=$('manifestUrlIn').value.trim()||'./salud_semanas.json';await loadHealthManifest(u);renderDatos();show('datos');};
   wireDrop('dzMare','fileMare',f=>loadFile(f,'mare'));
   wireDrop('dzHealth','fileHealth',f=>loadFile(f,'health'));
   $('consUrlBtn').onclick=async()=>{const u=$('consUrlIn').value.trim();if(!u){$('consMsg').textContent='Pega primero un enlace o ruta.';return;}const ok=await loadConsideraciones(u,{});const m=$('consMsg');if(m){m.style.color=ok?'#3B6D11':'#A32D2D';m.textContent=ok?'✓ Consideraciones aplicadas.':'No se pudo cargar el JSON.';}renderDatos();};
@@ -1275,12 +1318,12 @@ async function loadHealthManifest(url){
     if(!resp.ok){HEALTH_MANIFEST_LOG.push({file:url,status:`manifest no encontrado (HTTP ${resp.status})`});return false;}
     const j=await resp.json();
     let files=Array.isArray(j)?j:(j.archivos||j.files||j.semanas||[]);
+    const manifestPin=(!Array.isArray(j)&&(j.vigente||j.archivo_vigente||j.actual))||'';
     if(!files.length){HEALTH_MANIFEST_LOG.push({file:url,status:'manifest cargado pero sin archivos listados'});return false;}
     const base=url.replace(/[^/]*$/,'');
     const items=files.map(f=>({f,url:/^https?:|^\.?\//.test(f)?f:base+f,date:detectDateFromName(f)}));
-    items.sort((a,b)=>((a.date||'')<(b.date||'')?-1:1)); // más antiguo primero → el más reciente queda en métricas
-    CURRENT_HEALTH_DATE='';CURRENT_HEALTH_FILE=''; // el manifest manda: no dejar que una fecha vieja guardada en este navegador bloquee el archivo más nuevo listado hoy
-    let ok=0;
+    items.sort((a,b)=>((a.date||'')<(b.date||'')?-1:1)); // más antiguo primero, solo afecta el orden del historial
+    const parsedOK=[]; // {file,date,parsed} — candidatos a "vigente"
     for(const it of items){
       const entry={file:it.f,url:it.url,dateDetectada:it.date};
       try{
@@ -1291,12 +1334,37 @@ async function loadHealthManifest(url){
         const parsed=parseHealthWorkbook(wb);
         if(!it.date)entry.status='cargado, pero no se detectó fecha en el nombre del archivo (revisa "ej. salud-mx-30junio.xlsx")';
         else entry.status='ok';
-        applyHealthDated(parsed,it.date||detectDateFromName(it.url),it.f);ok++;
+        saveWeekSnap(it.date||todayISO(),snapshotFromHealth(parsed));
+        parsedOK.push({file:it.f,date:it.date,parsed});
       }catch(e){entry.status='error al leer/parsear: '+(e&&e.message||e);}
       HEALTH_MANIFEST_LOG.push(entry);
     }
+    let chosen=null,pinSource='';
+    if(FORCED_HEALTH_FILE){
+      chosen=parsedOK.find(p=>p.file===FORCED_HEALTH_FILE)||null;
+      pinSource='tu navegador (fijado localmente en Datos)';
+      if(!chosen&&parsedOK.length){
+        chosen=parsedOK.slice().sort((a,b)=>((a.date||'')<(b.date||'')?1:-1))[0];
+        HEALTH_MANIFEST_LOG.push({file:FORCED_HEALTH_FILE,status:'⚠ este archivo fijado en tu navegador no está en el manifest de hoy (o no cargó); se usó como respaldo el más reciente disponible: '+(chosen?chosen.file:'ninguno')});
+      }
+    }else if(manifestPin){
+      chosen=parsedOK.find(p=>p.file===manifestPin)||null;
+      pinSource='el manifest del repo ("vigente" en salud_semanas.json) — aplica a todos los que abran el link';
+      if(!chosen&&parsedOK.length){
+        chosen=parsedOK.slice().sort((a,b)=>((a.date||'')<(b.date||'')?1:-1))[0];
+        HEALTH_MANIFEST_LOG.push({file:manifestPin,status:'⚠ el archivo "vigente" del manifest no está en la lista de hoy (o no cargó); se usó como respaldo el más reciente disponible: '+(chosen?chosen.file:'ninguno')});
+      }
+    }else if(parsedOK.length){
+      chosen=parsedOK.slice().sort((a,b)=>((a.date||'')<(b.date||'')?1:-1))[0];
+      pinSource='automático (fecha más reciente en el nombre)';
+    }
+    if(chosen){
+      applyHealth(chosen.parsed);
+      CURRENT_HEALTH_DATE=chosen.date||todayISO();CURRENT_HEALTH_FILE=chosen.file;CURRENT_HEALTH_SOURCE=pinSource;
+      persist('current_health_date',CURRENT_HEALTH_DATE);persist('current_health_file',CURRENT_HEALTH_FILE);
+    }
     HEALTH_MANIFEST_LOG.forEach(e=>{e.vigente=(e.file===CURRENT_HEALTH_FILE);});
-    if(ok){LAST.healthUrl='';markReload();renderAll();renderSemanal();return true;}
+    if(chosen){LAST.healthUrl='';markReload();renderAll();renderSemanal();return true;}
     return false;
   }catch(e){HEALTH_MANIFEST_LOG.push({file:url,status:'error de red/CORS: '+(e&&e.message||e)});return false;}
 }
@@ -1322,6 +1390,7 @@ async function init(){
   try{const wk=await readStore('health_weeks');if(Array.isArray(wk))WEEKS=wk;}catch(e){}
   try{const chd=await readStore('current_health_date');if(typeof chd==='string')CURRENT_HEALTH_DATE=chd;}catch(e){}
   try{const chf=await readStore('current_health_file');if(typeof chf==='string')CURRENT_HEALTH_FILE=chf;}catch(e){}
+  try{const fhf=await readStore('forced_health_file');if(typeof fhf==='string')FORCED_HEALTH_FILE=fhf;}catch(e){}
   if(!HEALTH.loaded&&typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length){try{applyHealth(seedToParsed(HEALTH_SEED));}catch(e){}}
   if(!LAST_RELOAD)markReload();
   renderAll();autoLoad();
