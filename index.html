@@ -784,7 +784,7 @@ function drawPrList(){
   const marc=a=>(a.health&&a.health.adopcion!=null)?a.health.adopcion:Infinity;
   const byMarcaje=(a,b)=>marc(a)-marc(b) || (b._score-a._score);
   const byScore=(a,b)=>b._score-a._score;
-  const tools=`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(false)">Colapsar todo</button></div>`;
+  const tools=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(false)">Colapsar todo</button><button class="btn btn-primary" style="font-size:12px;padding:5px 11px" onclick="copyCriticasText()">📋 Copiar críticas por KAM</button></div>`;
   const groupsHtml=ordered.map(g=>{
     g.crit.sort(byMarcaje);g.ries.sort(byScore);g.resto.sort(byScore);
     const sinCSn=g.crit.concat(g.ries).filter(a=>!hasCS(a)).length;
@@ -818,6 +818,39 @@ function drawPrList(){
       </details>`;}
   }
   $('prList').innerHTML=tools+groupsHtml+extra+sinUsoBlock();
+}
+function razonLabel(code){return {marcaje:'marcaje bajo',sinuso:'sin uso',nps:'NPS detractor',ticket:'tickets sin resolver',fuga:'fuga / caída de facturación'}[code]||'salud crítica';}
+function kamShort(name){const n=normName(name||'');if(n.includes('raul'))return'Raúl';if(n.includes('dafne'))return'Dafne';if(n.includes('karla'))return'Karla';return name||'Sin KAM';}
+function buildCriticasText(){
+  const crit=ACCOUNTS.filter(isCritica);
+  const groups={};crit.forEach(a=>{const k=a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(a);});
+  const KAM_ORDER=['raul','dafne','karla'];
+  const kamRank=name=>{const n=normName(name);for(let i=0;i<KAM_ORDER.length;i++){if(n.includes(KAM_ORDER[i]))return i;}return KAM_ORDER.length;};
+  const marc=a=>(a.health&&a.health.adopcion!=null)?a.health.adopcion:Infinity;
+  const kams=Object.keys(groups).sort((x,y)=>kamRank(x)-kamRank(y)||x.localeCompare(y));
+  const lines=[];
+  kams.forEach(k=>{
+    const arr=groups[k].slice().sort((a,b)=>marc(a)-marc(b));
+    lines.push(`${kamShort(k)} ${arr.length} cuentas críticas`);
+    arr.forEach((a,i)=>{
+      const idPart=a.id?' '+a.id:'';
+      const adopcion=(a.health&&a.health.adopcion!=null)?Math.round(a.health.adopcion*100)+'%':'s/d';
+      const razon=razonLabel(a._razonCritico);
+      const cs=hasCS(a)?'con CSS':'sin CSS';
+      lines.push(`${i+1}. ${a.cliente}${idPart} Marcaje ${adopcion}, crítico por ${razon}, ${cs}`);
+    });
+    lines.push('');
+  });
+  return lines.join(String.fromCharCode(10)).trim();
+}
+async function copyCriticasText(){
+  const text=buildCriticasText();
+  if(!text){toast('No hay cuentas críticas para copiar.',true);return;}
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);
+    else{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
+    toast('Copiado: '+ACCOUNTS.filter(isCritica).length+' cuentas críticas por KAM.');
+  }catch(e){toast('No se pudo copiar: '+e.message,true);}
 }
 function isSinUso(a){const h=a.health;return !!(h&&((h.categoria&&/sin\s*uso/i.test(h.categoria))||h.adopcion===0));}
 function sinUsoBlock(){
