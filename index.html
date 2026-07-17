@@ -1317,6 +1317,7 @@ function renderKamKarla(){renderKamTab('Karla Pati\u00f1o','kam-karla');}
 
 
 let implFilter='';
+let implSearchQ='';
 function implSetFilter(f){implFilter=(implFilter===f)?'':f;renderImplementacion();}
 function renderImplementacion(){
   const all=IMPLEMENTACIONES;
@@ -1325,7 +1326,9 @@ function renderImplementacion(){
   const crit=activas.filter(r=>r._flag==='critico'),ries=activas.filter(r=>r._flag==='atencion'),sano=activas.filter(r=>r._flag==='ok');
   const grupCerr={};cerradas.forEach(r=>{grupCerr[r._grupo]=(grupCerr[r._grupo]||0)+1;});
   const base=implFilter?activas.filter(r=>r._flag===implFilter):activas;
-  const sorted=base.slice().sort((a,b)=>{const rank=f=>f==='critico'?0:f==='atencion'?1:2;return rank(a._flag)-rank(b._flag)||(a.marcajePct==null?99:a.marcajePct)-(b.marcajePct==null?99:b.marcajePct);});
+  const qn=normName(implSearchQ);
+  const searched=qn?base.filter(r=>normName(r.cliente).includes(qn)):base;
+  const sorted=searched.slice().sort((a,b)=>{const rank=f=>f==='critico'?0:f==='atencion'?1:2;return rank(a._flag)-rank(b._flag)||(a.marcajePct==null?99:a.marcajePct)-(b.marcajePct==null?99:b.marcajePct);});
   const badge=f=>f==='critico'?'<span class="badge b-red">🔴 Crítico</span>':f==='atencion'?'<span class="badge b-amber">🟡 En riesgo</span>':'<span class="badge b-green">🟢 Saludable</span>';
   const selStyle=f=>implFilter===f?'outline:2px solid var(--color-border-primary);outline-offset:-2px':'';
   const filterLabel={critico:'Críticas',atencion:'En riesgo',ok:'Saludables'}[implFilter]||'';
@@ -1338,14 +1341,35 @@ function renderImplementacion(){
     <div class="metric" style="cursor:pointer;${selStyle('atencion')}" onclick="implSetFilter('atencion')"><div class="label">En riesgo</div><div class="value" style="color:#EF9F27">${ries.length}</div><div class="sub">${activas.length?Math.round(ries.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
     <div class="metric" style="cursor:pointer;${selStyle('ok')}" onclick="implSetFilter('ok')"><div class="label">Saludables</div><div class="value" style="color:#639922">${sano.length}</div><div class="sub">${activas.length?Math.round(sano.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
   </div>
-  <div class="card"><h3>Implementaciones ${filterLabel?filterLabel+' ':'activas '}<span style="font-weight:400;color:var(--color-text-secondary)">· ${sorted.length} de ${activas.length}${implFilter?' · clic en la tarjeta de arriba de nuevo para ver todas':''}</span></h3><div class="table-wrap"><table><thead><tr><th class="nosort">Semáforo</th><th>Cliente</th><th class="nosort">Etapa</th><th class="nosort">Tipo</th><th class="nosort">Marcaje</th><th class="nosort">Usuarios (activos/a implementar)</th><th class="nosort">Fecha objetivo</th><th class="nosort">KAM (si ya está en cartera)</th></tr></thead><tbody>
-  ${sorted.map(r=>{const acc=matchImplToAccount(r);const marc=r.marcajePct!=null?Math.round(r.marcajePct)+'%':'s/d';return `<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td>${badge(r._flag)}${r._razon?`<div class="legend" style="margin-top:2px">${esc(r._razon)}</div>`:''}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}</td><td style="font-size:12px">${esc(r.etapa)}</td><td style="font-size:12px">${esc(r.tipo||'—')}</td><td>${marc}</td><td style="font-size:12px">${r.usuariosActivos??'—'} / ${r.usuariosImplementar??'—'}</td><td style="font-size:12px">${esc(r.fechaFin||'—')}</td><td style="font-size:12px">${acc?esc(acc.kam):'<span class="legend">Aún no en cartera</span>'}</td></tr>`;}).join('')||'<tr><td colspan="8" class="legend">Sin implementaciones en este filtro.</td></tr>'}
+  <div class="card"><h3>Implementaciones ${filterLabel?filterLabel+' ':'activas '}<span style="font-weight:400;color:var(--color-text-secondary)">· ${sorted.length} de ${activas.length}${implFilter?' · clic en la tarjeta de arriba de nuevo para ver todas':''}</span></h3>
+  <div class="urlrow" style="margin-bottom:10px">
+    <input type="text" id="implSearchIn" placeholder="Buscar por nombre de cliente…" value="${esc(implSearchQ)}" style="flex:1;min-width:200px">
+    <button class="btn" id="implDownloadBtn">⬇ Descargar Excel (${sorted.length})</button>
+  </div>
+  <div class="table-wrap"><table><thead><tr><th class="nosort">Semáforo</th><th>Cliente</th><th class="nosort">Etapa</th><th class="nosort">Tipo</th><th class="nosort">Marcaje</th><th class="nosort">Usuarios (activos/a implementar)</th><th class="nosort">Fecha objetivo</th><th class="nosort">KAM (si ya está en cartera)</th></tr></thead><tbody>
+  ${sorted.map(r=>{const acc=matchImplToAccount(r);const marc=r.marcajePct!=null?Math.round(r.marcajePct)+'%':'s/d';return `<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td>${badge(r._flag)}${r._razon?`<div class="legend" style="margin-top:2px">${esc(r._razon)}</div>`:''}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}</td><td style="font-size:12px">${esc(r.etapa)}</td><td style="font-size:12px">${esc(r.tipo||'—')}</td><td>${marc}</td><td style="font-size:12px">${r.usuariosActivos??'—'} / ${r.usuariosImplementar??'—'}</td><td style="font-size:12px">${esc(r.fechaFin||'—')}</td><td style="font-size:12px">${acc?esc(acc.kam):'<span class="legend">Aún no en cartera</span>'}</td></tr>`;}).join('')||'<tr><td colspan="8" class="legend">Sin implementaciones en este filtro/búsqueda.</td></tr>'}
   </tbody></table></div></div>
   <div class="card"><h3>Fuera de proceso (no cuentan en el semáforo)</h3>
     <div class="stat3">${['Rechazada','Abandono','Finalizada'].map(g=>`<div class="stat3-it"><div class="stat3-v">${grupCerr[g]||0}</div><div class="stat3-l">${g}</div></div>`).join('')}</div>
     <p class="legend" style="margin-top:8px">${cerradas.length} de ${all.length} registros del archivo (${Math.round(cerradas.length/(all.length||1)*100)}%) nunca llegaron a implementarse o se cerraron. Vale la pena revisar la tasa de rechazo/abandono con Preventa si se mantiene alta semana a semana.</p>
   </div>`}
   `;
+  if(!all.length)return;
+  const sIn=$('implSearchIn');
+  sIn.oninput=e=>{implSearchQ=e.target.value;const pos=e.target.selectionStart;renderImplementacion();const n=$('implSearchIn');if(n){n.focus();try{n.setSelectionRange(pos,pos);}catch(_){}}};
+  $('implDownloadBtn').onclick=()=>implDownloadExcel(sorted);
+}
+function implDownloadExcel(rows){
+  if(!rows.length){toast('No hay filas para descargar con este filtro/búsqueda.',true);return;}
+  const flagLabel=f=>f==='critico'?'Crítico':f==='atencion'?'En riesgo':'Saludable';
+  const data=rows.map(r=>{const acc=matchImplToAccount(r);return{'Cliente':r.cliente,'Semáforo':flagLabel(r._flag),'Motivo':r._razon||'','Etapa':r.etapa,'Tipo':r.tipo||'','% Marcaje':r.marcajePct!=null?r.marcajePct:'','Usuarios activos':r.usuariosActivos!=null?r.usuariosActivos:'','Usuarios a implementar':r.usuariosImplementar!=null?r.usuariosImplementar:'','Fecha objetivo':r.fechaFin||'','KAM (si ya está en cartera)':acc?acc.kam:'','Partner':r.partner||'','Servicios':r.servicios||''};});
+  const ws=XLSX.utils.json_to_sheet(data);
+  ws['!cols']=[{wch:32},{wch:12},{wch:34},{wch:26},{wch:10},{wch:10},{wch:16},{wch:20},{wch:14},{wch:18},{wch:16},{wch:28}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Implementaciones');
+  const stamp=todayISO();
+  XLSX.writeFile(wb,`implementaciones_${implFilter||'todas'}_${stamp}.xlsx`);
+  toast('Descargando '+rows.length+' filas…');
 }
 
 // ---------- Datos ----------
