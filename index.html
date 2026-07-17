@@ -1538,7 +1538,7 @@ function renderDatos(){
   wireDrop('dzMare','fileMare',f=>loadFile(f,'mare'));
   wireDrop('dzHealth','fileHealth',f=>loadFile(f,'health'));
   $('consUrlBtn').onclick=async()=>{const u=$('consUrlIn').value.trim();if(!u){$('consMsg').textContent='Pega primero un enlace o ruta.';return;}const ok=await loadConsideraciones(u,{});const m=$('consMsg');if(m){m.style.color=ok?'#3B6D11':'#A32D2D';m.textContent=ok?'✓ Consideraciones aplicadas.':'No se pudo cargar el JSON.';}renderDatos();};
-  wireDrop('dzCons','fileCons',f=>{const r=new FileReader();r.onload=e=>{try{CONSID=JSON.parse(e.target.result);LAST.consideracionesUrl='';if(HEALTH_CACHE)applyHealth(HEALTH_CACHE);else if(typeof HEALTH_SEED!=='undefined')applyHealth(seedToParsed(HEALTH_SEED));markReload();renderAll();show('datos');toast('Consideraciones aplicadas ✓');}catch(err){const m=$('consMsg');if(m){m.style.color='#A32D2D';m.textContent='JSON inválido: '+err.message;}}};r.onerror=()=>toast('No se pudo leer el archivo.',true);r.readAsText(f);});
+  wireDrop('dzCons','fileCons',f=>{const r=new FileReader();r.onload=e=>{try{const json=JSON.parse(e.target.result);CONSID=Object.assign({},CONSID_DEFAULT,json);CONSID.reglas_globales=Object.assign({},CONSID_DEFAULT.reglas_globales||{},json.reglas_globales||{});LAST.consideracionesUrl='';if(HEALTH_CACHE)applyHealth(HEALTH_CACHE);else if(typeof HEALTH_SEED!=='undefined')applyHealth(seedToParsed(HEALTH_SEED));markReload();renderAll();show('datos');toast('Consideraciones aplicadas ✓');}catch(err){const m=$('consMsg');if(m){m.style.color='#A32D2D';m.textContent='JSON inválido: '+err.message;}}};r.onerror=()=>toast('No se pudo leer el archivo.',true);r.readAsText(f);});
   $('implUrlBtn').onclick=()=>loadImplementacionesURL($('implUrlIn').value.trim(),{});
   wireDrop('dzImpl','fileImpl',async f=>{try{const wb=await readWB(f);const n=refreshImplementaciones(wb,f.name);if(!n)throw new Error('no se encontró la hoja/columnas esperadas');LAST.implementacionesUrl='';markReload();renderAll();show('datos');toast('✓ '+n+' implementaciones cargadas desde '+f.name+'.');}catch(err){const m=$('implMsg');if(m){m.style.color='#A32D2D';m.textContent='Error: '+err.message;}}});
   $('resetBtn').onclick=()=>{ACCOUNTS=hydrate(SEED);SOURCE='Cartera base (cuentas0206.xlsx)';HEALTH={loaded:false,matched:0,total:0,unmatched:[],keyHeader:'',signalHeaders:[]};VENTAS_DATA=VENTAS_DATA_SEED;FUGA_DETALLE=FUGA_DETALLE_SEED;VENTAS_SOURCE='snapshot congelado (Cuentas_Postventa.xlsx original)';if(typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length){try{applyHealth(seedToParsed(HEALTH_SEED));}catch(e){}}markReload();persistDel();renderAll();show('resumen');};
@@ -1595,7 +1595,10 @@ async function loadConsideraciones(url,opts){
     const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
     const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
     const json=await resp.json();
-    if(json&&typeof json==='object'){CONSID=json;LAST.consideracionesUrl=url;persist('last_consid_url',url);
+    if(json&&typeof json==='object'){
+      CONSID=Object.assign({},CONSID_DEFAULT,json);
+      CONSID.reglas_globales=Object.assign({},CONSID_DEFAULT.reglas_globales||{},json.reglas_globales||{});
+      LAST.consideracionesUrl=url;persist('last_consid_url',url);
       // re-aplicar salud para que las consideraciones surtan efecto
       if(HEALTH_CACHE)applyHealth(HEALTH_CACHE);else if(typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length)applyHealth(seedToParsed(HEALTH_SEED));
       renderAll();}
