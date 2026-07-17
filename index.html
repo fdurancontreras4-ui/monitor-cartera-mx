@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Monitor de Cartera — México</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -191,6 +193,7 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
     <button data-sec="kam-raul">Raúl</button>
     <button data-sec="kam-dafne">Dafne</button>
     <button data-sec="kam-karla">Karla</button>
+    <button data-sec="implementacion">Implementación</button>
     <button data-sec="datos">Datos</button>
   </div>
 
@@ -206,6 +209,7 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
   <div id="kam-raul" class="section"></div>
   <div id="kam-dafne" class="section"></div>
   <div id="kam-karla" class="section"></div>
+  <div id="implementacion" class="section"></div>
   <div id="datos" class="section"></div>
 </div>
 
@@ -225,7 +229,22 @@ const CONFIG = {
   healthUrl:    '',   // vacío = auto-detecta ./salud.xlsx
   healthManifest: '', // vacío = auto-detecta ./salud_semanas.json (lista de archivos de salud por semana)
   consideracionesUrl: '', // vacío = auto-detecta ./consideraciones.json
-  autoTryFiles: ['./cartera.xlsx','./Cuentas_Postventa.xlsx']
+  autoTryFiles: ['./cartera.xlsx','./Cuentas_Postventa.xlsx'],
+  // ===== Anotaciones de equipo en tiempo real (Firebase Realtime Database) =====
+  // Pega aquí el config de TU proyecto Firebase (gratis) para que las notas se compartan
+  // en vivo entre todos los que abran este dashboard. Instrucciones completas al final
+  // de este archivo, junto a la función initAnnotations(). Déjalo como null para
+  // desactivar la función (el dashboard funciona igual sin esto).
+  firebase: null,
+  implementacionesUrl: '', // vacío = auto-detecta ./implementaciones.xlsx
+  implementacionesAutoTry: ['./implementaciones.xlsx']
+  /* Ejemplo, una vez creado tu proyecto en https://console.firebase.google.com :
+  firebase: {
+    apiKey: "AIza...",
+    databaseURL: "https://TU-PROYECTO-default-rtdb.firebaseio.com",
+    projectId: "TU-PROYECTO"
+  }
+  */
 };
 
 // ===== CONSIDERACIONES DE NEGOCIO (editable en consideraciones.json del repo) =====
@@ -273,7 +292,7 @@ let ACCOUNTS=[];
 let SOURCE='Cartera base (cuentas0206.xlsx)';
 let HEALTH={loaded:false,matched:0,total:0,unmatched:[],keyHeader:'',signalHeaders:[]};
 let HEALTH_CACHE=null;
-let LAST={portfolioUrl:'',healthUrl:'',consideracionesUrl:''};
+let LAST={portfolioUrl:'',healthUrl:'',consideracionesUrl:'',implementacionesUrl:''};
 let LAST_RELOAD=null;
 function markReload(){LAST_RELOAD=new Date();try{persist('last_reload',LAST_RELOAD.toISOString());}catch(e){}}
 function fmtReload(){if(!LAST_RELOAD)return'—';try{return LAST_RELOAD.toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return LAST_RELOAD.toLocaleString();}}
@@ -324,8 +343,8 @@ function segOf(a){
   if(a.usuarios!=null)return a.usuarios>=100?'SMB medium':'SMB small';
   return'SMB small';
 }
-function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon)return false;return !!(a.health&&a.health.flag==='critico');}
-function isRiesgo(a){if(a._congelada||a._forzarSano||a._cambioRazon)return false;return !isCritica(a)&&!!(a.health&&a.health.flag==='atencion');}
+function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return false;return !!(a.health&&a.health.flag==='critico');}
+function isRiesgo(a){if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return false;return !isCritica(a)&&!!(a.health&&a.health.flag==='atencion');}
 // --- consideraciones de negocio ---
 // coincidencia por patrón de nombre; cubre "J&T" y "J & T" sin falsos positivos
 function matchPattern(name,patron){
@@ -551,6 +570,81 @@ function refreshVentasYFuga(wb,srcLabel){
   if(vN||fN)VENTAS_SOURCE=srcLabel||'archivo cargado';
   return{vN,fN};
 }
+
+// ---------- Implementaciones (implementaciones.xlsx, semanal) ----------
+let IMPLEMENTACIONES=[];
+let IMPL_SOURCE='no cargado';
+function excelSerialToISO(v){
+  if(v==null||v==='')return null;
+  if(v instanceof Date)return isNaN(v)?null:v.toISOString().slice(0,10);
+  const n=Number(v);
+  if(!isNaN(n)&&n>1000){const d=new Date(Math.round((n-25569)*86400*1000));if(!isNaN(d))return d.toISOString().slice(0,10);}
+  const d2=new Date(v);if(!isNaN(d2))return d2.toISOString().slice(0,10);
+  return null;
+}
+function parseImplementacionesSheet(wb){
+  const name=wb.SheetNames[0];
+  if(!name)return null;
+  const aoa=aoaOfSheet(wb,name);
+  const hdr=findHeaderRowAOA(aoa,[/implementaci.n\s*name/i,/etapa/i],12);
+  if(hdr<0)return null;
+  const headers=aoa[hdr].map(c=>c==null?'':String(c).trim());
+  const find=re=>headers.findIndex(h=>re.test(h));
+  const c={nombre:find(/implementaci.n\s*name/i),marcaje:find(/marcando/i),tipo:find(/tipo.*implementaci/i),etapa:find(/etapa/i),usImplementar:find(/usuarios a implementar/i),usActivos:find(/usuarios activos/i),partner:find(/^partner$/i),servicios:find(/servicios/i),fechaFin:find(/fecha fin/i)};
+  if(c.nombre<0||c.etapa<0)return null;
+  const out=[];
+  for(let r=hdr+1;r<aoa.length;r++){
+    const row=aoa[r]||[];
+    const nombre=txt(c.nombre>=0?row[c.nombre]:null);if(!nombre)continue;
+    out.push({cliente:nombre,marcajePct:num(c.marcaje>=0?row[c.marcaje]:null),tipo:txt(c.tipo>=0?row[c.tipo]:null),etapa:txt(c.etapa>=0?row[c.etapa]:null)||'Sin etapa',usuariosImplementar:num(c.usImplementar>=0?row[c.usImplementar]:null),usuariosActivos:num(c.usActivos>=0?row[c.usActivos]:null),partner:txt(c.partner>=0?row[c.partner]:null),servicios:txt(c.servicios>=0?row[c.servicios]:null),fechaFin:excelSerialToISO(c.fechaFin>=0?row[c.fechaFin]:null)});
+  }
+  return out;
+}
+function classifyImpl(r){
+  const etapaNorm=(r.etapa||'').toLowerCase();
+  if(/rechazada/.test(etapaNorm))return{flag:'cerrada',grupo:'Rechazada'};
+  if(/abandono/.test(etapaNorm))return{flag:'cerrada',grupo:'Abandono'};
+  if(/finalizad/.test(etapaNorm))return{flag:'cerrada',grupo:'Finalizada'};
+  const hoy=todayISO();
+  let flag='ok';const razones=[];
+  if(etapaNorm.includes('detenida')){flag='critico';razones.push('implementación detenida');}
+  if(r.fechaFin&&r.fechaFin<hoy){flag='critico';razones.push('fecha objetivo vencida ('+r.fechaFin+')');}
+  if(/marcha blanca/.test(etapaNorm)){
+    if(r.marcajePct!=null){
+      if(r.marcajePct<30){flag='critico';razones.push('marcaje muy bajo en marcha blanca ('+Math.round(r.marcajePct)+'%)');}
+      else if(r.marcajePct<60&&flag!=='critico'){flag='atencion';razones.push('marcaje bajo en marcha blanca ('+Math.round(r.marcajePct)+'%)');}
+    }
+    if(etapaNorm.includes('con pendientes')&&flag==='ok'){flag='atencion';razones.push('marcha blanca con pendientes abiertos');}
+  }
+  if(flag==='ok'&&r.fechaFin){const dias=Math.round((new Date(r.fechaFin)-new Date(hoy))/86400000);if(dias>=0&&dias<=7){flag='atencion';razones.push('fecha objetivo en los próximos 7 días');}}
+  return{flag,grupo:null,razon:razones.join(' · ')};
+}
+function matchImplToAccount(impl){
+  const keys=nameKeys(impl.cliente);
+  for(const k of keys){const hit=ACCOUNTS.find(a=>nameKeys(a.cliente||'').includes(k));if(hit)return hit;}
+  return null;
+}
+function refreshImplementaciones(wb,srcLabel){
+  let n=0;
+  try{const rows=parseImplementacionesSheet(wb);if(rows&&rows.length){IMPLEMENTACIONES=rows.map(r=>{const cl=classifyImpl(r);return Object.assign({},r,{_flag:cl.flag,_grupo:cl.grupo,_razon:cl.razon});});n=IMPLEMENTACIONES.length;}}catch(e){}
+  if(n)IMPL_SOURCE=srcLabel||'archivo cargado';
+  return n;
+}
+async function loadImplementacionesURL(url,opts){
+  opts=opts||{};const silent=opts.silent,probe=opts.probe;const msg=silent?null:$('implMsg');
+  if(!url){if(msg){msg.style.color='#A32D2D';msg.textContent='Pega primero un enlace o ruta.';}return false;}
+  try{
+    if(msg){msg.style.color='';msg.textContent='Descargando…';}
+    const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
+    const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const wb=XLSX.read(new Uint8Array(await resp.arrayBuffer()),{type:'array'});
+    const n=refreshImplementaciones(wb,url.split('/').pop()||url);
+    if(!n)throw new Error('no se encontró la hoja/columnas esperadas (Implementación Name, Etapa Implementación)');
+    LAST.implementacionesUrl=url;persist('last_impl_url',url);markReload();renderAll();
+    if(msg){msg.style.color='#3B6D11';msg.textContent='✓ '+n+' implementaciones cargadas.';}
+    return true;
+  }catch(err){if(probe)return false;if(msg){msg.style.color='#A32D2D';msg.textContent='Error: '+err.message;}else toast('Implementaciones: '+err.message,true);return false;}
+}
 const RE_KEY=/cliente|empresa|cuenta|raz[oó]n|nombre/i;
 const RE_SIGNAL=/salud|sem[aá]foro|prioridad|estad|riesg|marcaj|cr[ií]tic|alert|color|nivel/i;
 function classifyFlag(vals){const j=vals.map(v=>String(v).toLowerCase()).join(' ');if(/cr[ií]tic|rojo|red|urg|baja|down|alto riesgo|🔴/.test(j))return'critico';if(/amaril|medio|atenci|naranja|moderad|🟡/.test(j))return'atencion';if(/verde|\bok\b|salud|estable|🟢/.test(j))return'ok';return null;}
@@ -637,11 +731,12 @@ function prCard(a,rank){
   const ad=a.health&&a.health.adopcion!=null?a.health.adopcion:null;
   const marc=ad!=null?` · <strong style="color:${ad<0.3?'#A32D2D':ad<0.6?'#854F0B':'inherit'}">Marcaje ${Math.round(ad*100)}%${a._marcajeAjustado?' (ajustado)':''}</strong>`:'';
   const accion=pb?`<div class="pr-accion">${pbBadge(pb)} <strong>Acción a realizar:</strong> ${!hasCS(a)?'<strong style="color:#A32D2D">Asignar CSS · </strong>':''}${esc(pb.first)} <span style="opacity:.7">(${pb.sla})</span></div>`:'';
+  const anotBadge=(function(){if(!a._anot)return'';const es=ANNOT_ESTADOS[a._anot.estado];const tag=es?`<span class="badge ${es.badge}">📝 ${es.label}</span>`:'<span class="badge b-gray">📝 Nota</span>';return tag+' ';})();
   return`<div class="pr-card ${gap}" onclick="openDetail('${a._uid}')">
     <div class="pr-rank">${rank}</div>
     <div class="pr-main"><div class="pr-name">${esc(a.cliente)}</div>
     <div class="pr-meta">${carteraBadge(a.cartera)} · ${esc(a.kam)} · ${fmtUSD(a.mrr)}/mes${marc} · ${csBadge(a)}</div>
-    <div style="margin-top:5px">${stBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}</div>
+    <div style="margin-top:5px">${stBadge}${anotBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}${a._anot&&a._anot.nota?`<div class="pr-accion" style="color:var(--color-text-secondary)">📝 <em>"${esc(a._anot.nota.length>140?a._anot.nota.slice(0,140)+'…':a._anot.nota)}"</em> — ${esc(a._anot.autor||'')}</div>`:''}</div>
     <div class="pr-score" style="color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-secondary)'}">${a._score}</div>
   </div>`;
 }
@@ -898,6 +993,37 @@ let CURRENT_HEALTH_DATE='';
 let CURRENT_HEALTH_FILE='';
 let CURRENT_HEALTH_SOURCE='';
 let FORCED_HEALTH_FILE='';
+
+// ---------- Anotaciones de equipo (tiempo real, Firebase Realtime Database) ----------
+let ANNOTATIONS={};
+let ANNOT_STATUS='sin-configurar'; // 'sin-configurar' | 'conectando' | 'conectado' | 'error'
+let ANNOT_ERROR='';
+let fbDb=null;
+const ANNOT_ESTADOS={seguimiento:{label:'En seguimiento',color:'#EF9F27',badge:'b-amber'},resuelta:{label:'Resuelta',color:'#639922',badge:'b-green'},excluir:{label:'Excluida de críticas',color:'#7F77DD',badge:'b-purple'}};
+function annotKey(a){const id=cleanId(a.id);return id?('id_'+id):('n_'+normName(a.cliente||''));}
+function getAnnot(a){return ANNOTATIONS[annotKey(a)]||null;}
+function applyAnnotationsToAccounts(){ACCOUNTS.forEach(a=>{a._anot=getAnnot(a);a._anotExcluir=!!(a._anot&&a._anot.estado==='excluir');});}
+function getAutor(){let n=localStorage.getItem('gv_anot_autor');if(!n){n=prompt('¿Cómo te llamas? (para identificar quién dejó cada nota — se pregunta una sola vez en este navegador)')||'Equipo';localStorage.setItem('gv_anot_autor',n);}return n;}
+async function saveAnnotation(a,estado,nota){
+  if(!fbDb){toast('Anotaciones de equipo no están configuradas todavía (ver pestaña Datos).',true);return false;}
+  const key=annotKey(a);
+  const payload={estado:estado||'',nota:nota||'',autor:getAutor(),cliente:a.cliente,actualizado:Date.now()};
+  try{await fbDb.ref('anotaciones/'+key).set(payload);toast('Nota guardada — visible para todo el equipo al instante.');return true;}
+  catch(e){toast('No se pudo guardar la nota: '+e.message,true);return false;}
+}
+function initAnnotations(){
+  if(!CONFIG.firebase||!CONFIG.firebase.databaseURL){ANNOT_STATUS='sin-configurar';return;}
+  if(typeof firebase==='undefined'){ANNOT_STATUS='error';ANNOT_ERROR='No cargó el SDK de Firebase (revisa tu conexión o bloqueadores de script).';return;}
+  try{
+    ANNOT_STATUS='conectando';
+    const app=firebase.apps&&firebase.apps.length?firebase.apps[0]:firebase.initializeApp(CONFIG.firebase);
+    fbDb=firebase.database(app);
+    fbDb.ref('anotaciones').on('value',snap=>{
+      ANNOTATIONS=snap.val()||{};ANNOT_STATUS='conectado';
+      applyAnnotationsToAccounts();renderAll();
+    },err=>{ANNOT_STATUS='error';ANNOT_ERROR=err&&err.message||String(err);renderAll();});
+  }catch(e){ANNOT_STATUS='error';ANNOT_ERROR=e&&e.message||String(e);}
+}
 function todayISO(){return new Date().toISOString().slice(0,10);}
 function detectDateFromName(name){
   if(!name)return null;
@@ -1190,6 +1316,33 @@ function renderKamDafne(){renderKamTab('Dafne de la Rosa','kam-dafne');}
 function renderKamKarla(){renderKamTab('Karla Pati\u00f1o','kam-karla');}
 
 
+function renderImplementacion(){
+  const all=IMPLEMENTACIONES;
+  const activas=all.filter(r=>r._flag!=='cerrada');
+  const cerradas=all.filter(r=>r._flag==='cerrada');
+  const crit=activas.filter(r=>r._flag==='critico'),ries=activas.filter(r=>r._flag==='atencion'),sano=activas.filter(r=>r._flag==='ok');
+  const grupCerr={};cerradas.forEach(r=>{grupCerr[r._grupo]=(grupCerr[r._grupo]||0)+1;});
+  const sorted=activas.slice().sort((a,b)=>{const rank=f=>f==='critico'?0:f==='atencion'?1:2;return rank(a._flag)-rank(b._flag)||(a.marcajePct==null?99:a.marcajePct)-(b.marcajePct==null?99:b.marcajePct);});
+  const badge=f=>f==='critico'?'<span class="badge b-red">Crítico</span>':f==='atencion'?'<span class="badge b-amber">En riesgo</span>':'<span class="badge b-green">Saludable</span>';
+  $('implementacion').innerHTML=`
+  <div class="note-box">Datos de <strong>implementaciones.xlsx</strong> (subida semanal, fuente: ${esc(IMPL_SOURCE)}). Semáforo propio para cuentas que aún no llegan a postventa: <strong>Crítico</strong> = implementación detenida, fecha objetivo vencida, o marcha blanca con marcaje &lt;30%. <strong>En riesgo</strong> = marcha blanca con marcaje 30–60%, marcha blanca con pendientes abiertos, o fecha objetivo dentro de 7 días. El resto, <strong>Saludable</strong>. Las etapas Rechazada/Abandono/Finalizada se muestran aparte, no cuentan en el semáforo.</div>
+  ${!all.length?'<p class="legend">Aún no se ha cargado implementaciones.xlsx. Súbelo al repo (o cárgalo abajo en Datos) para ver este segmento.</p>':`
+  <div class="metrics">
+    <div class="metric"><div class="label">Implementaciones activas</div><div class="value">${activas.length}</div><div class="sub">de ${all.length} registros totales</div></div>
+    <div class="metric"><div class="label">Críticas</div><div class="value" style="color:#E24B4A">${crit.length}</div><div class="sub">${activas.length?Math.round(crit.length/activas.length*100):0}% de las activas</div></div>
+    <div class="metric"><div class="label">En riesgo</div><div class="value" style="color:#EF9F27">${ries.length}</div><div class="sub">${activas.length?Math.round(ries.length/activas.length*100):0}% de las activas</div></div>
+    <div class="metric"><div class="label">Saludables</div><div class="value" style="color:#639922">${sano.length}</div><div class="sub">${activas.length?Math.round(sano.length/activas.length*100):0}% de las activas</div></div>
+  </div>
+  <div class="card"><h3>Implementaciones activas — ordenadas por criticidad</h3><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Etapa</th><th class="nosort">Tipo</th><th class="nosort">Marcaje</th><th class="nosort">Usuarios (activos/a implementar)</th><th class="nosort">Fecha objetivo</th><th class="nosort">KAM (si ya está en cartera)</th><th class="nosort">Estado</th></tr></thead><tbody>
+  ${sorted.map(r=>{const acc=matchImplToAccount(r);const marc=r.marcajePct!=null?Math.round(r.marcajePct)+'%':'s/d';return `<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}</td><td style="font-size:12px">${esc(r.etapa)}</td><td style="font-size:12px">${esc(r.tipo||'—')}</td><td>${marc}</td><td style="font-size:12px">${r.usuariosActivos??'—'} / ${r.usuariosImplementar??'—'}</td><td style="font-size:12px">${esc(r.fechaFin||'—')}</td><td style="font-size:12px">${acc?esc(acc.kam):'<span class="legend">Aún no en cartera</span>'}</td><td>${badge(r._flag)}${r._razon?`<div class="legend" style="margin-top:2px">${esc(r._razon)}</div>`:''}</td></tr>`;}).join('')}
+  </tbody></table></div></div>
+  <div class="card"><h3>Fuera de proceso (no cuentan en el semáforo)</h3>
+    <div class="stat3">${['Rechazada','Abandono','Finalizada'].map(g=>`<div class="stat3-it"><div class="stat3-v">${grupCerr[g]||0}</div><div class="stat3-l">${g}</div></div>`).join('')}</div>
+    <p class="legend" style="margin-top:8px">${cerradas.length} de ${all.length} registros del archivo (${Math.round(cerradas.length/(all.length||1)*100)}%) nunca llegaron a implementarse o se cerraron. Vale la pena revisar la tasa de rechazo/abandono con Preventa si se mantiene alta semana a semana.</p>
+  </div>`}
+  `;
+}
+
 // ---------- Datos ----------
 function renderDatos(){
   $('datos').innerHTML=`
@@ -1254,6 +1407,34 @@ function renderDatos(){
     <input type="file" id="fileCons" accept=".json" style="display:none">
     <p class="legend" id="consMsg" style="margin-top:8px">En GitHub Pages, sube <code>consideraciones.json</code> al repo junto al <code>index.html</code> y se aplica al abrir. Estructura: <code>reglas_globales</code> + lista <code>cuentas</code> (con <code>id</code> Geo o <code>nombre</code>, y <code>accion</code>: <code>congelar</code> o <code>ajustar_marcaje</code> con <code>marcaje_maximo</code>).</p>
   </div>
+  <div class="card"><h3>3.5 · Anotaciones de equipo (tiempo real)</h3>
+    <p class="status-line" style="margin-bottom:8px">${ANNOT_STATUS==='conectado'?`<span style="color:#3B6D11">✓ Conectado</span> — las notas que dejes en el detalle de cualquier cuenta se ven al instante en el navegador de todo el equipo, sin recargar ni subir nada.`:ANNOT_STATUS==='sin-configurar'?`<span style="color:#854F0B">No configurado todavía</span> — sigue los pasos de abajo (una sola vez).`:ANNOT_STATUS==='error'?`<span style="color:#A32D2D">Error de conexión</span>: ${esc(ANNOT_ERROR)}`:'Conectando…'}</p>
+    ${ANNOT_STATUS==='conectado'?(function(){const withNotes=ACCOUNTS.filter(a=>a._anot);if(!withNotes.length)return '<p class="legend">Aún no hay anotaciones. Ábrelas desde el detalle de cualquier cuenta (clic en la cuenta, en Salud - Segmentos o Cuentas).</p>';return `<div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Estado</th><th class="nosort">Nota</th><th class="nosort">Quién / cuándo</th></tr></thead><tbody>${withNotes.sort((x,y)=>(y._anot.actualizado||0)-(x._anot.actualizado||0)).map(a=>{const es=ANNOT_ESTADOS[a._anot.estado];return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500">${esc(a.cliente)}</td><td>${es?`<span class="badge ${es.badge}">${es.label}</span>`:'<span class="badge b-gray">Sin marcar</span>'}</td><td style="font-size:12px;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a._anot.nota||'')}</td><td style="font-size:11px;color:var(--color-text-secondary)">${esc(a._anot.autor||'')}<br>${a._anot.actualizado?new Date(a._anot.actualizado).toLocaleString('es-MX'):''}</td></tr>`;}).join('')}</tbody></table></div>`;})():''}
+    <details style="margin-top:10px">
+      <summary style="cursor:pointer;font-size:12px;color:var(--color-text-secondary)">Cómo activarlo (una sola vez, ~5 minutos)</summary>
+      <ol class="steps" style="margin-top:8px">
+        <li>Entra a <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a> con tu cuenta de Google y crea un proyecto nuevo (gratis, sin tarjeta).</li>
+        <li>En el menú lateral, entra a <strong>Realtime Database</strong> → <strong>Crear base de datos</strong>. Elige el modo <strong>de prueba</strong> (reglas abiertas) — es un panel interno, no público.</li>
+        <li>Ve a ⚙️ <strong>Configuración del proyecto</strong> → pestaña <strong>General</strong> → sección "Tus apps" → agrega una app <strong>Web</strong> (el ícono &lt;/&gt;). Copia el objeto <code>firebaseConfig</code> que te muestra.</li>
+        <li>En el <code>index.html</code> de este dashboard, busca <code>const CONFIG = {</code> cerca del inicio, y pega tu config en la propiedad <code>firebase</code>, así:
+          <pre style="font-size:11px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 10px;overflow-x:auto;margin-top:4px">firebase: {
+  apiKey: "AIza...",
+  databaseURL: "https://TU-PROYECTO-default-rtdb.firebaseio.com",
+  projectId: "TU-PROYECTO"
+}</pre>
+        </li>
+        <li>Sube ese <code>index.html</code> actualizado a tu repo de GitHub (reemplaza el actual). Listo — a partir de ahí, todos los que abran el link comparten las mismas anotaciones en vivo.</li>
+      </ol>
+      <p class="legend" style="margin-top:6px">El modo de prueba de Firebase deja lectura/escritura abiertas por 30 días y luego las bloquea; cuando eso pase, entra a Realtime Database → Reglas y déjalas como <code>{"rules":{".read":true,".write":true}}</code> para que siga funcionando indefinidamente (aceptable para un panel interno sin datos sensibles de terceros).</p>
+    </details>
+  </div>
+  <div class="card"><h3>3.6 · Implementaciones (implementaciones.xlsx, semanal)</h3>
+    <p class="status-line" style="margin-bottom:8px">${IMPLEMENTACIONES.length?`<span style="color:#3B6D11">✓ Cargado</span> · ${IMPLEMENTACIONES.length} registros · fuente: ${esc(IMPL_SOURCE)}`:'Aún no cargado.'}</p>
+    <div class="urlrow"><input type="text" id="implUrlIn" placeholder="https://…/implementaciones.xlsx · ./implementaciones.xlsx" value="${esc(LAST.implementacionesUrl||CONFIG.implementacionesUrl||'')}"><button class="btn btn-primary" id="implUrlBtn">Cargar</button></div>
+    <div class="dropzone" id="dzImpl">Arrastra aquí <strong>implementaciones.xlsx</strong> o haz clic</div>
+    <input type="file" id="fileImpl" accept=".xlsx,.xls" style="display:none">
+    <p class="legend" id="implMsg" style="margin-top:8px">En GitHub Pages, sube cada semana <code>implementaciones.xlsx</code> (mismo nombre siempre) al repo junto al <code>index.html</code> y se carga solo al abrir — no necesitas tocar nada más. Columnas esperadas: <code>Implementación Name</code>, <code>% de usuarios marcando</code>, <code>Tipo de Implementación</code>, <code>Etapa Implementación</code>, <code>Cantidad de Usuarios a Implementar</code>, <code>Cantidad de usuarios activos</code>, <code>Fecha Fin Implementacion</code> — igual al export que ya me pasaste.</p>
+  </div>
   <div class="card"><h3>4 · Publicar en GitHub Pages y actualizar</h3>
     <ol class="steps">
       <li>Crea un repositorio y sube este archivo como <code>index.html</code>.</li>
@@ -1275,6 +1456,8 @@ function renderDatos(){
   wireDrop('dzHealth','fileHealth',f=>loadFile(f,'health'));
   $('consUrlBtn').onclick=async()=>{const u=$('consUrlIn').value.trim();if(!u){$('consMsg').textContent='Pega primero un enlace o ruta.';return;}const ok=await loadConsideraciones(u,{});const m=$('consMsg');if(m){m.style.color=ok?'#3B6D11':'#A32D2D';m.textContent=ok?'✓ Consideraciones aplicadas.':'No se pudo cargar el JSON.';}renderDatos();};
   wireDrop('dzCons','fileCons',f=>{const r=new FileReader();r.onload=e=>{try{CONSID=JSON.parse(e.target.result);LAST.consideracionesUrl='';if(HEALTH_CACHE)applyHealth(HEALTH_CACHE);else if(typeof HEALTH_SEED!=='undefined')applyHealth(seedToParsed(HEALTH_SEED));markReload();renderAll();show('datos');toast('Consideraciones aplicadas ✓');}catch(err){const m=$('consMsg');if(m){m.style.color='#A32D2D';m.textContent='JSON inválido: '+err.message;}}};r.onerror=()=>toast('No se pudo leer el archivo.',true);r.readAsText(f);});
+  $('implUrlBtn').onclick=()=>loadImplementacionesURL($('implUrlIn').value.trim(),{});
+  wireDrop('dzImpl','fileImpl',async f=>{try{const wb=await readWB(f);const n=refreshImplementaciones(wb,f.name);if(!n)throw new Error('no se encontró la hoja/columnas esperadas');LAST.implementacionesUrl='';markReload();renderAll();show('datos');toast('✓ '+n+' implementaciones cargadas desde '+f.name+'.');}catch(err){const m=$('implMsg');if(m){m.style.color='#A32D2D';m.textContent='Error: '+err.message;}}});
   $('resetBtn').onclick=()=>{ACCOUNTS=hydrate(SEED);SOURCE='Cartera base (cuentas0206.xlsx)';HEALTH={loaded:false,matched:0,total:0,unmatched:[],keyHeader:'',signalHeaders:[]};VENTAS_DATA=VENTAS_DATA_SEED;FUGA_DETALLE=FUGA_DETALLE_SEED;VENTAS_SOURCE='snapshot congelado (Cuentas_Postventa.xlsx original)';if(typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length){try{applyHealth(seedToParsed(HEALTH_SEED));}catch(e){}}markReload();persistDel();renderAll();show('resumen');};
 }
 function wireDrop(dzId,inId,cb){const dz=$(dzId),inp=$(inId);dz.onclick=()=>inp.click();inp.onchange=e=>{if(e.target.files[0])cb(e.target.files[0]);};dz.ondragover=e=>{e.preventDefault();dz.classList.add('drag');};dz.ondragleave=()=>dz.classList.remove('drag');dz.ondrop=e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])cb(e.dataTransfer.files[0]);};}
@@ -1374,8 +1557,24 @@ function openDetail(uid){
     ${modsHtml}
     <div class="sec-title">Métricas y contexto</div>
     <dl class="dl-grid">${dlRow('Grupo',a.grupo)}${dlRow('ID Geo',a.id)}${dlRow('Usuarios potenciales',a.usuarios)}${dlRow('Escala comunicación',a.escala)}${dlRow('Paga nómina con GV',a.nomina)}${dlRow('Arrienda equipos',a.arrienda)}</dl>
-    ${a.comentario?`<div class="sec-title">Comentario</div><p style="font-size:13px;color:var(--color-text-secondary)">${esc(a.comentario)}</p>`:''}`;
+    ${a.comentario?`<div class="sec-title">Comentario</div><p style="font-size:13px;color:var(--color-text-secondary)">${esc(a.comentario)}</p>`:''}
+    <div class="sec-title">📝 Nota de equipo <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">(en vivo para todos — ${ANNOT_STATUS==='conectado'?'<span style="color:#3B6D11">conectado</span>':ANNOT_STATUS==='sin-configurar'?'<span style="color:#854F0B">sin configurar, ver Datos</span>':ANNOT_STATUS==='error'?'<span style="color:#A32D2D">error de conexión, ver Datos</span>':'conectando…'})</span></div>
+    ${a._anot?`<p class="legend" style="margin-bottom:6px">Última actualización: ${new Date(a._anot.actualizado).toLocaleString('es-MX')} — ${esc(a._anot.autor||'')}</p>`:''}
+    <div class="urlrow" style="align-items:flex-start">
+      <select id="anotEstado" style="max-width:190px">
+        <option value="">Sin marcar</option>
+        <option value="seguimiento">En seguimiento</option>
+        <option value="resuelta">Resuelta</option>
+        <option value="excluir">Excluir de críticas</option>
+      </select>
+    </div>
+    <textarea id="anotNota" placeholder="Anota aquí lo que hiciste / lo que falta con esta cuenta…" style="width:100%;min-height:70px;margin-top:8px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;resize:vertical"></textarea>
+    <div style="margin-top:8px"><button class="btn btn-primary" id="anotSaveBtn">Guardar nota</button></div>
+    <p class="legend" style="margin-top:4px">"Excluir de críticas" saca esta cuenta del semáforo rojo/ámbar en todo el dashboard hasta que cambies el estado.</p>`;
   $('overlay').classList.add('open');
+  $('anotEstado').value=(a._anot&&a._anot.estado)||'';
+  $('anotNota').value=(a._anot&&a._anot.nota)||'';
+  $('anotSaveBtn').onclick=async()=>{const ok=await saveAnnotation(a,$('anotEstado').value,$('anotNota').value.trim());if(ok)closeDetail();};
 }
 function closeDetail(){$('overlay').classList.remove('open');}
 $('overlay').onclick=e=>{if(e.target.id==='overlay')closeDetail();};
@@ -1389,8 +1588,8 @@ function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');
 
 // ---------- navegación / init ----------
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
-const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,datos:renderDatos};
-function renderAll(){Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
+const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,implementacion:renderImplementacion,datos:renderDatos};
+function renderAll(){applyAnnotationsToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11" title="${CURRENT_HEALTH_FILE?esc(CURRENT_HEALTH_FILE):''}">salud vigente: ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'activa'}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 function show(sec){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));$(sec).classList.add('active');document.querySelector(`.nav button[data-sec="${sec}"]`).classList.add('active');RENDER[sec]();}
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.sec));
@@ -1466,6 +1665,9 @@ async function autoLoad(){
     else{await loadHealthURL('./salud.xlsx',{silent:true,probe:true});}}
   const curl=CONFIG.consideracionesUrl||LAST.consideracionesUrl||'./consideraciones.json';
   await loadConsideraciones(curl,{silent:true,probe:true});
+  const iurl=CONFIG.implementacionesUrl||LAST.implementacionesUrl;
+  if(iurl){await loadImplementacionesURL(iurl,{silent:true,probe:true});}
+  else{for(const u of (CONFIG.implementacionesAutoTry||['./implementaciones.xlsx'])){if(await loadImplementacionesURL(u,{silent:true,probe:true}))break;}}
 }
 async function init(){
   try{if(window.storage&&window.storage.get){
@@ -1479,12 +1681,13 @@ async function init(){
   try{const chd=await readStore('current_health_date');if(typeof chd==='string')CURRENT_HEALTH_DATE=chd;}catch(e){}
   try{const chf=await readStore('current_health_file');if(typeof chf==='string')CURRENT_HEALTH_FILE=chf;}catch(e){}
   try{const fhf=await readStore('forced_health_file');if(typeof fhf==='string')FORCED_HEALTH_FILE=fhf;}catch(e){}
+  try{const iu=await readStore('last_impl_url');if(typeof iu==='string')LAST.implementacionesUrl=iu;}catch(e){}
   if(!HEALTH.loaded&&typeof HEALTH_SEED!=='undefined'&&HEALTH_SEED.length){try{applyHealth(seedToParsed(HEALTH_SEED));}catch(e){}}
   if(!LAST_RELOAD)markReload();
   renderAll();autoLoad();
 }
 ACCOUNTS=hydrate(SEED);
-renderResumen();updateSubtitle();init();
+renderResumen();updateSubtitle();init();initAnnotations();
 </script>
 </body>
 </html>
