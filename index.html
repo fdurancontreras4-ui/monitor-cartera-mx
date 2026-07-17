@@ -1316,25 +1316,30 @@ function renderKamDafne(){renderKamTab('Dafne de la Rosa','kam-dafne');}
 function renderKamKarla(){renderKamTab('Karla Pati\u00f1o','kam-karla');}
 
 
+let implFilter='';
+function implSetFilter(f){implFilter=(implFilter===f)?'':f;renderImplementacion();}
 function renderImplementacion(){
   const all=IMPLEMENTACIONES;
   const activas=all.filter(r=>r._flag!=='cerrada');
   const cerradas=all.filter(r=>r._flag==='cerrada');
   const crit=activas.filter(r=>r._flag==='critico'),ries=activas.filter(r=>r._flag==='atencion'),sano=activas.filter(r=>r._flag==='ok');
   const grupCerr={};cerradas.forEach(r=>{grupCerr[r._grupo]=(grupCerr[r._grupo]||0)+1;});
-  const sorted=activas.slice().sort((a,b)=>{const rank=f=>f==='critico'?0:f==='atencion'?1:2;return rank(a._flag)-rank(b._flag)||(a.marcajePct==null?99:a.marcajePct)-(b.marcajePct==null?99:b.marcajePct);});
-  const badge=f=>f==='critico'?'<span class="badge b-red">Crítico</span>':f==='atencion'?'<span class="badge b-amber">En riesgo</span>':'<span class="badge b-green">Saludable</span>';
+  const base=implFilter?activas.filter(r=>r._flag===implFilter):activas;
+  const sorted=base.slice().sort((a,b)=>{const rank=f=>f==='critico'?0:f==='atencion'?1:2;return rank(a._flag)-rank(b._flag)||(a.marcajePct==null?99:a.marcajePct)-(b.marcajePct==null?99:b.marcajePct);});
+  const badge=f=>f==='critico'?'<span class="badge b-red">🔴 Crítico</span>':f==='atencion'?'<span class="badge b-amber">🟡 En riesgo</span>':'<span class="badge b-green">🟢 Saludable</span>';
+  const selStyle=f=>implFilter===f?'outline:2px solid var(--color-border-primary);outline-offset:-2px':'';
+  const filterLabel={critico:'Críticas',atencion:'En riesgo',ok:'Saludables'}[implFilter]||'';
   $('implementacion').innerHTML=`
   <div class="note-box">Datos de <strong>implementaciones.xlsx</strong> (subida semanal, fuente: ${esc(IMPL_SOURCE)}). Semáforo propio para cuentas que aún no llegan a postventa: <strong>Crítico</strong> = implementación detenida, fecha objetivo vencida, o marcha blanca con marcaje &lt;30%. <strong>En riesgo</strong> = marcha blanca con marcaje 30–60%, marcha blanca con pendientes abiertos, o fecha objetivo dentro de 7 días. El resto, <strong>Saludable</strong>. Las etapas Rechazada/Abandono/Finalizada se muestran aparte, no cuentan en el semáforo.</div>
   ${!all.length?'<p class="legend">Aún no se ha cargado implementaciones.xlsx. Súbelo al repo (o cárgalo abajo en Datos) para ver este segmento.</p>':`
   <div class="metrics">
-    <div class="metric"><div class="label">Implementaciones activas</div><div class="value">${activas.length}</div><div class="sub">de ${all.length} registros totales</div></div>
-    <div class="metric"><div class="label">Críticas</div><div class="value" style="color:#E24B4A">${crit.length}</div><div class="sub">${activas.length?Math.round(crit.length/activas.length*100):0}% de las activas</div></div>
-    <div class="metric"><div class="label">En riesgo</div><div class="value" style="color:#EF9F27">${ries.length}</div><div class="sub">${activas.length?Math.round(ries.length/activas.length*100):0}% de las activas</div></div>
-    <div class="metric"><div class="label">Saludables</div><div class="value" style="color:#639922">${sano.length}</div><div class="sub">${activas.length?Math.round(sano.length/activas.length*100):0}% de las activas</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('')}" onclick="implSetFilter('')"><div class="label">Implementaciones activas</div><div class="value">${activas.length}</div><div class="sub">de ${all.length} registros totales · clic para ver todas</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('critico')}" onclick="implSetFilter('critico')"><div class="label">Críticas</div><div class="value" style="color:#E24B4A">${crit.length}</div><div class="sub">${activas.length?Math.round(crit.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('atencion')}" onclick="implSetFilter('atencion')"><div class="label">En riesgo</div><div class="value" style="color:#EF9F27">${ries.length}</div><div class="sub">${activas.length?Math.round(ries.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('ok')}" onclick="implSetFilter('ok')"><div class="label">Saludables</div><div class="value" style="color:#639922">${sano.length}</div><div class="sub">${activas.length?Math.round(sano.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
   </div>
-  <div class="card"><h3>Implementaciones activas — ordenadas por criticidad</h3><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Etapa</th><th class="nosort">Tipo</th><th class="nosort">Marcaje</th><th class="nosort">Usuarios (activos/a implementar)</th><th class="nosort">Fecha objetivo</th><th class="nosort">KAM (si ya está en cartera)</th><th class="nosort">Estado</th></tr></thead><tbody>
-  ${sorted.map(r=>{const acc=matchImplToAccount(r);const marc=r.marcajePct!=null?Math.round(r.marcajePct)+'%':'s/d';return `<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}</td><td style="font-size:12px">${esc(r.etapa)}</td><td style="font-size:12px">${esc(r.tipo||'—')}</td><td>${marc}</td><td style="font-size:12px">${r.usuariosActivos??'—'} / ${r.usuariosImplementar??'—'}</td><td style="font-size:12px">${esc(r.fechaFin||'—')}</td><td style="font-size:12px">${acc?esc(acc.kam):'<span class="legend">Aún no en cartera</span>'}</td><td>${badge(r._flag)}${r._razon?`<div class="legend" style="margin-top:2px">${esc(r._razon)}</div>`:''}</td></tr>`;}).join('')}
+  <div class="card"><h3>Implementaciones ${filterLabel?filterLabel+' ':'activas '}<span style="font-weight:400;color:var(--color-text-secondary)">· ${sorted.length} de ${activas.length}${implFilter?' · clic en la tarjeta de arriba de nuevo para ver todas':''}</span></h3><div class="table-wrap"><table><thead><tr><th class="nosort">Semáforo</th><th>Cliente</th><th class="nosort">Etapa</th><th class="nosort">Tipo</th><th class="nosort">Marcaje</th><th class="nosort">Usuarios (activos/a implementar)</th><th class="nosort">Fecha objetivo</th><th class="nosort">KAM (si ya está en cartera)</th></tr></thead><tbody>
+  ${sorted.map(r=>{const acc=matchImplToAccount(r);const marc=r.marcajePct!=null?Math.round(r.marcajePct)+'%':'s/d';return `<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td>${badge(r._flag)}${r._razon?`<div class="legend" style="margin-top:2px">${esc(r._razon)}</div>`:''}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}</td><td style="font-size:12px">${esc(r.etapa)}</td><td style="font-size:12px">${esc(r.tipo||'—')}</td><td>${marc}</td><td style="font-size:12px">${r.usuariosActivos??'—'} / ${r.usuariosImplementar??'—'}</td><td style="font-size:12px">${esc(r.fechaFin||'—')}</td><td style="font-size:12px">${acc?esc(acc.kam):'<span class="legend">Aún no en cartera</span>'}</td></tr>`;}).join('')||'<tr><td colspan="8" class="legend">Sin implementaciones en este filtro.</td></tr>'}
   </tbody></table></div></div>
   <div class="card"><h3>Fuera de proceso (no cuentan en el semáforo)</h3>
     <div class="stat3">${['Rechazada','Abandono','Finalizada'].map(g=>`<div class="stat3-it"><div class="stat3-v">${grupCerr[g]||0}</div><div class="stat3-l">${g}</div></div>`).join('')}</div>
