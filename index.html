@@ -194,6 +194,7 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
     <button data-sec="kam-dafne">Dafne</button>
     <button data-sec="kam-karla">Karla</button>
     <button data-sec="implementacion">Implementación</button>
+    <button data-sec="sinuso">Sin uso</button>
     <button data-sec="datos">Datos</button>
   </div>
 
@@ -210,6 +211,7 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
   <div id="kam-dafne" class="section"></div>
   <div id="kam-karla" class="section"></div>
   <div id="implementacion" class="section"></div>
+  <div id="sinuso" class="section"></div>
   <div id="datos" class="section"></div>
 </div>
 
@@ -590,13 +592,14 @@ function parseImplementacionesSheet(wb){
   if(hdr<0)return null;
   const headers=aoa[hdr].map(c=>c==null?'':String(c).trim());
   const find=re=>headers.findIndex(h=>re.test(h));
-  const c={nombre:find(/implementaci.n\s*name/i),marcaje:find(/marcando/i),tipo:find(/tipo.*implementaci/i),etapa:find(/etapa/i),usImplementar:find(/usuarios a implementar/i),usActivos:find(/usuarios activos/i),partner:find(/^partner$/i),servicios:find(/servicios/i),fechaFin:find(/fecha fin/i)};
+  const c={nombre:find(/implementaci.n\s*name/i),cliente:find(/^cliente$/i),marcaje:find(/marcando/i),tipo:find(/tipo.*implementaci/i),etapa:find(/etapa/i),usImplementar:find(/usuarios a implementar/i),usActivos:find(/usuarios activos/i),partner:find(/^partner$/i),servicios:find(/servicios/i),fechaFin:find(/fecha fin/i)};
   if(c.nombre<0||c.etapa<0)return null;
   const out=[];
   for(let r=hdr+1;r<aoa.length;r++){
     const row=aoa[r]||[];
-    const nombre=txt(c.nombre>=0?row[c.nombre]:null);if(!nombre)continue;
-    out.push({cliente:nombre,marcajePct:num(c.marcaje>=0?row[c.marcaje]:null),tipo:txt(c.tipo>=0?row[c.tipo]:null),etapa:txt(c.etapa>=0?row[c.etapa]:null)||'Sin etapa',usuariosImplementar:num(c.usImplementar>=0?row[c.usImplementar]:null),usuariosActivos:num(c.usActivos>=0?row[c.usActivos]:null),partner:txt(c.partner>=0?row[c.partner]:null),servicios:txt(c.servicios>=0?row[c.servicios]:null),fechaFin:excelSerialToISO(c.fechaFin>=0?row[c.fechaFin]:null)});
+    const implName=txt(c.nombre>=0?row[c.nombre]:null);if(!implName)continue;
+    const clienteCol=txt(c.cliente>=0?row[c.cliente]:null);
+    out.push({implName,cliente:clienteCol||implName,marcajePct:num(c.marcaje>=0?row[c.marcaje]:null),tipo:txt(c.tipo>=0?row[c.tipo]:null),etapa:txt(c.etapa>=0?row[c.etapa]:null)||'Sin etapa',usuariosImplementar:num(c.usImplementar>=0?row[c.usImplementar]:null),usuariosActivos:num(c.usActivos>=0?row[c.usActivos]:null),partner:txt(c.partner>=0?row[c.partner]:null),servicios:txt(c.servicios>=0?row[c.servicios]:null),fechaFin:excelSerialToISO(c.fechaFin>=0?row[c.fechaFin]:null)});
   }
   return out;
 }
@@ -620,9 +623,24 @@ function classifyImpl(r){
   return{flag,grupo:null,razon:razones.join(' · ')};
 }
 function matchImplToAccount(impl){
-  const keys=nameKeys(impl.cliente);
+  const keys=nameKeys(impl.cliente).concat(nameKeys(impl.implName||''));
   for(const k of keys){const hit=ACCOUNTS.find(a=>nameKeys(a.cliente||'').includes(k));if(hit)return hit;}
   return null;
+}
+function matchAccountToImpl(a){
+  const keys=nameKeys(a.cliente||'');
+  for(const k of keys){const hit=IMPLEMENTACIONES.find(r=>nameKeys(r.cliente).concat(nameKeys(r.implName||'')).includes(k));if(hit)return hit;}
+  return null;
+}
+const IMPL_RIESGO_LABEL={critico:{txt:'Alto',badge:'b-red'},atencion:{txt:'Medio',badge:'b-amber'},ok:{txt:'Bajo',badge:'b-green'}};
+function saludBadgeFor(acc){
+  if(!acc)return'<span class="badge b-gray">Aún no en cartera</span>';
+  if(!acc.health)return'<span class="badge b-gray">Sin dato de salud</span>';
+  const f=acc.health.flag;
+  if(f==='critico')return'<span class="badge b-red">🔴 Crítico</span>';
+  if(f==='atencion')return'<span class="badge b-amber">🟡 En riesgo</span>';
+  if(f==='ok')return'<span class="badge b-green">🟢 Saludable</span>';
+  return'<span class="badge b-gray">Sin clasificar</span>';
 }
 function refreshImplementaciones(wb,srcLabel){
   let n=0;
@@ -840,7 +858,7 @@ function renderPriorizar(){
     return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500">${esc(a.cliente)}</td><td>${b.join(' ')}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(com)}</td></tr>`;};
   const excHtml=`<details class="card" style="padding:0"><summary style="cursor:pointer;padding:1rem 1.25rem;font-size:14px;font-weight:500;color:var(--color-text-secondary)">Excepciones <span class="badge b-gray">${exc.length}</span> <span style="font-weight:400;font-size:12px">— cuentas con un ajuste de consideraciones aplicado</span></summary><div style="padding:0 1.25rem 1rem">${exc.length?`<div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Excepción</th><th class="nosort">Comentario</th></tr></thead><tbody>${exc.map(excRow).join('')}</tbody></table></div>`:'<p class="legend">Sin excepciones aplicadas. Se gestionan en <code>consideraciones.json</code> (pestaña Datos).</p>'}</div></details>`;
   $('priorizar').innerHTML=`
-  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong> y el despliegue <strong>"⛔ SIN USO"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.</div>
+  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.</div>
   ${excHtml}
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
@@ -854,7 +872,7 @@ function renderPriorizar(){
 }
 function prSet(estado,cs){prState.estado=estado;prState.cs=cs;show('priorizar');}
 function drawPrList(){
-  let rows=ACCOUNTS.slice();
+  let rows=ACCOUNTS.slice().filter(a=>!isSinUso(a));
   if(prState.estado==='atrisk')rows=rows.filter(a=>isCritica(a)||isRiesgo(a));
   else if(prState.estado==='critica')rows=rows.filter(isCritica);
   else if(prState.estado==='riesgo')rows=rows.filter(a=>isRiesgo(a)&&!isCritica(a));
@@ -899,7 +917,7 @@ function drawPrList(){
   const showCrit=['atrisk','critica','all'].includes(prState.estado);
   if(showCrit&&HEALTH.loaded&&HEALTH.unmatched.length){
     const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;
-    let uc=HEALTH.unmatched.filter(u=>u.flag==='critico'&&!testRe.test(u.key));
+    let uc=HEALTH.unmatched.filter(u=>u.flag==='critico'&&!testRe.test(u.key)&&!((u.cat&&/sin\s*uso/i.test(u.cat))||u.ad===0));
     if(prState.cs==='sin')uc=uc.filter(u=>!u.css);else if(prState.cs==='con')uc=uc.filter(u=>!!u.css);
     uc.sort((x,y)=>((x.ad==null?Infinity:x.ad)-(y.ad==null?Infinity:y.ad)));
     if(uc.length){let rank=0;
@@ -912,7 +930,7 @@ function drawPrList(){
         <div class="kam-body"><div class="kam-sub">🔴 Críticas (marcaje ↑) · ${uc.length}</div>${uc.map(u=>prCardUnmatched(u,++rank)).join('')}</div>
       </details>`;}
   }
-  $('prList').innerHTML=tools+groupsHtml+extra+sinUsoBlock();
+  $('prList').innerHTML=tools+groupsHtml+extra;
 }
 function razonLabel(code){return {marcaje:'marcaje bajo',sinuso:'sin uso',nps:'NPS detractor',ticket:'tickets sin resolver',fuga:'fuga / caída de facturación'}[code]||'salud crítica';}
 function kamShort(name){const n=normName(name||'');if(n.includes('raul'))return'Raúl';if(n.includes('dafne'))return'Dafne';if(n.includes('karla'))return'Karla';return name||'Sin KAM';}
@@ -1327,27 +1345,27 @@ function renderImplementacion(){
   const grupCerr={};cerradas.forEach(r=>{grupCerr[r._grupo]=(grupCerr[r._grupo]||0)+1;});
   const base=implFilter?activas.filter(r=>r._flag===implFilter):activas;
   const qn=normName(implSearchQ);
-  const searched=qn?base.filter(r=>normName(r.cliente).includes(qn)):base;
+  const searched=qn?base.filter(r=>normName(r.cliente).includes(qn)||normName(r.implName||'').includes(qn)):base;
   const sorted=searched.slice().sort((a,b)=>{const rank=f=>f==='critico'?0:f==='atencion'?1:2;return rank(a._flag)-rank(b._flag)||(a.marcajePct==null?99:a.marcajePct)-(b.marcajePct==null?99:b.marcajePct);});
-  const badge=f=>f==='critico'?'<span class="badge b-red">🔴 Crítico</span>':f==='atencion'?'<span class="badge b-amber">🟡 En riesgo</span>':'<span class="badge b-green">🟢 Saludable</span>';
+  const riesgoBadge=f=>{const l=IMPL_RIESGO_LABEL[f]||IMPL_RIESGO_LABEL.ok;return `<span class="badge ${l.badge}">Riesgo implementación: ${l.txt}</span>`;};
   const selStyle=f=>implFilter===f?'outline:2px solid var(--color-border-primary);outline-offset:-2px':'';
   const filterLabel={critico:'Críticas',atencion:'En riesgo',ok:'Saludables'}[implFilter]||'';
   $('implementacion').innerHTML=`
-  <div class="note-box">Datos de <strong>implementaciones.xlsx</strong> (subida semanal, fuente: ${esc(IMPL_SOURCE)}). Semáforo propio para cuentas que aún no llegan a postventa: <strong>Crítico</strong> = implementación detenida, fecha objetivo vencida, o marcha blanca con marcaje &lt;30%. <strong>En riesgo</strong> = marcha blanca con marcaje 30–60%, marcha blanca con pendientes abiertos, o fecha objetivo dentro de 7 días. El resto, <strong>Saludable</strong>. Las etapas Rechazada/Abandono/Finalizada se muestran aparte, no cuentan en el semáforo.</div>
+  <div class="note-box">Datos de <strong>implementaciones.xlsx</strong> (subida semanal, fuente: ${esc(IMPL_SOURCE)}). Cruce por la columna <strong>Cliente</strong> del archivo contra la cartera. <strong>Riesgo implementación</strong> es un semáforo propio para cuentas que aún no llegan a postventa: <strong>Alto</strong> = implementación detenida, fecha objetivo vencida, o marcha blanca con marcaje &lt;30%. <strong>Medio</strong> = marcha blanca con marcaje 30–60%, marcha blanca con pendientes abiertos, o fecha objetivo dentro de 7 días. El resto, <strong>Bajo</strong>. <strong>Estado de salud</strong> es aparte: viene del archivo de salud vigente de la cuenta ya en cartera (si la encontramos) — pueden no coincidir, son dos fuentes distintas. Las etapas Rechazada/Abandono/Finalizada se muestran aparte, no cuentan en el semáforo.</div>
   ${!all.length?'<p class="legend">Aún no se ha cargado implementaciones.xlsx. Súbelo al repo (o cárgalo abajo en Datos) para ver este segmento.</p>':`
   <div class="metrics">
     <div class="metric" style="cursor:pointer;${selStyle('')}" onclick="implSetFilter('')"><div class="label">Implementaciones activas</div><div class="value">${activas.length}</div><div class="sub">de ${all.length} registros totales · clic para ver todas</div></div>
-    <div class="metric" style="cursor:pointer;${selStyle('critico')}" onclick="implSetFilter('critico')"><div class="label">Críticas</div><div class="value" style="color:#E24B4A">${crit.length}</div><div class="sub">${activas.length?Math.round(crit.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
-    <div class="metric" style="cursor:pointer;${selStyle('atencion')}" onclick="implSetFilter('atencion')"><div class="label">En riesgo</div><div class="value" style="color:#EF9F27">${ries.length}</div><div class="sub">${activas.length?Math.round(ries.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
-    <div class="metric" style="cursor:pointer;${selStyle('ok')}" onclick="implSetFilter('ok')"><div class="label">Saludables</div><div class="value" style="color:#639922">${sano.length}</div><div class="sub">${activas.length?Math.round(sano.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('critico')}" onclick="implSetFilter('critico')"><div class="label">Riesgo Alto</div><div class="value" style="color:#E24B4A">${crit.length}</div><div class="sub">${activas.length?Math.round(crit.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('atencion')}" onclick="implSetFilter('atencion')"><div class="label">Riesgo Medio</div><div class="value" style="color:#EF9F27">${ries.length}</div><div class="sub">${activas.length?Math.round(ries.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('ok')}" onclick="implSetFilter('ok')"><div class="label">Riesgo Bajo</div><div class="value" style="color:#639922">${sano.length}</div><div class="sub">${activas.length?Math.round(sano.length/activas.length*100):0}% de las activas · clic para filtrar</div></div>
   </div>
   <div class="card"><h3>Implementaciones ${filterLabel?filterLabel+' ':'activas '}<span style="font-weight:400;color:var(--color-text-secondary)">· ${sorted.length} de ${activas.length}${implFilter?' · clic en la tarjeta de arriba de nuevo para ver todas':''}</span></h3>
   <div class="urlrow" style="margin-bottom:10px">
     <input type="text" id="implSearchIn" placeholder="Buscar por nombre de cliente…" value="${esc(implSearchQ)}" style="flex:1;min-width:200px">
     <button class="btn" id="implDownloadBtn">⬇ Descargar Excel (${sorted.length})</button>
   </div>
-  <div class="table-wrap"><table><thead><tr><th class="nosort">Semáforo</th><th>Cliente</th><th class="nosort">Etapa</th><th class="nosort">Tipo</th><th class="nosort">Marcaje</th><th class="nosort">Usuarios (activos/a implementar)</th><th class="nosort">Fecha objetivo</th><th class="nosort">KAM (si ya está en cartera)</th></tr></thead><tbody>
-  ${sorted.map(r=>{const acc=matchImplToAccount(r);const marc=r.marcajePct!=null?Math.round(r.marcajePct)+'%':'s/d';return `<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td>${badge(r._flag)}${r._razon?`<div class="legend" style="margin-top:2px">${esc(r._razon)}</div>`:''}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}</td><td style="font-size:12px">${esc(r.etapa)}</td><td style="font-size:12px">${esc(r.tipo||'—')}</td><td>${marc}</td><td style="font-size:12px">${r.usuariosActivos??'—'} / ${r.usuariosImplementar??'—'}</td><td style="font-size:12px">${esc(r.fechaFin||'—')}</td><td style="font-size:12px">${acc?esc(acc.kam):'<span class="legend">Aún no en cartera</span>'}</td></tr>`;}).join('')||'<tr><td colspan="8" class="legend">Sin implementaciones en este filtro/búsqueda.</td></tr>'}
+  <div class="table-wrap"><table><thead><tr><th class="nosort">Riesgo implementación</th><th class="nosort">Estado de salud</th><th>Cliente</th><th class="nosort">Etapa</th><th class="nosort">Tipo</th><th class="nosort">Marcaje</th><th class="nosort">Usuarios (activos/a implementar)</th><th class="nosort">Fecha objetivo</th><th class="nosort">KAM (si ya está en cartera)</th></tr></thead><tbody>
+  ${sorted.map(r=>{const acc=matchImplToAccount(r);const marc=r.marcajePct!=null?Math.round(r.marcajePct)+'%':'s/d';const nombreExtra=(r.implName&&normName(r.implName)!==normName(r.cliente))?`<div class="legend" style="margin-top:2px">${esc(r.implName)}</div>`:'';return `<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td>${riesgoBadge(r._flag)}${r._razon?`<div class="legend" style="margin-top:2px">${esc(r._razon)}</div>`:''}</td><td>${saludBadgeFor(acc)}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}${nombreExtra}</td><td style="font-size:12px">${esc(r.etapa)}</td><td style="font-size:12px">${esc(r.tipo||'—')}</td><td>${marc}</td><td style="font-size:12px">${r.usuariosActivos??'—'} / ${r.usuariosImplementar??'—'}</td><td style="font-size:12px">${esc(r.fechaFin||'—')}</td><td style="font-size:12px">${acc?esc(acc.kam):'<span class="legend">Aún no en cartera</span>'}</td></tr>`;}).join('')||'<tr><td colspan="9" class="legend">Sin implementaciones en este filtro/búsqueda.</td></tr>'}
   </tbody></table></div></div>
   <div class="card"><h3>Fuera de proceso (no cuentan en el semáforo)</h3>
     <div class="stat3">${['Rechazada','Abandono','Finalizada'].map(g=>`<div class="stat3-it"><div class="stat3-v">${grupCerr[g]||0}</div><div class="stat3-l">${g}</div></div>`).join('')}</div>
@@ -1361,15 +1379,51 @@ function renderImplementacion(){
 }
 function implDownloadExcel(rows){
   if(!rows.length){toast('No hay filas para descargar con este filtro/búsqueda.',true);return;}
-  const flagLabel=f=>f==='critico'?'Crítico':f==='atencion'?'En riesgo':'Saludable';
-  const data=rows.map(r=>{const acc=matchImplToAccount(r);return{'Cliente':r.cliente,'Semáforo':flagLabel(r._flag),'Motivo':r._razon||'','Etapa':r.etapa,'Tipo':r.tipo||'','% Marcaje':r.marcajePct!=null?r.marcajePct:'','Usuarios activos':r.usuariosActivos!=null?r.usuariosActivos:'','Usuarios a implementar':r.usuariosImplementar!=null?r.usuariosImplementar:'','Fecha objetivo':r.fechaFin||'','KAM (si ya está en cartera)':acc?acc.kam:'','Partner':r.partner||'','Servicios':r.servicios||''};});
+  const riesgoLbl=f=>(IMPL_RIESGO_LABEL[f]||IMPL_RIESGO_LABEL.ok).txt;
+  const saludLbl=acc=>{if(!acc)return'Aún no en cartera';if(!acc.health)return'Sin dato';return acc.health.flag==='critico'?'Crítico':acc.health.flag==='atencion'?'En riesgo':acc.health.flag==='ok'?'Saludable':'Sin clasificar';};
+  const data=rows.map(r=>{const acc=matchImplToAccount(r);return{'Cliente':r.cliente,'Implementación (nombre original)':r.implName||'','Riesgo implementación':riesgoLbl(r._flag),'Motivo riesgo':r._razon||'','Estado de salud (cartera)':saludLbl(acc),'Etapa':r.etapa,'Tipo':r.tipo||'','% Marcaje':r.marcajePct!=null?r.marcajePct:'','Usuarios activos':r.usuariosActivos!=null?r.usuariosActivos:'','Usuarios a implementar':r.usuariosImplementar!=null?r.usuariosImplementar:'','Fecha objetivo':r.fechaFin||'','KAM (si ya está en cartera)':acc?acc.kam:'','Partner':r.partner||'','Servicios':r.servicios||''};});
   const ws=XLSX.utils.json_to_sheet(data);
-  ws['!cols']=[{wch:32},{wch:12},{wch:34},{wch:26},{wch:10},{wch:10},{wch:16},{wch:20},{wch:14},{wch:18},{wch:16},{wch:28}];
+  ws['!cols']=[{wch:32},{wch:32},{wch:12},{wch:34},{wch:16},{wch:26},{wch:10},{wch:10},{wch:16},{wch:20},{wch:14},{wch:18},{wch:16},{wch:28}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Implementaciones');
   const stamp=todayISO();
   XLSX.writeFile(wb,`implementaciones_${implFilter||'todas'}_${stamp}.xlsx`);
   toast('Descargando '+rows.length+' filas…');
+}
+
+function implInfoFor(implRow){
+  if(!implRow)return{html:'<span class="badge b-gray">No aparece en implementaciones.xlsx</span>',detenida:false};
+  const etapaNorm=(implRow.etapa||'').toLowerCase();
+  if(etapaNorm.includes('detenida'))return{html:'<span class="badge b-red">⏸ Implementación detenida</span>',detenida:true};
+  if(implRow._flag==='cerrada')return{html:`<span class="badge b-gray">Cerrada en implementación (${esc(implRow._grupo||implRow.etapa)})</span>`,detenida:false};
+  return{html:`<span class="badge b-blue">${esc(implRow.etapa)}</span>${implRow.marcajePct!=null?` <span class="legend">· marcaje ${Math.round(implRow.marcajePct)}% ahí</span>`:''}`,detenida:false};
+}
+function renderSinUso(){
+  const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;
+  let mu=ACCOUNTS.filter(isSinUso);
+  let uu=HEALTH.unmatched.filter(u=>(!testRe.test(u.key))&&((u.cat&&/sin\s*uso/i.test(u.cat))||u.ad===0));
+  mu.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
+  uu.sort((x,y)=>((y.score==null?-1:y.score)-(x.score==null?-1:x.score)));
+  const muInfo=mu.map(a=>({a,impl:matchAccountToImpl(a)}));
+  const detenidasN=muInfo.filter(x=>implInfoFor(x.impl).detenida).length;
+  const sinExplicarN=muInfo.filter(x=>!x.impl).length;
+  const tot=mu.length+uu.length;
+  $('sinuso').innerHTML=`
+  <div class="note-box"><strong>Cuentas sin uso.</strong> Vienen del archivo de salud vigente (Categoría "Sin Uso" o 0% de adopción). Se sacaron de <strong>Salud - Segmentos</strong> para no duplicar y quedaron aquí, cruzadas con <strong>implementaciones.xlsx</strong> por si el sin-uso se explica porque la implementación sigue <strong>detenida</strong> o en curso.</div>
+  ${!tot?'<p class="legend">No hay cuentas marcadas como Sin Uso en la salud vigente.</p>':`
+  <div class="metrics">
+    <div class="metric"><div class="label">Total sin uso</div><div class="value" style="color:#7F77DD">${tot}</div><div class="sub">${mu.length} en cartera · ${uu.length} sin emparejar</div></div>
+    <div class="metric"><div class="label">Explicadas: implementación detenida</div><div class="value" style="color:#EF9F27">${detenidasN}</div><div class="sub">de las ${mu.length} en cartera</div></div>
+    <div class="metric"><div class="label">Sin explicación</div><div class="value" style="color:#E24B4A">${sinExplicarN}</div><div class="sub">ya implementadas, sin uso real — revisar primero</div></div>
+  </div>
+  <div class="card"><h3>En cartera · ${mu.length}</h3><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">MRR</th><th class="nosort">CS</th><th class="nosort">Implementación</th></tr></thead><tbody>
+  ${muInfo.map(({a,impl})=>{const info=implInfoFor(impl);return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${hasCS(a)?'<span class="badge b-teal">'+esc(a.css)+'</span>':'<span class="badge b-gray">Sin CS</span>'}</td><td>${info.html}</td></tr>`;}).join('')||'<tr><td colspan="6" class="legend">Ninguna.</td></tr>'}
+  </tbody></table></div></div>
+  ${uu.length?`<div class="card"><h3>Sin emparejar en cartera · ${uu.length}</h3><p class="legend" style="margin-bottom:8px">Aparecen como Sin Uso en el modelo de salud pero no encontramos su cuenta en la cartera (falta ID Geo o el nombre no coincide).</p><div class="table-wrap"><table><thead><tr><th>Nombre (modelo de salud)</th><th class="nosort">CS</th><th class="nosort">Implementación</th></tr></thead><tbody>
+  ${uu.map(u=>{const impl=IMPLEMENTACIONES.find(r=>nameKeys(r.cliente).concat(nameKeys(r.implName||'')).some(k=>nameKeys(u.key).includes(k)));const info=implInfoFor(impl);return `<tr style="cursor:default"><td style="font-weight:500">${esc(u.key)}</td><td>${u.css?'<span class="badge b-teal">'+esc(u.css)+'</span>':'<span class="badge b-gray">Sin CS</span>'}</td><td>${info.html}</td></tr>`;}).join('')}
+  </tbody></table></div></div>`:''}
+  `}
+  `;
 }
 
 // ---------- Datos ----------
@@ -1617,7 +1671,7 @@ function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');
 
 // ---------- navegación / init ----------
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
-const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,implementacion:renderImplementacion,datos:renderDatos};
+const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,implementacion:renderImplementacion,sinuso:renderSinUso,datos:renderDatos};
 function renderAll(){applyAnnotationsToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11" title="${CURRENT_HEALTH_FILE?esc(CURRENT_HEALTH_FILE):''}">salud vigente: ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'activa'}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 function show(sec){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));$(sec).classList.add('active');document.querySelector(`.nav button[data-sec="${sec}"]`).classList.add('active');RENDER[sec]();}
