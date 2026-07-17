@@ -39,6 +39,13 @@
       "marcaje_maximo": 0.62,
       "razon": "De 8 usuarios, marcan máximo 5"
     },
+     {
+      "id": "20172",
+      "nombre": "MASTER BUILDER S.A. DE C.V. (GAYA)",
+      "accion": "ajustar_marcaje",
+      "marcaje_maximo": 0.17,
+      "razon": "De 180 y tantos, marcan aprox 20"
+    },
     {
       "id": "23927",
       "nombre": "QUALIS TECHNOLOGIES",
