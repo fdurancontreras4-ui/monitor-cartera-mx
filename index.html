@@ -1062,9 +1062,11 @@ function weekLetter(r){const cat=(r.cat||'').toLowerCase(),ad=r.ad,nps=r.nps,inc
   if(/sin\s*uso/.test(cat)||ad===0)return'A';if(ad!=null&&ad<0.60)return'A';if(nps!=null&&nps<=6)return'N';if(inc!=null&&inc>=1)return'T';return'A';}
 function snapshotFromHealth(parsed){
   const rows=((parsed||HEALTH_CACHE)||{}).rows||[];const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;const snap={};
-  rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;snap[nm]=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);});
+  rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;const f=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);snap[nm]={f,ad:(r.ad!=null?Math.round(r.ad*1000)/1000:null)};});
   return snap;
 }
+function snapFlag(v){if(v==null)return null;return typeof v==='string'?v:v.f;}
+function snapAd(v){if(v==null||typeof v==='string')return null;return v.ad;}
 function saveWeekSnap(date,snap){if(!date||!snap||!Object.keys(snap).length)return false;const i=WEEKS.findIndex(w=>w.date===date);if(i>=0)WEEKS[i]={date,snap};else WEEKS.push({date,snap});WEEKS.sort((a,b)=>a.date<b.date?-1:1);if(WEEKS.length>40)WEEKS=WEEKS.slice(WEEKS.length-40);persist('health_weeks',WEEKS);return true;}
 // aplica una salud fechada: siempre la guarda como semana; usa para métricas solo si es la más reciente
 function applyHealthDated(parsed,date,file){
@@ -1078,6 +1080,7 @@ function saveWeek(date){if(!date)return;const snap=snapshotFromHealth();if(!Obje
 function delWeek(date){if(!confirm('¿Borrar la semana '+date+' del historial?'))return;WEEKS=WEEKS.filter(w=>w.date!==date);persist('health_weeks',WEEKS);renderSemanal();}
 function fmtWeek(d){try{const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('es-MX',{day:'2-digit',month:'short'});}catch(e){return d;}}
 let semQ='';
+let semView='salud';
 function renderSemanal(){
   let weeks=WEEKS.slice();let transient=false;
   if(!weeks.length&&HEALTH.loaded){weeks=[{date:todayISO(),snap:snapshotFromHealth()}];transient=true;}
@@ -1086,12 +1089,14 @@ function renderSemanal(){
   if(semQ){const q=semQ.toLowerCase();empresas=empresas.filter(n=>n.toLowerCase().includes(q));}
   const last=weeks[weeks.length-1];
   const cnt={ok:0,aten:0,crit:0};
-  if(last)Object.values(last.snap).forEach(v=>{if(v==='ok')cnt.ok++;else if(v==='aten')cnt.aten++;else cnt.crit++;});
-  const cellHtml=(code)=>{if(!code)return'<td class="hm-cell hm-empty"></td>';if(code==='ok')return'<td class="hm-cell c-ok"></td>';if(code==='aten')return'<td class="hm-cell c-aten"></td>';return`<td class="hm-cell c-crit">${esc(code)}</td>`;};
+  if(last)Object.values(last.snap).forEach(v=>{const f=snapFlag(v);if(f==='ok')cnt.ok++;else if(f==='aten')cnt.aten++;else cnt.crit++;});
+  const cellHtmlSalud=(v)=>{const code=snapFlag(v);if(!code)return'<td class="hm-cell hm-empty"></td>';if(code==='ok')return'<td class="hm-cell c-ok"></td>';if(code==='aten')return'<td class="hm-cell c-aten"></td>';return`<td class="hm-cell c-crit">${esc(code)}</td>`;};
+  const cellHtmlMarcaje=(v)=>{const ad=snapAd(v);if(v==null)return'<td class="hm-cell hm-empty"></td>';if(ad==null)return'<td class="hm-cell hm-empty" style="font-size:9px;color:var(--color-text-secondary)" title="Sin dato de marcaje esa semana">s/d</td>';const pct=Math.round(ad*100);const cls=pct<30?'c-crit':pct<60?'c-aten':'c-ok';return`<td class="hm-cell ${cls}" style="font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;padding:0">${pct}%</td>`;};
+  const cellHtml=semView==='marcaje'?cellHtmlMarcaje:cellHtmlSalud;
   const head=weeks.map(w=>`<th class="hm-date"><div class="hm-datelbl">${fmtWeek(w.date)}${!transient?` <span class="hm-x" title="Borrar semana" onclick="delWeek('${w.date}')">✕</span>`:''}</div></th>`).join('');
   const body=empresas.map(nm=>`<tr><td class="hm-emp" title="${esc(nm)}">${esc(nm)}</td>${weeks.map(w=>cellHtml(w.snap[nm])).join('')}</tr>`).join('');
   $('semanal').innerHTML=`
-  <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets.${CURRENT_HEALTH_DATE?` Las <strong>métricas del dashboard</strong> usan la salud más reciente: <strong>${CURRENT_HEALTH_DATE}</strong>${CURRENT_HEALTH_FILE?' — archivo <strong>'+esc(CURRENT_HEALTH_FILE)+'</strong>':''}; las fechas anteriores alimentan solo este historial.`:''} Carga la salud de la semana en <strong>Datos</strong> (con la fecha en el nombre, ej. <em>salud-30junio.xlsx</em>) y se añade sola; o usa <strong>Guardar semana</strong> para tomar la actual.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''}</div>
+  <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). ${semView==='marcaje'?'Vista de <strong>% de marcaje</strong>: número = adopción esa semana; rojo &lt;30%, amarillo 30–60%, verde ≥60%. "s/d" = esa semana no trajo el dato de marcaje (quedó guardada solo con el estado de salud).':'Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets.'}${CURRENT_HEALTH_DATE?` Las <strong>métricas del dashboard</strong> usan la salud más reciente: <strong>${CURRENT_HEALTH_DATE}</strong>${CURRENT_HEALTH_FILE?' — archivo <strong>'+esc(CURRENT_HEALTH_FILE)+'</strong>':''}; las fechas anteriores alimentan solo este historial.`:''} Carga la salud de la semana en <strong>Datos</strong> (con la fecha en el nombre, ej. <em>salud-30junio.xlsx</em>) y se añade sola; o usa <strong>Guardar semana</strong> para tomar la actual.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''}</div>
   <div class="metrics">
     <div class="metric"><div class="label">Empresas</div><div class="value">${Object.keys(set).length}</div><div class="sub">en el historial</div></div>
     <div class="metric"><div class="label">Semanas</div><div class="value">${transient?0:weeks.length}</div><div class="sub">guardadas</div></div>
@@ -1100,6 +1105,7 @@ function renderSemanal(){
     <div class="metric"><div class="label">Críticas</div><div class="value" style="color:#A32D2D">${cnt.crit}</div><div class="sub">última semana</div></div>
   </div>
   <div class="controls" style="align-items:center">
+    <div class="nav" style="margin:0"><button class="${semView==='salud'?'active':''}" id="semViewSalud" style="font-size:12px;padding:6px 12px">Estado de salud</button><button class="${semView==='marcaje'?'active':''}" id="semViewMarcaje" style="font-size:12px;padding:6px 12px">% Marcaje</button></div>
     <input type="date" id="semDate" value="${todayISO()}" style="font-family:var(--font-sans);font-size:13px;padding:5px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)">
     <button class="btn btn-primary" id="semSave">Guardar semana</button>
     <input type="text" id="semQ" placeholder="Buscar empresa…" value="${esc(semQ)}" style="flex:1;min-width:160px;font-size:13px;padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)">
@@ -1109,6 +1115,8 @@ function renderSemanal(){
     <div class="hm-wrap"><table class="hm"><thead><tr><th class="hm-emp hm-corner">Empresa</th>${head}</tr></thead><tbody>${body||'<tr><td class="hm-emp">Sin datos de salud.</td></tr>'}</tbody></table></div>
   </div>`;
   $('semSave').onclick=()=>saveWeek($('semDate').value);
+  $('semViewSalud').onclick=()=>{semView='salud';renderSemanal();};
+  $('semViewMarcaje').onclick=()=>{semView='marcaje';renderSemanal();};
   const qel=$('semQ');qel.oninput=e=>{semQ=e.target.value;const pos=e.target.selectionStart;renderSemanal();const n=$('semQ');if(n){n.focus();try{n.setSelectionRange(pos,pos);}catch(_){}}};
 }
 // ---------- Cuentas ----------
