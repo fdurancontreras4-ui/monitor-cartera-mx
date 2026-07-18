@@ -743,7 +743,9 @@ function crossCell(a){const ok=a.okCount||0,op=a.opCount||0;if(!ok&&!op)return'<
 function prCard(a,rank){
   const st=riesgoState(a);
   const razon=a._razonCritico||razonCritico(a);
-  const stBadge=st==='critica'?`<span class="badge b-red">Crítico${razon?'-'+razon:''}</span> `:st==='riesgo'?'<span class="badge b-amber">En riesgo</span> ':a._congelada?'<span class="badge b-gray">Congelada</span> ':a._cambioRazon?'<span class="badge b-blue">Cambio razón social</span> ':'';
+  const razonIcon={marcaje:'📉',sinuso:'⛔',nps:'😠',ticket:'🎫',fuga:'💸'};
+  const razonChip=(st==='critica'&&razon)?`<span class="badge b-red" style="font-size:12px;font-weight:700;padding:4px 11px;border:1.5px solid #A32D2D">${razonIcon[razon]||'⚠️'} ${esc(razonLabel(razon))}</span> `:'';
+  const stBadge=st==='critica'?`<span class="badge b-red">Crítico</span> ${razonChip}`:st==='riesgo'?'<span class="badge b-amber">En riesgo</span> ':a._congelada?'<span class="badge b-gray">Congelada</span> ':a._cambioRazon?'<span class="badge b-blue">Cambio razón social</span> ':'';
   const gap=(st!=='estable'&&!hasCS(a))?'gap':'';
   const pb=playbookFor(a);
   const ad=a.health&&a.health.adopcion!=null?a.health.adopcion:null;
@@ -1093,6 +1095,8 @@ function delWeek(date){if(!confirm('¿Borrar la semana '+date+' del historial?')
 function fmtWeek(d){try{const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('es-MX',{day:'2-digit',month:'short'});}catch(e){return d;}}
 let semQ='';
 let semView='salud';
+let semFilter='';
+function semSetFilter(f){semFilter=(semFilter===f)?'':f;renderSemanal();}
 function renderSemanal(){
   let weeks=WEEKS.slice();let transient=false;
   if(!weeks.length&&HEALTH.loaded){weeks=[{date:todayISO(),snap:snapshotFromHealth()}];transient=true;}
@@ -1102,19 +1106,21 @@ function renderSemanal(){
   const last=weeks[weeks.length-1];
   const cnt={ok:0,aten:0,crit:0};
   if(last)Object.values(last.snap).forEach(v=>{const f=snapFlag(v);if(f==='ok')cnt.ok++;else if(f==='aten')cnt.aten++;else cnt.crit++;});
+  if(semFilter&&last){empresas=empresas.filter(nm=>{const f=snapFlag(last.snap[nm]);if(semFilter==='crit')return f&&f!=='ok'&&f!=='aten';return f===semFilter;});}
   const cellHtmlSalud=(v)=>{const code=snapFlag(v);if(!code)return'<td class="hm-cell hm-empty"></td>';if(code==='ok')return'<td class="hm-cell c-ok"></td>';if(code==='aten')return'<td class="hm-cell c-aten"></td>';return`<td class="hm-cell c-crit">${esc(code)}</td>`;};
   const cellHtmlMarcaje=(v)=>{const ad=snapAd(v);if(v==null)return'<td class="hm-cell hm-empty"></td>';if(ad==null)return'<td class="hm-cell hm-empty" style="font-size:9px;color:var(--color-text-secondary)" title="Sin dato de marcaje esa semana">s/d</td>';const pct=Math.round(ad*100);const cls=pct<30?'c-crit':pct<60?'c-aten':'c-ok';return`<td class="hm-cell ${cls}" style="font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;padding:0">${pct}%</td>`;};
   const cellHtml=semView==='marcaje'?cellHtmlMarcaje:cellHtmlSalud;
   const head=weeks.map(w=>`<th class="hm-date"><div class="hm-datelbl">${fmtWeek(w.date)}${!transient?` <span class="hm-x" title="Borrar semana" onclick="delWeek('${w.date}')">✕</span>`:''}</div></th>`).join('');
   const body=empresas.map(nm=>`<tr><td class="hm-emp" title="${esc(nm)}">${esc(nm)}</td>${weeks.map(w=>cellHtml(w.snap[nm])).join('')}</tr>`).join('');
+  const selStyle=f=>semFilter===f?'outline:2px solid var(--color-border-primary);outline-offset:-2px':'';
   $('semanal').innerHTML=`
-  <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). ${semView==='marcaje'?'Vista de <strong>% de marcaje</strong>: número = adopción esa semana; rojo &lt;30%, amarillo 30–60%, verde ≥60%. "s/d" = esa semana no trajo el dato de marcaje (quedó guardada solo con el estado de salud).':'Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets.'}${CURRENT_HEALTH_DATE?` Las <strong>métricas del dashboard</strong> usan la salud más reciente: <strong>${CURRENT_HEALTH_DATE}</strong>${CURRENT_HEALTH_FILE?' — archivo <strong>'+esc(CURRENT_HEALTH_FILE)+'</strong>':''}; las fechas anteriores alimentan solo este historial.`:''} Carga la salud de la semana en <strong>Datos</strong> (con la fecha en el nombre, ej. <em>salud-30junio.xlsx</em>) y se añade sola; o usa <strong>Guardar semana</strong> para tomar la actual.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''}</div>
+  <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). ${semView==='marcaje'?'Vista de <strong>% de marcaje</strong>: número = adopción esa semana; rojo &lt;30%, amarillo 30–60%, verde ≥60%. "s/d" = esa semana no trajo el dato de marcaje (quedó guardada solo con el estado de salud).':'Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets.'}${CURRENT_HEALTH_DATE?` Las <strong>métricas del dashboard</strong> usan la salud más reciente: <strong>${CURRENT_HEALTH_DATE}</strong>${CURRENT_HEALTH_FILE?' — archivo <strong>'+esc(CURRENT_HEALTH_FILE)+'</strong>':''}; las fechas anteriores alimentan solo este historial.`:''} Carga la salud de la semana en <strong>Datos</strong> (con la fecha en el nombre, ej. <em>salud-30junio.xlsx</em>) y se añade sola; o usa <strong>Guardar semana</strong> para tomar la actual.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''} Las tarjetas de abajo filtran las filas según el estado de la <strong>última semana</strong> — clic de nuevo para quitar el filtro.</div>
   <div class="metrics">
     <div class="metric"><div class="label">Empresas</div><div class="value">${Object.keys(set).length}</div><div class="sub">en el historial</div></div>
     <div class="metric"><div class="label">Semanas</div><div class="value">${transient?0:weeks.length}</div><div class="sub">guardadas</div></div>
-    <div class="metric"><div class="label">Saludables</div><div class="value" style="color:#3B6D11">${cnt.ok}</div><div class="sub">última semana</div></div>
-    <div class="metric"><div class="label">En riesgo</div><div class="value" style="color:#854F0B">${cnt.aten}</div><div class="sub">última semana</div></div>
-    <div class="metric"><div class="label">Críticas</div><div class="value" style="color:#A32D2D">${cnt.crit}</div><div class="sub">última semana</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('ok')}" onclick="semSetFilter('ok')"><div class="label">Saludables</div><div class="value" style="color:#3B6D11">${cnt.ok}</div><div class="sub">última semana · clic para filtrar</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('aten')}" onclick="semSetFilter('aten')"><div class="label">En riesgo</div><div class="value" style="color:#854F0B">${cnt.aten}</div><div class="sub">última semana · clic para filtrar</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('crit')}" onclick="semSetFilter('crit')"><div class="label">Críticas</div><div class="value" style="color:#A32D2D">${cnt.crit}</div><div class="sub">última semana · clic para filtrar</div></div>
   </div>
   <div class="controls" style="align-items:center">
     <div class="nav" style="margin:0"><button class="${semView==='salud'?'active':''}" id="semViewSalud" style="font-size:12px;padding:6px 12px">Estado de salud</button><button class="${semView==='marcaje'?'active':''}" id="semViewMarcaje" style="font-size:12px;padding:6px 12px">% Marcaje</button></div>
@@ -1124,7 +1130,7 @@ function renderSemanal(){
     <span class="legend">${empresas.length} empresas mostradas</span>
   </div>
   <div class="card" style="padding:0;overflow:hidden">
-    <div class="hm-wrap"><table class="hm"><thead><tr><th class="hm-emp hm-corner">Empresa</th>${head}</tr></thead><tbody>${body||'<tr><td class="hm-emp">Sin datos de salud.</td></tr>'}</tbody></table></div>
+    <div class="hm-wrap"><table class="hm"><thead><tr><th class="hm-emp hm-corner">Empresa</th>${head}</tr></thead><tbody>${body||'<tr><td class="hm-emp">Sin empresas con este filtro.</td></tr>'}</tbody></table></div>
   </div>`;
   $('semSave').onclick=()=>saveWeek($('semDate').value);
   $('semViewSalud').onclick=()=>{semView='salud';renderSemanal();};
@@ -1170,6 +1176,11 @@ function drawCuTable(){
 }
 
 // ---------- Fuga ----------
+function matchFugaToAccount(r){
+  const keys=nameKeys(r.cliente);
+  for(const k of keys){const hit=ACCOUNTS.find(a=>nameKeys(a.cliente||'').includes(k));if(hit)return hit;}
+  return null;
+}
 function renderFuga(){
   const bajasReal=FUGA_DETALLE.filter(r=>r.tipo==='Baja');
   const fdMotivos=groupCount(bajasReal,r=>r.motivo);
@@ -1177,6 +1188,7 @@ function renderFuga(){
   const fdMontoPorMes=monthSums(bajasReal,'mesBaja',r=>r.facturacionUSD||r.facturacionMXN);
   const fdPorQ=qCount(bajasReal);
   const fdMontoAnio=bajasReal.reduce((s,r)=>s+(r.facturacionUSD||0),0);
+  const detalle=bajasReal.slice().sort((a,b)=>(b.facturacionUSD||0)-(a.facturacionUSD||0));
   $('fuga').innerHTML=`
   <div class="note-box">Solo se considera <strong>Baja</strong> (Tipo = Baja en Detalle Fuga 2026). Se excluyen <strong>Disminución</strong> y <strong>Cambio de razón social</strong> — revísalas en la pestaña <strong>Disminuciones</strong>.</div>
   <div class="metrics">
@@ -1192,21 +1204,44 @@ function renderFuga(){
   <p class="legend" style="margin-top:8px">Monto total perdido en el año: <strong style="color:var(--color-text-primary)">${fmtUSD(fdMontoAnio)}</strong> (USD, según Detalle Fuga 2026).</p>
   </div>
   <div class="card"><h3>Motivos de baja (% del total)</h3>${pieSVG(fdMotivos)}</div>
+  <div class="card"><h3>Detalle de cuentas fugadas · ${detalle.length}</h3><p class="legend" style="margin-bottom:8px">Clic en una fila para abrir su ficha completa, si todavía existe en la cartera actual.</p><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">KAM</th><th class="nosort">Segmento</th><th class="nosort">Motivo</th><th class="nosort">Mes de baja</th><th class="nosort">Última facturación</th></tr></thead><tbody>
+  ${detalle.map(r=>{const acc=matchFugaToAccount(r);return`<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}${!acc?' <span class=\"legend\">(ya no está en la cartera)</span>':''}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.kam)}</td><td style="font-size:12px">${esc(r.segmento||'—')}</td><td style="font-size:12px">${esc(r.motivo)}</td><td style="font-size:12px">${esc(r.mesBaja||'—')}</td><td style="font-weight:500">${fmtUSD(r.facturacionUSD)}</td></tr>`;}).join('')||'<tr><td colspan="6" class="legend">Sin bajas registradas.</td></tr>'}
+  </tbody></table></div></div>
 `;
+}
+function disminucionAlert(a){
+  const meses=a.meses||[];const idxs=[];meses.forEach((m,i)=>{if(m!=null)idxs.push(i);});
+  if(idxs.length<2)return{flag:'ok',mom:null,sixmo:null,razon:'datos insuficientes'};
+  const lastIdx=idxs[idxs.length-1],prevIdx=idxs[idxs.length-2];
+  const last=meses[lastIdx],prev=meses[prevIdx];
+  const mom=prev>0?(last-prev)/prev:null;
+  let sixmo=null;const sixIdx=lastIdx-6;
+  if(sixIdx>=0&&meses[sixIdx]!=null&&meses[sixIdx]>0)sixmo=(last-meses[sixIdx])/meses[sixIdx];
+  let flag='ok';const razones=[];
+  if(mom!=null&&mom<=-0.20){flag='critico';razones.push('↓'+Math.round(Math.abs(mom)*100)+'% vs mes anterior');}
+  else if(mom!=null&&mom<=-0.10){flag='atencion';razones.push('↓'+Math.round(Math.abs(mom)*100)+'% vs mes anterior');}
+  if(sixmo!=null&&sixmo<=-0.30){flag='critico';razones.push('↓'+Math.round(Math.abs(sixmo)*100)+'% vs hace 6 meses');}
+  else if(sixmo!=null&&sixmo<=-0.15&&flag!=='critico'){flag='atencion';razones.push('↓'+Math.round(Math.abs(sixmo)*100)+'% vs hace 6 meses');}
+  return{flag,mom,sixmo,razon:razones.join(' · ')||'estable'};
 }
 function renderDisminuciones(){
   const bajas=ACCOUNTS.filter(a=>!a._cambioRazon&&a.fuga==='Baja'),dism=ACCOUNTS.filter(a=>!a._cambioRazon&&a.fuga==='Disminución');
   const montoB=bajas.reduce((s,a)=>s+(a.mrr||0),0),montoD=dism.reduce((s,a)=>s+(a.mrr||0),0);
-  const list=[...bajas,...dism].sort((x,y)=>(y.mrr||0)-(x.mrr||0));
+  let list=[...bajas,...dism].map(a=>({a,alert:disminucionAlert(a)}));
+  const alRank={critico:0,atencion:1,ok:2};
+  list.sort((x,y)=>alRank[x.alert.flag]-alRank[y.alert.flag]||(y.a.mrr||0)-(x.a.mrr||0));
+  const alBadge=f=>f==='critico'?'<span class="badge b-red">🔴 Alerta alta</span>':f==='atencion'?'<span class="badge b-amber">🟡 Alerta media</span>':'<span class="badge b-green">🟢 Sin alerta</span>';
+  const nAlto=list.filter(x=>x.alert.flag==='critico').length,nMedio=list.filter(x=>x.alert.flag==='atencion').length;
   $('disminuciones').innerHTML=`
-  <div class="note-box">La fuga/disminución se deriva de la tendencia Enero→${MONTHS_SHORT[monthsLoaded()-1]||'Abril'}. <strong>Baja</strong>: la facturación cae prácticamente a cero. <strong>Disminución</strong>: cae 15%+ sin llegar a cero. Para el corte oficial (solo bajas reales, sin disminuciones ni cambios de razón social), revisa la pestaña <strong>Fuga</strong>, que usa el archivo Detalle Fuga 2026.</div>
+  <div class="note-box">La fuga/disminución se deriva de la tendencia Enero→${MONTHS_SHORT[monthsLoaded()-1]||'Abril'}. <strong>Baja</strong>: la facturación cae prácticamente a cero. <strong>Disminución</strong>: cae 15%+ sin llegar a cero. Para el corte oficial (solo bajas reales, sin disminuciones ni cambios de razón social), revisa la pestaña <strong>Fuga</strong>, que usa el archivo Detalle Fuga 2026.<br><strong>Semáforo de alertas</strong> (nuevo): compara el último mes cargado contra el mes anterior <em>y</em> contra hace 6 meses (cuando hay suficiente historial). 🔴 Alerta alta: caída ≥20% mes a mes, o ≥30% vs 6 meses atrás. 🟡 Alerta media: caída 10–20% mes a mes, o 15–30% vs 6 meses atrás.</div>
   <div class="metrics">
     <div class="metric"><div class="label">Bajas (tendencia)</div><div class="value" style="color:#E24B4A">${bajas.length}</div><div class="sub">${fmtUSD(montoB)} perdidos</div></div>
     <div class="metric"><div class="label">Disminuciones</div><div class="value" style="color:#EF9F27">${dism.length}</div><div class="sub">${fmtUSD(montoD)} afectados</div></div>
-    <div class="metric"><div class="label">Total</div><div class="value">${bajas.length+dism.length}</div><div class="sub">${fmtUSD(montoB+montoD)} en juego</div></div>
+    <div class="metric"><div class="label">🔴 Alerta alta</div><div class="value" style="color:#E24B4A">${nAlto}</div><div class="sub">caída fuerte reciente o vs 6 meses</div></div>
+    <div class="metric"><div class="label">🟡 Alerta media</div><div class="value" style="color:#EF9F27">${nMedio}</div><div class="sub">caída moderada</div></div>
   </div>
-  <div class="card"><h3>Cuentas en fuga / disminución (mayor monto primero)</h3><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">CS</th><th class="nosort">Tendencia</th><th class="nosort">MRR</th><th class="nosort">Estado</th></tr></thead><tbody>
-  ${list.map(a=>`<tr onclick="openDetail('${a._uid}')"><td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td>${hasCS(a)?'<span class="badge b-teal">'+esc(a.css)+'</span>':'<span class="badge b-gray">Sin CS</span>'}</td><td>${sparkline(a.meses)} <span style="font-size:11px;color:var(--color-text-secondary)">${a.meses.map(m=>m==null?'·':Math.round(m)).join(' › ')}</span></td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${fugaCell(a)}</td></tr>`).join('')}
+  <div class="card"><h3>Cuentas en fuga / disminución (alerta primero, luego mayor monto)</h3><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">CS</th><th class="nosort">Tendencia</th><th class="nosort">MRR</th><th class="nosort">Estado</th><th class="nosort">Semáforo de alerta</th></tr></thead><tbody>
+  ${list.map(({a,alert})=>`<tr onclick="openDetail('${a._uid}')"><td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td>${hasCS(a)?'<span class="badge b-teal">'+esc(a.css)+'</span>':'<span class="badge b-gray">Sin CS</span>'}</td><td>${sparkline(a.meses)} <span style="font-size:11px;color:var(--color-text-secondary)">${a.meses.map(m=>m==null?'·':Math.round(m)).join(' › ')}</span></td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${fugaCell(a)}</td><td>${alBadge(alert.flag)}${alert.razon?`<div class="legend" style="margin-top:2px">${esc(alert.razon)}</div>`:''}</td></tr>`).join('')}
   </tbody></table></div></div>`;
 }
 
@@ -1419,11 +1454,25 @@ function implDownloadExcel(rows){
 }
 
 function implInfoFor(implRow){
-  if(!implRow)return{html:'<span class="badge b-gray">No aparece en implementaciones.xlsx</span>',detenida:false};
+  if(!implRow)return{html:'<span class="badge b-gray">No aparece en implementaciones.xlsx</span>',detenida:false,cat:'noaparece',label:'No aparece en implementaciones.xlsx'};
   const etapaNorm=(implRow.etapa||'').toLowerCase();
-  if(etapaNorm.includes('detenida'))return{html:'<span class="badge b-red">⏸ Implementación detenida</span>',detenida:true};
-  if(implRow._flag==='cerrada')return{html:`<span class="badge b-gray">Cerrada en implementación (${esc(implRow._grupo||implRow.etapa)})</span>`,detenida:false};
-  return{html:`<span class="badge b-blue">${esc(implRow.etapa)}</span>${implRow.marcajePct!=null?` <span class="legend">· marcaje ${Math.round(implRow.marcajePct)}% ahí</span>`:''}`,detenida:false};
+  if(etapaNorm.includes('detenida'))return{html:'<span class="badge b-red">⏸ Implementación detenida</span>',detenida:true,cat:'detenida',label:'Implementación detenida'};
+  if(implRow._flag==='cerrada')return{html:`<span class="badge b-gray">Cerrada en implementación (${esc(implRow._grupo||implRow.etapa)})</span>`,detenida:false,cat:'cerrada',label:'Cerrada en implementación ('+(implRow._grupo||implRow.etapa)+')'};
+  return{html:`<span class="badge b-blue">${esc(implRow.etapa)}</span>${implRow.marcajePct!=null?` <span class="legend">· marcaje ${Math.round(implRow.marcajePct)}% ahí</span>`:''}`,detenida:false,cat:'activa',label:'Activa en implementación ('+implRow.etapa+')'};
+}
+const SINUSO_IMPL_OPTS=[['','Toda implementación'],['detenida','⏸ Detenida'],['activa','Activa en implementación'],['cerrada','Cerrada en implementación'],['noaparece','No aparece en implementaciones.xlsx']];
+let sinUsoImplFilter='';
+function sinUsoDownloadExcel(muInfo,uu){
+  if(!muInfo.length&&!uu.length){toast('No hay filas para descargar con este filtro.',true);return;}
+  const data=[];
+  muInfo.forEach(({a,impl})=>{const info=implInfoFor(impl);data.push({'Cliente':a.cliente,'En cartera':'Sí','Cartera':a.cartera,'KAM':a.kam,'MRR':a.mrr||0,'CS':hasCS(a)?a.css:'','Implementación':info.label});});
+  uu.forEach(u=>{const impl=IMPLEMENTACIONES.find(r=>nameKeys(r.cliente).concat(nameKeys(r.implName||'')).some(k=>nameKeys(u.key).includes(k)));const info=implInfoFor(impl);data.push({'Cliente':u.key,'En cartera':'No (sin emparejar)','Cartera':'','KAM':'','MRR':'','CS':u.css||'','Implementación':info.label});});
+  const ws=XLSX.utils.json_to_sheet(data);
+  ws['!cols']=[{wch:32},{wch:16},{wch:12},{wch:18},{wch:10},{wch:18},{wch:34}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Sin uso');
+  XLSX.writeFile(wb,`sin_uso_${sinUsoImplFilter||'todas'}_${todayISO()}.xlsx`);
+  toast('Descargando '+data.length+' filas…');
 }
 function renderSinUso(){
   const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;
@@ -1431,26 +1480,39 @@ function renderSinUso(){
   let uu=HEALTH.unmatched.filter(u=>(!testRe.test(u.key))&&((u.cat&&/sin\s*uso/i.test(u.cat))||u.ad===0));
   mu.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
   uu.sort((x,y)=>((y.score==null?-1:y.score)-(x.score==null?-1:x.score)));
-  const muInfo=mu.map(a=>({a,impl:matchAccountToImpl(a)}));
+  let muInfo=mu.map(a=>({a,impl:matchAccountToImpl(a)}));
   const detenidasN=muInfo.filter(x=>implInfoFor(x.impl).detenida).length;
   const sinExplicarN=muInfo.filter(x=>!x.impl).length;
-  const tot=mu.length+uu.length;
+  const totAll=mu.length+uu.length;
+  if(sinUsoImplFilter){
+    muInfo=muInfo.filter(x=>implInfoFor(x.impl).cat===sinUsoImplFilter);
+    uu=uu.filter(u=>{const impl=IMPLEMENTACIONES.find(r=>nameKeys(r.cliente).concat(nameKeys(r.implName||'')).some(k=>nameKeys(u.key).includes(k)));return implInfoFor(impl).cat===sinUsoImplFilter;});
+  }
+  const tot=muInfo.length+uu.length;
   $('sinuso').innerHTML=`
   <div class="note-box"><strong>Cuentas sin uso.</strong> Vienen del archivo de salud vigente (Categoría "Sin Uso" o 0% de adopción). Se sacaron de <strong>Salud - Segmentos</strong> para no duplicar y quedaron aquí, cruzadas con <strong>implementaciones.xlsx</strong> por si el sin-uso se explica porque la implementación sigue <strong>detenida</strong> o en curso.</div>
-  ${!tot?'<p class="legend">No hay cuentas marcadas como Sin Uso en la salud vigente.</p>':`
+  ${!totAll?'<p class="legend">No hay cuentas marcadas como Sin Uso en la salud vigente.</p>':`
   <div class="metrics">
-    <div class="metric"><div class="label">Total sin uso</div><div class="value" style="color:#7F77DD">${tot}</div><div class="sub">${mu.length} en cartera · ${uu.length} sin emparejar</div></div>
+    <div class="metric"><div class="label">Total sin uso</div><div class="value" style="color:#7F77DD">${totAll}</div><div class="sub">${mu.length} en cartera · ${uu.length} sin emparejar</div></div>
     <div class="metric"><div class="label">Explicadas: implementación detenida</div><div class="value" style="color:#EF9F27">${detenidasN}</div><div class="sub">de las ${mu.length} en cartera</div></div>
     <div class="metric"><div class="label">Sin explicación</div><div class="value" style="color:#E24B4A">${sinExplicarN}</div><div class="sub">ya implementadas, sin uso real — revisar primero</div></div>
   </div>
-  <div class="card"><h3>En cartera · ${mu.length}</h3><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">MRR</th><th class="nosort">CS</th><th class="nosort">Implementación</th></tr></thead><tbody>
-  ${muInfo.map(({a,impl})=>{const info=implInfoFor(impl);return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${hasCS(a)?'<span class="badge b-teal">'+esc(a.css)+'</span>':'<span class="badge b-gray">Sin CS</span>'}</td><td>${info.html}</td></tr>`;}).join('')||'<tr><td colspan="6" class="legend">Ninguna.</td></tr>'}
+  <div class="urlrow" style="margin-bottom:10px">
+    <select id="sinUsoImplIn">${SINUSO_IMPL_OPTS.map(([v,l])=>`<option value="${v}" ${sinUsoImplFilter===v?'selected':''}>${l}</option>`).join('')}</select>
+    <span class="legend" style="flex:1">${tot} de ${totAll} cuentas con este filtro</span>
+    <button class="btn" id="sinUsoDownloadBtn">⬇ Descargar Excel (${tot})</button>
+  </div>
+  <div class="card"><h3>En cartera · ${muInfo.length}</h3><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">MRR</th><th class="nosort">CS</th><th class="nosort">Implementación</th></tr></thead><tbody>
+  ${muInfo.map(({a,impl})=>{const info=implInfoFor(impl);return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${hasCS(a)?'<span class="badge b-teal">'+esc(a.css)+'</span>':'<span class="badge b-gray">Sin CS</span>'}</td><td>${info.html}</td></tr>`;}).join('')||'<tr><td colspan="6" class="legend">Ninguna con este filtro.</td></tr>'}
   </tbody></table></div></div>
   ${uu.length?`<div class="card"><h3>Sin emparejar en cartera · ${uu.length}</h3><p class="legend" style="margin-bottom:8px">Aparecen como Sin Uso en el modelo de salud pero no encontramos su cuenta en la cartera (falta ID Geo o el nombre no coincide).</p><div class="table-wrap"><table><thead><tr><th>Nombre (modelo de salud)</th><th class="nosort">CS</th><th class="nosort">Implementación</th></tr></thead><tbody>
   ${uu.map(u=>{const impl=IMPLEMENTACIONES.find(r=>nameKeys(r.cliente).concat(nameKeys(r.implName||'')).some(k=>nameKeys(u.key).includes(k)));const info=implInfoFor(impl);return `<tr style="cursor:default"><td style="font-weight:500">${esc(u.key)}</td><td>${u.css?'<span class="badge b-teal">'+esc(u.css)+'</span>':'<span class="badge b-gray">Sin CS</span>'}</td><td>${info.html}</td></tr>`;}).join('')}
   </tbody></table></div></div>`:''}
   `}
   `;
+  if(!totAll)return;
+  $('sinUsoImplIn').onchange=e=>{sinUsoImplFilter=e.target.value;renderSinUso();};
+  $('sinUsoDownloadBtn').onclick=()=>sinUsoDownloadExcel(muInfo,uu);
 }
 
 // ---------- Datos ----------
