@@ -1058,11 +1058,23 @@ function detectDateFromName(name){
   if(m){const yr=m[3]||String(new Date().getFullYear());return `${yr}-${String(+m[2]).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;}
   return null;
 }
-function weekLetter(r){const cat=(r.cat||'').toLowerCase(),ad=r.ad,nps=r.nps,inc=r.inc30;
+function weekLetter(r){const cat=(r.cat||'').toLowerCase(),ad=adjustedAdForRow(r),nps=r.nps,inc=r.inc30;
   if(/sin\s*uso/.test(cat)||ad===0)return'A';if(ad!=null&&ad<0.60)return'A';if(nps!=null&&nps<=6)return'N';if(inc!=null&&inc>=1)return'T';return'A';}
+function findConsidByRow(r){
+  const pid=r.id?cleanId(r.id):null,n=r.keyNorm||normName(r.key);const list=CONSID.cuentas||[];
+  for(const c of list){if(c.id&&pid&&cleanId(c.id)===pid)return c;}
+  for(const c of list){if(c.nombre){const cn=normName(c.nombre);if(cn&&(cn===n||(cn.length>5&&(n.includes(cn)||cn.includes(n)))))return c;}}
+  return null;
+}
+function adjustedAdForRow(r){
+  if(r.ad==null)return r.ad;
+  const c=findConsidByRow(r);
+  if(c&&c.accion==='ajustar_marcaje'&&c.marcaje_maximo)return Math.min(r.ad/c.marcaje_maximo,1);
+  return r.ad;
+}
 function snapshotFromHealth(parsed){
   const rows=((parsed||HEALTH_CACHE)||{}).rows||[];const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;const snap={};
-  rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;const f=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);snap[nm]={f,ad:(r.ad!=null?Math.round(r.ad*1000)/1000:null)};});
+  rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;const f=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);const adAdj=adjustedAdForRow(r);snap[nm]={f,ad:(adAdj!=null?Math.round(adAdj*1000)/1000:null)};});
   return snap;
 }
 function snapFlag(v){if(v==null)return null;return typeof v==='string'?v:v.f;}
@@ -1631,6 +1643,18 @@ async function reloadData(){
 
 // ---------- detalle ----------
 function dlRow(k,v){return v?`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`:'';}
+function findAccountSnapKey(a){
+  const allKeys=new Set();WEEKS.forEach(w=>Object.keys(w.snap).forEach(k=>allKeys.add(k)));
+  const targetKeys=nameKeys(a.cliente);
+  for(const k of allKeys){if(targetKeys.includes(normName(k)))return k;}
+  for(const k of allKeys){const kn=normName(k);for(const n of targetKeys){if(n.length>4&&(kn.includes(n)||n.includes(kn)))return k;}}
+  return null;
+}
+function weeklyMarcajeSeries(a){
+  const key=findAccountSnapKey(a);
+  if(!key)return[];
+  return WEEKS.map(w=>({date:w.date,ad:snapAd(w.snap[key])}));
+}
 function openDetail(uid){
   const a=ACCOUNTS.find(x=>x._uid===uid);if(!a)return;priority(a);
   const mx=Math.max(...a.meses.map(m=>m||0),1),labels=MONTHS_SHORT;
@@ -1650,6 +1674,11 @@ function openDetail(uid){
       <div><div class="sec-title">Semáforo de salud</div><dl class="dl-grid">${dlRow('Cuadrante (MARE)',a.cuadrante)}${dlRow('Estado salud',a.estadoSalud)}${dlRow('Riesgo',a.riesgo)}</dl>${healthHtml}</div>
     </div>
     <div class="sec-title">Fuga</div><p style="font-size:13px">${fugaCell(a)} <span class="legend">— ${a._cambioRazon?'marcada como cambio de razón social: no se cuenta como fuga ni como crítica.':'derivada de la tendencia '+MONTHS_SHORT[0]+'→'+(MONTHS_SHORT[a.meses.length-1]||'')+'.'}</span></p>
+    ${(function(){const serie=weeklyMarcajeSeries(a);const conDato=serie.filter(w=>w.ad!=null);if(!serie.length)return'';if(!conDato.length)return`<div class="sec-title">Marcaje semanal</div><p class="legend">No encontramos esta cuenta en el historial de Salud semanal (por nombre). Revisa la pestaña <strong>Salud semanal</strong> directamente si crees que sí debería estar.</p>`;
+      const shown=serie.slice(-12);
+      const bars=shown.map(w=>{const pct=w.ad!=null?Math.round(w.ad*100):null;const h=pct!=null?Math.max(4,Math.round(pct/100*70)):2;const col=pct==null?'var(--color-border-secondary)':pct<30?'#E24B4A':pct<60?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${pct!=null?pct+'%':'—'}</div><div class="bar" style="height:${h}px;background:${col};${pct==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
+      return`<div class="sec-title">Marcaje semanal ${serie.length>12?`<span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· últimas 12 de ${serie.length} semanas guardadas</span>`:''}</div><div class="big-bars">${bars}</div><p class="status-line">Ve el historial completo y compáralo con otras cuentas en <strong>Salud semanal → % Marcaje</strong>.</p>`;
+    })()}
     <div class="sec-title">Acción recomendada · Playbook CSS</div>
     ${(function(){const pb=playbookFor(a);if(!pb)return'<p class="legend">Sin señales de playbook con los datos actuales. PB-02 (Detractor NPS) requiere el dato de NPS, que no está en esta cartera.</p>';const noCS=!hasCS(a)?'<div class="callout" style="margin-bottom:8px"><strong>Sin CSS asignado.</strong> Primer paso: asignar gestión de Customer Success antes de ejecutar el playbook — toda alerta necesita un responsable de monitoreo.</div>':'';return`${noCS}<div class="rec-box"><div class="rec-title">${esc(pb.code)} — ${esc(pb.name)} · SLA primera acción ${esc(pb.sla)}</div><div class="rec-body">${a._signals.length?'<strong>Señales detectadas:</strong> '+a._signals.map(esc).join(' · ')+'<br>':''}<strong>Acción a realizar:</strong> ${esc(pb.first)}<br><strong>Plan:</strong> ${esc(pb.plan)}<br><strong>Escalación:</strong> ${esc(pb.escala)}</div></div>`;})()}
     <div class="sec-title">Referidos</div><p style="font-size:13px">${a.referido?esc(a.referido):'<span class="legend">Sin referido/referencia registrado.</span>'}</p>
