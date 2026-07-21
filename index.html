@@ -801,6 +801,7 @@ function renderResumen(){
 
 // ---------- Salud - General ----------
 let prState={estado:'atrisk',cs:''};
+let PR_GROUPS=[];
 let segSel={seg:'',estado:''};
 function segShow(seg,estado){segSel=(segSel.seg===seg&&segSel.estado===estado)?{seg:'',estado:''}:{seg,estado};renderPrioridad();const el=$('segList');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function renderPrioridad(){
@@ -899,17 +900,20 @@ function drawPrList(){
   const marc=a=>(a.health&&a.health.adopcion!=null)?a.health.adopcion:Infinity;
   const byMarcaje=(a,b)=>marc(a)-marc(b) || (b._score-a._score);
   const byScore=(a,b)=>b._score-a._score;
-  const tools=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(false)">Colapsar todo</button><button class="btn btn-primary" style="font-size:12px;padding:5px 11px" onclick="copyCriticasText()">📋 Copiar críticas por KAM</button></div>`;
-  const groupsHtml=ordered.map(g=>{
+  const tools=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(false)">Colapsar todo</button></div>`;
+  PR_GROUPS=ordered;
+  const groupsHtml=ordered.map((g,gi)=>{
     g.crit.sort(byMarcaje);g.ries.sort(byScore);g.resto.sort(byScore);
     const sinCSn=g.crit.concat(g.ries).filter(a=>!hasCS(a)).length;
     let rank=0;
     const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(a=>prCard(a,++rank)).join('')}`:'';
+    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${g.crit.length?'':' disabled'} title="${g.crit.length?`Copia las ${g.crit.length} cuentas críticas de ${esc(kamShort(g.kam))} en formato tabla (TSV) para pegar en Excel/Sheets/Word`:`${esc(kamShort(g.kam))} no tiene cuentas críticas con estos filtros`}" onclick="event.stopPropagation();event.preventDefault();copyKamCriticasTSV(${gi})">📋 Copiar críticas</button>`;
     return`<details class="kam-group">
       <summary class="kam-head">
         <span class="chev">▸</span>
         <span class="kam-name">${esc(g.kam)}</span>
         <span class="kam-stats"><strong style="color:#E24B4A">${g.crit.length}</strong> críticas · <strong style="color:#EF9F27">${g.ries.length}</strong> en riesgo${g.resto.length?` · <strong style="color:#3B6D11">${g.resto.length}</strong> saludables`:''} · <strong>${fmtUSD(g.montoRiesgo)}/mes</strong> expuesto${sinCSn?` · <strong style="color:#E24B4A">${sinCSn} sin CS</strong>`:''}</span>
+        ${copyBtn}
       </summary>
       <div class="kam-body">${block(g.crit,'🔴 Críticas (marcaje ↑)')}${block(g.ries,'🟠 En riesgo')}${block(g.resto,'🟢 Saludables')}</div>
     </details>`;
@@ -936,35 +940,33 @@ function drawPrList(){
 }
 function razonLabel(code){return {marcaje:'marcaje bajo',sinuso:'sin uso',nps:'NPS detractor',ticket:'tickets sin resolver',fuga:'fuga / caída de facturación'}[code]||'salud crítica';}
 function kamShort(name){const n=normName(name||'');if(n.includes('raul'))return'Raúl';if(n.includes('dafne'))return'Dafne';if(n.includes('karla'))return'Karla';return name||'Sin KAM';}
-function buildCriticasText(){
-  const crit=ACCOUNTS.filter(isCritica);
-  const groups={};crit.forEach(a=>{const k=a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(a);});
-  const KAM_ORDER=['raul','dafne','karla'];
-  const kamRank=name=>{const n=normName(name);for(let i=0;i<KAM_ORDER.length;i++){if(n.includes(KAM_ORDER[i]))return i;}return KAM_ORDER.length;};
-  const marc=a=>(a.health&&a.health.adopcion!=null)?a.health.adopcion:Infinity;
-  const kams=Object.keys(groups).sort((x,y)=>kamRank(x)-kamRank(y)||x.localeCompare(y));
-  const lines=[];
-  kams.forEach(k=>{
-    const arr=groups[k].slice().sort((a,b)=>marc(a)-marc(b));
-    lines.push(`${kamShort(k)} ${arr.length} cuentas críticas`);
-    arr.forEach((a,i)=>{
-      const idPart=a.id?' '+a.id:'';
-      const adopcion=(a.health&&a.health.adopcion!=null)?Math.round(a.health.adopcion*100)+'%':'s/d';
-      const razon=razonLabel(a._razonCritico);
-      const cs=hasCS(a)?'con CSS':'sin CSS';
-      lines.push(`${i+1}. ${a.cliente}${idPart} Marcaje ${adopcion}, crítico por ${razon}, ${cs}`);
-    });
-    lines.push('');
+// limpia un valor para que no rompa la estructura TSV (sin tabs ni saltos de línea)
+function tsvCell(v){return String(v==null?'':v).replace(/[\t\r\n]+/g,' ').trim();}
+// tabla TSV (encabezado + filas) con las cuentas críticas de UN solo grupo/KAM
+function buildKamCriticasTSV(g){
+  if(!g||!g.crit||!g.crit.length)return '';
+  const header=['#','Cuenta','ID','Cartera','MRR (USD)','Marcaje','Motivo crítico','CS','Acción sugerida'];
+  const rows=[header.join('\t')];
+  g.crit.forEach((a,i)=>{
+    const adopcion=(a.health&&a.health.adopcion!=null)?Math.round(a.health.adopcion*100)+'%':'s/d';
+    const razon=razonLabel(a._razonCritico||razonCritico(a));
+    const cs=hasCS(a)?csOf(a):'Sin CS';
+    const pb=playbookFor(a);
+    const accion=pb?pb.first:'';
+    rows.push([i+1,a.cliente,a.id,a.cartera,Math.round(a.mrr||0),adopcion,razon,cs,accion].map(tsvCell).join('\t'));
   });
-  return lines.join(String.fromCharCode(10)).trim();
+  return rows.join('\n');
 }
-async function copyCriticasText(){
-  const text=buildCriticasText();
-  if(!text){toast('No hay cuentas críticas para copiar.',true);return;}
+async function copyKamCriticasTSV(idx){
+  const g=PR_GROUPS[idx];
+  if(!g){toast('No se encontró el grupo de KAM (vuelve a filtrar y reintenta).',true);return;}
+  const nombre=kamShort(g.kam);
+  if(!g.crit||!g.crit.length){toast('No hay cuentas críticas para copiar de '+nombre+'.',true);return;}
+  const text=buildKamCriticasTSV(g);
   try{
     if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);
     else{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
-    toast('Copiado: '+ACCOUNTS.filter(isCritica).length+' cuentas críticas por KAM.');
+    toast('Copiado: '+g.crit.length+' cuentas críticas de '+nombre+' (tabla lista para pegar en Excel).');
   }catch(e){toast('No se pudo copiar: '+e.message,true);}
 }
 function isSinUso(a){const h=a.health;return !!(h&&((h.categoria&&/sin\s*uso/i.test(h.categoria))||h.adopcion===0));}
