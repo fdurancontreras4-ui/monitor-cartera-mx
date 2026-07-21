@@ -1,10 +1,11 @@
 {
   "_ayuda": "Lista de archivos de salud por semana que el dashboard carga desde GitHub. El más reciente (por la fecha en el nombre) alimenta todas las métricas; todos alimentan la pestaña Salud semanal. Cada semana: sube el nuevo Excel al repo y agrega su nombre a esta lista.",
-  "vigente": "salud-mx-13julio.xlsx",
+  "vigente": "salud-mx-20julio.xlsx",
   "archivos": [
     "salud-mx-22junio.xlsx",
     "salud-mx-30junio.xlsx",
     "salud-mx-06julio.xlsx",
-    "salud-mx-13julio.xlsx"
+    "salud-mx-13julio.xlsx",
+    "salud-mx-20julio.xlsx"
   ]
 }
