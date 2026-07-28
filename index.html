@@ -1102,7 +1102,7 @@ let fbDb=null;
 const ANNOT_ESTADOS={seguimiento:{label:'En seguimiento',color:'#EF9F27',badge:'b-amber'},resuelta:{label:'Resuelta',color:'#639922',badge:'b-green'},excluir:{label:'Excluida de críticas',color:'#7F77DD',badge:'b-purple'}};
 function annotKey(a){const id=cleanId(a.id);return id?('id_'+id):('n_'+normName(a.cliente||''));}
 function getAnnot(a){return ANNOTATIONS[annotKey(a)]||null;}
-function applyAnnotationsToAccounts(){ACCOUNTS.forEach(a=>{a._anot=getAnnot(a);a._anotExcluir=!!(a._anot&&a._anot.estado==='excluir');});}
+function applyAnnotationsToAccounts(){ACCOUNTS.forEach(a=>{a._anot=getAnnot(a);a._anotExcluir=!!(a._anot&&a._anot.estado==='excluir');});applyGestionToAccounts();}
 function getAutor(){let n=localStorage.getItem('gv_anot_autor');if(!n){n=prompt('¿Cómo te llamas? (para identificar quién dejó cada nota — se pregunta una sola vez en este navegador)')||'Equipo';localStorage.setItem('gv_anot_autor',n);}return n;}
 async function saveAnnotation(a,estado,nota){
   if(!fbDb){toast('Anotaciones de equipo no están configuradas todavía (ver pestaña Datos).',true);return false;}
