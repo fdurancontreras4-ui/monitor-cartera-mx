@@ -232,11 +232,21 @@ const CONFIG = {
   healthManifest: '', // vacío = auto-detecta ./salud_semanas.json (lista de archivos de salud por semana)
   consideracionesUrl: '', // vacío = auto-detecta ./consideraciones.json
   autoTryFiles: ['./cartera.xlsx','./Cuentas_Postventa.xlsx'],
-  // ===== Anotaciones de equipo en tiempo real (Firebase Realtime Database) =====
+  // ===== Señal de gestión (nueva vs recurrente + en seguimiento/sin gestionar) =====
+  // Opción simple sin Firebase, en Excel: sube un archivo gestion.xlsx a la raíz del repo
+  // (junto a cartera.xlsx) con columnas: ID | Cuenta | Estado | Nota | Responsable | Fecha
+  //   - Estado: escribe "Seguimiento" o "Resuelta"
+  //   - ID: el ID Geo de la cuenta (opcional pero recomendado, matchea mejor que el nombre)
+  //   - Una fila por cuenta con seguimiento; para actualizar, edita el Excel y vuelve a subirlo
+  // Se auto-detecta solo, igual que cartera.xlsx e implementaciones.xlsx — no hace falta tocar nada más aquí.
+  gestionUrl: '', // vacío = auto-detecta ./gestion.xlsx
+  gestionAutoTry: ['./gestion.xlsx'],
+  // ===== Anotaciones de equipo en tiempo real (Firebase Realtime Database) — alternativa opcional/avanzada =====
   // Pega aquí el config de TU proyecto Firebase (gratis) para que las notas se compartan
   // en vivo entre todos los que abran este dashboard. Instrucciones completas al final
   // de este archivo, junto a la función initAnnotations(). Déjalo como null para
-  // desactivar la función (el dashboard funciona igual sin esto).
+  // desactivar la función (el dashboard funciona igual sin esto, y gestionUrl de arriba
+  // es la vía recomendada si no quieres configurar un proyecto Firebase).
   firebase: null,
   implementacionesUrl: '', // vacío = auto-detecta ./implementaciones.xlsx
   implementacionesAutoTry: ['./implementaciones.xlsx']
@@ -272,6 +282,8 @@ let CONSID = CONSID_DEFAULT;
 let FUGA_EXCL = {ids:{}, norms:{}};
 // historial de salud semanal: [{date:'YYYY-MM-DD', snap:{empresa:'ok'|'aten'|'A'|'N'|'T'}}]
 let WEEKS = [];
+// señal de gestión (alternativa simple a Firebase): filas leídas de un Google Sheet publicado como CSV
+let GESTION_ENTRIES = [];
 
 // ---------- salud por tamaño (resumen agregado, archivo resumen-tamano.csv) ----------
 let tamSel='';
@@ -294,7 +306,7 @@ let ACCOUNTS=[];
 let SOURCE='Cartera base (cuentas0206.xlsx)';
 let HEALTH={loaded:false,matched:0,total:0,unmatched:[],keyHeader:'',signalHeaders:[]};
 let HEALTH_CACHE=null;
-let LAST={portfolioUrl:'',healthUrl:'',consideracionesUrl:'',implementacionesUrl:''};
+let LAST={portfolioUrl:'',healthUrl:'',consideracionesUrl:'',implementacionesUrl:'',gestionUrl:''};
 let LAST_RELOAD=null;
 function markReload(){LAST_RELOAD=new Date();try{persist('last_reload',LAST_RELOAD.toISOString());}catch(e){}}
 function fmtReload(){if(!LAST_RELOAD)return'—';try{return LAST_RELOAD.toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return LAST_RELOAD.toLocaleString();}}
@@ -752,11 +764,18 @@ function prCard(a,rank){
   const marc=ad!=null?` · <strong style="color:${ad<0.3?'#A32D2D':ad<0.6?'#854F0B':'inherit'}">Marcaje ${Math.round(ad*100)}%${a._marcajeAjustado?' (ajustado)':''}</strong>`:'';
   const accion=pb?`<div class="pr-accion">${pbBadge(pb)} <strong>Acción a realizar:</strong> ${!hasCS(a)?'<strong style="color:#A32D2D">Asignar CSS · </strong>':''}${esc(pb.first)} <span style="opacity:.7">(${pb.sla})</span></div>`:'';
   const anotBadge=(function(){if(!a._anot)return'';const es=ANNOT_ESTADOS[a._anot.estado];const tag=es?`<span class="badge ${es.badge}">📝 ${es.label}</span>`:'<span class="badge b-gray">📝 Nota</span>';return tag+' ';})();
+  // seguimiento semanal: nueva vs recurrente (WEEKS) + señal de "sin gestionar" cuando no hay anotación de equipo
+  let trackBadge='';
+  if(st==='critica'){
+    if(a._streak===undefined)computeTracking(a);
+    if(a._weeksAvail>0)trackBadge+=a._streak<=1?`<span class="badge b-blue" title="No aparecía crítica en la semana guardada anterior">🆕 Nueva esta semana</span> `:`<span class="badge b-gray" title="Semanas consecutivas crítica, incluyendo la actual">🔁 Crítica hace ${a._streak} semana${a._streak===1?'':'s'}</span> `;
+    if(!a._anot)trackBadge+='<span class="badge b-red" title="Sin nota de seguimiento registrada">🔴 Sin gestionar</span> ';
+  }
   return`<div class="pr-card ${gap}" onclick="openDetail('${a._uid}')">
     <div class="pr-rank">${rank}</div>
     <div class="pr-main"><div class="pr-name">${esc(a.cliente)}</div>
     <div class="pr-meta">${carteraBadge(a.cartera)} · ${esc(a.kam)} · ${fmtUSD(a.mrr)}/mes${marc} · ${csBadge(a)}</div>
-    <div style="margin-top:5px">${stBadge}${anotBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}${a._anot&&a._anot.nota?`<div class="pr-accion" style="color:var(--color-text-secondary)">📝 <em>"${esc(a._anot.nota.length>140?a._anot.nota.slice(0,140)+'…':a._anot.nota)}"</em> — ${esc(a._anot.autor||'')}</div>`:''}</div>
+    <div style="margin-top:5px">${stBadge}${anotBadge}${trackBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}${a._anot&&a._anot.nota?`<div class="pr-accion" style="color:var(--color-text-secondary)">📝 <em>"${esc(a._anot.nota.length>140?a._anot.nota.slice(0,140)+'…':a._anot.nota)}"</em> — ${esc(a._anot.autor||'')}</div>`:''}</div>
     <div class="pr-score" style="color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-secondary)'}">${a._score}</div>
   </div>`;
 }
@@ -800,7 +819,7 @@ function renderResumen(){
 }
 
 // ---------- Salud - General ----------
-let prState={estado:'atrisk',cs:''};
+let prState={estado:'atrisk',cs:'',antig:'',gestion:''};
 let PR_GROUPS=[];
 let segSel={seg:'',estado:''};
 function segShow(seg,estado){segSel=(segSel.seg===seg&&segSel.estado===estado)?{seg:'',estado:''}:{seg,estado};renderPrioridad();const el=$('segList');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});}
@@ -846,6 +865,48 @@ function renderPrioridad(){
   <p class="legend"><span class="badge b-amber">PB-01</span> Adopción/marcaje cayendo (&lt;60% o caída &gt;20pp) · SLA 5 días · diagnóstico con admin del sistema y plan por causa raíz.<br><span class="badge b-red">PB-03</span> Riesgo de fuga (2+ señales: sin marcaje 14d, NPS detractor, ticket &gt;7d) · SLA 24h · contacto con decisor y plan de recuperación en 72h.<br><span class="badge b-gray">PB-02</span> Detractor NPS (0–6) · SLA 48h. Cada cuenta muestra su acción concreta en Salud - Segmentos.</p></div>`;
 }
 
+// ---------- Seguimiento semanal de críticas: nueva vs recurrente + señal de gestión ----------
+// Empareja una cuenta contra el snapshot (por nombre) de una semana guardada en WEEKS.
+// snap viene de snapshotFromHealth(): {nombreCrudo: {f,ad}} — se indexa una vez por semana (memoizado).
+const WEEK_SNAP_IDX=new WeakMap();
+function weekSnapIndex(snap){
+  if(WEEK_SNAP_IDX.has(snap))return WEEK_SNAP_IDX.get(snap);
+  const idx={};Object.keys(snap).forEach(nm=>{nameKeys(nm).forEach(k=>{if(!idx[k])idx[k]=snap[nm];});});
+  WEEK_SNAP_IDX.set(snap,idx);return idx;
+}
+function findInWeekSnap(a,snap){
+  if(!snap)return null;const idx=weekSnapIndex(snap);const keys=nameKeys(a.cliente);
+  for(const k of keys){if(idx[k])return idx[k];}
+  for(const k of keys){const found=Object.keys(idx).find(ik=>ik.length>4&&(ik.includes(k)||k.includes(ik)));if(found)return idx[found];}
+  return null;
+}
+function isWeekCritical(entry){const f=snapFlag(entry);return f!=null&&f!=='ok'&&f!=='aten';}
+// semanas consecutivas crítica contando hacia atrás desde la semana vigente (incluida).
+// Si falta el dato de una semana intermedia, se corta la racha ahí (conservador: no asume continuidad sin evidencia).
+function criticalStreak(a){
+  let weeks=WEEKS.filter(w=>!CURRENT_HEALTH_DATE||w.date<=CURRENT_HEALTH_DATE);
+  weeks=weeks.slice().sort((x,y)=>x.date<y.date?-1:1);
+  if(!weeks.length)return{streak:isCritica(a)?1:0,weeksAvailable:0};
+  let streak=0;
+  for(let i=weeks.length-1;i>=0;i--){
+    const entry=findInWeekSnap(a,weeks[i].snap);
+    if(entry&&isWeekCritical(entry))streak++;else break;
+  }
+  return{streak:Math.max(streak,isCritica(a)?1:0),weeksAvailable:weeks.length};
+}
+// señal de gestión: se apoya en a._anot, que puede venir de gestion.xlsx (ver CONFIG.gestionUrl/gestionAutoTry)
+// o de Firebase si lo configuraste. Si ninguno está activo, a._anot siempre es null y todo sale "Sin gestionar" —
+// eso no significa que nadie esté trabajando la cuenta, significa que el dashboard aún no tiene dónde leerlo.
+function gestionInfo(a){
+  const an=a._anot;
+  if(!an)return{estado:'sin_gestionar',label:'Sin gestionar',badge:'b-red',icon:'🔴'};
+  if(an.estado==='seguimiento')return{estado:'seguimiento',label:'En seguimiento',badge:'b-amber',icon:'🟠'};
+  if(an.estado==='resuelta')return{estado:'reabrir',label:'Marcada resuelta · sigue crítica',badge:'b-purple',icon:'⚠️'};
+  return{estado:'nota',label:'Con nota',badge:'b-gray',icon:'📝'};
+}
+// calcula y cachea _streak/_weeksAvail/_gestion sobre la cuenta; se recalcula en cada render de Priorizar
+function computeTracking(a){const st=criticalStreak(a);a._streak=st.streak;a._weeksAvail=st.weeksAvailable;a._gestion=gestionInfo(a);return a;}
+
 // ---------- Priorizar por KAM ----------
 function renderPriorizar(){
   ACCOUNTS.forEach(priority);
@@ -861,16 +922,20 @@ function renderPriorizar(){
     return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500">${esc(a.cliente)}</td><td>${b.join(' ')}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(com)}</td></tr>`;};
   const excHtml=`<details class="card" style="padding:0"><summary style="cursor:pointer;padding:1rem 1.25rem;font-size:14px;font-weight:500;color:var(--color-text-secondary)">Excepciones <span class="badge b-gray">${exc.length}</span> <span style="font-weight:400;font-size:12px">— cuentas con un ajuste de consideraciones aplicado</span></summary><div style="padding:0 1.25rem 1rem">${exc.length?`<div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Excepción</th><th class="nosort">Comentario</th></tr></thead><tbody>${exc.map(excRow).join('')}</tbody></table></div>`:'<p class="legend">Sin excepciones aplicadas. Se gestionan en <code>consideraciones.json</code> (pestaña Datos).</p>'}</div></details>`;
   $('priorizar').innerHTML=`
-  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.</div>
+  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.<br><br><strong>Nuevo — seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"), y si tiene una <strong>nota de seguimiento</strong> o está <strong>🔴 sin gestionar</strong>. Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como sin gestionar aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo.</div>
   ${excHtml}
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
     <select id="prCS"><option value="">Toda cobertura CS</option><option value="sin">Sin CS</option><option value="con">Con CS</option></select>
+    <select id="prAntig" title="Solo afecta a las cuentas críticas"><option value="">Toda antigüedad</option><option value="nueva">🆕 Nuevas esta semana</option><option value="recurrente">🔁 Recurrentes (2+ semanas)</option></select>
+    <select id="prGestion" title="Solo afecta a las cuentas críticas · según notas de equipo"><option value="">Toda gestión</option><option value="sin">🔴 Sin gestionar</option><option value="gestionando">En gestión (con nota)</option></select>
   </div>
   <div class="card"><h3 id="prTitle"></h3><div id="prList"></div></div>`;
-  $('prEstado').value=prState.estado;$('prCS').value=prState.cs;
+  $('prEstado').value=prState.estado;$('prCS').value=prState.cs;$('prAntig').value=prState.antig;$('prGestion').value=prState.gestion;
   $('prEstado').onchange=e=>{prState.estado=e.target.value;drawPrList();};
   $('prCS').onchange=e=>{prState.cs=e.target.value;drawPrList();};
+  $('prAntig').onchange=e=>{prState.antig=e.target.value;drawPrList();};
+  $('prGestion').onchange=e=>{prState.gestion=e.target.value;drawPrList();};
   drawPrList();
 }
 function prSet(estado,cs){prState.estado=estado;prState.cs=cs;show('priorizar');}
@@ -882,6 +947,12 @@ function drawPrList(){
   else if(prState.estado==='sano')rows=rows.filter(a=>!isCritica(a)&&!isRiesgo(a));
   if(prState.cs==='sin')rows=rows.filter(a=>!hasCS(a));
   else if(prState.cs==='con')rows=rows.filter(hasCS);
+  // seguimiento semanal: calcula racha/gestión de cada crítica visible antes de filtrar por antigüedad/gestión
+  rows.forEach(a=>{if(isCritica(a))computeTracking(a);});
+  if(prState.antig==='nueva')rows=rows.filter(a=>isCritica(a)&&a._streak<=1);
+  else if(prState.antig==='recurrente')rows=rows.filter(a=>isCritica(a)&&a._streak>1);
+  if(prState.gestion==='sin')rows=rows.filter(a=>isCritica(a)&&!a._anot);
+  else if(prState.gestion==='gestionando')rows=rows.filter(a=>isCritica(a)&&!!a._anot);
   // agrupar por KAM
   const groups={};
   rows.forEach(a=>{const k=a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(a);});
@@ -892,7 +963,9 @@ function drawPrList(){
     const ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a));
     const resto=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));
     const montoRiesgo=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);
-    return{kam,crit,ries,resto,montoRiesgo,total:arr.length};
+    const nuevas=crit.filter(a=>a._streak<=1).length;
+    const sinGestionar=crit.filter(a=>!a._anot).length;
+    return{kam,crit,ries,resto,montoRiesgo,total:arr.length,nuevas,sinGestionar};
   }).sort((x,y)=> kamRank(x.kam)-kamRank(y.kam) || y.crit.length-x.crit.length || y.ries.length-x.ries.length || y.montoRiesgo-x.montoRiesgo || y.total-x.total);
   $('prTitle').textContent=`${rows.length} cuentas en ${ordered.length} KAM · críticas por marcaje ascendente`;
   if(!rows.length){$('prList').innerHTML='<p class="legend">No hay cuentas con estos filtros.</p>';return;}
@@ -901,6 +974,8 @@ function drawPrList(){
   const byMarcaje=(a,b)=>marc(a)-marc(b) || (b._score-a._score);
   const byScore=(a,b)=>b._score-a._score;
   const tools=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(false)">Colapsar todo</button></div>`;
+  const critVisible=rows.filter(isCritica);
+  const summaryBanner=critVisible.length?`<div class="note-box" style="margin-bottom:10px">Resumen de esta vista: 🆕 <strong>${critVisible.filter(a=>a._streak<=1).length}</strong> críticas nuevas esta semana · 🔴 <strong>${critVisible.filter(a=>!a._anot).length}</strong> sin gestionar (sin nota) de <strong>${critVisible.length}</strong> críticas visibles.</div>`:'';
   PR_GROUPS=ordered;
   const groupsHtml=ordered.map((g,gi)=>{
     g.crit.sort(byMarcaje);g.ries.sort(byScore);g.resto.sort(byScore);
@@ -912,7 +987,7 @@ function drawPrList(){
       <summary class="kam-head">
         <span class="chev">▸</span>
         <span class="kam-name">${esc(g.kam)}</span>
-        <span class="kam-stats"><strong style="color:#E24B4A">${g.crit.length}</strong> críticas · <strong style="color:#EF9F27">${g.ries.length}</strong> en riesgo${g.resto.length?` · <strong style="color:#3B6D11">${g.resto.length}</strong> saludables`:''} · <strong>${fmtUSD(g.montoRiesgo)}/mes</strong> expuesto${sinCSn?` · <strong style="color:#E24B4A">${sinCSn} sin CS</strong>`:''}</span>
+        <span class="kam-stats"><strong style="color:#E24B4A">${g.crit.length}</strong> críticas · <strong style="color:#EF9F27">${g.ries.length}</strong> en riesgo${g.resto.length?` · <strong style="color:#3B6D11">${g.resto.length}</strong> saludables`:''} · <strong>${fmtUSD(g.montoRiesgo)}/mes</strong> expuesto${sinCSn?` · <strong style="color:#E24B4A">${sinCSn} sin CS</strong>`:''}${g.nuevas?` · <strong style="color:#0C447C">${g.nuevas} 🆕 nuevas</strong>`:''}${g.sinGestionar?` · <strong style="color:#A32D2D">${g.sinGestionar} sin gestionar</strong>`:''}</span>
         ${copyBtn}
       </summary>
       <div class="kam-body">${block(g.crit,'🔴 Críticas (marcaje ↑)')}${block(g.ries,'🟠 En riesgo')}${block(g.resto,'🟢 Saludables')}</div>
@@ -936,7 +1011,7 @@ function drawPrList(){
         <div class="kam-body"><div class="kam-sub">🔴 Críticas (marcaje ↑) · ${uc.length}</div>${uc.map(u=>prCardUnmatched(u,++rank)).join('')}</div>
       </details>`;}
   }
-  $('prList').innerHTML=tools+groupsHtml+extra;
+  $('prList').innerHTML=tools+summaryBanner+groupsHtml+extra;
 }
 function razonLabel(code){return {marcaje:'marcaje bajo',sinuso:'sin uso',nps:'NPS detractor',ticket:'tickets sin resolver',fuga:'fuga / caída de facturación'}[code]||'salud crítica';}
 function kamShort(name){const n=normName(name||'');if(n.includes('raul'))return'Raúl';if(n.includes('dafne'))return'Dafne';if(n.includes('karla'))return'Karla';return name||'Sin KAM';}
@@ -945,15 +1020,18 @@ function tsvCell(v){return String(v==null?'':v).replace(/[\t\r\n]+/g,' ').trim()
 // tabla TSV (encabezado + filas) con las cuentas críticas de UN solo grupo/KAM
 function buildKamCriticasTSV(g){
   if(!g||!g.crit||!g.crit.length)return '';
-  const header=['#','Cuenta','ID','Cartera','MRR (USD)','Marcaje','Motivo crítico','CS','Acción sugerida'];
+  const header=['#','Cuenta','ID','Cartera','MRR (USD)','Marcaje','Motivo crítico','CS','Antigüedad','Gestión','Acción sugerida'];
   const rows=[header.join('\t')];
   g.crit.forEach((a,i)=>{
+    if(a._streak===undefined)computeTracking(a);
     const adopcion=(a.health&&a.health.adopcion!=null)?Math.round(a.health.adopcion*100)+'%':'s/d';
     const razon=razonLabel(a._razonCritico||razonCritico(a));
     const cs=hasCS(a)?csOf(a):'Sin CS';
     const pb=playbookFor(a);
     const accion=pb?pb.first:'';
-    rows.push([i+1,a.cliente,a.id,a.cartera,Math.round(a.mrr||0),adopcion,razon,cs,accion].map(tsvCell).join('\t'));
+    const antig=a._weeksAvail>0?(a._streak<=1?'Nueva esta semana':`Semana ${a._streak} seguida`):'s/d';
+    const gestion=a._gestion?a._gestion.label:'Sin gestionar';
+    rows.push([i+1,a.cliente,a.id,a.cartera,Math.round(a.mrr||0),adopcion,razon,cs,antig,gestion,accion].map(tsvCell).join('\t'));
   });
   return rows.join('\n');
 }
@@ -1678,7 +1756,7 @@ async function loadHealthURL(url,opts){
     return true;
   }catch(err){if(probe)return false;if(msg){msg.style.color='#A32D2D';msg.textContent='Error: '+err.message;}else toast('Salud: '+err.message,true);return false;}
 }
-async function refreshHealthAfterPortfolio(){const hurl=LAST.healthUrl||CONFIG.healthUrl;if(hurl){await loadHealthURL(hurl,{silent:true,probe:true});}else if(HEALTH_CACHE){applyHealth(HEALTH_CACHE);}}
+async function refreshHealthAfterPortfolio(){const hurl=LAST.healthUrl||CONFIG.healthUrl;if(hurl){await loadHealthURL(hurl,{silent:true,probe:true});}else if(HEALTH_CACHE){applyHealth(HEALTH_CACHE);}applyGestionToAccounts();}
 async function loadConsideraciones(url,opts){
   opts=opts||{};const silent=opts.silent,probe=opts.probe;
   if(!url)return false;
@@ -1695,6 +1773,62 @@ async function loadConsideraciones(url,opts){
       renderAll();}
     return true;
   }catch(err){if(!silent&&!probe)toast('Consideraciones: '+err.message,true);return false;}
+}
+// lee la hoja de gestión (gestion.xlsx): columnas por nombre, insensible a mayúsculas/orden —
+// ID | Cuenta | Estado | Nota | Responsable | Fecha
+function parseGestionSheet(wb){
+  const name=wb.SheetNames[0];if(!name)return null;
+  const aoa=aoaOfSheet(wb,name);
+  const hdr=findHeaderRowAOA(aoa,[/cuenta|nombre|empresa/i,/estado/i],8);
+  if(hdr<0)return null;
+  const headers=aoa[hdr].map(c=>c==null?'':String(c).trim());
+  const find=re=>headers.findIndex(h=>re.test(h));
+  const c={id:find(/^id/i),nombre:find(/cuenta|nombre|empresa/i),estado:find(/estado/i),nota:find(/nota/i),autor:find(/responsable|autor|kam/i),fecha:find(/fecha/i)};
+  if(c.nombre<0)return null;
+  const out=[];
+  for(let r=hdr+1;r<aoa.length;r++){
+    const row=aoa[r]||[];
+    const nombre=txt(c.nombre>=0?row[c.nombre]:null);
+    const idv=c.id>=0?cleanId(row[c.id]):null;
+    if(!nombre&&!idv)continue;
+    const estadoRaw=(txt(c.estado>=0?row[c.estado]:null)||'').toLowerCase();
+    const estado=/segui/.test(estadoRaw)?'seguimiento':/resuel/.test(estadoRaw)?'resuelta':(estadoRaw||null);
+    out.push({id:idv,nombre:nombre||'',estado,nota:txt(c.nota>=0?row[c.nota]:null)||'',autor:txt(c.autor>=0?row[c.autor]:null)||'',fecha:excelSerialToISO(c.fecha>=0?row[c.fecha]:null)||''});
+  }
+  return out;
+}
+function refreshGestion(wb){
+  let n=0;
+  try{const rows=parseGestionSheet(wb);if(rows){GESTION_ENTRIES=rows;n=rows.length;}}catch(e){}
+  applyGestionToAccounts();
+  return n;
+}
+// carga la señal de gestión desde gestion.xlsx (alternativa simple a Firebase, sin depender de Google Sheets)
+async function loadGestionURL(url,opts){
+  opts=opts||{};const silent=opts.silent,probe=opts.probe;
+  if(!url)return false;
+  try{
+    const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
+    const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const wb=XLSX.read(new Uint8Array(await resp.arrayBuffer()),{type:'array'});
+    const n=refreshGestion(wb);
+    if(!n)throw new Error('no se encontraron filas (revisa encabezados: ID, Cuenta, Estado, Nota, Responsable, Fecha)');
+    LAST.gestionUrl=url;persist('last_gestion_url',url);renderAll();
+    return true;
+  }catch(err){if(!silent&&!probe)toast('Gestión: '+err.message,true);return false;}
+}
+// empareja GESTION_ENTRIES con ACCOUNTS por ID (preferido) o nombre normalizado, y llena a._anot.
+// no pisa una anotación ya puesta por Firebase (si algún día lo activas, Firebase manda).
+function applyGestionToAccounts(){
+  if(!GESTION_ENTRIES.length)return;
+  const byId={},byNorm={};
+  GESTION_ENTRIES.forEach(e=>{if(e.id)byId[e.id]=e;nameKeys(e.nombre).forEach(k=>{if(!byNorm[k])byNorm[k]=e;});});
+  ACCOUNTS.forEach(a=>{
+    if(a._anot)return;
+    const pid=cleanId(a.id);let hit=pid&&byId[pid]?byId[pid]:null;
+    if(!hit){const keys=nameKeys(a.cliente);for(const k of keys){if(byNorm[k]){hit=byNorm[k];break;}}}
+    if(hit&&hit.estado){a._anot={estado:hit.estado,nota:hit.nota,autor:hit.autor,actualizado:hit.fecha?(Date.parse(hit.fecha)||null):null};}
+  });
 }
 async function reloadData(){
   const btn=$('reloadBtn');const old=btn.textContent;btn.disabled=true;btn.textContent='Recargando…';
@@ -1862,6 +1996,9 @@ async function autoLoad(){
   const iurl=CONFIG.implementacionesUrl||LAST.implementacionesUrl;
   if(iurl){await loadImplementacionesURL(iurl,{silent:true,probe:true});}
   else{for(const u of (CONFIG.implementacionesAutoTry||['./implementaciones.xlsx'])){if(await loadImplementacionesURL(u,{silent:true,probe:true}))break;}}
+  const gurl=CONFIG.gestionUrl||LAST.gestionUrl;
+  if(gurl){await loadGestionURL(gurl,{silent:true,probe:true});}
+  else{for(const u of (CONFIG.gestionAutoTry||['./gestion.xlsx'])){if(await loadGestionURL(u,{silent:true,probe:true}))break;}}
 }
 async function init(){
   try{if(window.storage&&window.storage.get){
