@@ -34,6 +34,10 @@
   .rec-box{background:#06344a!important;border-color:#00AFF2!important;}
   .rec-box .rec-title{color:#9fdcf7!important;}.rec-box .rec-body{color:#76c8ee!important;}
   .note-box,.dropzone{background:#262d32!important;}
+  .pr-card.gestion-resuelta{background:#173404!important;}
+  .pr-card.gestion-seguimiento{background:#412402!important;}
+  .pr-card.gestion-sin{background:#501313!important;}
+  .pr-card.gestion-implementando{background:#042C53!important;}
 }
 body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary);min-height:100vh;}
 .page{max-width:980px;margin:0 auto;padding:2rem 1.5rem 4rem;}
@@ -86,6 +90,10 @@ tr:last-child td{border-bottom:none;}
 .pr-card{display:flex;align-items:center;gap:12px;padding:11px 12px;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);margin-bottom:8px;cursor:pointer;background:var(--color-background-primary);}
 .pr-card:hover{background:var(--color-background-secondary);}
 .pr-card.gap{border-left:3px solid #E24B4A;}
+.pr-card.gestion-resuelta{background:#EAF3DE;}
+.pr-card.gestion-seguimiento{background:#FAEEDA;}
+.pr-card.gestion-sin{background:#FCEBEB;}
+.pr-card.gestion-implementando{background:#E6F1FB;}
 .pr-rank{font-size:15px;font-weight:600;color:var(--color-text-secondary);min-width:26px;text-align:center;}
 .pr-main{flex:1;min-width:0;}
 .pr-name{font-size:14px;font-weight:500;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -312,7 +320,7 @@ function markReload(){LAST_RELOAD=new Date();try{persist('last_reload',LAST_RELO
 function fmtReload(){if(!LAST_RELOAD)return'—';try{return LAST_RELOAD.toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return LAST_RELOAD.toLocaleString();}}
 const WEIGHTS={mrr:30,fugaBaja:30,fugaDism:20,saludCritico:25,healthCritico:30,healthAtencion:12,cuadRetener:15,cuadExpandir:10,cuadAlcanzar:5,cuadMantener:3,upside:4,churnGap:20};
 
-const HEADER_MAP={'ID Geo':'id','CLIENTE':'cliente','Grupo':'grupo','Cartera':'cartera','KAM':'kam','CSS':'css','Facturación actual USD':'mrr','Enero':'m0','Febrero':'m1','Marzo':'m2','Abril':'m3','Mayo':'m4','Junio':'m5','Julio':'m6','Agosto':'m7','Septiembre':'m8','Octubre':'m9','Noviembre':'m10','Diciembre':'m11','Estado salud':'estadoSalud','Cuadrante (MARE + Retener)':'cuadrante','Riesgo':'riesgo','Estado Claude':'estado','Rubro zoho':'rubro','Descripción breve de la empresa y a que se dedica':'desc','Usuarios potenciales (Claude)':'usuarios','Escala comunicación':'escala','Nos usa para pagar nómina?':'nomina','Arrienda equipos?':'arrienda','Puntaje Cross':'puntajeCross','# Productos OK':'okCount','# Productos OP':'opCount','Referido/Referencia':'referido','Comentario':'comentario'};
+const HEADER_MAP={'ID Geo':'id','CLIENTE':'cliente','Grupo':'grupo','Cartera':'cartera','KAM':'kam','CSS':'css','Facturación actual USD':'mrr','Enero':'m0','Febrero':'m1','Marzo':'m2','Abril':'m3','Mayo':'m4','Junio':'m5','Julio':'m6','Agosto':'m7','Septiembre':'m8','Octubre':'m9','Noviembre':'m10','Diciembre':'m11','Estado salud':'estadoSalud','Cuadrante (MARE + Retener)':'cuadrante','Riesgo':'riesgo','Estado Claude':'estado','Rubro zoho':'rubro','Descripción breve de la empresa y a que se dedica':'desc','Usuarios potenciales (Claude)':'usuarios','Escala comunicación':'escala','Nos usa para pagar nómina?':'nomina','Arrienda equipos?':'arrienda','Puntaje Cross':'puntajeCross','# Productos OK':'okCount','# Productos OP':'opCount','Referido/Referencia':'referido','Comentario':'comentario','Implementando?':'implementando'};
 const MOD_COLS={'Alertas':'Alertas','Integración (VC)':'Integración VC','Permisos y vacaciones':'Permisos y vacaciones','Planif. Inteligente ':'Planificador Inteligente','BI':'BI','RAM':'RAM','Acceso':'Acceso','Comedor':'Comedor','VictorIA':'VictorIA','Optimizador Turnos':'Optimizador Turnos','Marcaje WPP':'Marcaje WPP','WF Cambio de turno':'WF Cambio turno','Formularios':'Formularios','Upselling':'Upselling'};
 const MOD_ALL=['Alertas','Integración VC','Permisos y vacaciones','Planificador Inteligente','BI','RAM','Acceso','Comedor','VictorIA','Optimizador Turnos','Marcaje WPP','WF Cambio turno','Formularios','Upselling'];
 
@@ -358,6 +366,8 @@ function segOf(a){
   return'SMB small';
 }
 function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return false;return !!(a.health&&a.health.flag==='critico');}
+// cuenta marcada "Implementando?" = Sí en la cartera (columna de cartera.xlsx, no del modelo de salud)
+function isImplementando(a){return /^s[ií]$/i.test(String(a.implementando||'').trim());}
 function isRiesgo(a){if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return false;return !isCritica(a)&&!!(a.health&&a.health.flag==='atencion');}
 // --- consideraciones de negocio ---
 // coincidencia por patrón de nombre; cubre "J&T" y "J & T" sin falsos positivos
@@ -510,7 +520,7 @@ function parseMareWorkbook(wb){
     while(meses.length>4&&meses[meses.length-1]==null)meses.pop();
     let mrr=num(get(row,'mrr'));const pres=meses.filter(m=>m!=null);if(mrr==null&&pres.length)mrr=pres[pres.length-1];
     const mods={};Object.keys(modIdx).forEach(name=>{const raw=row[modIdx[name]];const s=modStatus(raw);if(s)mods[name]={s,raw:txt(raw)};});
-    out.push({id:txt(get(row,'id')),cliente:cli,grupo:txt(get(row,'grupo')),cartera:txt(get(row,'cartera'))||'Sin segmento',kam:txt(get(row,'kam'))||'No Asignado',css:txt(get(row,'css')),mrr,meses,fuga:fugaFromMonths(meses),estadoSalud:txt(get(row,'estadoSalud')),cuadrante:txt(get(row,'cuadrante')),riesgo:txt(get(row,'riesgo')),estado:txt(get(row,'estado')),rubro:txt(get(row,'rubro')),desc:txt(get(row,'desc')),usuarios:num(get(row,'usuarios')),escala:txt(get(row,'escala')),nomina:txt(get(row,'nomina')),arrienda:txt(get(row,'arrienda')),puntajeCross:num(get(row,'puntajeCross')),okCount:num(get(row,'okCount')),opCount:num(get(row,'opCount')),referido:txt(get(row,'referido')),comentario:txt(get(row,'comentario')),mods});
+    out.push({id:txt(get(row,'id')),cliente:cli,grupo:txt(get(row,'grupo')),cartera:txt(get(row,'cartera'))||'Sin segmento',kam:txt(get(row,'kam'))||'No Asignado',css:txt(get(row,'css')),mrr,meses,fuga:fugaFromMonths(meses),estadoSalud:txt(get(row,'estadoSalud')),cuadrante:txt(get(row,'cuadrante')),riesgo:txt(get(row,'riesgo')),estado:txt(get(row,'estado')),rubro:txt(get(row,'rubro')),desc:txt(get(row,'desc')),usuarios:num(get(row,'usuarios')),escala:txt(get(row,'escala')),nomina:txt(get(row,'nomina')),arrienda:txt(get(row,'arrienda')),puntajeCross:num(get(row,'puntajeCross')),okCount:num(get(row,'okCount')),opCount:num(get(row,'opCount')),referido:txt(get(row,'referido')),comentario:txt(get(row,'comentario')),implementando:txt(get(row,'implementando')),mods});
   }
   if(!out.length)throw new Error('Encabezado encontrado pero sin filas de CLIENTE.');
   // leer hoja "detalle fuga" (si existe) → cuentas a excluir de la marca de fuga
@@ -764,6 +774,7 @@ function prCard(a,rank){
   const marc=ad!=null?` · <strong style="color:${ad<0.3?'#A32D2D':ad<0.6?'#854F0B':'inherit'}">Marcaje ${Math.round(ad*100)}%${a._marcajeAjustado?' (ajustado)':''}</strong>`:'';
   const accion=pb?`<div class="pr-accion">${pbBadge(pb)} <strong>Acción a realizar:</strong> ${!hasCS(a)?'<strong style="color:#A32D2D">Asignar CSS · </strong>':''}${esc(pb.first)} <span style="opacity:.7">(${pb.sla})</span></div>`:'';
   const anotBadge=(function(){if(!a._anot)return'';const es=ANNOT_ESTADOS[a._anot.estado];const tag=es?`<span class="badge ${es.badge}">📝 ${es.label}</span>`:'<span class="badge b-gray">📝 Nota</span>';return tag+' ';})();
+  const implBadge=isImplementando(a)?'<span class="badge b-blue" title="Marcada Implementando? = Sí en la cartera">🔵 Implementando</span> ':'';
   // seguimiento semanal: nueva vs recurrente (WEEKS) + señal de "sin gestionar" cuando no hay anotación de equipo
   let trackBadge='';
   if(st==='critica'){
@@ -771,11 +782,17 @@ function prCard(a,rank){
     if(a._weeksAvail>0)trackBadge+=a._streak<=1?`<span class="badge b-blue" title="No aparecía crítica en la semana guardada anterior">🆕 Nueva esta semana</span> `:`<span class="badge b-gray" title="Semanas consecutivas crítica, incluyendo la actual">🔁 Crítica hace ${a._streak} semana${a._streak===1?'':'s'}</span> `;
     if(!a._anot)trackBadge+='<span class="badge b-red" title="Sin nota de seguimiento registrada">🔴 Sin gestionar</span> ';
   }
-  return`<div class="pr-card ${gap}" onclick="openDetail('${a._uid}')">
+  // color de fondo: Implementando manda sobre todo lo demás; si no, resuelta=verde, en seguimiento=amarillo, crítica sin gestionar=rojo
+  let gestionClass='';
+  if(isImplementando(a))gestionClass='gestion-implementando';
+  else if(a._anot&&a._anot.estado==='resuelta')gestionClass='gestion-resuelta';
+  else if(a._anot&&a._anot.estado==='seguimiento')gestionClass='gestion-seguimiento';
+  else if(st==='critica'&&!a._anot)gestionClass='gestion-sin';
+  return`<div class="pr-card ${gap} ${gestionClass}" onclick="openDetail('${a._uid}')">
     <div class="pr-rank">${rank}</div>
     <div class="pr-main"><div class="pr-name">${esc(a.cliente)}</div>
     <div class="pr-meta">${carteraBadge(a.cartera)} · ${esc(a.kam)} · ${fmtUSD(a.mrr)}/mes${marc} · ${csBadge(a)}</div>
-    <div style="margin-top:5px">${stBadge}${anotBadge}${trackBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}${a._anot&&a._anot.nota?`<div class="pr-accion" style="color:var(--color-text-secondary)">📝 <em>"${esc(a._anot.nota.length>140?a._anot.nota.slice(0,140)+'…':a._anot.nota)}"</em> — ${esc(a._anot.autor||'')}</div>`:''}</div>
+    <div style="margin-top:5px">${stBadge}${implBadge}${anotBadge}${trackBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}${a._anot&&a._anot.nota?`<div class="pr-accion" style="color:var(--color-text-secondary)">📝 <em>"${esc(a._anot.nota.length>140?a._anot.nota.slice(0,140)+'…':a._anot.nota)}"</em> — ${esc(a._anot.autor||'')}</div>`:''}</div>
     <div class="pr-score" style="color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-secondary)'}">${a._score}</div>
   </div>`;
 }
@@ -922,7 +939,7 @@ function renderPriorizar(){
     return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500">${esc(a.cliente)}</td><td>${b.join(' ')}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(com)}</td></tr>`;};
   const excHtml=`<details class="card" style="padding:0"><summary style="cursor:pointer;padding:1rem 1.25rem;font-size:14px;font-weight:500;color:var(--color-text-secondary)">Excepciones <span class="badge b-gray">${exc.length}</span> <span style="font-weight:400;font-size:12px">— cuentas con un ajuste de consideraciones aplicado</span></summary><div style="padding:0 1.25rem 1rem">${exc.length?`<div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Excepción</th><th class="nosort">Comentario</th></tr></thead><tbody>${exc.map(excRow).join('')}</tbody></table></div>`:'<p class="legend">Sin excepciones aplicadas. Se gestionan en <code>consideraciones.json</code> (pestaña Datos).</p>'}</div></details>`;
   $('priorizar').innerHTML=`
-  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.<br><br><strong>Nuevo — seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"), y si tiene una <strong>nota de seguimiento</strong> o está <strong>🔴 sin gestionar</strong>. Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como sin gestionar aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo.</div>
+  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.<br><br><strong>Nuevo — seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"), y si tiene una <strong>nota de seguimiento</strong> o está <strong>🔴 sin gestionar</strong>. Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como sin gestionar aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo. Las tarjetas también se pintan: <strong style="color:#3B6D11">verde</strong> si está "Resuelta", <strong style="color:#854F0B">amarillo</strong> si está "En seguimiento", <strong style="color:#A32D2D">rojo</strong> si es crítica y no tiene nada en gestión, y <strong style="color:#185FA5">celeste 🔵 Implementando</strong> si la cartera trae <code>Implementando? = Sí</code> para esa cuenta — estas últimas quedan fuera del botón "Copiar críticas" porque ya las lleva el equipo de implementación.</div>
   ${excHtml}
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
@@ -982,7 +999,8 @@ function drawPrList(){
     const sinCSn=g.crit.concat(g.ries).filter(a=>!hasCS(a)).length;
     let rank=0;
     const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(a=>prCard(a,++rank)).join('')}`:'';
-    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${g.crit.length?'':' disabled'} title="${g.crit.length?`Copia las ${g.crit.length} cuentas críticas de ${esc(kamShort(g.kam))} en formato tabla (TSV) para pegar en Excel/Sheets/Word`:`${esc(kamShort(g.kam))} no tiene cuentas críticas con estos filtros`}" onclick="event.stopPropagation();event.preventDefault();copyKamCriticasTSV(${gi})">📋 Copiar críticas</button>`;
+    const copiableN=g.crit.filter(a=>!isImplementando(a)).length;
+    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} cuentas críticas de ${esc(kamShort(g.kam))} en formato tabla (TSV) para pegar en Excel/Sheets/Word (no incluye las marcadas Implementando)`:`${esc(kamShort(g.kam))} no tiene cuentas críticas copiables con estos filtros`}" onclick="event.stopPropagation();event.preventDefault();copyKamCriticasTSV(${gi})">📋 Copiar críticas</button>`;
     return`<details class="kam-group">
       <summary class="kam-head">
         <span class="chev">▸</span>
@@ -1020,9 +1038,11 @@ function tsvCell(v){return String(v==null?'':v).replace(/[\t\r\n]+/g,' ').trim()
 // tabla TSV (encabezado + filas) con las cuentas críticas de UN solo grupo/KAM
 function buildKamCriticasTSV(g){
   if(!g||!g.crit||!g.crit.length)return '';
+  const rowsSrc=g.crit.filter(a=>!isImplementando(a)); // las en implementación no van al copiado de críticas
+  if(!rowsSrc.length)return '';
   const header=['#','Cuenta','ID','Cartera','MRR (USD)','Marcaje','Motivo crítico','CS','Antigüedad','Gestión','Acción sugerida'];
   const rows=[header.join('\t')];
-  g.crit.forEach((a,i)=>{
+  rowsSrc.forEach((a,i)=>{
     if(a._streak===undefined)computeTracking(a);
     const adopcion=(a.health&&a.health.adopcion!=null)?Math.round(a.health.adopcion*100)+'%':'s/d';
     const razon=razonLabel(a._razonCritico||razonCritico(a));
@@ -1039,12 +1059,13 @@ async function copyKamCriticasTSV(idx){
   const g=PR_GROUPS[idx];
   if(!g){toast('No se encontró el grupo de KAM (vuelve a filtrar y reintenta).',true);return;}
   const nombre=kamShort(g.kam);
-  if(!g.crit||!g.crit.length){toast('No hay cuentas críticas para copiar de '+nombre+'.',true);return;}
+  const copiable=(g.crit||[]).filter(a=>!isImplementando(a));
+  if(!copiable.length){toast('No hay cuentas críticas para copiar de '+nombre+' (excluyendo Implementando).',true);return;}
   const text=buildKamCriticasTSV(g);
   try{
     if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);
     else{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
-    toast('Copiado: '+g.crit.length+' cuentas críticas de '+nombre+' (tabla lista para pegar en Excel).');
+    toast('Copiado: '+copiable.length+' cuentas críticas de '+nombre+' (tabla lista para pegar en Excel).');
   }catch(e){toast('No se pudo copiar: '+e.message,true);}
 }
 function isSinUso(a){const h=a.health;return !!(h&&((h.categoria&&/sin\s*uso/i.test(h.categoria))||h.adopcion===0));}
