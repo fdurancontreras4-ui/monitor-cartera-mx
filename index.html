@@ -698,7 +698,16 @@ function saludBadgeFor(acc){
 }
 function refreshImplementaciones(wb,srcLabel){
   let n=0;
-  try{const rows=parseImplementacionesSheet(wb);if(rows&&rows.length){IMPLEMENTACIONES=rows.map(r=>{const cl=classifyImpl(r);return Object.assign({},r,{_flag:cl.flag,_grupo:cl.grupo,_razon:cl.razon});});n=IMPLEMENTACIONES.length;}}catch(e){}
+  try{const rows=parseImplementacionesSheet(wb);if(rows&&rows.length){IMPLEMENTACIONES=rows.map(r=>{
+    // si la cuenta ya está en cartera y tiene dato de salud vigente, ese manda sobre el % de implementaciones.xlsx
+    // (que se sube semanal y puede quedar desactualizado una vez que la cuenta ya está operando en postventa)
+    const acc=matchImplToAccount(r);
+    const healthAd=(acc&&acc.health&&acc.health.adopcion!=null)?Math.round(acc.health.adopcion*100):null;
+    const marcajeImplXlsx=r.marcajePct;
+    const marcajePct=healthAd!=null?healthAd:marcajeImplXlsx;
+    const cl=classifyImpl(Object.assign({},r,{marcajePct}));
+    return Object.assign({},r,{marcajePct,_marcajeFuente:healthAd!=null?'salud':'implementaciones',_marcajeImplXlsx:marcajeImplXlsx,_flag:cl.flag,_grupo:cl.grupo,_razon:cl.razon});
+  });n=IMPLEMENTACIONES.length;}}catch(e){}
   if(n)IMPL_SOURCE=srcLabel||'archivo cargado';
   return n;
 }
@@ -1544,7 +1553,7 @@ function renderImplementacion(){
   const filterLabel={critico:'Críticas',atencion:'En riesgo',ok:'Saludables'}[implFilter]||'';
   const saludLabel={critico:'· salud Crítica',atencion:'· salud En riesgo',ok:'· salud Saludable',sindato:'· sin dato de salud',sincartera:'· aún no en cartera'}[implSaludFilter]||'';
   $('implementacion').innerHTML=`
-  <div class="note-box">Datos de <strong>implementaciones.xlsx</strong> (subida semanal, fuente: ${esc(IMPL_SOURCE)}). Cruce por la columna <strong>Cliente</strong> del archivo contra la cartera. <strong>Riesgo implementación</strong> es un semáforo propio para cuentas que aún no llegan a postventa: <strong>Alto</strong> = implementación detenida, fecha objetivo vencida, o marcha blanca con marcaje &lt;30%. <strong>Medio</strong> = marcha blanca con marcaje 30–60%, marcha blanca con pendientes abiertos, o fecha objetivo dentro de 7 días. El resto, <strong>Bajo</strong>. <strong>Estado de salud</strong> es aparte: viene del archivo de salud vigente de la cuenta ya en cartera (si la encontramos) — pueden no coincidir, son dos fuentes distintas. Puedes filtrar por ambos a la vez. Las etapas Rechazada/Abandono/Finalizada se muestran aparte, no cuentan en el semáforo.</div>
+  <div class="note-box">Datos de <strong>implementaciones.xlsx</strong> (subida semanal, fuente: ${esc(IMPL_SOURCE)}). Cruce por la columna <strong>Cliente</strong> del archivo contra la cartera. <strong>Marcaje</strong>: si la cuenta ya está en cartera y tiene dato de salud vigente, se usa ese % de adopción (más reciente) en vez del que trae implementaciones.xlsx, que puede quedar desactualizado una vez que la cuenta ya opera en postventa — la ⚠️ indica cuando ambas fuentes difieren bastante. <strong>Riesgo implementación</strong> es un semáforo propio para cuentas que aún no llegan a postventa: <strong>Alto</strong> = implementación detenida, fecha objetivo vencida, o marcha blanca con marcaje &lt;30%. <strong>Medio</strong> = marcha blanca con marcaje 30–60%, marcha blanca con pendientes abiertos, o fecha objetivo dentro de 7 días. El resto, <strong>Bajo</strong>. <strong>Estado de salud</strong> es aparte: viene del archivo de salud vigente de la cuenta ya en cartera (si la encontramos). Puedes filtrar por ambos a la vez. Las etapas Rechazada/Abandono/Finalizada se muestran aparte, no cuentan en el semáforo.</div>
   ${!all.length?'<p class="legend">Aún no se ha cargado implementaciones.xlsx. Súbelo al repo (o cárgalo abajo en Datos) para ver este segmento.</p>':`
   <div class="metrics">
     <div class="metric" style="cursor:pointer;${selStyle('')}" onclick="implSetFilter('')"><div class="label">Implementaciones activas</div><div class="value">${activas.length}</div><div class="sub">de ${all.length} registros totales · clic para ver todas</div></div>
@@ -1559,7 +1568,7 @@ function renderImplementacion(){
     <button class="btn" id="implDownloadBtn">⬇ Descargar Excel (${sorted.length})</button>
   </div>
   <div class="table-wrap"><table><thead><tr><th class="nosort">Riesgo implementación</th><th class="nosort">Estado de salud</th><th>Cliente</th><th class="nosort">Etapa</th><th class="nosort">Tipo</th><th class="nosort">Marcaje</th><th class="nosort">Usuarios (activos/a implementar)</th><th class="nosort">Fecha objetivo</th><th class="nosort">KAM (si ya está en cartera)</th></tr></thead><tbody>
-  ${sorted.map(r=>{const acc=matchImplToAccount(r);const marc=r.marcajePct!=null?Math.round(r.marcajePct)+'%':'s/d';const nombreExtra=(r.implName&&normName(r.implName)!==normName(r.cliente))?`<div class="legend" style="margin-top:2px">${esc(r.implName)}</div>`:'';return `<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td>${riesgoBadge(r._flag)}${r._razon?`<div class="legend" style="margin-top:2px">${esc(r._razon)}</div>`:''}</td><td>${saludBadgeFor(acc)}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}${nombreExtra}</td><td style="font-size:12px">${esc(r.etapa)}</td><td style="font-size:12px">${esc(r.tipo||'—')}</td><td>${marc}</td><td style="font-size:12px">${r.usuariosActivos??'—'} / ${r.usuariosImplementar??'—'}</td><td style="font-size:12px">${esc(r.fechaFin||'—')}</td><td style="font-size:12px">${acc?esc(acc.kam):'<span class="legend">Aún no en cartera</span>'}</td></tr>`;}).join('')||'<tr><td colspan="9" class="legend">Sin implementaciones en este filtro/búsqueda.</td></tr>'}
+  ${sorted.map(r=>{const acc=matchImplToAccount(r);const marc=r.marcajePct!=null?Math.round(r.marcajePct)+'%':'s/d';const marcWarn=(r._marcajeFuente==='salud'&&r._marcajeImplXlsx!=null&&Math.abs(r._marcajeImplXlsx-r.marcajePct)>=15)?` <span title="implementaciones.xlsx trae ${Math.round(r._marcajeImplXlsx)}% en esta fila — se muestra el dato del modelo de salud (más reciente, la cuenta ya está en cartera)">⚠️</span>`:'';const nombreExtra=(r.implName&&normName(r.implName)!==normName(r.cliente))?`<div class="legend" style="margin-top:2px">${esc(r.implName)}</div>`:'';return `<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td>${riesgoBadge(r._flag)}${r._razon?`<div class="legend" style="margin-top:2px">${esc(r._razon)}</div>`:''}</td><td>${saludBadgeFor(acc)}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}${nombreExtra}</td><td style="font-size:12px">${esc(r.etapa)}</td><td style="font-size:12px">${esc(r.tipo||'—')}</td><td>${marc}${marcWarn}</td><td style="font-size:12px">${r.usuariosActivos??'—'} / ${r.usuariosImplementar??'—'}</td><td style="font-size:12px">${esc(r.fechaFin||'—')}</td><td style="font-size:12px">${acc?esc(acc.kam):'<span class="legend">Aún no en cartera</span>'}</td></tr>`;}).join('')||'<tr><td colspan="9" class="legend">Sin implementaciones en este filtro/búsqueda.</td></tr>'}
   </tbody></table></div></div>
   <div class="card"><h3>Fuera de proceso (no cuentan en el semáforo)</h3>
     <div class="stat3">${['Rechazada','Abandono','Finalizada'].map(g=>`<div class="stat3-it"><div class="stat3-v">${grupCerr[g]||0}</div><div class="stat3-l">${g}</div></div>`).join('')}</div>
@@ -1576,9 +1585,9 @@ function implDownloadExcel(rows){
   if(!rows.length){toast('No hay filas para descargar con este filtro/búsqueda.',true);return;}
   const riesgoLbl=f=>(IMPL_RIESGO_LABEL[f]||IMPL_RIESGO_LABEL.ok).txt;
   const saludLbl=acc=>{if(!acc)return'Aún no en cartera';if(!acc.health)return'Sin dato';return acc.health.flag==='critico'?'Crítico':acc.health.flag==='atencion'?'En riesgo':acc.health.flag==='ok'?'Saludable':'Sin clasificar';};
-  const data=rows.map(r=>{const acc=matchImplToAccount(r);return{'Cliente':r.cliente,'Implementación (nombre original)':r.implName||'','Riesgo implementación':riesgoLbl(r._flag),'Motivo riesgo':r._razon||'','Estado de salud (cartera)':saludLbl(acc),'Etapa':r.etapa,'Tipo':r.tipo||'','% Marcaje':r.marcajePct!=null?r.marcajePct:'','Usuarios activos':r.usuariosActivos!=null?r.usuariosActivos:'','Usuarios a implementar':r.usuariosImplementar!=null?r.usuariosImplementar:'','Fecha objetivo':r.fechaFin||'','KAM (si ya está en cartera)':acc?acc.kam:'','Partner':r.partner||'','Servicios':r.servicios||''};});
+  const data=rows.map(r=>{const acc=matchImplToAccount(r);return{'Cliente':r.cliente,'Implementación (nombre original)':r.implName||'','Riesgo implementación':riesgoLbl(r._flag),'Motivo riesgo':r._razon||'','Estado de salud (cartera)':saludLbl(acc),'Etapa':r.etapa,'Tipo':r.tipo||'','% Marcaje':r.marcajePct!=null?r.marcajePct:'','Fuente % Marcaje':r._marcajeFuente==='salud'?'Modelo de salud':'implementaciones.xlsx','% Marcaje en implementaciones.xlsx':r._marcajeImplXlsx!=null?r._marcajeImplXlsx:'','Usuarios activos':r.usuariosActivos!=null?r.usuariosActivos:'','Usuarios a implementar':r.usuariosImplementar!=null?r.usuariosImplementar:'','Fecha objetivo':r.fechaFin||'','KAM (si ya está en cartera)':acc?acc.kam:'','Partner':r.partner||'','Servicios':r.servicios||''};});
   const ws=XLSX.utils.json_to_sheet(data);
-  ws['!cols']=[{wch:32},{wch:32},{wch:12},{wch:34},{wch:16},{wch:26},{wch:10},{wch:10},{wch:16},{wch:20},{wch:14},{wch:18},{wch:16},{wch:28}];
+  ws['!cols']=[{wch:32},{wch:32},{wch:12},{wch:34},{wch:16},{wch:26},{wch:10},{wch:10},{wch:18},{wch:24},{wch:16},{wch:20},{wch:14},{wch:18},{wch:16},{wch:28}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Implementaciones');
   const stamp=todayISO();
@@ -1605,6 +1614,18 @@ function sinUsoDownloadExcel(muInfo,uu){
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Sin uso');
   XLSX.writeFile(wb,`sin_uso_${sinUsoImplFilter||'todas'}_${todayISO()}.xlsx`);
+  toast('Descargando '+data.length+' filas…');
+}
+function healthUnmatchedDownloadExcel(){
+  const rows=HEALTH.unmatched||[];
+  if(!rows.length){toast('No hay filas sin emparejar para descargar.',true);return;}
+  const estadoLbl=u=>u.cat||(u.flag==='critico'?'Crítico':u.flag==='atencion'?'En riesgo':u.flag==='ok'?'Saludable':'Sin clasificar');
+  const data=rows.map(u=>({'Empresa (archivo de salud)':u.key,'ID (archivo de salud)':u.id||'','Estado de salud':estadoLbl(u),'% Adopción':u.ad!=null?Math.round(u.ad*100)+'%':'','NPS':u.nps!=null?u.nps:'','Incidencias 30 días':u.inc30!=null?u.inc30:'','Score':u.score!=null?u.score:'','CS':u.css||'','Segmento':u.seg||''}));
+  const ws=XLSX.utils.json_to_sheet(data);
+  ws['!cols']=[{wch:34},{wch:16},{wch:16},{wch:12},{wch:8},{wch:16},{wch:10},{wch:18},{wch:14}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Sin emparejar');
+  XLSX.writeFile(wb,`salud_sin_emparejar_${todayISO()}.xlsx`);
   toast('Descargando '+data.length+' filas…');
 }
 function renderSinUso(){
@@ -1668,9 +1689,10 @@ function renderDatos(){
     <input type="file" id="fileHealth" accept=".xlsx,.xls,.csv" style="display:none">
     <p class="legend" id="healthMsg" style="margin-top:8px">Empareja por nombre de cliente. Detecto la columna llave (cliente/empresa) y las de señal (salud/semáforo/prioridad/riesgo/marcaje) para clasificar cada cuenta en crítico / atención / ok. Si tu archivo usa otra estructura, dime los nombres de columna y lo ajusto.</p>
     ${HEALTH.loaded&&HEALTH.unmatched.length?`<details style="margin-top:10px" open><summary style="font-size:12px;color:var(--color-text-secondary);cursor:pointer">${HEALTH.unmatched.length} filas de salud sin emparejar con la cartera — con su estado</summary>
+      <div style="margin-top:8px"><button class="btn" id="healthUnmatchedDlBtn">⬇ Descargar Excel (${HEALTH.unmatched.length})</button></div>
       <div class="table-wrap" style="margin-top:8px"><table><thead><tr><th>Empresa (archivo de salud)</th><th class="nosort">Estado de salud</th></tr></thead><tbody>
       ${HEALTH.unmatched.slice(0,120).map(u=>{const fl=u.flag==='critico'?'b-red':u.flag==='atencion'?'b-amber':u.flag==='ok'?'b-green':'b-gray';const lbl=u.cat||(u.flag==='critico'?'Crítico':u.flag==='atencion'?'En riesgo':u.flag==='ok'?'Saludable':'Sin clasificar');return`<tr style="cursor:default"><td>${esc(u.key)}</td><td><span class="badge ${fl}">${esc(lbl)}</span></td></tr>`;}).join('')}
-      </tbody></table></div>${HEALTH.unmatched.length>120?`<p class="legend" style="margin-top:6px">Mostrando 120 de ${HEALTH.unmatched.length}.</p>`:''}
+      </tbody></table></div>${HEALTH.unmatched.length>120?`<p class="legend" style="margin-top:6px">Mostrando 120 de ${HEALTH.unmatched.length} en la tabla — el Excel trae todas.</p>`:''}
       <p class="legend" style="margin-top:6px">Estas filas vienen del modelo de salud pero no encontraron su cuenta en la cartera MARE MX. El monitor empareja <strong>primero por ID Geo</strong> y, si falta, por <strong>nombre normalizado</strong> (quita S.A. de C.V., acentos, etc.). Para emparejarlas: <strong>(1)</strong> lo más efectivo — llena la columna <code>ID Geo</code> en la cartera (hoy solo ~110 de 453 la tienen); con el mismo ID en ambos archivos el match es exacto. <strong>(2)</strong> si no hay ID, usa el <strong>mismo nombre</strong> en cartera y salud, evitando sufijos de sucursal/alias que difieren ("GDL", "EDO MEX", "(RH MEDICAL)"). <strong>(3)</strong> ignora las de prueba (Demo, Piloto, GeoVictoria interno): no son clientes reales.</p></details>`:''}
     <div class="sec-title" style="margin-top:14px">Elegir el archivo vigente para TODOS (recomendado) — editar el repo</div>
     <p class="legend" style="margin-bottom:8px">Esto es lo que ve cualquiera que abra el link publicado, sin importar su navegador o dispositivo. Agrega la clave <code>"vigente"</code> a tu <code>salud_semanas.json</code> en GitHub con el nombre exacto del archivo que quieres que mande:</p>
@@ -1753,6 +1775,7 @@ function renderDatos(){
   $('urlBtn').onclick=()=>loadURL($('urlIn').value.trim(),{});
   $('urlReload').onclick=()=>loadURL(($('urlIn').value.trim()||LAST.portfolioUrl),{});
   $('healthUrlBtn').onclick=()=>loadHealthURL($('healthUrlIn').value.trim(),{});
+  if($('healthUnmatchedDlBtn'))$('healthUnmatchedDlBtn').onclick=healthUnmatchedDownloadExcel;
   $('manifestTestBtn').onclick=async()=>{const btn=$('manifestTestBtn');btn.disabled=true;btn.textContent='Probando…';const u=$('manifestUrlIn').value.trim()||'./salud_semanas.json';await loadHealthManifest(u);renderDatos();show('datos');};
   const pinSelect=$('healthPinSelect');if(pinSelect)pinSelect.onchange=()=>{if(pinSelect.value)$('healthPinIn').value=pinSelect.value;};
   $('healthPinBtn').onclick=async()=>{const v=$('healthPinIn').value.trim();if(!v){alert('Escribe o selecciona el nombre exacto del archivo.');return;}const btn=$('healthPinBtn');btn.disabled=true;btn.textContent='Fijando…';FORCED_HEALTH_FILE=v;await persist('forced_health_file',v);const u=$('manifestUrlIn').value.trim()||'./salud_semanas.json';await loadHealthManifest(u);renderDatos();show('datos');};
