@@ -40,7 +40,7 @@
   .pr-card.gestion-seguimiento{background:#412402!important;}
   .pr-card.gestion-sin{background:#501313!important;}
   .pr-card.gestion-implementando{background:#042C53!important;}
-  .controls select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='16' viewBox='0 0 10 16'%3E%3Cpolygon points='5,0 9,6 1,6' fill='%239aa0a6'/%3E%3Cpolygon points='5,16 9,10 1,10' fill='%239aa0a6'/%3E%3C/svg%3E")!important;}
+  .controls select,.urlrow select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='16' viewBox='0 0 10 16'%3E%3Cpolygon points='5,0 9,6 1,6' fill='%239aa0a6'/%3E%3Cpolygon points='5,16 9,10 1,10' fill='%239aa0a6'/%3E%3C/svg%3E")!important;}
 }
 body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary);min-height:100vh;-webkit-font-smoothing:antialiased;}
 .page{max-width:1040px;margin:0 auto;padding:2.25rem 1.5rem 4rem;}
@@ -91,10 +91,10 @@ tr:last-child td{border-bottom:none;}
 @media (max-width:680px){.grid2{grid-template-columns:1fr;}.bar-label{min-width:120px;max-width:120px;}}
 .note-box{font-size:12px;color:var(--color-text-secondary);background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:11px 14px;margin-bottom:1rem;line-height:1.55;}
 .controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.15rem;align-items:center;}
-.controls input[type=text],.controls select,.urlrow input{font-family:var(--font-sans);font-size:13.5px;font-weight:500;padding:10px 14px;border-radius:12px;border:1.5px solid var(--color-border-secondary);background-color:var(--color-background-primary);color:var(--color-text-primary);box-shadow:var(--shadow-sm);transition:border-color .12s,box-shadow .12s;}
-.controls select{padding-right:32px;appearance:none;-webkit-appearance:none;-moz-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='16' viewBox='0 0 10 16'%3E%3Cpolygon points='5,0 9,6 1,6' fill='%2367718c'/%3E%3Cpolygon points='5,16 9,10 1,10' fill='%2367718c'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:9px 14px;cursor:pointer;}
-.controls select:hover,.controls input[type=text]:hover,.urlrow input:hover{border-color:var(--color-border-primary);}
-.controls select:focus,.controls input[type=text]:focus,.urlrow input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.controls input[type=text],.controls select,.urlrow input,.urlrow select{font-family:var(--font-sans);font-size:13.5px;font-weight:500;padding:10px 14px;border-radius:12px;border:1.5px solid var(--color-border-secondary);background-color:var(--color-background-primary);color:var(--color-text-primary);box-shadow:var(--shadow-sm);transition:border-color .12s,box-shadow .12s;}
+.controls select,.urlrow select{padding-right:32px;appearance:none;-webkit-appearance:none;-moz-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='16' viewBox='0 0 10 16'%3E%3Cpolygon points='5,0 9,6 1,6' fill='%2367718c'/%3E%3Cpolygon points='5,16 9,10 1,10' fill='%2367718c'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:9px 14px;cursor:pointer;}
+.controls select:hover,.controls input[type=text]:hover,.urlrow input:hover,.urlrow select:hover{border-color:var(--color-border-primary);}
+.controls select:focus,.controls input[type=text]:focus,.urlrow input:focus,.urlrow select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .controls input[type=text]{flex:1;min-width:160px;}
 .btn{font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:999px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;box-shadow:var(--shadow-sm);transition:border-color .12s,box-shadow .12s;}
 .btn:hover{border-color:var(--color-border-primary);box-shadow:var(--shadow-md);}
@@ -385,6 +385,12 @@ function normName(s){if(!s)return'';let t=String(s).toLowerCase().normalize('NFD
 // claves de emparejamiento: nombre principal + cada alias entre paréntesis (en ambos lados)
 function nameKeys(s){if(!s)return[];const raw=String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');const keys=[];const add=x=>{const k=normName(x);if(k&&k.length>3&&keys.indexOf(k)<0)keys.push(k);};add(raw);(raw.match(/\(([^)]*)\)/g)||[]).forEach(p=>add(p.replace(/[()]/g,' ')));return keys;}
 function cleanId(v){if(v==null||v==='')return null;const f=parseFloat(v);return isNaN(f)?String(v).trim():String(Math.round(f));}
+// permite poner varios ID Geo en una sola celda, separados por "-" (ej. "29157-37879-36085"), para
+// asociar varias sucursales del modelo de salud a la misma razón social/línea de cartera.
+function splitIds(raw){
+  if(raw==null||raw==='')return[];
+  return String(raw).split('-').map(s=>cleanId(s.trim())).filter(Boolean);
+}
 function catFlag(c){if(!c)return null;const s=String(c).toLowerCase();if(s.includes('crít')||s.includes('crit')||s.includes('sin uso'))return'critico';if(s.includes('riesgo'))return'atencion';if(s.includes('salud'))return'ok';return null;}
 const csOf=a=>a.css||(a.health&&a.health.css)||null;
 const hasCS=a=>!!csOf(a);
@@ -430,9 +436,9 @@ function findConsid(a){
   for(const c of list){if(c.nombre){const cn=normName(c.nombre);if(cn&&(cn===n||(cn.length>5&&(n.includes(cn)||cn.includes(n)))))return c;}}
   return null;
 }
-// razón por la que una cuenta está crítica → sufijo del tag (critico-marcaje, etc.)
-function razonCritico(a){
-  const h=a.health,f=a.fuga;
+// razón por la que una cuenta (o una sucursal de salud puntual) está crítica → sufijo del tag (critico-marcaje, etc.)
+function razonCriticoFor(a,h){
+  const f=a.fuga;
   const ad=h?h.adopcion:null,nps=h?h.nps:null,vr=h?h.variacion:null,ic=h?h.inc30:null,cat=h?h.categoria:null;
   if((cat&&/sin\s*uso/i.test(cat))||ad===0)return 'sinuso';
   if(ad!=null&&ad<0.60)return 'marcaje';
@@ -442,6 +448,7 @@ function razonCritico(a){
   if(a.estadoSalud&&/marcaj/i.test(a.estadoSalud))return 'marcaje';
   return null;
 }
+function razonCritico(a){return razonCriticoFor(a,a.health);}
 function applyConsideraciones(){
   const reg=(CONSID&&CONSID.reglas_globales)||{};
   const tk=reg.critico_solo_por_ticket||{};
@@ -562,7 +569,7 @@ function parseMareWorkbook(wb){
     while(meses.length>4&&meses[meses.length-1]==null)meses.pop();
     let mrr=num(get(row,'mrr'));const pres=meses.filter(m=>m!=null);if(mrr==null&&pres.length)mrr=pres[pres.length-1];
     const mods={};Object.keys(modIdx).forEach(name=>{const raw=row[modIdx[name]];const s=modStatus(raw);if(s)mods[name]={s,raw:txt(raw)};});
-    out.push({id:txt(get(row,'id')),cliente:cli,grupo:txt(get(row,'grupo')),cartera:txt(get(row,'cartera'))||'Sin segmento',kam:txt(get(row,'kam'))||'No Asignado',css:txt(get(row,'css')),mrr,meses,fuga:fugaFromMonths(meses),estadoSalud:txt(get(row,'estadoSalud')),cuadrante:txt(get(row,'cuadrante')),riesgo:txt(get(row,'riesgo')),estado:txt(get(row,'estado')),rubro:txt(get(row,'rubro')),desc:txt(get(row,'desc')),usuarios:num(get(row,'usuarios')),escala:txt(get(row,'escala')),nomina:txt(get(row,'nomina')),arrienda:txt(get(row,'arrienda')),puntajeCross:num(get(row,'puntajeCross')),okCount:num(get(row,'okCount')),opCount:num(get(row,'opCount')),referido:txt(get(row,'referido')),comentario:txt(get(row,'comentario')),implementando:txt(get(row,'implementando')),mods});
+    out.push({id:txt(get(row,'id')),_idList:splitIds(get(row,'id')),cliente:cli,grupo:txt(get(row,'grupo')),cartera:txt(get(row,'cartera'))||'Sin segmento',kam:txt(get(row,'kam'))||'No Asignado',css:txt(get(row,'css')),mrr,meses,fuga:fugaFromMonths(meses),estadoSalud:txt(get(row,'estadoSalud')),cuadrante:txt(get(row,'cuadrante')),riesgo:txt(get(row,'riesgo')),estado:txt(get(row,'estado')),rubro:txt(get(row,'rubro')),desc:txt(get(row,'desc')),usuarios:num(get(row,'usuarios')),escala:txt(get(row,'escala')),nomina:txt(get(row,'nomina')),arrienda:txt(get(row,'arrienda')),puntajeCross:num(get(row,'puntajeCross')),okCount:num(get(row,'okCount')),opCount:num(get(row,'opCount')),referido:txt(get(row,'referido')),comentario:txt(get(row,'comentario')),implementando:txt(get(row,'implementando')),mods});
   }
   if(!out.length)throw new Error('Encabezado encontrado pero sin filas de CLIENTE.');
   // leer hoja "detalle fuga" (si existe) → cuentas a excluir de la marca de fuga
@@ -801,23 +808,44 @@ function seedToParsed(seed){
   return{keyHeader:'Nombre Empresa',signalHeaders:['Categoría','% Adopción','NPS','Incidencias','Score'],structured:true,
     rows:seed.map(r=>({key:r.nombre,keyNorm:normName(r.nombre),id:cleanId(r.id),flag:catFlag(r.cat),cat:r.cat,ad:r.ad,vari:r.var,nps:r.nps,inc30:r.inc30,score:r.score,css:r.css,seg:r.seg,raw:null}))};
 }
+const HEALTH_FLAG_RANK={critico:3,atencion:2,ok:1};
+// entre varias sucursales de salud de la misma cuenta, cuál representa el estado "peor" (para el agregado a.health)
+function worstBranch(branches){
+  let best=branches[0];
+  for(const b of branches){
+    const rb=HEALTH_FLAG_RANK[b.flag]||0,rBest=HEALTH_FLAG_RANK[best.flag]||0;
+    if(rb>rBest)best=b;
+    else if(rb===rBest){const ab=b.adopcion==null?Infinity:b.adopcion,aBest=best.adopcion==null?Infinity:best.adopcion;if(ab<aBest)best=b;}
+  }
+  return best;
+}
 function applyHealth(parsed){
   const byNorm={},byId={};parsed.rows.forEach(r=>{nameKeys(r.key).forEach(k=>{(byNorm[k]=byNorm[k]||[]).push(r);});if(r.id)byId[r.id]=r;});
-  let matched=0;const used=new Set();ACCOUNTS.forEach(a=>{a.health=null;});
+  let matched=0;const used=new Set();ACCOUNTS.forEach(a=>{a.health=null;a._healthBranches=null;});
+  const hitToObj=hit=>({flag:hit.flag,categoria:hit.cat,adopcion:hit.ad,variacion:hit.vari,nps:hit.nps,inc30:hit.inc30,score:hit.score,css:hit.css,seg:hit.seg,raw:hit.raw,nombre:hit.key,id:hit.id});
   ACCOUNTS.forEach(a=>{
-    let hit=null;const pid=cleanId(a.id);
+    const ids=(a._idList&&a._idList.length)?a._idList:(a.id?[cleanId(a.id)]:[]);
+    if(ids.length>1){
+      // ID Geo concatenados con "-": varias sucursales del modelo de salud → la misma línea/razón social de cartera
+      const branches=[];
+      ids.forEach(pid=>{if(pid&&byId[pid]){const hit=byId[pid];branches.push(hitToObj(hit));used.add(hit.keyNorm||hit.id);matched++;}});
+      if(branches.length){a._healthBranches=branches;a.health=worstBranch(branches);}
+      return;
+    }
+    let hit=null;const pid=ids[0]||cleanId(a.id);
     if(pid&&byId[pid])hit=byId[pid];
     if(!hit){const keys=nameKeys(a.cliente);
       for(const n of keys){if(byNorm[n]){hit=byNorm[n][0];break;}}
       if(!hit){for(const n of keys){const key=Object.keys(byNorm).find(k=>k.length>4&&(k.includes(n)||n.includes(k)));if(key){hit=byNorm[key][0];break;}}}
     }
-    if(hit){a.health={flag:hit.flag,categoria:hit.cat,adopcion:hit.ad,variacion:hit.vari,nps:hit.nps,inc30:hit.inc30,score:hit.score,css:hit.css,seg:hit.seg,raw:hit.raw};matched++;used.add(hit.keyNorm||hit.id);}
+    if(hit){a.health=hitToObj(hit);matched++;used.add(hit.keyNorm||hit.id);}
   });
   const unmatched=parsed.rows.filter(r=>!used.has(r.keyNorm)&&!used.has(r.id)).map(r=>({key:r.key,flag:r.flag,cat:r.cat||null,ad:r.ad,nps:r.nps,inc30:r.inc30,score:r.score,css:r.css,seg:r.seg,id:r.id}));
   HEALTH={loaded:true,matched,total:parsed.rows.length,unmatched,keyHeader:parsed.keyHeader,signalHeaders:parsed.signalHeaders};
   HEALTH_CACHE=parsed;persist('mare_health',parsed);
   applyConsideraciones();
 }
+
 
 // ---------- prioridad ----------
 function priority(a){
@@ -844,20 +872,24 @@ function csBadge(a){const cs=csOf(a);return cs?`<span class="badge b-teal">CS: $
 function sparkline(meses){const p=meses.map(m=>m||0);const mx=Math.max(...p,1);return`<span class="spark">${meses.map(m=>{const h=m==null?2:Math.max(3,Math.round((m/mx)*22));const op=m==null?.25:.85;return`<span style="height:${h}px;opacity:${op}"></span>`;}).join('')}</span>`;}
 function crossCell(a){const ok=a.okCount||0,op=a.opCount||0;if(!ok&&!op)return'<span class="badge b-gray">Sin cross</span>';let h='';if(ok)h+=`<span class="badge b-green">${ok} OK</span> `;if(op)h+=`<span class="badge b-amber">${op} OP</span>`;return h;}
 
-function prCard(a,rank){
-  const st=riesgoState(a);
-  const razon=a._razonCritico||razonCritico(a);
+function prCard(a,rank,branch){
+  const excluded=!!(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir);
+  const h=branch||a.health;
+  const flag=h?h.flag:null;
+  const st=excluded?'estable':(flag==='critico'?'critica':flag==='atencion'?'riesgo':'estable');
+  const razon=branch?razonCriticoFor(a,branch):(a._razonCritico||razonCritico(a));
   const razonIcon={marcaje:'📉',sinuso:'⛔',nps:'😠',ticket:'🎫',fuga:'💸'};
   const razonChip=(st==='critica'&&razon)?`<span class="badge b-red" style="font-size:12px;font-weight:700;padding:4px 11px;border:1.5px solid #A32D2D">${razonIcon[razon]||'⚠️'} ${esc(razonLabel(razon))}</span> `:'';
   const stBadge=st==='critica'?`<span class="badge b-red">Crítico</span> ${razonChip}`:st==='riesgo'?'<span class="badge b-amber">En riesgo</span> ':a._congelada?'<span class="badge b-gray">Congelada</span> ':a._cambioRazon?'<span class="badge b-blue">Cambio razón social</span> ':'';
   const gap=(st!=='estable'&&!hasCS(a))?'gap':'';
   const pb=playbookFor(a);
-  const ad=a.health&&a.health.adopcion!=null?a.health.adopcion:null;
-  const marc=ad!=null?` · <strong style="color:${ad<0.3?'#A32D2D':ad<0.6?'#854F0B':'inherit'}">Marcaje ${Math.round(ad*100)}%${a._marcajeAjustado?' (ajustado)':''}</strong>`:'';
+  const ad=h&&h.adopcion!=null?h.adopcion:null;
+  const marc=ad!=null?` · <strong style="color:${ad<0.3?'#A32D2D':ad<0.6?'#854F0B':'inherit'}">Marcaje ${Math.round(ad*100)}%${!branch&&a._marcajeAjustado?' (ajustado)':''}</strong>`:'';
   const accion=pb?`<div class="pr-accion">${pbBadge(pb)} <strong>Acción a realizar:</strong> ${!hasCS(a)?'<strong style="color:#A32D2D">Asignar CSS · </strong>':''}${esc(pb.first)} <span style="opacity:.7">(${pb.sla})</span></div>`:'';
   const anotBadge=(function(){if(!a._anot)return'';const es=ANNOT_ESTADOS[a._anot.estado];const tag=es?`<span class="badge ${es.badge}">📝 ${es.label}</span>`:'<span class="badge b-gray">📝 Nota</span>';return tag+' ';})();
   const implBadge=isImplementando(a)?'<span class="badge b-blue" title="Marcada Implementando? = Sí en la cartera">🔵 Implementando</span> ':'';
   // seguimiento semanal: nueva vs recurrente (WEEKS) + señal de "sin gestionar" cuando no hay anotación de equipo
+  // (a nivel de cuenta/razón social — no varía entre sucursales de una misma cuenta)
   let trackBadge='';
   if(st==='critica'){
     if(a._streak===undefined)computeTracking(a);
@@ -870,9 +902,10 @@ function prCard(a,rank){
   else if(a._anot&&a._anot.estado==='resuelta')gestionClass='gestion-resuelta';
   else if(a._anot&&a._anot.estado==='seguimiento')gestionClass='gestion-seguimiento';
   else if(st==='critica'&&!a._anot)gestionClass='gestion-sin';
+  const nameHtml=branch?`${esc(branch.nombre||a.cliente)}<div class="legend" style="margin-top:1px;font-weight:400">Razón social/facturación: ${esc(a.cliente)}</div>`:esc(a.cliente);
   return`<div class="pr-card ${gap} ${gestionClass}" onclick="openDetail('${a._uid}')">
     <div class="pr-rank">${rank}</div>
-    <div class="pr-main"><div class="pr-name">${esc(a.cliente)}</div>
+    <div class="pr-main"><div class="pr-name">${nameHtml}</div>
     <div class="pr-meta">${carteraBadge(a.cartera)} · ${esc(a.kam)} · ${fmtUSD(a.mrr)}/mes${marc} · ${csBadge(a)}</div>
     <div style="margin-top:5px">${stBadge}${implBadge}${anotBadge}${trackBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}${a._anot&&a._anot.nota?`<div class="pr-accion" style="color:var(--color-text-secondary)">📝 <em>"${esc(a._anot.nota.length>140?a._anot.nota.slice(0,140)+'…':a._anot.nota)}"</em> — ${esc(a._anot.autor||'')}</div>`:''}</div>
     <div class="pr-score" style="color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-secondary)'}">${a._score}</div>
@@ -918,7 +951,7 @@ function renderResumen(){
 }
 
 // ---------- Salud - General ----------
-let prState={estado:'atrisk',cs:'',antig:'',gestion:''};
+let prState={estado:'atrisk',cs:'',antig:'',gestion:'',razon:''};
 let PR_GROUPS=[];
 let segSel={seg:'',estado:''};
 function segShow(seg,estado){segSel=(segSel.seg===seg&&segSel.estado===estado)?{seg:'',estado:''}:{seg,estado};renderPrioridad();const el=$('segList');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});}
@@ -1021,67 +1054,87 @@ function renderPriorizar(){
     return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500">${esc(a.cliente)}</td><td>${b.join(' ')}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(com)}</td></tr>`;};
   const excHtml=`<details class="card" style="padding:0"><summary style="cursor:pointer;padding:1rem 1.25rem;font-size:14px;font-weight:500;color:var(--color-text-secondary)">Excepciones <span class="badge b-gray">${exc.length}</span> <span style="font-weight:400;font-size:12px">— cuentas con un ajuste de consideraciones aplicado</span></summary><div style="padding:0 1.25rem 1rem">${exc.length?`<div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Excepción</th><th class="nosort">Comentario</th></tr></thead><tbody>${exc.map(excRow).join('')}</tbody></table></div>`:'<p class="legend">Sin excepciones aplicadas. Se gestionan en <code>consideraciones.json</code> (pestaña Datos).</p>'}</div></details>`;
   $('priorizar').innerHTML=`
-  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.<br><br><strong>Nuevo — seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"), y si tiene una <strong>nota de seguimiento</strong> o está <strong>🔴 sin gestionar</strong>. Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como sin gestionar aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo. Las tarjetas también se pintan: <strong style="color:#3B6D11">verde</strong> si está "Resuelta", <strong style="color:#854F0B">amarillo</strong> si está "En seguimiento", <strong style="color:#A32D2D">rojo</strong> si es crítica y no tiene nada en gestión, y <strong style="color:#185FA5">celeste 🔵 Implementando</strong> si la cartera trae <code>Implementando? = Sí</code> para esa cuenta — estas últimas quedan fuera del botón "Copiar críticas" porque ya las lleva el equipo de implementación.</div>
+  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar — el de <strong>motivo</strong> deja ver solo las críticas por adopción/marcaje bajo, por tickets sin resolver o por NPS detractor. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.<br><br><strong>Nuevo — seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"), y si tiene una <strong>nota de seguimiento</strong> o está <strong>🔴 sin gestionar</strong>. Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como sin gestionar aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo. Las tarjetas también se pintan: <strong style="color:#3B6D11">verde</strong> si está "Resuelta", <strong style="color:#854F0B">amarillo</strong> si está "En seguimiento", <strong style="color:#A32D2D">rojo</strong> si es crítica y no tiene nada en gestión, y <strong style="color:#185FA5">celeste 🔵 Implementando</strong> si la cartera trae <code>Implementando? = Sí</code> para esa cuenta — estas últimas quedan fuera del botón "Copiar críticas" porque ya las lleva el equipo de implementación.</div>
   ${excHtml}
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
     <select id="prCS"><option value="">Toda cobertura CS</option><option value="sin">Sin CS</option><option value="con">Con CS</option></select>
+    <select id="prRazon" title="Solo afecta a las cuentas críticas · por qué está crítica"><option value="">Todo motivo</option><option value="marcaje">📉 Adopción/marcaje bajo</option><option value="ticket">🎫 Tickets sin resolver</option><option value="nps">😠 NPS detractor</option></select>
     <select id="prAntig" title="Solo afecta a las cuentas críticas"><option value="">Toda antigüedad</option><option value="nueva">🆕 Nuevas esta semana</option><option value="recurrente">🔁 Recurrentes (2+ semanas)</option></select>
     <select id="prGestion" title="Solo afecta a las cuentas críticas · según notas de equipo"><option value="">Toda gestión</option><option value="sin">🔴 Sin gestionar</option><option value="gestionando">En gestión (con nota)</option></select>
   </div>
   <div class="card"><h3 id="prTitle"></h3><div id="prList"></div></div>`;
-  $('prEstado').value=prState.estado;$('prCS').value=prState.cs;$('prAntig').value=prState.antig;$('prGestion').value=prState.gestion;
+  $('prEstado').value=prState.estado;$('prCS').value=prState.cs;$('prRazon').value=prState.razon;$('prAntig').value=prState.antig;$('prGestion').value=prState.gestion;
   $('prEstado').onchange=e=>{prState.estado=e.target.value;drawPrList();};
   $('prCS').onchange=e=>{prState.cs=e.target.value;drawPrList();};
+  $('prRazon').onchange=e=>{prState.razon=e.target.value;drawPrList();};
   $('prAntig').onchange=e=>{prState.antig=e.target.value;drawPrList();};
   $('prGestion').onchange=e=>{prState.gestion=e.target.value;drawPrList();};
   drawPrList();
 }
 function prSet(estado,cs){prState.estado=estado;prState.cs=cs;show('priorizar');}
 function drawPrList(){
-  let rows=ACCOUNTS.slice().filter(a=>!isSinUso(a));
-  if(prState.estado==='atrisk')rows=rows.filter(a=>isCritica(a)||isRiesgo(a));
-  else if(prState.estado==='critica')rows=rows.filter(isCritica);
-  else if(prState.estado==='riesgo')rows=rows.filter(a=>isRiesgo(a)&&!isCritica(a));
-  else if(prState.estado==='sano')rows=rows.filter(a=>!isCritica(a)&&!isRiesgo(a));
-  if(prState.cs==='sin')rows=rows.filter(a=>!hasCS(a));
-  else if(prState.cs==='con')rows=rows.filter(hasCS);
-  // seguimiento semanal: calcula racha/gestión de cada crítica visible antes de filtrar por antigüedad/gestión
-  rows.forEach(a=>{if(isCritica(a))computeTracking(a);});
-  if(prState.antig==='nueva')rows=rows.filter(a=>isCritica(a)&&a._streak<=1);
-  else if(prState.antig==='recurrente')rows=rows.filter(a=>isCritica(a)&&a._streak>1);
-  if(prState.gestion==='sin')rows=rows.filter(a=>isCritica(a)&&!a._anot);
-  else if(prState.gestion==='gestionando')rows=rows.filter(a=>isCritica(a)&&!!a._anot);
+  let accRows=ACCOUNTS.slice().filter(a=>!isSinUso(a));
+  // expandir: una cuenta con varias sucursales de salud (ID Geo "29157-37879-...") genera una entrada por
+  // sucursal, cada una con su propio estado/marcaje; el resto (el caso normal) genera una sola entrada,
+  // exactamente como antes.
+  let rows=[];
+  accRows.forEach(a=>{
+    if(a._healthBranches&&a._healthBranches.length>1)a._healthBranches.forEach(br=>rows.push({a,branch:br}));
+    else rows.push({a,branch:null});
+  });
+  const eExcluded=e=>!!(e.a._congelada||e.a._forzarSano||e.a._cambioRazon||e.a._anotExcluir);
+  const eFlag=e=>(e.branch||e.a.health)?(e.branch||e.a.health).flag:null;
+  const eCritica=e=>!eExcluded(e)&&eFlag(e)==='critico';
+  const eRiesgo=e=>!eExcluded(e)&&!eCritica(e)&&eFlag(e)==='atencion';
+  const eAd=e=>{const h=e.branch||e.a.health;return h&&h.adopcion!=null?h.adopcion:null;};
+  // dedup por cuenta: para no contar MRR/CS/streak varias veces cuando una cuenta aporta varias entradas (sucursales)
+  const uniqByAccount=arr=>{const seen=new Set();return arr.filter(e=>{if(seen.has(e.a._uid))return false;seen.add(e.a._uid);return true;});};
+  if(prState.estado==='atrisk')rows=rows.filter(e=>eCritica(e)||eRiesgo(e));
+  else if(prState.estado==='critica')rows=rows.filter(eCritica);
+  else if(prState.estado==='riesgo')rows=rows.filter(e=>eRiesgo(e)&&!eCritica(e));
+  else if(prState.estado==='sano')rows=rows.filter(e=>!eCritica(e)&&!eRiesgo(e));
+  if(prState.cs==='sin')rows=rows.filter(e=>!hasCS(e.a));
+  else if(prState.cs==='con')rows=rows.filter(e=>hasCS(e.a));
+  // motivo de criticidad: adopción/marcaje bajo, tickets sin resolver o NPS detractor (por sucursal si aplica)
+  const eRazon=e=>razonCriticoFor(e.a,e.branch||e.a.health);
+  if(prState.razon)rows=rows.filter(e=>eCritica(e)&&eRazon(e)===prState.razon);
+  // seguimiento semanal: calcula racha/gestión de cada crítica visible (por cuenta) antes de filtrar por antigüedad/gestión
+  rows.forEach(e=>{if(eCritica(e)&&e.a._streak===undefined)computeTracking(e.a);});
+  if(prState.antig==='nueva')rows=rows.filter(e=>eCritica(e)&&e.a._streak<=1);
+  else if(prState.antig==='recurrente')rows=rows.filter(e=>eCritica(e)&&e.a._streak>1);
+  if(prState.gestion==='sin')rows=rows.filter(e=>eCritica(e)&&!e.a._anot);
+  else if(prState.gestion==='gestionando')rows=rows.filter(e=>eCritica(e)&&!!e.a._anot);
   // agrupar por KAM
   const groups={};
-  rows.forEach(a=>{const k=a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(a);});
+  rows.forEach(e=>{const k=e.a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(e);});
   const KAM_ORDER=['raul','dafne','karla','no asignado'];
   const kamRank=name=>{const n=normName(name);for(let i=0;i<KAM_ORDER.length;i++){if(n.includes(KAM_ORDER[i]))return i;}return KAM_ORDER.length;};
   const ordered=Object.entries(groups).map(([kam,arr])=>{
-    const crit=arr.filter(isCritica);
-    const ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a));
-    const resto=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));
-    const montoRiesgo=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);
-    const nuevas=crit.filter(a=>a._streak<=1).length;
-    const sinGestionar=crit.filter(a=>!a._anot).length;
+    const crit=arr.filter(eCritica);
+    const ries=arr.filter(e=>eRiesgo(e)&&!eCritica(e));
+    const resto=arr.filter(e=>!eCritica(e)&&!eRiesgo(e));
+    const montoRiesgo=uniqByAccount(crit.concat(ries)).reduce((s,e)=>s+(e.a.mrr||0),0);
+    const nuevas=uniqByAccount(crit).filter(e=>e.a._streak<=1).length;
+    const sinGestionar=uniqByAccount(crit).filter(e=>!e.a._anot).length;
     return{kam,crit,ries,resto,montoRiesgo,total:arr.length,nuevas,sinGestionar};
   }).sort((x,y)=> kamRank(x.kam)-kamRank(y.kam) || y.crit.length-x.crit.length || y.ries.length-x.ries.length || y.montoRiesgo-x.montoRiesgo || y.total-x.total);
-  $('prTitle').textContent=`${rows.length} cuentas en ${ordered.length} KAM · críticas por marcaje ascendente`;
+  const uniqAccCount=new Set(rows.map(e=>e.a._uid)).size;
+  $('prTitle').textContent=rows.length===uniqAccCount?`${rows.length} cuentas en ${ordered.length} KAM · críticas por marcaje ascendente`:`${uniqAccCount} cuentas (${rows.length} filas, incluye sucursales) en ${ordered.length} KAM · críticas por marcaje ascendente`;
   if(!rows.length){$('prList').innerHTML='<p class="legend">No hay cuentas con estos filtros.</p>';return;}
   // marcaje ascendente: peor marcaje (menor adopción) primero; sin dato al final
-  const marc=a=>(a.health&&a.health.adopcion!=null)?a.health.adopcion:Infinity;
-  const byMarcaje=(a,b)=>marc(a)-marc(b) || (b._score-a._score);
-  const byScore=(a,b)=>b._score-a._score;
+  const byMarcaje=(x,y)=>{const mx=eAd(x)==null?Infinity:eAd(x),my=eAd(y)==null?Infinity:eAd(y);return mx-my||(y.a._score-x.a._score);};
+  const byScore=(x,y)=>y.a._score-x.a._score;
   const tools=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(false)">Colapsar todo</button></div>`;
-  const critVisible=rows.filter(isCritica);
-  const summaryBanner=critVisible.length?`<div class="note-box" style="margin-bottom:10px">Resumen de esta vista: 🆕 <strong>${critVisible.filter(a=>a._streak<=1).length}</strong> críticas nuevas esta semana · 🔴 <strong>${critVisible.filter(a=>!a._anot).length}</strong> sin gestionar (sin nota) de <strong>${critVisible.length}</strong> críticas visibles.</div>`:'';
+  const critVisible=uniqByAccount(rows.filter(eCritica));
+  const summaryBanner=critVisible.length?`<div class="note-box" style="margin-bottom:10px">Resumen de esta vista: 🆕 <strong>${critVisible.filter(e=>e.a._streak<=1).length}</strong> críticas nuevas esta semana · 🔴 <strong>${critVisible.filter(e=>!e.a._anot).length}</strong> sin gestionar (sin nota) de <strong>${critVisible.length}</strong> críticas visibles.</div>`:'';
   PR_GROUPS=ordered;
   const groupsHtml=ordered.map((g,gi)=>{
     g.crit.sort(byMarcaje);g.ries.sort(byScore);g.resto.sort(byScore);
-    const sinCSn=g.crit.concat(g.ries).filter(a=>!hasCS(a)).length;
+    const sinCSn=uniqByAccount(g.crit.concat(g.ries)).filter(e=>!hasCS(e.a)).length;
     let rank=0;
-    const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(a=>prCard(a,++rank)).join('')}`:'';
-    const copiableN=g.crit.filter(a=>!isImplementando(a)).length;
+    const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(e=>prCard(e.a,++rank,e.branch)).join('')}`:'';
+    const copiableN=uniqByAccount(g.crit.filter(e=>!isImplementando(e.a))).length;
     const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} cuentas críticas de ${esc(kamShort(g.kam))} en formato tabla (TSV) para pegar en Excel/Sheets/Word (no incluye las marcadas Implementando)`:`${esc(kamShort(g.kam))} no tiene cuentas críticas copiables con estos filtros`}" onclick="event.stopPropagation();event.preventDefault();copyKamCriticasTSV(${gi})">📋 Copiar críticas</button>`;
     return`<details class="kam-group">
       <summary class="kam-head">
@@ -1124,20 +1177,24 @@ function tsvCell(v){return String(v==null?'':v).replace(/[\t\r\n]+/g,' ').trim()
 // tabla TSV (encabezado + filas) con las cuentas críticas de UN solo grupo/KAM
 function buildKamCriticasTSV(g){
   if(!g||!g.crit||!g.crit.length)return '';
-  const rowsSrc=g.crit.filter(a=>!isImplementando(a)); // las en implementación no van al copiado de críticas
+  const rowsSrc=g.crit.filter(e=>!isImplementando(e.a)); // las en implementación no van al copiado de críticas
   if(!rowsSrc.length)return '';
   const header=['#','Cuenta','ID','Cartera','MRR (USD)','Marcaje','Motivo crítico','CS','Antigüedad','Gestión','Acción sugerida'];
   const rows=[header.join('\t')];
-  rowsSrc.forEach((a,i)=>{
+  rowsSrc.forEach((e,i)=>{
+    const a=e.a,branch=e.branch;
     if(a._streak===undefined)computeTracking(a);
-    const adopcion=(a.health&&a.health.adopcion!=null)?Math.round(a.health.adopcion*100)+'%':'s/d';
-    const razon=razonLabel(a._razonCritico||razonCritico(a));
+    const h=branch||a.health;
+    const adopcion=(h&&h.adopcion!=null)?Math.round(h.adopcion*100)+'%':'s/d';
+    const razon=razonLabel(branch?razonCriticoFor(a,branch):(a._razonCritico||razonCritico(a)));
     const cs=hasCS(a)?csOf(a):'Sin CS';
     const pb=playbookFor(a);
     const accion=pb?pb.first:'';
     const antig=a._weeksAvail>0?(a._streak<=1?'Nueva esta semana':`Semana ${a._streak} seguida`):'s/d';
     const gestion=a._gestion?a._gestion.label:'Sin gestionar';
-    rows.push([i+1,a.cliente,a.id,a.cartera,Math.round(a.mrr||0),adopcion,razon,cs,antig,gestion,accion].map(tsvCell).join('\t'));
+    const nombreCol=branch?`${a.cliente} — ${branch.nombre||''}`:a.cliente;
+    const idCol=branch?(branch.id||a.id):a.id;
+    rows.push([i+1,nombreCol,idCol,a.cartera,Math.round(a.mrr||0),adopcion,razon,cs,antig,gestion,accion].map(tsvCell).join('\t'));
   });
   return rows.join('\n');
 }
@@ -1145,7 +1202,7 @@ async function copyKamCriticasTSV(idx){
   const g=PR_GROUPS[idx];
   if(!g){toast('No se encontró el grupo de KAM (vuelve a filtrar y reintenta).',true);return;}
   const nombre=kamShort(g.kam);
-  const copiable=(g.crit||[]).filter(a=>!isImplementando(a));
+  const copiable=(g.crit||[]).filter(e=>!isImplementando(e.a));
   if(!copiable.length){toast('No hay cuentas críticas para copiar de '+nombre+' (excluyendo Implementando).',true);return;}
   const text=buildKamCriticasTSV(g);
   try{
@@ -2004,6 +2061,16 @@ function openDetail(uid){
   const modsHtml=Object.keys(a.mods).length?`<div class="mod-grid">${Object.entries(a.mods).map(([m,v])=>`<div class="mod-item"><span>${esc(m)} ${v.raw&&v.raw!==v.s?`<span class="raw">${esc(v.raw)}</span>`:''}</span><span class="badge ${v.s==='OK'?'b-green':v.s==='OP'?'b-amber':'b-gray'}">${v.s}</span></div>`).join('')}</div>`:'<p class="legend">Sin módulos adicionales registrados.</p>';
   const healthHtml=a.health?(function(){const h=a.health;const rz=a._razonCritico||razonCritico(a);const catBase=h.categoria||h.flag||'sin clasificar';const catLbl=(h.flag==='critico'&&rz&&!/sin\s*uso/i.test(catBase))?esc(catBase)+'-'+rz:esc(catBase);const fb=`<span class="badge ${h.flag==='critico'?'b-red':h.flag==='atencion'?'b-amber':h.flag==='ok'?'b-green':'b-gray'}">${catLbl}</span>`;const cnote=(function(){const n=[];if(a._congelada)n.push('❄️ <strong>Congelada</strong> — '+esc((a._consid&&a._consid.razon)||'no se cuenta como crítica.'));if(a._marcajeAjustado)n.push(`🔧 <strong>Marcaje ajustado</strong> — real ${Math.round(a._marcajeAjustado.orig*100)}% reescalado sobre tope ${Math.round(a._marcajeAjustado.max*100)}% → ${Math.round(a._marcajeAjustado.adj*100)}%. ${esc((a._consid&&a._consid.razon)||'')}`);if(a._reclasificado==='solo-ticket')n.push('✓ <strong>Reclasificada a Saludable</strong> — crítica solo por 1 ticket y por lo demás sana (regla de consideraciones).');return n.length?`<div class="note-box" style="margin-top:8px">${n.join('<br>')}</div>`:'';})();if(h.categoria){const tile=(lbl,val,col)=>`<div class="stat3-it"><div class="stat3-v" style="${col?`color:${col}`:''}">${val}</div><div class="stat3-l">${lbl}</div></div>`;const adv=h.adopcion!=null?Math.round(h.adopcion*100)+'%':'—';const adc=h.adopcion!=null?(h.adopcion<0.3?'#E24B4A':h.adopcion<0.6?'#EF9F27':'#3B6D11'):'';const npsv=h.nps!=null?h.nps:'—';const npc=h.nps!=null?(h.nps<=6?'#E24B4A':h.nps<=8?'#EF9F27':'#3B6D11'):'';const tkv=h.inc30!=null?h.inc30:'—';const tkc=h.inc30!=null&&h.inc30>0?'#EF9F27':'';return`<div style="margin-top:6px">${fb} ${h.score!=null?`<span class="chip">Score ${h.score}</span>`:''}</div>${cnote}<div class="stat3">${tile('% Adopción (marcaje)',adv,adc)}${tile('NPS',npsv,npc)}${tile('Tickets / inc. 30d',tkv,tkc)}</div><dl class="dl-grid" style="margin-top:8px">${dlRow('Variación adopción',h.variacion!=null?(h.variacion>0?'+':'')+Math.round(h.variacion*100)+'pp':null)}${a._marcajeAjustado?dlRow('Marcaje real (sin ajustar)',Math.round(a._marcajeAjustado.orig*100)+'%'):''}${dlRow('CS (tablero)',h.css)}</dl>`;}return`<div style="margin-top:6px">${fb}</div>${cnote}`+(h.raw?`<dl class="dl-grid" style="margin-top:8px">${Object.entries(h.raw).map(([k,v])=>dlRow(k,v)).join('')}</dl>`:'');})():'<p class="legend">Sin datos del tablero de salud para esta cuenta.</p>';
   const csLine=hasCS(a)?`<span class="badge b-teal">Customer Success: ${esc(a.css)}</span>`:'<span class="badge b-gray">Sin Customer Success</span>';
+  const branchesHtml=(a._healthBranches&&a._healthBranches.length>1)?(function(){
+    const rows=a._healthBranches.slice().sort((x,y)=>{const ax=x.adopcion==null?Infinity:x.adopcion,ay=y.adopcion==null?Infinity:y.adopcion;return ax-ay;}).map(br=>{
+      const fl=br.flag==='critico'?'b-red':br.flag==='atencion'?'b-amber':br.flag==='ok'?'b-green':'b-gray';
+      const lbl=br.categoria||(br.flag==='critico'?'Crítico':br.flag==='atencion'?'En riesgo':br.flag==='ok'?'Saludable':'Sin clasificar');
+      const ad=br.adopcion!=null?Math.round(br.adopcion*100)+'%':'—';
+      return `<tr><td style="font-weight:500">${esc(br.nombre||'')}</td><td><span class="badge ${fl}">${esc(lbl)}</span></td><td>${ad}</td><td>${br.nps!=null?br.nps:'—'}</td><td>${br.inc30!=null?br.inc30:'—'}</td><td style="font-size:11px;color:var(--color-text-secondary)">${br.id?esc(br.id):'—'}</td></tr>`;
+    }).join('');
+    return `<div class="sec-title">Sucursales (ID Geo concatenados) <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· ${a._healthBranches.length} sucursales del modelo de salud asociadas a esta razón social — la facturación/MRR de arriba es una sola, para toda la cuenta</span></div>
+    <div class="table-wrap"><table><thead><tr><th>Sucursal (modelo de salud)</th><th class="nosort">Estado</th><th class="nosort">Marcaje</th><th class="nosort">NPS</th><th class="nosort">Inc. 30d</th><th class="nosort">ID</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  })():'';
   $('modal').innerHTML=`
     <div class="modal-head"><h2>${esc(a.cliente)}</h2><button class="close-x" onclick="closeDetail()">×</button></div>
     <div style="margin-bottom:6px">${carteraBadge(a.cartera)} ${fugaCell(a)} <span class="badge b-gray">${esc(a.kam)}${a._kamReasignado?' · reasignado':''}</span> ${csLine} ${a.estado?`<span class="chip">${esc(a.estado)}</span>`:''} ${a.rubro?`<span class="chip">${esc(a.rubro)}</span>`:''}</div>
@@ -2014,6 +2081,7 @@ function openDetail(uid){
       <div><div class="sec-title">Ventas (facturación mensual USD)</div><div class="big-bars">${bars}</div><p class="status-line">MRR actual <strong>${fmtUSD(a.mrr)}</strong>${delta?` · ${delta}`:''}</p></div>
       <div><div class="sec-title">Semáforo de salud</div><dl class="dl-grid">${dlRow('Cuadrante (MARE)',a.cuadrante)}${dlRow('Estado salud',a.estadoSalud)}${dlRow('Riesgo',a.riesgo)}</dl>${healthHtml}</div>
     </div>
+    ${branchesHtml}
     <div class="sec-title">Fuga</div><p style="font-size:13px">${fugaCell(a)} <span class="legend">— ${a._cambioRazon?'marcada como cambio de razón social: no se cuenta como fuga ni como crítica.':'derivada de la tendencia '+MONTHS_SHORT[0]+'→'+(MONTHS_SHORT[a.meses.length-1]||'')+'.'}</span></p>
     ${(function(){const serie=weeklyMarcajeSeries(a);const conDato=serie.filter(w=>w.ad!=null);if(!serie.length)return'';if(!conDato.length)return`<div class="sec-title">Marcaje semanal</div><p class="legend">No encontramos esta cuenta en el historial de Salud semanal (por nombre). Revisa la pestaña <strong>Salud semanal</strong> directamente si crees que sí debería estar.</p>`;
       const shown=serie.slice(-12);
