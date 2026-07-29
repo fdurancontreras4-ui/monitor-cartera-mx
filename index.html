@@ -1423,6 +1423,7 @@ function renderSemanal(){
 // ---------- Cuentas ----------
 let cuState={q:'',cartera:'',kam:'',fuga:'',sort:'mrr',dir:-1};
 function renderCuentas(){
+  ACCOUNTS.forEach(priority); // asegura que _score esté calculado para poder ordenar por Puntaje sin pasar antes por Salud
   const kamOpts=[...new Set(ACCOUNTS.map(a=>a.kam))].sort();
   $('cuentas').innerHTML=`
   <div class="controls">
@@ -1430,12 +1431,20 @@ function renderCuentas(){
     <select id="cuCart"><option value="">Toda cartera</option><option>ENTERPRISE</option><option>SMB</option><option>Sin segmento</option></select>
     <select id="cuKam"><option value="">Todo KAM</option>${kamOpts.map(k=>`<option>${esc(k)}</option>`).join('')}</select>
     <select id="cuFuga"><option value="">Toda fuga</option><option>Baja</option><option>Disminución</option><option>Estable</option><option>Crecimiento</option><option>Sin datos</option></select>
+    <select id="cuSort" title="También puedes hacer clic en cualquier encabezado de la tabla para ordenar por esa columna">
+      <option value="mrr:-1">Ordenar: MRR (mayor a menor)</option>
+      <option value="mrr:1">Ordenar: MRR (menor a mayor)</option>
+      <option value="puntaje:-1">Ordenar: Puntaje (mayor a menor)</option>
+      <option value="puntaje:1">Ordenar: Puntaje (menor a mayor)</option>
+      <option value="cliente:1">Ordenar: Cliente (A-Z)</option>
+    </select>
   </div>
   <div class="card" style="padding:0.5rem 0.75rem"><div class="table-wrap"><table id="cuTable"></table></div></div>
   <p class="status-line" id="cuCount"></p>`;
   $('cuCart').value=cuState.cartera;$('cuKam').value=cuState.kam;$('cuFuga').value=cuState.fuga;
   $('cuQ').oninput=e=>{cuState.q=e.target.value;drawCuTable();};
   ['cuCart','cuKam','cuFuga'].forEach((id,k)=>{$(id).onchange=e=>{cuState[['cartera','kam','fuga'][k]]=e.target.value;drawCuTable();};});
+  $('cuSort').onchange=e=>{const[s,d]=e.target.value.split(':');cuState.sort=s;cuState.dir=+d;drawCuTable();};
   drawCuTable();
 }
 function drawCuTable(){
@@ -1445,17 +1454,20 @@ function drawCuTable(){
     if(cuState.fuga&&a.fuga!==cuState.fuga)return false;
     if(cuState.q){const q=cuState.q.toLowerCase();if(!([a.cliente,a.grupo,a.rubro].filter(Boolean).join(' ').toLowerCase().includes(q)))return false;}
     return true;});
-  const sg={mrr:a=>a.mrr||0,cliente:a=>a.cliente.toLowerCase(),cartera:a=>a.cartera,kam:a=>a.kam,fuga:a=>a.fuga};
+  const sg={mrr:a=>a.mrr||0,puntaje:a=>a._score||0,cliente:a=>a.cliente.toLowerCase(),cartera:a=>a.cartera,kam:a=>a.kam,fuga:a=>a.fuga};
   rows.sort((x,y)=>{const f=sg[cuState.sort];let A=f(x),B=f(y);return A<B?-1*cuState.dir:A>B?cuState.dir:0;});
   const th=(k,l,cls='')=>`<th class="${cls}" data-sort="${k}">${l}${cuState.sort===k?(cuState.dir>0?' ▲':' ▼'):''}</th>`;
-  let html=`<thead><tr>${th('cliente','Cliente')}${th('cartera','Cartera')}${th('kam','KAM')}<th class="nosort">CS</th>${th('mrr','MRR')}<th class="nosort">Tendencia</th>${th('fuga','Fuga')}<th class="nosort">Semáforo</th><th class="nosort">Cross</th></tr></thead><tbody>`;
+  let html=`<thead><tr>${th('cliente','Cliente')}${th('cartera','Cartera')}${th('kam','KAM')}<th class="nosort">CS</th>${th('mrr','MRR')}${th('puntaje','Puntaje')}<th class="nosort">Tendencia</th>${th('fuga','Fuga')}<th class="nosort">Semáforo</th><th class="nosort">Cross</th></tr></thead><tbody>`;
   rows.forEach(a=>{
     const sem=a.health?`<span class="dot" style="background:${a.health.flag==='critico'?'#E24B4A':a.health.flag==='atencion'?'#EF9F27':'#639922'}"></span>`:'';
-    html+=`<tr onclick="openDetail('${a._uid}')"><td style="max-width:190px"><div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.cliente)}</div>${a.grupo?`<div style="font-size:11px;color:var(--color-text-secondary)">${esc(a.grupo)}</div>`:''}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary);white-space:nowrap">${esc(a.kam)}</td><td>${csOf(a)?`<span class="badge b-teal">${esc(csOf(a))}</span>`:'<span style="color:var(--color-text-secondary);font-size:11px">—</span>'}</td><td style="font-weight:500;white-space:nowrap">${fmtUSD(a.mrr)}</td><td>${sparkline(a.meses)}</td><td>${fugaCell(a)}</td><td>${sem}${a.cuadrante?`<span class="badge b-gray">${esc(a.cuadrante)}</span>`:'<span style="color:var(--color-text-secondary);font-size:11px">—</span>'}</td><td>${crossCell(a)}</td></tr>`;
+    const score=a._score||0;
+    const scoreHtml=`<span style="font-weight:600;color:${score>=55?'#E24B4A':score>=35?'#854F0B':'var(--color-text-secondary)'}">${score}</span>`;
+    html+=`<tr onclick="openDetail('${a._uid}')"><td style="max-width:190px"><div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.cliente)}</div>${a.grupo?`<div style="font-size:11px;color:var(--color-text-secondary)">${esc(a.grupo)}</div>`:''}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary);white-space:nowrap">${esc(a.kam)}</td><td>${csOf(a)?`<span class="badge b-teal">${esc(csOf(a))}</span>`:'<span style="color:var(--color-text-secondary);font-size:11px">—</span>'}</td><td style="font-weight:500;white-space:nowrap">${fmtUSD(a.mrr)}</td><td>${scoreHtml}</td><td>${sparkline(a.meses)}</td><td>${fugaCell(a)}</td><td>${sem}${a.cuadrante?`<span class="badge b-gray">${esc(a.cuadrante)}</span>`:'<span style="color:var(--color-text-secondary);font-size:11px">—</span>'}</td><td>${crossCell(a)}</td></tr>`;
   });
   html+='</tbody>';$('cuTable').innerHTML=html;
   $('cuCount').textContent=`${rows.length} cuentas mostradas de ${ACCOUNTS.length}.`;
-  $('cuTable').querySelectorAll('th[data-sort]').forEach(t=>t.onclick=()=>{const k=t.dataset.sort;if(cuState.sort===k)cuState.dir*=-1;else{cuState.sort=k;cuState.dir=k==='mrr'?-1:1;}drawCuTable();});
+  $('cuTable').querySelectorAll('th[data-sort]').forEach(t=>t.onclick=()=>{const k=t.dataset.sort;if(cuState.sort===k)cuState.dir*=-1;else{cuState.sort=k;cuState.dir=(k==='mrr'||k==='puntaje')?-1:1;}drawCuTable();});
+  if($('cuSort'))$('cuSort').value=cuState.sort+':'+cuState.dir; // mantiene el select sincronizado aunque se ordene haciendo clic en un encabezado
 }
 
 // ---------- Fuga ----------
