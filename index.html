@@ -1148,7 +1148,7 @@ function drawPrList(){
     const copiable=copySetFor(g).filter(e=>!isImplementando(e.a));
     const copiableN=copiable.length;
     const copyLabel=prState.estado==='riesgo'?'en riesgo':prState.estado==='sano'?'saludables':prState.estado==='all'?'(todas)':prState.estado==='critica'?'críticas':'críticas + en riesgo';
-    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} cuentas ${copyLabel} de ${esc(kamShort(g.kam))} en el mismo formato de gestion.xlsx (ID / Cuenta / Estado / Nota / Responsable / Fecha) — incluye TODAS sin importar el filtro de gestión o antigüedad, y trae la nota si ya se está gestionando. No incluye las marcadas Implementando.`:`${esc(kamShort(g.kam))} no tiene cuentas ${copyLabel} copiables con este filtro de estado`}" onclick="event.stopPropagation();event.preventDefault();copyKamCuentasTSV(${gi})">📋 Copiar cuentas</button>`;
+    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} cuentas ${copyLabel} de ${esc(kamShort(g.kam))}: mismo formato de gestion.xlsx (ID / Cuenta / Estado / Nota / Responsable / Fecha) más Fecha salud / Estado salud / MRR / CSS — incluye TODAS sin importar el filtro de gestión o antigüedad, y trae la nota si ya se está gestionando. No incluye las marcadas Implementando.`:`${esc(kamShort(g.kam))} no tiene cuentas ${copyLabel} copiables con este filtro de estado`}" onclick="event.stopPropagation();event.preventDefault();copyKamCuentasTSV(${gi})">📋 Copiar cuentas</button>`;
     return`<details class="kam-group">
       <summary class="kam-head">
         <span class="chev">▸</span>
@@ -1203,7 +1203,8 @@ function buildKamCuentasTSV(g){
   const rowsSrc=copySetFor(g).filter(e=>!isImplementando(e.a)); // las en implementación no van al copiado
   if(!rowsSrc.length)return '';
   const ESTADO_LABEL={seguimiento:'Seguimiento',resuelta:'Resuelta'};
-  const header=['ID','Cuenta','Estado','Nota','Responsable','Fecha'];
+  const saludLabel=a=>{if(!a.health)return'Sin dato de salud';const f=a.health.flag;return f==='critico'?'Crítico':f==='atencion'?'En riesgo':f==='ok'?'Saludable':'Sin clasificar';};
+  const header=['ID','Cuenta','Estado','Nota','Responsable','Fecha','Fecha salud','Estado salud','MRR','CSS'];
   const rows=[header.join('\t')];
   rowsSrc.forEach(e=>{
     const a=e.a,anot=a._anot;
@@ -1211,7 +1212,7 @@ function buildKamCuentasTSV(g){
     const nota=anot&&anot.nota?anot.nota:'';
     const responsable=(anot&&anot.autor)?anot.autor:(a.kam||'');
     const fecha=(anot&&anot.actualizado)?new Date(anot.actualizado).toISOString().slice(0,10):'';
-    rows.push([a.id||'',a.cliente,estado,nota,responsable,fecha].map(tsvCell).join('\t'));
+    rows.push([a.id||'',a.cliente,estado,nota,responsable,fecha,CURRENT_HEALTH_DATE||'',saludLabel(a),Math.round(a.mrr||0),csOf(a)||''].map(tsvCell).join('\t'));
   });
   return rows.join('\n');
 }
