@@ -1088,26 +1088,32 @@ function drawPrList(){
   const eCritica=e=>!eExcluded(e)&&eFlag(e)==='critico';
   const eRiesgo=e=>!eExcluded(e)&&!eCritica(e)&&eFlag(e)==='atencion';
   const eAd=e=>{const h=e.branch||e.a.health;return h&&h.adopcion!=null?h.adopcion:null;};
-  // dedup por cuenta: para no contar MRR/CS/streak varias veces cuando una cuenta aporta varias entradas (sucursales)
+  const eRazon=e=>razonCriticoFor(e.a,e.branch||e.a.health);
+  // dedup por cuenta: para no contar MRR/CS/streak/copiado varias veces cuando una cuenta aporta varias entradas (sucursales)
   const uniqByAccount=arr=>{const seen=new Set();return arr.filter(e=>{if(seen.has(e.a._uid))return false;seen.add(e.a._uid);return true;});};
+  // 1) filtro de Estado: es el ÚNICO filtro que también acota lo que se puede COPIAR (crítica/riesgo/saludable/etc.)
   if(prState.estado==='atrisk')rows=rows.filter(e=>eCritica(e)||eRiesgo(e));
   else if(prState.estado==='critica')rows=rows.filter(eCritica);
   else if(prState.estado==='riesgo')rows=rows.filter(e=>eRiesgo(e)&&!eCritica(e));
   else if(prState.estado==='sano')rows=rows.filter(e=>!eCritica(e)&&!eRiesgo(e));
-  if(prState.cs==='sin')rows=rows.filter(e=>!hasCS(e.a));
-  else if(prState.cs==='con')rows=rows.filter(e=>hasCS(e.a));
-  // motivo de criticidad: adopción/marcaje bajo, tickets sin resolver o NPS detractor (por sucursal si aplica)
-  const eRazon=e=>razonCriticoFor(e.a,e.branch||e.a.health);
-  if(prState.razon)rows=rows.filter(e=>eCritica(e)&&eRazon(e)===prState.razon);
-  // seguimiento semanal: calcula racha/gestión de cada crítica visible (por cuenta) antes de filtrar por antigüedad/gestión
-  rows.forEach(e=>{if(eCritica(e)&&e.a._streak===undefined)computeTracking(e.a);});
-  if(prState.antig==='nueva')rows=rows.filter(e=>eCritica(e)&&e.a._streak<=1);
-  else if(prState.antig==='recurrente')rows=rows.filter(e=>eCritica(e)&&e.a._streak>1);
-  if(prState.gestion==='sin')rows=rows.filter(e=>eCritica(e)&&!e.a._anot);
-  else if(prState.gestion==='gestionando')rows=rows.filter(e=>eCritica(e)&&!!e.a._anot);
-  // agrupar por KAM
+  // agrupar por KAM el set COMPLETO (solo filtrado por Estado) — es la base del botón "Copiar cuentas"
+  const fullGroups={};
+  rows.forEach(e=>{const k=e.a.kam||'Sin KAM';(fullGroups[k]=fullGroups[k]||[]).push(e);});
+  // 2) filtros de refinamiento (CS, motivo, antigüedad, gestión): solo acotan lo que se VE en pantalla,
+  // nunca lo que se puede copiar — así "Copiar cuentas" siempre trae todas las críticas visibles o no,
+  // sin importar si están en seguimiento, resueltas o sin gestionar.
+  let dispRows=rows.slice();
+  if(prState.cs==='sin')dispRows=dispRows.filter(e=>!hasCS(e.a));
+  else if(prState.cs==='con')dispRows=dispRows.filter(e=>hasCS(e.a));
+  if(prState.razon)dispRows=dispRows.filter(e=>eCritica(e)&&eRazon(e)===prState.razon);
+  dispRows.forEach(e=>{if(eCritica(e)&&e.a._streak===undefined)computeTracking(e.a);});
+  if(prState.antig==='nueva')dispRows=dispRows.filter(e=>eCritica(e)&&e.a._streak<=1);
+  else if(prState.antig==='recurrente')dispRows=dispRows.filter(e=>eCritica(e)&&e.a._streak>1);
+  if(prState.gestion==='sin')dispRows=dispRows.filter(e=>eCritica(e)&&!e.a._anot);
+  else if(prState.gestion==='gestionando')dispRows=dispRows.filter(e=>eCritica(e)&&!!e.a._anot);
+  // agrupar por KAM lo que se muestra en pantalla
   const groups={};
-  rows.forEach(e=>{const k=e.a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(e);});
+  dispRows.forEach(e=>{const k=e.a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(e);});
   const KAM_ORDER=['raul','dafne','karla','no asignado'];
   const kamRank=name=>{const n=normName(name);for(let i=0;i<KAM_ORDER.length;i++){if(n.includes(KAM_ORDER[i]))return i;}return KAM_ORDER.length;};
   const ordered=Object.entries(groups).map(([kam,arr])=>{
@@ -1117,16 +1123,21 @@ function drawPrList(){
     const montoRiesgo=uniqByAccount(crit.concat(ries)).reduce((s,e)=>s+(e.a.mrr||0),0);
     const nuevas=uniqByAccount(crit).filter(e=>e.a._streak<=1).length;
     const sinGestionar=uniqByAccount(crit).filter(e=>!e.a._anot).length;
-    return{kam,crit,ries,resto,montoRiesgo,total:arr.length,nuevas,sinGestionar};
+    // set completo del mismo KAM (sin CS/motivo/antigüedad/gestión) — para el botón de copiar
+    const fArr=fullGroups[kam]||[];
+    const fullCrit=uniqByAccount(fArr.filter(eCritica));
+    const fullRies=uniqByAccount(fArr.filter(e=>eRiesgo(e)&&!eCritica(e)));
+    const fullResto=uniqByAccount(fArr.filter(e=>!eCritica(e)&&!eRiesgo(e)));
+    return{kam,crit,ries,resto,montoRiesgo,total:arr.length,nuevas,sinGestionar,fullCrit,fullRies,fullResto};
   }).sort((x,y)=> kamRank(x.kam)-kamRank(y.kam) || y.crit.length-x.crit.length || y.ries.length-x.ries.length || y.montoRiesgo-x.montoRiesgo || y.total-x.total);
-  const uniqAccCount=new Set(rows.map(e=>e.a._uid)).size;
-  $('prTitle').textContent=rows.length===uniqAccCount?`${rows.length} cuentas en ${ordered.length} KAM · críticas por marcaje ascendente`:`${uniqAccCount} cuentas (${rows.length} filas, incluye sucursales) en ${ordered.length} KAM · críticas por marcaje ascendente`;
-  if(!rows.length){$('prList').innerHTML='<p class="legend">No hay cuentas con estos filtros.</p>';return;}
+  const uniqAccCount=new Set(dispRows.map(e=>e.a._uid)).size;
+  $('prTitle').textContent=dispRows.length===uniqAccCount?`${dispRows.length} cuentas en ${ordered.length} KAM · críticas por marcaje ascendente`:`${uniqAccCount} cuentas (${dispRows.length} filas, incluye sucursales) en ${ordered.length} KAM · críticas por marcaje ascendente`;
+  if(!dispRows.length){$('prList').innerHTML='<p class="legend">No hay cuentas con estos filtros.</p>';return;}
   // marcaje ascendente: peor marcaje (menor adopción) primero; sin dato al final
   const byMarcaje=(x,y)=>{const mx=eAd(x)==null?Infinity:eAd(x),my=eAd(y)==null?Infinity:eAd(y);return mx-my||(y.a._score-x.a._score);};
   const byScore=(x,y)=>y.a._score-x.a._score;
   const tools=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="prToggleAll(false)">Colapsar todo</button></div>`;
-  const critVisible=uniqByAccount(rows.filter(eCritica));
+  const critVisible=uniqByAccount(dispRows.filter(eCritica));
   const summaryBanner=critVisible.length?`<div class="note-box" style="margin-bottom:10px">Resumen de esta vista: 🆕 <strong>${critVisible.filter(e=>e.a._streak<=1).length}</strong> críticas nuevas esta semana · 🔴 <strong>${critVisible.filter(e=>!e.a._anot).length}</strong> sin gestionar (sin nota) de <strong>${critVisible.length}</strong> críticas visibles.</div>`:'';
   PR_GROUPS=ordered;
   const groupsHtml=ordered.map((g,gi)=>{
@@ -1134,8 +1145,10 @@ function drawPrList(){
     const sinCSn=uniqByAccount(g.crit.concat(g.ries)).filter(e=>!hasCS(e.a)).length;
     let rank=0;
     const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(e=>prCard(e.a,++rank,e.branch)).join('')}`:'';
-    const copiableN=uniqByAccount(g.crit.filter(e=>!isImplementando(e.a))).length;
-    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} cuentas críticas de ${esc(kamShort(g.kam))} en formato tabla (TSV) para pegar en Excel/Sheets/Word (no incluye las marcadas Implementando)`:`${esc(kamShort(g.kam))} no tiene cuentas críticas copiables con estos filtros`}" onclick="event.stopPropagation();event.preventDefault();copyKamCriticasTSV(${gi})">📋 Copiar críticas</button>`;
+    const copiable=copySetFor(g).filter(e=>!isImplementando(e.a));
+    const copiableN=copiable.length;
+    const copyLabel=prState.estado==='riesgo'?'en riesgo':prState.estado==='sano'?'saludables':prState.estado==='all'?'(todas)':prState.estado==='critica'?'críticas':'críticas + en riesgo';
+    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} cuentas ${copyLabel} de ${esc(kamShort(g.kam))} en el mismo formato de gestion.xlsx (ID / Cuenta / Estado / Nota / Responsable / Fecha) — incluye TODAS sin importar el filtro de gestión o antigüedad, y trae la nota si ya se está gestionando. No incluye las marcadas Implementando.`:`${esc(kamShort(g.kam))} no tiene cuentas ${copyLabel} copiables con este filtro de estado`}" onclick="event.stopPropagation();event.preventDefault();copyKamCuentasTSV(${gi})">📋 Copiar cuentas</button>`;
     return`<details class="kam-group">
       <summary class="kam-head">
         <span class="chev">▸</span>
@@ -1175,40 +1188,44 @@ function kamShort(name){const n=normName(name||'');if(n.includes('raul'))return'
 // limpia un valor para que no rompa la estructura TSV (sin tabs ni saltos de línea)
 function tsvCell(v){return String(v==null?'':v).replace(/[\t\r\n]+/g,' ').trim();}
 // tabla TSV (encabezado + filas) con las cuentas críticas de UN solo grupo/KAM
-function buildKamCriticasTSV(g){
-  if(!g||!g.crit||!g.crit.length)return '';
-  const rowsSrc=g.crit.filter(e=>!isImplementando(e.a)); // las en implementación no van al copiado de críticas
+// según el filtro de Estado activo, decide qué sub-conjunto COMPLETO del grupo corresponde copiar
+// (siempre el set entero para ese estado, sin importar CS/motivo/antigüedad/gestión de la vista)
+function copySetFor(g){
+  if(prState.estado==='critica')return g.fullCrit;
+  if(prState.estado==='riesgo')return g.fullRies;
+  if(prState.estado==='sano')return g.fullResto;
+  if(prState.estado==='all')return g.fullCrit.concat(g.fullRies,g.fullResto);
+  return g.fullCrit.concat(g.fullRies); // 'atrisk' (críticas + en riesgo), el filtro por defecto
+}
+// tabla TSV con el MISMO formato de columnas que gestion.xlsx (ID | Cuenta | Estado | Nota | Responsable | Fecha)
+// para pegar directo ahí — trae la nota/estado/responsable si la cuenta ya se está gestionando, o vacío si no.
+function buildKamCuentasTSV(g){
+  const rowsSrc=copySetFor(g).filter(e=>!isImplementando(e.a)); // las en implementación no van al copiado
   if(!rowsSrc.length)return '';
-  const header=['#','Cuenta','ID','Cartera','MRR (USD)','Marcaje','Motivo crítico','CS','Antigüedad','Gestión','Acción sugerida'];
+  const ESTADO_LABEL={seguimiento:'Seguimiento',resuelta:'Resuelta'};
+  const header=['ID','Cuenta','Estado','Nota','Responsable','Fecha'];
   const rows=[header.join('\t')];
-  rowsSrc.forEach((e,i)=>{
-    const a=e.a,branch=e.branch;
-    if(a._streak===undefined)computeTracking(a);
-    const h=branch||a.health;
-    const adopcion=(h&&h.adopcion!=null)?Math.round(h.adopcion*100)+'%':'s/d';
-    const razon=razonLabel(branch?razonCriticoFor(a,branch):(a._razonCritico||razonCritico(a)));
-    const cs=hasCS(a)?csOf(a):'Sin CS';
-    const pb=playbookFor(a);
-    const accion=pb?pb.first:'';
-    const antig=a._weeksAvail>0?(a._streak<=1?'Nueva esta semana':`Semana ${a._streak} seguida`):'s/d';
-    const gestion=a._gestion?a._gestion.label:'Sin gestionar';
-    const nombreCol=branch?`${a.cliente} — ${branch.nombre||''}`:a.cliente;
-    const idCol=branch?(branch.id||a.id):a.id;
-    rows.push([i+1,nombreCol,idCol,a.cartera,Math.round(a.mrr||0),adopcion,razon,cs,antig,gestion,accion].map(tsvCell).join('\t'));
+  rowsSrc.forEach(e=>{
+    const a=e.a,anot=a._anot;
+    const estado=anot&&anot.estado?(ESTADO_LABEL[anot.estado]||anot.estado):'';
+    const nota=anot&&anot.nota?anot.nota:'';
+    const responsable=(anot&&anot.autor)?anot.autor:(a.kam||'');
+    const fecha=(anot&&anot.actualizado)?new Date(anot.actualizado).toISOString().slice(0,10):'';
+    rows.push([a.id||'',a.cliente,estado,nota,responsable,fecha].map(tsvCell).join('\t'));
   });
   return rows.join('\n');
 }
-async function copyKamCriticasTSV(idx){
+async function copyKamCuentasTSV(idx){
   const g=PR_GROUPS[idx];
   if(!g){toast('No se encontró el grupo de KAM (vuelve a filtrar y reintenta).',true);return;}
   const nombre=kamShort(g.kam);
-  const copiable=(g.crit||[]).filter(e=>!isImplementando(e.a));
-  if(!copiable.length){toast('No hay cuentas críticas para copiar de '+nombre+' (excluyendo Implementando).',true);return;}
-  const text=buildKamCriticasTSV(g);
+  const copiable=copySetFor(g).filter(e=>!isImplementando(e.a));
+  if(!copiable.length){toast('No hay cuentas para copiar de '+nombre+' con este filtro de estado (excluyendo Implementando).',true);return;}
+  const text=buildKamCuentasTSV(g);
   try{
     if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);
     else{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
-    toast('Copiado: '+copiable.length+' cuentas críticas de '+nombre+' (tabla lista para pegar en Excel).');
+    toast('Copiado: '+copiable.length+' cuentas de '+nombre+' (formato gestion.xlsx, listo para pegar).');
   }catch(e){toast('No se pudo copiar: '+e.message,true);}
 }
 function isSinUso(a){const h=a.health;return !!(h&&((h.categoria&&/sin\s*uso/i.test(h.categoria))||h.adopcion===0));}
