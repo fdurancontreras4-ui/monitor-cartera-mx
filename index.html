@@ -393,6 +393,9 @@ function splitIds(raw){
 }
 function catFlag(c){if(!c)return null;const s=String(c).toLowerCase();if(s.includes('crít')||s.includes('crit')||s.includes('sin uso'))return'critico';if(s.includes('riesgo'))return'atencion';if(s.includes('salud'))return'ok';return null;}
 const csOf=a=>a.css||(a.health&&a.health.css)||null;
+// número de usuarios: prioriza el dato del archivo de salud vigente (más actual, "Usuarios Activos"),
+// y si la cuenta no tiene match de salud usa el estimado de cartera ("Usuarios potenciales") como respaldo
+const usersOf=a=>(a.health&&a.health.usuarios!=null)?a.health.usuarios:(a.usuarios!=null?a.usuarios:null);
 const hasCS=a=>!!csOf(a);
 // segmento: Enterprise / SMB medium (>=100 usuarios) / SMB small (<100)
 const SEG_ORDER=['Enterprise','SMB medium','SMB small'];
@@ -790,15 +793,15 @@ function parseHealthWorkbook(wb){
   const catCol=find(/categor/i);
   const structured=catCol>=0&&(find(/adopci/i)>=0||find(/score/i)>=0||find(/nombre/i)>=0);
   if(structured){
-    const c={id:find(/id\s*empresa|^id$/i),nombre:find(/nombre/i),cat:catCol,ad:find(/adopci/i),vari:find(/variaci/i),nps:find(/^nps$|\bnps\b/i),inc30:find(/incidencias?\s*30/i),score:find(/score/i),css:find(/^css$|customer success/i),seg:find(/segmento|segment|^seg$|tama[ñn]o/i)};
+    const c={id:find(/id\s*empresa|^id$/i),nombre:find(/nombre/i),cat:catCol,ad:find(/adopci/i),vari:find(/variaci/i),nps:find(/^nps$|\bnps\b/i),inc30:find(/incidencias?\s*30/i),score:find(/score/i),css:find(/^css$|customer success/i),seg:find(/segmento|segment|^seg$|tama[ñn]o/i),usuarios:find(/usuarios?\s*activ/i)};
     if(c.nombre<0)c.nombre=find(RE_KEY);
     const rows=[];
     for(let r=hdr+1;r<aoa.length;r++){const row=aoa[r]||[];const key=txt(row[c.nombre]);if(!key)continue;
       const cat=txt(row[c.cat]);
       rows.push({key,keyNorm:normName(key),id:cleanId(c.id>=0?row[c.id]:null),flag:catFlag(cat),cat,
         ad:c.ad>=0?num(row[c.ad]):null,vari:c.vari>=0?num(row[c.vari]):null,nps:c.nps>=0?num(row[c.nps]):null,
-        inc30:c.inc30>=0?num(row[c.inc30]):null,score:c.score>=0?num(row[c.score]):null,css:c.css>=0?txt(row[c.css]):null,seg:c.seg>=0?txt(row[c.seg]):null,raw:null});}
-    return{headers,keyHeader:headers[c.nombre],signalHeaders:['Categoría','% Adopción','NPS','Incidencias','Score'],rows,structured:true};
+        inc30:c.inc30>=0?num(row[c.inc30]):null,score:c.score>=0?num(row[c.score]):null,css:c.css>=0?txt(row[c.css]):null,seg:c.seg>=0?txt(row[c.seg]):null,usuarios:c.usuarios>=0?num(row[c.usuarios]):null,raw:null});}
+    return{headers,keyHeader:headers[c.nombre],signalHeaders:['Categoría','% Adopción','NPS','Incidencias','Score','Usuarios Activos'],rows,structured:true};
   }
   // genérico
   let keyCol=find(RE_KEY);
@@ -810,7 +813,7 @@ function parseHealthWorkbook(wb){
 }
 function seedToParsed(seed){
   return{keyHeader:'Nombre Empresa',signalHeaders:['Categoría','% Adopción','NPS','Incidencias','Score'],structured:true,
-    rows:seed.map(r=>({key:r.nombre,keyNorm:normName(r.nombre),id:cleanId(r.id),flag:catFlag(r.cat),cat:r.cat,ad:r.ad,vari:r.var,nps:r.nps,inc30:r.inc30,score:r.score,css:r.css,seg:r.seg,raw:null}))};
+    rows:seed.map(r=>({key:r.nombre,keyNorm:normName(r.nombre),id:cleanId(r.id),flag:catFlag(r.cat),cat:r.cat,ad:r.ad,vari:r.var,nps:r.nps,inc30:r.inc30,score:r.score,css:r.css,seg:r.seg,usuarios:r.usuarios!=null?r.usuarios:null,raw:null}))};
 }
 const HEALTH_FLAG_RANK={critico:3,atencion:2,ok:1};
 // entre varias sucursales de salud de la misma cuenta, cuál representa el estado "peor" (para el agregado a.health)
@@ -826,7 +829,7 @@ function worstBranch(branches){
 function applyHealth(parsed){
   const byNorm={},byId={};parsed.rows.forEach(r=>{nameKeys(r.key).forEach(k=>{(byNorm[k]=byNorm[k]||[]).push(r);});if(r.id)byId[r.id]=r;});
   let matched=0;const used=new Set();ACCOUNTS.forEach(a=>{a.health=null;a._healthBranches=null;});
-  const hitToObj=hit=>({flag:hit.flag,categoria:hit.cat,adopcion:hit.ad,variacion:hit.vari,nps:hit.nps,inc30:hit.inc30,score:hit.score,css:hit.css,seg:hit.seg,raw:hit.raw,nombre:hit.key,id:hit.id});
+  const hitToObj=hit=>({flag:hit.flag,categoria:hit.cat,adopcion:hit.ad,variacion:hit.vari,nps:hit.nps,inc30:hit.inc30,score:hit.score,css:hit.css,seg:hit.seg,usuarios:hit.usuarios!=null?hit.usuarios:null,raw:hit.raw,nombre:hit.key,id:hit.id});
   ACCOUNTS.forEach(a=>{
     const ids=(a._idList&&a._idList.length)?a._idList:(a.id?[cleanId(a.id)]:[]);
     if(ids.length>1){
@@ -889,7 +892,7 @@ function prCard(a,rank,branch){
   const pb=playbookFor(a);
   const ad=h&&h.adopcion!=null?h.adopcion:null;
   const marc=ad!=null?` · <strong style="color:${ad<0.3?'#A32D2D':ad<0.6?'#854F0B':'inherit'}">Marcaje ${Math.round(ad*100)}%${!branch&&a._marcajeAjustado?' (ajustado)':''}</strong>`:'';
-  const usuariosTxt=a.usuarios!=null?` · ${a.usuarios} usuario${a.usuarios===1?'':'s'}`:'';
+  const usuariosTxt=usersOf(a)!=null?` · ${usersOf(a)} usuario${usersOf(a)===1?'':'s'}`:'';
   const accion=pb?`<div class="pr-accion">${pbBadge(pb)} <strong>Acción a realizar:</strong> ${!hasCS(a)?'<strong style="color:#A32D2D">Asignar CSS · </strong>':''}${esc(pb.first)} <span style="opacity:.7">(${pb.sla})</span></div>`:'';
   const anotBadge=(function(){if(!a._anot)return'';const es=ANNOT_ESTADOS[a._anot.estado];const tag=es?`<span class="badge ${es.badge}">📝 ${es.label}</span>`:'<span class="badge b-gray">📝 Nota</span>';return tag+' ';})();
   const implBadge=isImplementando(a)?'<span class="badge b-blue" title="Marcada Implementando? = Sí en la cartera">🔵 Implementando</span> ':'';
@@ -932,9 +935,11 @@ function renderResumen(){
   const cus=Object.entries(cuMap).sort((x,y)=>y[1]-x[1]);const cuMax=Math.max(...cus.map(c=>c[1]),1);
   const nomYes=A.filter(a=>/^s[ií]$/i.test(String(a.nomina||'').trim())).length;
   const pctNomina=Math.round(nomYes/N*100);
-  const sisMap={};A.forEach(a=>{const v=(a.sistemaNomina&&a.sistemaNomina.trim())?a.sistemaNomina.trim():'Sin dato';sisMap[v]=(sisMap[v]||0)+1;});
-  const sisEntries=Object.entries(sisMap).sort((x,y)=>{if(x[0]==='Sin dato')return 1;if(y[0]==='Sin dato')return -1;return y[1]-x[1];});
+  const sisMap={};A.forEach(a=>{if(a.sistemaNomina&&a.sistemaNomina.trim())sisMap[a.sistemaNomina.trim()]=(sisMap[a.sistemaNomina.trim()]||0)+1;});
+  const sisEntries=Object.entries(sisMap).sort((x,y)=>y[1]-x[1]);
   const sisMax=Math.max(...sisEntries.map(([,v])=>v),1);
+  const sisConDato=sisEntries.reduce((s,[,v])=>s+v,0);
+  const sisSinDato=A.length-sisConDato;
   $('resumen').innerHTML=`
   ${HEALTH.loaded?`<div class="note-box" style="font-size:13px"><strong>Salud vigente para todas las métricas:</strong> ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'(sin fecha detectada)'} ${CURRENT_HEALTH_FILE?`— archivo <strong>${esc(CURRENT_HEALTH_FILE)}</strong>`:'— archivo no identificado (salud cargada sin nombre de archivo con fecha)'}${CURRENT_HEALTH_SOURCE?` · elegido por: ${esc(CURRENT_HEALTH_SOURCE)}`:''}. Revisa/depura o cambia esto en <strong>Datos → Cartera de salud</strong>.</div>`:''}
   <div class="metrics">
@@ -956,9 +961,9 @@ function renderResumen(){
     <div class="metrics" style="margin-bottom:.9rem">
       <div class="metric"><div class="label">Nos usa para pagar nómina</div><div class="value" style="color:#639922">${pctNomina}%</div><div class="sub">${nomYes} de ${A.length} cuentas</div></div>
     </div>
-    <div class="sec-title" style="margin-top:0">Por marca/sistema <span style="font-weight:400;text-transform:none;letter-spacing:normal;color:var(--color-text-secondary)">· dato nuevo, se va llenando semana a semana</span></div>
-    ${sisEntries.map(([k,v])=>`<div class="bar-row"><div class="bar-label">${esc(k)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/sisMax*100)}%;background:${k==='Sin dato'?'#B4B2A9':'#378ADD'}"></div></div><div class="bar-num">${v} <span style="opacity:.6">(${Math.round(v/N*100)}%)</span></div></div>`).join('')}
-    <p class="legend" style="margin-top:8px">"Nos usa para pagar nómina" viene del campo <strong>Nos usa para pagar nómina?</strong> de la cartera. El desglose por marca es de la columna nueva de <strong>Sistema de nómina</strong> — mientras más cuentas la tengan completa en cartera.xlsx, más preciso se pone este desglose; hoy la mayoría cae en "Sin dato" y es esperado.</p>
+    <div class="sec-title" style="margin-top:0">Por marca/sistema <span style="font-weight:400;text-transform:none;letter-spacing:normal;color:var(--color-text-secondary)">· ${sisConDato} de ${A.length} cuentas con el dato lleno</span></div>
+    ${sisEntries.length?sisEntries.map(([k,v])=>`<div class="bar-row"><div class="bar-label">${esc(k)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/sisMax*100)}%;background:#378ADD"></div></div><div class="bar-num">${v} <span style="opacity:.6">(${Math.round(v/A.length*100)}%)</span></div></div>`).join(''):'<p class="legend">Aún no hay ninguna cuenta con el campo "Sistema de nómina" lleno en cartera.xlsx.</p>'}
+    <p class="legend" style="margin-top:8px">"Nos usa para pagar nómina" viene del campo <strong>Nos usa para pagar nómina?</strong> de la cartera (aparte de esto). El desglose de arriba es de la columna nueva <strong>Sistema de nómina</strong> y solo muestra las <strong>${sisConDato}</strong> cuentas que ya la tienen llena — las otras <strong>${sisSinDato}</strong> (${Math.round(sisSinDato/A.length*100)}%) no aparecen en las barras para no aplastarlas visualmente mientras el dato se sigue llenando semana a semana; van entrando solas según Fernanda las complete.</p>
   </div>
   <div class="card"><h3>Top 8 a priorizar</h3>${A.slice().map(a=>{priority(a);return a;}).sort((x,y)=>y._score-x._score).slice(0,8).map((a,i)=>prCard(a,i+1)).join('')}<p class="status-line">Abre <strong>Salud</strong> para la lista completa por KAM, el foco de prevención de churn y el detalle de criterios.</p></div>
   <div class="card"><h3>Salud por tamaño de empresa <span style="font-weight:400;color:var(--color-text-secondary)">· clic en "crít" para ver las cuentas</span></h3>
@@ -1263,7 +1268,7 @@ function buildKamCuentasTSV(g){
     const nota=anot&&anot.nota?anot.nota:'';
     const responsable=(anot&&anot.autor)?anot.autor:(a.kam||'');
     const fechaComentario=(anot&&anot.actualizado)?new Date(anot.actualizado).toISOString().slice(0,10):'';
-    rows.push([a.id||'',a.cliente,estado,nota,a.kam||'',responsable,razonSaludTxt(a),fechaComentario,fechaInicioTxt(a),saludLabel(a),Math.round(a.mrr||0),a.usuarios!=null?a.usuarios:'',csOf(a)||''].map(tsvCell).join('\t'));
+    rows.push([a.id||'',a.cliente,estado,nota,a.kam||'',responsable,razonSaludTxt(a),fechaComentario,fechaInicioTxt(a),saludLabel(a),Math.round(a.mrr||0),usersOf(a)!=null?usersOf(a):'',csOf(a)||''].map(tsvCell).join('\t'));
   });
   return rows.join('\n');
 }
@@ -2160,7 +2165,7 @@ function openDetail(uid){
     <div style="display:flex;align-items:center;gap:14px"><div style="font-size:30px;font-weight:600;color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-primary)'}">${a._score}</div><div>${(a._drivers||[]).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')||'<span class="legend">Sin factores destacados.</span>'}</div></div>
     <div class="grid2" style="margin-top:8px">
       <div><div class="sec-title">Ventas (facturación mensual USD)</div><div class="big-bars">${bars}</div><p class="status-line">MRR actual <strong>${fmtUSD(a.mrr)}</strong>${delta?` · ${delta}`:''}</p></div>
-      <div><div class="sec-title">Semáforo de salud</div><dl class="dl-grid">${dlRow('Usuarios',a.usuarios!=null?String(a.usuarios):null)}${dlRow('Cuadrante (MARE)',a.cuadrante)}${dlRow('Estado salud',a.estadoSalud)}${dlRow('Riesgo',a.riesgo)}</dl>${healthHtml}</div>
+      <div><div class="sec-title">Semáforo de salud</div><dl class="dl-grid">${dlRow('Usuarios activos',usersOf(a)!=null?String(usersOf(a)):null)}${dlRow('Cuadrante (MARE)',a.cuadrante)}${dlRow('Estado salud',a.estadoSalud)}${dlRow('Riesgo',a.riesgo)}</dl>${healthHtml}</div>
     </div>
     ${branchesHtml}
     <div class="sec-title">Fuga</div><p style="font-size:13px">${fugaCell(a)} <span class="legend">— ${a._cambioRazon?'marcada como cambio de razón social: no se cuenta como fuga ni como crítica.':'derivada de la tendencia '+MONTHS_SHORT[0]+'→'+(MONTHS_SHORT[a.meses.length-1]||'')+'.'}</span></p>
