@@ -2130,8 +2130,12 @@ function dlRow(k,v){return v?`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`:'';}
 function findAccountSnapKey(a){
   const allKeys=new Set();WEEKS.forEach(w=>Object.keys(w.snap).forEach(k=>allKeys.add(k)));
   const targetKeys=nameKeys(a.cliente);
-  for(const k of allKeys){if(targetKeys.includes(normName(k)))return k;}
-  for(const k of allKeys){const kn=normName(k);for(const n of targetKeys){if(n.length>4&&(kn.includes(n)||n.includes(kn)))return k;}}
+  if(!targetKeys.length)return null;
+  // coincidencia exacta: nameKeys() de cada clave cruda (extrae alias entre paréntesis, ej. "Cronos ... (ISEG Mexico)")
+  for(const k of allKeys){if(nameKeys(k).some(kk=>targetKeys.includes(kk)))return k;}
+  // luego por substring, siempre sobre claves ya normalizadas por nameKeys() — nunca vacías ni de 3 caracteres o
+  // menos (nameKeys ya filtra eso), a diferencia de un normName() suelto que puede dar "" y matchear cualquier cosa
+  for(const k of allKeys){const kKeys=nameKeys(k);for(const kk of kKeys){for(const n of targetKeys){if(kk.includes(n)||n.includes(kk))return k;}}}
   return null;
 }
 function weeklyMarcajeSeries(a){
