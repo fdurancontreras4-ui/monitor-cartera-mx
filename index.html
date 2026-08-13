@@ -1204,7 +1204,7 @@ function drawPrList(){
     const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(e=>prCard(e.a,++rank,e.branch)).join('')}`:'';
     const copiable=copySetFor(g).filter(e=>!isImplementando(e.a));
     const copiableN=copiable.length;
-    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} críticas de ${esc(kamShort(g.kam))} que NO se están gestionando y NO están en implementación: Fecha Salud / ID / Cuenta / Estado / Nota / KAM / Responsable / Razón (mismo orden que gestion.xlsx) + Fecha inicio estado salud / Estado salud / MRR / N° usuarios / CSS. Siempre este mismo criterio, sin importar los filtros de la vista.`:`${esc(kamShort(g.kam))} no tiene críticas sin gestionar y sin implementación para copiar`}" onclick="event.stopPropagation();event.preventDefault();copyKamCuentasTSV(${gi})">📋 Copiar críticas sin gestionar</button>`;
+    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} críticas de ${esc(kamShort(g.kam))} que NO se están gestionando y NO están en implementación: Fecha inicio salud / ID / Cuenta / Estado / Nota / KAM / Responsable / Razón / MRR / N° usuarios. Siempre este mismo criterio, sin importar los filtros de la vista.`:`${esc(kamShort(g.kam))} no tiene críticas sin gestionar y sin implementación para copiar`}" onclick="event.stopPropagation();event.preventDefault();copyKamCuentasTSV(${gi})">📋 Copiar críticas sin gestionar</button>`;
     return`<details class="kam-group">
       <summary class="kam-head">
         <span class="chev">▸</span>
@@ -1251,28 +1251,23 @@ function tsvCell(v){return String(v==null?'':v).replace(/[\t\r\n]+/g,' ').trim()
 function copySetFor(g){
   return g.fullCrit.filter(e=>!e.a._anot);
 }
-// tabla TSV con el MISMO orden de columnas que la hoja "Gestión" de gestion.xlsx (Fecha Salud | ID | Cuenta |
-// Estado | Nota | KAM | Responsable | Razón) para pegar directo ahí, seguido de columnas extra de contexto
-// (Fecha inicio estado salud, Estado salud, MRR, N° usuarios, CSS) que no interfieren con el pegado porque
-// caen en columnas más a la derecha de las que usa gestion.xlsx.
+// tabla TSV con las columnas: Fecha inicio salud | ID | Cuenta | Estado | Nota | KAM | Responsable | Razón | MRR | N° usuarios
 function buildKamCuentasTSV(g){
   const rowsSrc=copySetFor(g).filter(e=>!isImplementando(e.a)); // las en implementación no van al copiado
   if(!rowsSrc.length)return '';
   const ESTADO_LABEL={seguimiento:'Seguimiento',resuelta:'Resuelta'};
-  const saludLabel=a=>{if(!a.health)return'Sin dato de salud';const f=a.health.flag;return f==='critico'?'Crítico':f==='atencion'?'En riesgo':f==='ok'?'Saludable':'Sin clasificar';};
   // "Marcaje X% - NPS X - Tickets X": los 3 números clave del modelo de salud en una sola celda
   const razonTxt=a=>{const h=a.health;if(!h)return'Sin dato de salud';const marc=h.adopcion!=null?Math.round(h.adopcion*100)+'%':'s/d';const nps=h.nps!=null?h.nps:'s/d';const tk=h.inc30!=null?h.inc30:'s/d';return`Marcaje ${marc} - NPS ${nps} - Tickets ${tk}`;};
   // fecha en que empezó el estado de salud ACTUAL (crítico/en riesgo/saludable) + semanas que lleva, ej "2026-06-22 (6 semanas)"
   const fechaInicioTxt=a=>{const st=stateStreak(a);const fecha=st.startDate||'s/d';return`${fecha} (${st.streak} semana${st.streak===1?'':'s'})`;};
-  const header=['Fecha Salud','ID','Cuenta','Estado','Nota','KAM','Responsable','Razón','Fecha inicio estado salud','Estado salud','MRR','N° usuarios','CSS'];
+  const header=['Fecha inicio salud','ID','Cuenta','Estado','Nota','KAM','Responsable','Razón','MRR','N° usuarios'];
   const rows=[header.join('\t')];
   rowsSrc.forEach(e=>{
     const a=e.a,anot=a._anot;
     const estado=anot&&anot.estado?(ESTADO_LABEL[anot.estado]||anot.estado):'';
     const nota=anot&&anot.nota?anot.nota:'';
     const responsable=(anot&&anot.autor)?anot.autor:(a.kam||'');
-    const fechaSalud=(anot&&anot.actualizado)?new Date(anot.actualizado).toISOString().slice(0,10):'';
-    rows.push([fechaSalud,a.id||'',a.cliente,estado,nota,a.kam||'',responsable,razonTxt(a),fechaInicioTxt(a),saludLabel(a),Math.round(a.mrr||0),usersOf(a)!=null?usersOf(a):'',csOf(a)||''].map(tsvCell).join('\t'));
+    rows.push([fechaInicioTxt(a),a.id||'',a.cliente,estado,nota,a.kam||'',responsable,razonTxt(a),Math.round(a.mrr||0),usersOf(a)!=null?usersOf(a):''].map(tsvCell).join('\t'));
   });
   return rows.join('\n');
 }
