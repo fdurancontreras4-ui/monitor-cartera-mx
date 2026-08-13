@@ -1143,18 +1143,18 @@ function drawPrList(){
   const eRazon=e=>razonCriticoFor(e.a,e.branch||e.a.health);
   // dedup por cuenta: para no contar MRR/CS/streak/copiado varias veces cuando una cuenta aporta varias entradas (sucursales)
   const uniqByAccount=arr=>{const seen=new Set();return arr.filter(e=>{if(seen.has(e.a._uid))return false;seen.add(e.a._uid);return true;});};
-  // 1) filtro de Estado: es el ÚNICO filtro que también acota lo que se puede COPIAR (crítica/riesgo/saludable/etc.)
-  if(prState.estado==='atrisk')rows=rows.filter(e=>eCritica(e)||eRiesgo(e));
-  else if(prState.estado==='critica')rows=rows.filter(eCritica);
-  else if(prState.estado==='riesgo')rows=rows.filter(e=>eRiesgo(e)&&!eCritica(e));
-  else if(prState.estado==='sano')rows=rows.filter(e=>!eCritica(e)&&!eRiesgo(e));
-  // agrupar por KAM el set COMPLETO (solo filtrado por Estado) — es la base del botón "Copiar cuentas"
+  // agrupar por KAM el set COMPLETO (todas las entradas, sin ningún filtro de vista) — base fija del botón
+  // "Copiar críticas sin gestionar": así siempre ve todas las críticas de cada KAM, sin importar qué esté
+  // seleccionado en Estado/CS/motivo/antigüedad/gestión en ese momento.
   const fullGroups={};
   rows.forEach(e=>{const k=e.a.kam||'Sin KAM';(fullGroups[k]=fullGroups[k]||[]).push(e);});
-  // 2) filtros de refinamiento (CS, motivo, antigüedad, gestión): solo acotan lo que se VE en pantalla,
-  // nunca lo que se puede copiar — así "Copiar cuentas" siempre trae todas las críticas visibles o no,
-  // sin importar si están en seguimiento, resueltas o sin gestionar.
+  // 1) filtro de Estado: acota SOLO lo que se muestra en pantalla (ya no afecta lo que se puede copiar)
   let dispRows=rows.slice();
+  if(prState.estado==='atrisk')dispRows=dispRows.filter(e=>eCritica(e)||eRiesgo(e));
+  else if(prState.estado==='critica')dispRows=dispRows.filter(eCritica);
+  else if(prState.estado==='riesgo')dispRows=dispRows.filter(e=>eRiesgo(e)&&!eCritica(e));
+  else if(prState.estado==='sano')dispRows=dispRows.filter(e=>!eCritica(e)&&!eRiesgo(e));
+  // 2) filtros de refinamiento (CS, motivo, antigüedad, gestión): también solo acotan la pantalla, nunca el copiado
   if(prState.cs==='sin')dispRows=dispRows.filter(e=>!hasCS(e.a));
   else if(prState.cs==='con')dispRows=dispRows.filter(e=>hasCS(e.a));
   if(prState.razon)dispRows=dispRows.filter(e=>eCritica(e)&&eRazon(e)===prState.razon);
@@ -1168,23 +1168,28 @@ function drawPrList(){
   dispRows.forEach(e=>{const k=e.a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(e);});
   const KAM_ORDER=['raul','dafne','karla','no asignado'];
   const kamRank=name=>{const n=normName(name);for(let i=0;i<KAM_ORDER.length;i++){if(n.includes(KAM_ORDER[i]))return i;}return KAM_ORDER.length;};
-  const ordered=Object.entries(groups).map(([kam,arr])=>{
+  // unión de KAMs con algo que mostrar (groups) o algo que copiar (fullGroups) — para que "Copiar críticas sin
+  // gestionar" siga disponible aunque el filtro de Estado actual no deje ver ninguna fila de ese KAM en pantalla
+  const allKamNames=new Set([...Object.keys(groups),...Object.keys(fullGroups)]);
+  const ordered=[...allKamNames].map(kam=>{
+    const arr=groups[kam]||[];
     const crit=arr.filter(eCritica);
     const ries=arr.filter(e=>eRiesgo(e)&&!eCritica(e));
     const resto=arr.filter(e=>!eCritica(e)&&!eRiesgo(e));
     const montoRiesgo=uniqByAccount(crit.concat(ries)).reduce((s,e)=>s+(e.a.mrr||0),0);
     const nuevas=uniqByAccount(crit).filter(e=>e.a._streak<=1).length;
     const sinGestionar=uniqByAccount(crit).filter(e=>!e.a._anot).length;
-    // set completo del mismo KAM (sin CS/motivo/antigüedad/gestión) — para el botón de copiar
+    // set completo del mismo KAM (sin CS/motivo/antigüedad/gestión ni Estado) — para el botón de copiar
     const fArr=fullGroups[kam]||[];
     const fullCrit=uniqByAccount(fArr.filter(eCritica));
     const fullRies=uniqByAccount(fArr.filter(e=>eRiesgo(e)&&!eCritica(e)));
     const fullResto=uniqByAccount(fArr.filter(e=>!eCritica(e)&&!eRiesgo(e)));
     return{kam,crit,ries,resto,montoRiesgo,total:arr.length,nuevas,sinGestionar,fullCrit,fullRies,fullResto};
-  }).sort((x,y)=> kamRank(x.kam)-kamRank(y.kam) || y.crit.length-x.crit.length || y.ries.length-x.ries.length || y.montoRiesgo-x.montoRiesgo || y.total-x.total);
+  }).filter(g=>g.total>0||g.fullCrit.some(e=>!e.a._anot&&!isImplementando(e.a)))
+    .sort((x,y)=> kamRank(x.kam)-kamRank(y.kam) || y.crit.length-x.crit.length || y.ries.length-x.ries.length || y.montoRiesgo-x.montoRiesgo || y.total-x.total);
   const uniqAccCount=new Set(dispRows.map(e=>e.a._uid)).size;
   $('prTitle').textContent=dispRows.length===uniqAccCount?`${dispRows.length} cuentas en ${ordered.length} KAM · críticas por marcaje ascendente`:`${uniqAccCount} cuentas (${dispRows.length} filas, incluye sucursales) en ${ordered.length} KAM · críticas por marcaje ascendente`;
-  if(!dispRows.length){$('prList').innerHTML='<p class="legend">No hay cuentas con estos filtros.</p>';return;}
+  if(!ordered.length){PR_GROUPS=[];$('prList').innerHTML='<p class="legend">No hay cuentas con estos filtros.</p>';return;}
   // marcaje ascendente: peor marcaje (menor adopción) primero; sin dato al final
   const byMarcaje=(x,y)=>{const mx=eAd(x)==null?Infinity:eAd(x),my=eAd(y)==null?Infinity:eAd(y);return mx-my||(y.a._score-x.a._score);};
   const byScore=(x,y)=>y.a._score-x.a._score;
@@ -1199,8 +1204,7 @@ function drawPrList(){
     const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(e=>prCard(e.a,++rank,e.branch)).join('')}`:'';
     const copiable=copySetFor(g).filter(e=>!isImplementando(e.a));
     const copiableN=copiable.length;
-    const copyLabel=prState.estado==='riesgo'?'en riesgo':prState.estado==='sano'?'saludables':prState.estado==='all'?'(todas)':prState.estado==='critica'?'críticas':'críticas + en riesgo';
-    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} cuentas ${copyLabel} de ${esc(kamShort(g.kam))}: ID / Cuenta / Estado / Nota / KAM / Responsable / Razón salud / Fecha comentario / Fecha inicio estado salud / Estado salud / MRR / N° usuarios / CSS — incluye TODAS sin importar el filtro de gestión o antigüedad, y trae la nota si ya se está gestionando. No incluye las marcadas Implementando.`:`${esc(kamShort(g.kam))} no tiene cuentas ${copyLabel} copiables con este filtro de estado`}" onclick="event.stopPropagation();event.preventDefault();copyKamCuentasTSV(${gi})">📋 Copiar cuentas</button>`;
+    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} críticas de ${esc(kamShort(g.kam))} que NO se están gestionando y NO están en implementación: Fecha Salud / ID / Cuenta / Estado / Nota / KAM / Responsable / Razón (mismo orden que gestion.xlsx) + Fecha inicio estado salud / Estado salud / MRR / N° usuarios / CSS. Siempre este mismo criterio, sin importar los filtros de la vista.`:`${esc(kamShort(g.kam))} no tiene críticas sin gestionar y sin implementación para copiar`}" onclick="event.stopPropagation();event.preventDefault();copyKamCuentasTSV(${gi})">📋 Copiar críticas sin gestionar</button>`;
     return`<details class="kam-group">
       <summary class="kam-head">
         <span class="chev">▸</span>
@@ -1242,33 +1246,33 @@ function tsvCell(v){return String(v==null?'':v).replace(/[\t\r\n]+/g,' ').trim()
 // tabla TSV (encabezado + filas) con las cuentas críticas de UN solo grupo/KAM
 // según el filtro de Estado activo, decide qué sub-conjunto COMPLETO del grupo corresponde copiar
 // (siempre el set entero para ese estado, sin importar CS/motivo/antigüedad/gestión de la vista)
+// el copiado siempre es: críticas de este KAM que NO se están gestionando (sin nota) y que NO están en
+// implementación — sin importar qué filtro de Estado/CS/motivo/antigüedad/gestión esté aplicado en pantalla.
 function copySetFor(g){
-  if(prState.estado==='critica')return g.fullCrit;
-  if(prState.estado==='riesgo')return g.fullRies;
-  if(prState.estado==='sano')return g.fullResto;
-  if(prState.estado==='all')return g.fullCrit.concat(g.fullRies,g.fullResto);
-  return g.fullCrit.concat(g.fullRies); // 'atrisk' (críticas + en riesgo), el filtro por defecto
+  return g.fullCrit.filter(e=>!e.a._anot);
 }
-// tabla TSV con el MISMO formato de columnas que gestion.xlsx (ID | Cuenta | Estado | Nota | Responsable | Fecha)
-// para pegar directo ahí — trae la nota/estado/responsable si la cuenta ya se está gestionando, o vacío si no.
+// tabla TSV con el MISMO orden de columnas que la hoja "Gestión" de gestion.xlsx (Fecha Salud | ID | Cuenta |
+// Estado | Nota | KAM | Responsable | Razón) para pegar directo ahí, seguido de columnas extra de contexto
+// (Fecha inicio estado salud, Estado salud, MRR, N° usuarios, CSS) que no interfieren con el pegado porque
+// caen en columnas más a la derecha de las que usa gestion.xlsx.
 function buildKamCuentasTSV(g){
   const rowsSrc=copySetFor(g).filter(e=>!isImplementando(e.a)); // las en implementación no van al copiado
   if(!rowsSrc.length)return '';
   const ESTADO_LABEL={seguimiento:'Seguimiento',resuelta:'Resuelta'};
   const saludLabel=a=>{if(!a.health)return'Sin dato de salud';const f=a.health.flag;return f==='critico'?'Crítico':f==='atencion'?'En riesgo':f==='ok'?'Saludable':'Sin clasificar';};
   // "Marcaje X% - NPS X - Tickets X": los 3 números clave del modelo de salud en una sola celda
-  const razonSaludTxt=a=>{const h=a.health;if(!h)return'Sin dato de salud';const marc=h.adopcion!=null?Math.round(h.adopcion*100)+'%':'s/d';const nps=h.nps!=null?h.nps:'s/d';const tk=h.inc30!=null?h.inc30:'s/d';return`Marcaje ${marc} - NPS ${nps} - Tickets ${tk}`;};
+  const razonTxt=a=>{const h=a.health;if(!h)return'Sin dato de salud';const marc=h.adopcion!=null?Math.round(h.adopcion*100)+'%':'s/d';const nps=h.nps!=null?h.nps:'s/d';const tk=h.inc30!=null?h.inc30:'s/d';return`Marcaje ${marc} - NPS ${nps} - Tickets ${tk}`;};
   // fecha en que empezó el estado de salud ACTUAL (crítico/en riesgo/saludable) + semanas que lleva, ej "2026-06-22 (6 semanas)"
   const fechaInicioTxt=a=>{const st=stateStreak(a);const fecha=st.startDate||'s/d';return`${fecha} (${st.streak} semana${st.streak===1?'':'s'})`;};
-  const header=['ID','Cuenta','Estado','Nota','KAM','Responsable','Razón salud','Fecha comentario','Fecha inicio estado salud','Estado salud','MRR','N° usuarios','CSS'];
+  const header=['Fecha Salud','ID','Cuenta','Estado','Nota','KAM','Responsable','Razón','Fecha inicio estado salud','Estado salud','MRR','N° usuarios','CSS'];
   const rows=[header.join('\t')];
   rowsSrc.forEach(e=>{
     const a=e.a,anot=a._anot;
     const estado=anot&&anot.estado?(ESTADO_LABEL[anot.estado]||anot.estado):'';
     const nota=anot&&anot.nota?anot.nota:'';
     const responsable=(anot&&anot.autor)?anot.autor:(a.kam||'');
-    const fechaComentario=(anot&&anot.actualizado)?new Date(anot.actualizado).toISOString().slice(0,10):'';
-    rows.push([a.id||'',a.cliente,estado,nota,a.kam||'',responsable,razonSaludTxt(a),fechaComentario,fechaInicioTxt(a),saludLabel(a),Math.round(a.mrr||0),usersOf(a)!=null?usersOf(a):'',csOf(a)||''].map(tsvCell).join('\t'));
+    const fechaSalud=(anot&&anot.actualizado)?new Date(anot.actualizado).toISOString().slice(0,10):'';
+    rows.push([fechaSalud,a.id||'',a.cliente,estado,nota,a.kam||'',responsable,razonTxt(a),fechaInicioTxt(a),saludLabel(a),Math.round(a.mrr||0),usersOf(a)!=null?usersOf(a):'',csOf(a)||''].map(tsvCell).join('\t'));
   });
   return rows.join('\n');
 }
@@ -1277,12 +1281,12 @@ async function copyKamCuentasTSV(idx){
   if(!g){toast('No se encontró el grupo de KAM (vuelve a filtrar y reintenta).',true);return;}
   const nombre=kamShort(g.kam);
   const copiable=copySetFor(g).filter(e=>!isImplementando(e.a));
-  if(!copiable.length){toast('No hay cuentas para copiar de '+nombre+' con este filtro de estado (excluyendo Implementando).',true);return;}
+  if(!copiable.length){toast(nombre+' no tiene críticas sin gestionar y sin implementación para copiar.',true);return;}
   const text=buildKamCuentasTSV(g);
   try{
     if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);
     else{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
-    toast('Copiado: '+copiable.length+' cuentas de '+nombre+' (formato gestion.xlsx, listo para pegar).');
+    toast('Copiado: '+copiable.length+' críticas sin gestionar de '+nombre+' (mismo orden que gestion.xlsx, listo para pegar).');
   }catch(e){toast('No se pudo copiar: '+e.message,true);}
 }
 function isSinUso(a){const h=a.health;return !!(h&&((h.categoria&&/sin\s*uso/i.test(h.categoria))||h.adopcion===0));}
@@ -2069,7 +2073,11 @@ function parseGestionSheet(wb){
   if(hdr<0)return null;
   const headers=aoa[hdr].map(c=>c==null?'':String(c).trim());
   const find=re=>headers.findIndex(h=>re.test(h));
-  const c={id:find(/^id/i),nombre:find(/cuenta|nombre|empresa/i),estado:find(/estado/i),nota:find(/nota/i),autor:find(/responsable|autor|kam/i),fecha:find(/fecha/i)};
+  // "Responsable"/"Autor" antes que "KAM": gestion.xlsx ahora trae ambas columnas por separado (KAM asignado
+  // vs. quién escribió la nota), y no son siempre la misma persona — "kam" solo se usa como último respaldo
+  // para archivos viejos donde esa era la única columna de responsable.
+  const findFirst=(...res)=>{for(const re of res){const i=find(re);if(i>=0)return i;}return -1;};
+  const c={id:find(/^id/i),nombre:find(/cuenta|nombre|empresa/i),estado:find(/estado/i),nota:find(/nota/i),autor:findFirst(/responsable/i,/autor/i,/\bkam\b/i),fecha:find(/fecha/i)};
   if(c.nombre<0)return null;
   const out=[];
   for(let r=hdr+1;r<aoa.length;r++){
@@ -2129,13 +2137,22 @@ async function reloadData(){
 function dlRow(k,v){return v?`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`:'';}
 function findAccountSnapKey(a){
   const allKeys=new Set();WEEKS.forEach(w=>Object.keys(w.snap).forEach(k=>allKeys.add(k)));
-  const targetKeys=nameKeys(a.cliente);
-  if(!targetKeys.length)return null;
-  // coincidencia exacta: nameKeys() de cada clave cruda (extrae alias entre paréntesis, ej. "Cronos ... (ISEG Mexico)")
-  for(const k of allKeys){if(nameKeys(k).some(kk=>targetKeys.includes(kk)))return k;}
+  // buscar primero por el nombre de cartera, y si no hay match, por el nombre EXACTO con el que la cuenta ya
+  // quedó emparejada esta semana en el modelo de salud (a.health.nombre, vía ID) — necesario cuando la razón
+  // social de cartera y el nombre comercial en salud son muy distintos (ej. "GRUPO EPOL" en cartera = "MÍA
+  // Hotels & Resorts" en salud, mismo ID Geo) — por nombre solo nunca matchearían entre sí.
+  const candidateNames=[a.cliente];
+  if(a.health&&a.health.nombre&&a.health.nombre!==a.cliente)candidateNames.push(a.health.nombre);
+  for(const nombre of candidateNames){
+    const targetKeys=nameKeys(nombre);if(!targetKeys.length)continue;
+    for(const k of allKeys){if(nameKeys(k).some(kk=>targetKeys.includes(kk)))return k;}
+  }
   // luego por substring, siempre sobre claves ya normalizadas por nameKeys() — nunca vacías ni de 3 caracteres o
   // menos (nameKeys ya filtra eso), a diferencia de un normName() suelto que puede dar "" y matchear cualquier cosa
-  for(const k of allKeys){const kKeys=nameKeys(k);for(const kk of kKeys){for(const n of targetKeys){if(kk.includes(n)||n.includes(kk))return k;}}}
+  for(const nombre of candidateNames){
+    const targetKeys=nameKeys(nombre);if(!targetKeys.length)continue;
+    for(const k of allKeys){const kKeys=nameKeys(k);for(const kk of kKeys){for(const n of targetKeys){if(kk.includes(n)||n.includes(kk))return k;}}}
+  }
   return null;
 }
 function weeklyMarcajeSeries(a){
@@ -2173,7 +2190,7 @@ function openDetail(uid){
     </div>
     ${branchesHtml}
     <div class="sec-title">Fuga</div><p style="font-size:13px">${fugaCell(a)} <span class="legend">— ${a._cambioRazon?'marcada como cambio de razón social: no se cuenta como fuga ni como crítica.':'derivada de la tendencia '+MONTHS_SHORT[0]+'→'+(MONTHS_SHORT[a.meses.length-1]||'')+'.'}</span></p>
-    ${(function(){const serie=weeklyMarcajeSeries(a);const conDato=serie.filter(w=>w.ad!=null);if(!serie.length)return'';if(!conDato.length)return`<div class="sec-title">Marcaje semanal</div><p class="legend">No encontramos esta cuenta en el historial de Salud semanal (por nombre). Revisa la pestaña <strong>Salud semanal</strong> directamente si crees que sí debería estar.</p>`;
+    ${(function(){const serie=weeklyMarcajeSeries(a);const conDato=serie.filter(w=>w.ad!=null);if(!serie.length||!conDato.length)return`<div class="sec-title">Marcaje semanal</div><p class="legend">No encontramos esta cuenta en el historial de Salud semanal (por nombre). Revisa la pestaña <strong>Salud semanal</strong> directamente si crees que sí debería estar, o compara el nombre exacto contra <strong>Datos → Cartera de salud</strong>.</p>`;
       const shown=serie.slice(-12);
       const bars=shown.map(w=>{const pct=w.ad!=null?Math.round(w.ad*100):null;const h=pct!=null?Math.max(4,Math.round(pct/100*70)):2;const col=pct==null?'var(--color-border-secondary)':pct<30?'#E24B4A':pct<60?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${pct!=null?pct+'%':'—'}</div><div class="bar" style="height:${h}px;background:${col};${pct==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
       return`<div class="sec-title">Marcaje semanal ${serie.length>12?`<span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· últimas 12 de ${serie.length} semanas guardadas</span>`:''}</div><div class="big-bars">${bars}</div><p class="status-line">Ve el historial completo y compáralo con otras cuentas en <strong>Salud semanal → % Marcaje</strong>.</p>`;
