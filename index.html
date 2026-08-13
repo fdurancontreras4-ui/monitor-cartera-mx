@@ -227,6 +227,7 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
   <div class="subnav" id="subnav-fugag">
     <button data-sec="fuga">Fuga</button>
     <button data-sec="disminuciones">Disminuciones</button>
+    <button data-sec="facturcritica">Críticas por facturación</button>
   </div>
   <div class="subnav" id="subnav-venta">
     <button data-sec="cross">Cross-sell</button>
@@ -245,6 +246,7 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
   <div id="cuentas" class="section"></div>
   <div id="fuga" class="section"></div>
   <div id="disminuciones" class="section"></div>
+  <div id="facturcritica" class="section"></div>
   <div id="cross" class="section"></div>
   <div id="upsell" class="section"></div>
   <div id="kam-raul" class="section"></div>
@@ -435,7 +437,7 @@ function segOf(a){
   if(a.usuarios!=null)return a.usuarios>=100?'SMB medium':'SMB small';
   return'SMB small';
 }
-function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return false;return !!(a.health&&a.health.flag==='critico')||facturacionCritica(a);}
+function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return false;return !!(a.health&&a.health.flag==='critico');}
 // cuenta marcada "Implementando?" = Sí en la cartera (columna de cartera.xlsx, no del modelo de salud)
 function isImplementando(a){return /^s[ií]$/i.test(String(a.implementando||'').trim());}
 function isRiesgo(a){if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return false;return !isCritica(a)&&!!(a.health&&a.health.flag==='atencion');}
@@ -912,14 +914,11 @@ function prCard(a,rank,branch){
   const excluded=!!(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir);
   const h=branch||a.health;
   const flag=h?h.flag:null;
-  const facturInfo=facturacionDropInfo(a);
-  const st=excluded?'estable':((flag==='critico'||facturInfo.mes||facturInfo.acum)?'critica':flag==='atencion'?'riesgo':'estable');
+  const st=excluded?'estable':(flag==='critico'?'critica':flag==='atencion'?'riesgo':'estable');
   const razon=branch?razonCriticoFor(a,branch):(a._razonCritico||razonCritico(a));
   const razonIcon={marcaje:'📉',sinuso:'⛔',nps:'😠',ticket:'🎫',fuga:'💸',variacion:'📊'};
   const razonChip=(st==='critica'&&razon)?`<span class="badge b-red" style="font-size:12px;font-weight:700;padding:4px 11px;border:1.5px solid #A32D2D">${razonIcon[razon]||'⚠️'} ${esc(razonLabel(razon))}</span> `:'';
-  // dos alertas de caída de facturación, independientes del archivo de salud (ver facturacionDropInfo)
-  const facturChips=(st==='critica'?(facturInfo.mes?`<span class="badge b-red" title="Facturación: ${fmtUSD(facturInfo.mes.prev)} → ${fmtUSD(facturInfo.mes.last)} (mes anterior → último mes)" style="font-size:12px;font-weight:700;padding:4px 11px;border:1.5px solid #A32D2D">📉 Caída ${facturInfo.mes.pct}% facturación</span> `:'')+(facturInfo.acum?`<span class="badge b-red" title="Facturación: ${fmtUSD(facturInfo.acum.first)} → ${fmtUSD(facturInfo.acum.last)} (inicio → fin de los últimos 6 meses)" style="font-size:12px;font-weight:700;padding:4px 11px;border:1.5px solid #A32D2D">📉 Caída ${facturInfo.acum.pct}% facturación acumulada</span> `:''):'');
-  const stBadge=st==='critica'?`<span class="badge b-red">Crítico</span> ${razonChip}${facturChips}`:st==='riesgo'?'<span class="badge b-amber">En riesgo</span> ':a._congelada?'<span class="badge b-gray">Congelada</span> ':a._cambioRazon?'<span class="badge b-blue">Cambio razón social</span> ':'';
+  const stBadge=st==='critica'?`<span class="badge b-red">Crítico</span> ${razonChip}`:st==='riesgo'?'<span class="badge b-amber">En riesgo</span> ':a._congelada?'<span class="badge b-gray">Congelada</span> ':a._cambioRazon?'<span class="badge b-blue">Cambio razón social</span> ':'';
   const gap=(st!=='estable'&&!hasCS(a))?'gap':'';
   const pb=playbookFor(a);
   const ad=h&&h.adopcion!=null?h.adopcion:null;
@@ -927,6 +926,7 @@ function prCard(a,rank,branch){
   const usuariosTxt=usersOf(a)!=null?` · ${usersOf(a)} usuario${usersOf(a)===1?'':'s'}`:'';
   const accion=pb?`<div class="pr-accion">${pbBadge(pb)} <strong>Acción a realizar:</strong> ${!hasCS(a)?'<strong style="color:#A32D2D">Asignar CSS · </strong>':''}${esc(pb.first)} <span style="opacity:.7">(${pb.sla})</span></div>`:'';
   const anotBadge=(function(){if(!a._anot)return'';const es=ANNOT_ESTADOS[a._anot.estado];const tag=es?`<span class="badge ${es.badge}">📝 ${es.label}</span>`:'<span class="badge b-gray">📝 Nota</span>';return tag+' ';})();
+  const responsableBadge=(a._anot&&a._anot.autor)?`<span class="badge b-blue" title="Columna Responsable de gestion.xlsx — quién está trabajando esta cuenta ahora mismo">👤 ${esc(a._anot.autor)}</span> `:'';
   const implBadge=isImplementando(a)?'<span class="badge b-blue" title="Marcada Implementando? = Sí en la cartera">🔵 Implementando</span> ':'';
   // seguimiento semanal: nueva vs recurrente (WEEKS) + señal de "sin gestionar" cuando no hay anotación de equipo
   // (a nivel de cuenta/razón social — no varía entre sucursales de una misma cuenta)
@@ -947,7 +947,7 @@ function prCard(a,rank,branch){
     <div class="pr-rank">${rank}</div>
     <div class="pr-main"><div class="pr-name">${nameHtml}</div>
     <div class="pr-meta">${carteraBadge(a.cartera)} · ${esc(a.kam)} · ${fmtUSD(a.mrr)}/mes${marc}${usuariosTxt} · ${csBadge(a)}</div>
-    <div style="margin-top:5px">${stBadge}${implBadge}${anotBadge}${trackBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}${a._anot&&a._anot.nota?`<div class="pr-accion" style="color:var(--color-text-secondary)">📝 <em>"${esc(a._anot.nota.length>140?a._anot.nota.slice(0,140)+'…':a._anot.nota)}"</em> — ${esc(a._anot.autor||'')}</div>`:''}</div>
+    <div style="margin-top:5px">${stBadge}${implBadge}${anotBadge}${responsableBadge}${trackBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}${a._anot&&a._anot.nota?`<div class="pr-accion" style="color:var(--color-text-secondary)">📝 <em>"${esc(a._anot.nota.length>140?a._anot.nota.slice(0,140)+'…':a._anot.nota)}"</em> — ${esc(a._anot.autor||'')}</div>`:''}</div>
     <div class="pr-score" style="color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-secondary)'}">${a._score}</div>
   </div>`;
 }
@@ -1138,7 +1138,7 @@ function renderPriorizar(){
     return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500">${esc(a.cliente)}</td><td>${b.join(' ')}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(com)}</td></tr>`;};
   const excHtml=`<details class="card" style="padding:0"><summary style="cursor:pointer;padding:1rem 1.25rem;font-size:14px;font-weight:500;color:var(--color-text-secondary)">Excepciones <span class="badge b-gray">${exc.length}</span> <span style="font-weight:400;font-size:12px">— cuentas con un ajuste de consideraciones aplicado</span></summary><div style="padding:0 1.25rem 1rem">${exc.length?`<div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Excepción</th><th class="nosort">Comentario</th></tr></thead><tbody>${exc.map(excRow).join('')}</tbody></table></div>`:'<p class="legend">Sin excepciones aplicadas. Se gestionan en <code>consideraciones.json</code> (pestaña Datos).</p>'}</div></details>`;
   $('priorizar').innerHTML=`
-  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar — el de <strong>motivo</strong> deja ver solo las críticas por adopción/marcaje bajo, por tickets sin resolver o por NPS detractor. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.<br><br><strong>Una cuenta puede ser crítica por dos vías independientes:</strong> (1) el archivo de salud vigente la marca "Crítico" — puede ser por marcaje bajo, NPS detractor, tickets sin resolver, o por <strong>% Variación</strong> del archivo de salud (se etiqueta "crítico por % variación 30 días" — esto es variación de <em>adopción</em>, no de facturación, aunque a veces coincidan). (2) La <strong>facturación de la propia cartera</strong> cayó fuerte, sin importar lo que diga el archivo de salud: <strong>"Caída X% facturación"</strong> si el último mes cayó 20% o más contra el mes anterior, o <strong>"Caída X% facturación acumulada"</strong> si en los últimos 6 meses acumula una caída de 40% o más. Esta segunda vía es distinta del badge de <strong>Fuga</strong> que ya existía en el resto del dashboard (ese compara el primer mes con dato de todo el historial contra el último, con 15% de umbral — sigue igual, no se tocó).<br><br><strong>Seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"), y si tiene una <strong>nota de seguimiento</strong> o está <strong>🔴 sin gestionar</strong>. Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como sin gestionar aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo. Las tarjetas también se pintan: <strong style="color:#3B6D11">verde</strong> si está "Resuelta", <strong style="color:#854F0B">amarillo</strong> si está "En seguimiento", <strong style="color:#A32D2D">rojo</strong> si es crítica y no tiene nada en gestión, y <strong style="color:#185FA5">celeste 🔵 Implementando</strong> si la cartera trae <code>Implementando? = Sí</code> para esa cuenta — estas últimas quedan fuera del botón "Copiar críticas sin gestionar" porque ya las lleva el equipo de implementación.</div>
+  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar — el de <strong>motivo</strong> deja ver solo las críticas por adopción/marcaje bajo, por tickets sin resolver o por NPS detractor. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.<br><br>Lo crítico de esta pestaña viene <strong>solo del archivo de salud vigente</strong> (marcaje, NPS, tickets, o <strong>% Variación</strong> — este último se etiqueta "crítico por % variación 30 días", es variación de <em>adopción</em>, no de facturación). Las caídas de <strong>facturación</strong> ya no se mezclan aquí — tienen su propia pestaña <strong>Fuga → Críticas por facturación</strong>, con el mismo agrupado por KAM.<br><br><strong>Seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"), y si tiene una <strong>nota de seguimiento</strong> o está <strong>🔴 sin gestionar</strong>. Cuando hay nota, ahora también aparece el tag <strong>👤 Responsable</strong> — es la columna <strong>Responsable</strong> de <code>gestion.xlsx</code>, que puede ser distinta del KAM asignado (por ejemplo, si un CS está llevando el seguimiento puntual). Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como sin gestionar aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo. Las tarjetas también se pintan: <strong style="color:#3B6D11">verde</strong> si está "Resuelta", <strong style="color:#854F0B">amarillo</strong> si está "En seguimiento", <strong style="color:#A32D2D">rojo</strong> si es crítica y no tiene nada en gestión, y <strong style="color:#185FA5">celeste 🔵 Implementando</strong> si la cartera trae <code>Implementando? = Sí</code> para esa cuenta — estas últimas quedan fuera del botón "Copiar críticas sin gestionar" porque ya las lleva el equipo de implementación.</div>
   ${excHtml}
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
@@ -1169,7 +1169,7 @@ function drawPrList(){
   });
   const eExcluded=e=>!!(e.a._congelada||e.a._forzarSano||e.a._cambioRazon||e.a._anotExcluir);
   const eFlag=e=>(e.branch||e.a.health)?(e.branch||e.a.health).flag:null;
-  const eCritica=e=>!eExcluded(e)&&(eFlag(e)==='critico'||facturacionCritica(e.a));
+  const eCritica=e=>!eExcluded(e)&&eFlag(e)==='critico';
   const eRiesgo=e=>!eExcluded(e)&&!eCritica(e)&&eFlag(e)==='atencion';
   const eAd=e=>{const h=e.branch||e.a.health;return h&&h.adopcion!=null?h.adopcion:null;};
   const eRazon=e=>razonCriticoFor(e.a,e.branch||e.a.health);
@@ -1625,6 +1625,88 @@ function renderDisminuciones(){
   <div class="card"><h3>Cuentas en fuga / disminución (alerta primero, luego mayor monto)</h3><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">CS</th><th class="nosort">Tendencia</th><th class="nosort">MRR</th><th class="nosort">Estado</th><th class="nosort">Semáforo de alerta</th></tr></thead><tbody>
   ${list.map(({a,alert})=>`<tr onclick="openDetail('${a._uid}')"><td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td>${hasCS(a)?'<span class="badge b-teal">'+esc(a.css)+'</span>':'<span class="badge b-gray">Sin CS</span>'}</td><td>${sparkline(a.meses)} <span style="font-size:11px;color:var(--color-text-secondary)">${a.meses.map(m=>m==null?'·':Math.round(m)).join(' › ')}</span></td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${fugaCell(a)}</td><td>${alBadge(alert.flag)}${alert.razon?`<div class="legend" style="margin-top:2px">${esc(alert.razon)}</div>`:''}</td></tr>`).join('')}
   </tbody></table></div></div>`;
+}
+
+// ---------- Críticas por facturación (independiente del archivo de salud) ----------
+let PR_GROUPS_FACTUR=[];
+function prCardFactur(a,rank){
+  const d=facturacionDropInfo(a);
+  const chips=(d.mes?`<span class="badge b-red" title="Facturación: ${fmtUSD(d.mes.prev)} → ${fmtUSD(d.mes.last)} (mes anterior → último mes)" style="font-size:12px;font-weight:700;padding:4px 11px;border:1.5px solid #A32D2D">📉 Caída ${d.mes.pct}% facturación</span> `:'')+(d.acum?`<span class="badge b-red" title="Facturación: ${fmtUSD(d.acum.first)} → ${fmtUSD(d.acum.last)} (inicio → fin de los últimos 6 meses)" style="font-size:12px;font-weight:700;padding:4px 11px;border:1.5px solid #A32D2D">📉 Caída ${d.acum.pct}% facturación acumulada</span> `:'');
+  const usuariosTxt=usersOf(a)!=null?` · ${usersOf(a)} usuario${usersOf(a)===1?'':'s'}`:'';
+  const anotBadge=(function(){if(!a._anot)return'';const es=ANNOT_ESTADOS[a._anot.estado];const tag=es?`<span class="badge ${es.badge}">📝 ${es.label}</span>`:'<span class="badge b-gray">📝 Nota</span>';return tag+' ';})();
+  const responsableBadge=(a._anot&&a._anot.autor)?`<span class="badge b-blue" title="Columna Responsable de gestion.xlsx — quién está trabajando esta cuenta ahora mismo">👤 ${esc(a._anot.autor)}</span> `:'';
+  return`<div class="pr-card" onclick="openDetail('${a._uid}')">
+    <div class="pr-rank">${rank}</div>
+    <div class="pr-main"><div class="pr-name">${esc(a.cliente)}</div>
+    <div class="pr-meta">${carteraBadge(a.cartera)} · ${esc(a.kam)} · ${fmtUSD(a.mrr)}/mes${usuariosTxt} · ${hasCS(a)?'<span class="badge b-teal">CS: '+esc(a.css)+'</span>':'<span class="badge b-red">Sin CS</span>'}</div>
+    <div style="margin-top:5px"><span class="badge b-red">Crítico</span> ${chips}${anotBadge}${responsableBadge}</div>
+    <div class="pr-accion">${sparkline(a.meses)} <span style="font-size:11px;color:var(--color-text-secondary);margin-left:6px">${a.meses.map(m=>m==null?'·':Math.round(m)).join(' › ')}</span></div></div>
+    <div class="pr-score" style="color:var(--color-text-secondary)">—</div>
+  </div>`;
+}
+function renderFacturCritica(){
+  const rows=ACCOUNTS.filter(a=>!a._congelada&&!a._forzarSano&&!a._cambioRazon&&!a._anotExcluir&&facturacionCritica(a));
+  const groups={};
+  rows.forEach(a=>{const k=a.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(a);});
+  const KAM_ORDER=['raul','dafne','karla','no asignado'];
+  const kamRank=name=>{const n=normName(name);for(let i=0;i<KAM_ORDER.length;i++){if(n.includes(KAM_ORDER[i]))return i;}return KAM_ORDER.length;};
+  const ordered=Object.entries(groups).map(([kam,arr])=>{
+    arr.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
+    const montoRiesgo=arr.reduce((s,a)=>s+(a.mrr||0),0);
+    const sinCSn=arr.filter(a=>!hasCS(a)).length;
+    return{kam,arr,montoRiesgo,sinCSn};
+  }).sort((x,y)=>kamRank(x.kam)-kamRank(y.kam)||y.arr.length-x.arr.length||y.montoRiesgo-x.montoRiesgo);
+  PR_GROUPS_FACTUR=ordered;
+  const totalMonto=rows.reduce((s,a)=>s+(a.mrr||0),0);
+  const soloMes=rows.filter(a=>{const d=facturacionDropInfo(a);return d.mes&&!d.acum;}).length;
+  const soloAcum=rows.filter(a=>{const d=facturacionDropInfo(a);return !d.mes&&d.acum;}).length;
+  const ambas=rows.filter(a=>{const d=facturacionDropInfo(a);return d.mes&&d.acum;}).length;
+  $('facturcritica').innerHTML=`
+  <div class="note-box">Cuentas <strong>críticas por caída de facturación</strong>, calculado directo de los montos mensuales de la cartera — <strong>independiente de lo que diga el archivo de salud</strong> (una cuenta puede estar aquí y salir "Saludable" en la pestaña Salud, o viceversa). Dos alertas posibles: <strong>"Caída X% facturación"</strong> si el último mes cayó 20% o más contra el mes anterior, y <strong>"Caída X% facturación acumulada"</strong> si en los últimos 6 meses acumula una caída de 40% o más — una cuenta puede tener una, la otra, o ambas. Es distinto del semáforo de la pestaña <strong>Disminuciones</strong> (usa otros umbrales: 10/20% mes a mes y 15/30% vs hace 6 meses) y del badge de <strong>Fuga</strong> de siempre (compara el primer mes de todo el historial contra el último, 15% de umbral) — son tres señales relacionadas pero calculadas distinto; esta pestaña es la más estricta y la más orientada a alertar rápido.</div>
+  <div class="metrics">
+    <div class="metric"><div class="label">Cuentas críticas por facturación</div><div class="value" style="color:#E24B4A">${rows.length}</div><div class="sub">${fmtUSD(totalMonto)}/mes expuesto</div></div>
+    <div class="metric"><div class="label">Solo caída mensual</div><div class="value">${soloMes}</div><div class="sub">≥20% vs mes anterior</div></div>
+    <div class="metric"><div class="label">Solo caída acumulada</div><div class="value">${soloAcum}</div><div class="sub">≥40% en 6 meses</div></div>
+    <div class="metric"><div class="label">Ambas señales</div><div class="value" style="color:#A32D2D">${ambas}</div><div class="sub">mensual y acumulada a la vez</div></div>
+  </div>
+  ${ordered.length?ordered.map((g,gi)=>`<details class="kam-group">
+      <summary class="kam-head">
+        <span class="chev">▸</span>
+        <span class="kam-name">${esc(g.kam)}</span>
+        <span class="kam-stats"><strong style="color:#E24B4A">${g.arr.length}</strong> cuentas · <strong>${fmtUSD(g.montoRiesgo)}/mes</strong> expuesto${g.sinCSn?` · <strong style="color:#E24B4A">${g.sinCSn} sin CS</strong>`:''}</span>
+        <button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto" title="Copia las ${g.arr.length} cuentas de ${esc(kamShort(g.kam))} — mismas columnas que en Salud (Fecha inicio salud / ID / Cuenta / Estado / Nota / KAM / Responsable / Razón / MRR / N° usuarios), con la Razón describiendo la caída de facturación." onclick="event.stopPropagation();event.preventDefault();copyKamFacturTSV(${gi})">📋 Copiar cuentas</button>
+      </summary>
+      <div class="kam-body">${g.arr.map((a,i)=>prCardFactur(a,i+1)).join('')}</div>
+    </details>`).join(''):'<p class="legend">Ninguna cuenta cumple los umbrales de caída de facturación en este momento.</p>'}
+  `;
+}
+function buildKamFacturTSV(g){
+  if(!g||!g.arr||!g.arr.length)return '';
+  const ESTADO_LABEL={seguimiento:'Seguimiento',resuelta:'Resuelta'};
+  const razonTxt=a=>{const d=facturacionDropInfo(a);const parts=[];if(d.mes)parts.push(`Caída ${d.mes.pct}% facturación (mes a mes)`);if(d.acum)parts.push(`Caída ${d.acum.pct}% facturación acumulada (6 meses)`);return parts.join(' · ')||'—';};
+  const fechaInicioTxt=a=>{const st=stateStreak(a);const fecha=st.startDate||'s/d';return`${fecha} (${st.streak} semana${st.streak===1?'':'s'})`;};
+  const header=['Fecha inicio salud','ID','Cuenta','Estado','Nota','KAM','Responsable','Razón','MRR','N° usuarios'];
+  const rows=[header.join('\t')];
+  g.arr.forEach(a=>{
+    const anot=a._anot;
+    const estado=anot&&anot.estado?(ESTADO_LABEL[anot.estado]||anot.estado):'';
+    const nota=anot&&anot.nota?anot.nota:'';
+    const responsable=(anot&&anot.autor)?anot.autor:(a.kam||'');
+    rows.push([fechaInicioTxt(a),a.id||'',a.cliente,estado,nota,a.kam||'',responsable,razonTxt(a),Math.round(a.mrr||0),usersOf(a)!=null?usersOf(a):''].map(tsvCell).join('\t'));
+  });
+  return rows.join('\n');
+}
+async function copyKamFacturTSV(idx){
+  const g=PR_GROUPS_FACTUR[idx];
+  if(!g){toast('No se encontró el grupo de KAM (vuelve a filtrar y reintenta).',true);return;}
+  const nombre=kamShort(g.kam);
+  if(!g.arr.length){toast(nombre+' no tiene cuentas críticas por facturación para copiar.',true);return;}
+  const text=buildKamFacturTSV(g);
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);
+    else{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
+    toast('Copiado: '+g.arr.length+' cuentas críticas por facturación de '+nombre+' (listo para pegar).');
+  }catch(e){toast('No se pudo copiar: '+e.message,true);}
 }
 
 // ---------- Cross-sell ----------
@@ -2264,11 +2346,11 @@ function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');
 
 // ---------- navegación / init ----------
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
-const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,implementacion:renderImplementacion,sinuso:renderSinUso,datos:renderDatos};
+const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,implementacion:renderImplementacion,sinuso:renderSinUso,datos:renderDatos};
 function renderAll(){applyAnnotationsToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11" title="${CURRENT_HEALTH_FILE?esc(CURRENT_HEALTH_FILE):''}">salud vigente: ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'activa'}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 // mapa: id de sección real -> id de grupo (pestaña principal) al que pertenece
-const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',implementacion:'implementacion',datos:'datos'};
+const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',implementacion:'implementacion',datos:'datos'};
 let NAV_LAST_CHILD={}; // recuerda qué sub-pestaña se vio por última vez en cada grupo con hijos
 // clic en una pestaña principal con sub-pestañas: abre la última vista o, si es la primera vez, la primera opción
 function showGroup(gid){
