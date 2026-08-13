@@ -2230,7 +2230,7 @@ function applyGestionToAccounts(){
     if(a._anot)return;
     const pid=cleanId(a.id);let hit=pid&&byId[pid]?byId[pid]:null;
     if(!hit){const keys=nameKeys(a.cliente);for(const k of keys){if(byNorm[k]){hit=byNorm[k];break;}}}
-    if(hit&&hit.estado){a._anot={estado:hit.estado,nota:hit.nota,autor:hit.autor,actualizado:hit.fecha?(Date.parse(hit.fecha)||null):null};}
+    if(hit&&(hit.estado||hit.nota||hit.autor)){a._anot={estado:hit.estado,nota:hit.nota,autor:hit.autor,actualizado:hit.fecha?(Date.parse(hit.fecha)||null):null};}
   });
 }
 async function reloadData(){
