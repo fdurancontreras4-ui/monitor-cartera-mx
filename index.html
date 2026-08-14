@@ -2334,11 +2334,31 @@ function openDetail(uid){
   const bars=a.meses.map((m,i)=>`<div class="bb"><div class="amt">${m==null?'—':Math.round(m)}</div><div class="bar" style="height:${m==null?2:Math.max(4,Math.round(m/mx*70))}px;${m==null?'opacity:.25':''}"></div><div class="lbl">${labels[i]||('M'+(i+1))}</div></div>`).join('');
   const pres=a.meses.filter(m=>m!=null);let delta='';if(pres.length>=2&&pres[0]>0){const d=Math.round((pres[pres.length-1]-pres[0])/pres[0]*100);delta=`${d>0?'+':''}${d}% ${MONTHS_SHORT[0]}→${MONTHS_SHORT[a.meses.length-1]||''}`;}
   const modsHtml=Object.keys(a.mods).length?`<div class="mod-grid">${Object.entries(a.mods).map(([m,v])=>`<div class="mod-item"><span>${esc(m)} ${v.raw&&v.raw!==v.s?`<span class="raw">${esc(v.raw)}</span>`:''}</span><span class="badge ${v.s==='OK'?'b-green':v.s==='OP'?'b-amber':'b-gray'}">${v.s}</span></div>`).join('')}</div>`:'<p class="legend">Sin módulos adicionales registrados.</p>';
-  const healthHtml=a.health?(function(){const h=a.health;const rz=a._razonCritico||razonCritico(a);const catBase=h.categoria||h.flag||'sin clasificar';const catLbl=(h.flag==='critico'&&rz&&!/sin\s*uso/i.test(catBase))?esc(catBase)+'-'+rz:esc(catBase);const fb=`<span class="badge ${h.flag==='critico'?'b-red':h.flag==='atencion'?'b-amber':h.flag==='ok'?'b-green':'b-gray'}">${catLbl}</span>`;const cnote=(function(){const n=[];if(a._congelada)n.push('❄️ <strong>Congelada</strong> — '+esc((a._consid&&a._consid.razon)||'no se cuenta como crítica.'));if(a._marcajeAjustado)n.push(`🔧 <strong>Marcaje ajustado</strong> — real ${Math.round(a._marcajeAjustado.orig*100)}% reescalado sobre tope ${Math.round(a._marcajeAjustado.max*100)}% → ${Math.round(a._marcajeAjustado.adj*100)}%. ${esc((a._consid&&a._consid.razon)||'')}`);if(a._reclasificado==='solo-ticket')n.push('✓ <strong>Reclasificada a Saludable</strong> — crítica solo por 1 ticket y por lo demás sana (regla de consideraciones).');return n.length?`<div class="note-box" style="margin-top:8px">${n.join('<br>')}</div>`:'';})();if(h.categoria){const tile=(lbl,val,col)=>`<div class="stat3-it"><div class="stat3-v" style="${col?`color:${col}`:''}">${val}</div><div class="stat3-l">${lbl}</div></div>`;const adv=h.adopcion!=null?Math.round(h.adopcion*100)+'%':'—';const adc=h.adopcion!=null?(h.adopcion<0.3?'#E24B4A':h.adopcion<0.6?'#EF9F27':'#3B6D11'):'';const npsv=h.nps!=null?h.nps:'—';const npc=h.nps!=null?(h.nps<=6?'#E24B4A':h.nps<=8?'#EF9F27':'#3B6D11'):'';const tkv=h.inc30!=null?h.inc30:'—';const tkc=h.inc30!=null&&h.inc30>0?'#EF9F27':'';return`<div style="margin-top:6px">${fb} ${h.score!=null?`<span class="chip">Score ${h.score}</span>`:''}</div>${cnote}<div class="stat3">${tile('% Adopción (marcaje)',adv,adc)}${tile('NPS',npsv,npc)}${tile('Tickets / inc. 30d',tkv,tkc)}</div><dl class="dl-grid" style="margin-top:8px">${dlRow('Variación adopción',h.variacion!=null?(h.variacion>0?'+':'')+Math.round(h.variacion*100)+'pp':null)}${a._marcajeAjustado?dlRow('Marcaje real (sin ajustar)',Math.round(a._marcajeAjustado.orig*100)+'%'):''}${dlRow('CS (tablero)',h.css)}</dl>`;}return`<div style="margin-top:6px">${fb}</div>${cnote}`+(h.raw?`<dl class="dl-grid" style="margin-top:8px">${Object.entries(h.raw).map(([k,v])=>dlRow(k,v)).join('')}</dl>`:'');})():'<p class="legend">Sin datos del tablero de salud para esta cuenta.</p>';
-  const csLine=hasCS(a)?`<span class="badge b-teal">Customer Success: ${esc(a.css)}</span>`:'<span class="badge b-gray">Sin Customer Success</span>';
-  // alertas de caída de facturación (independientes del archivo de salud, ver facturacionDropInfo)
+  const h=a.health;
+  const rz=a._razonCritico||razonCritico(a);
+  // --- alertas: se juntan todas acá (antes estaban repartidas por todo el modal) ---
+  const alerts=[];
+  if(a._congelada)alerts.push('❄️ <strong>Congelada</strong> — '+esc((a._consid&&a._consid.razon)||'no se cuenta como crítica.'));
+  if(a._marcajeAjustado)alerts.push(`🔧 <strong>Marcaje ajustado</strong> — real ${Math.round(a._marcajeAjustado.orig*100)}% reescalado sobre tope ${Math.round(a._marcajeAjustado.max*100)}% → ${Math.round(a._marcajeAjustado.adj*100)}%. ${esc((a._consid&&a._consid.razon)||'')}`);
+  if(a._reclasificado==='solo-ticket')alerts.push('✓ <strong>Reclasificada a Saludable</strong> — crítica solo por 1 ticket y por lo demás sana (regla de consideraciones).');
+  if(!hasCS(a))alerts.push('👤 <strong>Sin Customer Success asignado</strong> — antes de ejecutar cualquier playbook, asignar un responsable de monitoreo.');
   const facturDrop=facturacionDropInfo(a);
-  const facturDropHtml=(facturDrop.mes||facturDrop.acum)?`<div class="callout" style="margin-top:8px">${facturDrop.mes?`📉 <strong>Caída ${facturDrop.mes.pct}% facturación</strong> mes a mes — ${fmtUSD(facturDrop.mes.prev)} → ${fmtUSD(facturDrop.mes.last)}.<br>`:''}${facturDrop.acum?`📉 <strong>Caída ${facturDrop.acum.pct}% facturación acumulada</strong> en los últimos 6 meses — ${fmtUSD(facturDrop.acum.first)} → ${fmtUSD(facturDrop.acum.last)}.`:''}</div>`:'';
+  if(facturDrop.mes)alerts.push(`📉 <strong>Caída ${facturDrop.mes.pct}% facturación</strong> mes a mes — ${fmtUSD(facturDrop.mes.prev)} → ${fmtUSD(facturDrop.mes.last)}.`);
+  if(facturDrop.acum)alerts.push(`📉 <strong>Caída ${facturDrop.acum.pct}% facturación acumulada</strong> en los últimos 6 meses — ${fmtUSD(facturDrop.acum.first)} → ${fmtUSD(facturDrop.acum.last)}.`);
+  const alertsHtml=alerts.length?`<div class="card" style="border-left:3px solid #E24B4A"><div class="sec-title" style="margin-top:0">⚠ Alertas</div>${alerts.map(t=>`<p style="font-size:13px;line-height:1.55;margin:0 0 6px">${t}</p>`).join('')}</div>`:'';
+  // --- métricas de un vistazo (arriba de todo, inspirado en las tarjetas de referencia) ---
+  const flagLbl=h?(h.flag==='critico'?'Crítico':h.flag==='atencion'?'En riesgo':h.flag==='ok'?'Saludable':'Sin clasificar'):'Sin dato';
+  const flagCol=h?(h.flag==='critico'?'#E24B4A':h.flag==='atencion'?'#EF9F27':h.flag==='ok'?'#3B6D11':'var(--color-text-secondary)'):'var(--color-text-secondary)';
+  const adv=h&&h.adopcion!=null?Math.round(h.adopcion*100):null;
+  const adCol=adv!=null?(adv<30?'#E24B4A':adv<60?'#EF9F27':'#3B6D11'):'var(--color-text-primary)';
+  const usuariosV=usersOf(a);
+  const metricsHtml=`<div class="metrics">
+    <div class="metric"><div class="label">Puntaje</div><div class="value" style="color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-primary)'}">${a._score}</div><div class="sub">${(a._drivers||[]).slice(0,2).map(d=>d[0]).join(' · ')||'sin factores destacados'}</div></div>
+    <div class="metric"><div class="label">MRR actual</div><div class="value">${fmtUSD(a.mrr)}</div><div class="sub">${delta||'sin tendencia'}</div></div>
+    <div class="metric"><div class="label">Marcaje</div><div class="value" style="color:${adCol}">${adv!=null?adv+'%':'—'}</div><div class="sub">${h&&h.variacion!=null?(h.variacion>0?'+':'')+Math.round(h.variacion*100)+'pp variación':'sin variación'}</div></div>
+    <div class="metric"><div class="label">Usuarios activos</div><div class="value">${usuariosV!=null?usuariosV:'—'}</div><div class="sub">${a.usuarios!=null?a.usuarios+' potenciales':''}</div></div>
+    <div class="metric"><div class="label">Estado de salud</div><div class="value" style="color:${flagCol};font-size:20px">${flagLbl}</div><div class="sub">${h&&h.flag==='critico'&&rz?razonLabel(rz):(h&&h.score!=null?'Score '+h.score:'')}</div></div>
+  </div>`;
   const branchesHtml=(a._healthBranches&&a._healthBranches.length>1)?(function(){
     const rows=a._healthBranches.slice().sort((x,y)=>{const ax=x.adopcion==null?Infinity:x.adopcion,ay=y.adopcion==null?Infinity:y.adopcion;return ax-ay;}).map(br=>{
       const fl=br.flag==='critico'?'b-red':br.flag==='atencion'?'b-amber':br.flag==='ok'?'b-green':'b-gray';
@@ -2349,55 +2369,65 @@ function openDetail(uid){
     return `<div class="sec-title">Sucursales (ID Geo concatenados) <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· ${a._healthBranches.length} sucursales del modelo de salud asociadas a esta razón social — la facturación/MRR de arriba es una sola, para toda la cuenta</span></div>
     <div class="table-wrap"><table><thead><tr><th>Sucursal (modelo de salud)</th><th class="nosort">Estado</th><th class="nosort">Marcaje</th><th class="nosort">NPS</th><th class="nosort">Inc. 30d</th><th class="nosort">ID</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   })():'';
+  const semanaHtml=(function(){
+    const serie=weeklyMarcajeSeries(a);const conAd=serie.filter(w=>w.ad!=null),conNps=serie.filter(w=>w.nps!=null),conTk=serie.filter(w=>w.inc30!=null);
+    if(!serie.length||(!conAd.length&&!conNps.length&&!conTk.length))return`<div class="card"><div class="sec-title" style="margin-top:0">Salud semanal</div><p class="legend">No encontramos esta cuenta en el historial de Salud semanal (por nombre). Revisa la pestaña <strong>Salud semanal</strong> directamente si crees que sí debería estar, o compara el nombre exacto contra <strong>Datos → Cartera de salud</strong>.</p></div>`;
+    const shown=serie.slice(-12);
+    const marcajeBars=conAd.length?shown.map(w=>{const pct=w.ad!=null?Math.round(w.ad*100):null;const hgt=pct!=null?Math.max(4,Math.round(pct/100*70)):2;const col=pct==null?'var(--color-border-secondary)':pct<30?'#E24B4A':pct<60?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${pct!=null?pct+'%':'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${pct==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join(''):'';
+    const npsBars=conNps.length?shown.map(w=>{const v=w.nps;const hgt=v!=null?Math.max(4,Math.round(Math.max(0,Math.min(10,v))/10*70)):2;const col=v==null?'var(--color-border-secondary)':v<=6?'#E24B4A':v<=8?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join(''):'';
+    const tkVals=shown.map(w=>w.inc30).filter(v=>v!=null);const tkMax=Math.max(3,...tkVals,1);
+    const tkBars=conTk.length?shown.map(w=>{const v=w.inc30;const hgt=v!=null?Math.max(4,Math.round(v/tkMax*70)):2;const col=v==null?'var(--color-border-secondary)':v===0?'#639922':v<=2?'#EF9F27':'#E24B4A';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join(''):'';
+    return`<div class="card"><div class="sec-title" style="margin-top:0">Salud semanal ${serie.length>12?`<span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· últimas 12 de ${serie.length} semanas guardadas</span>`:''}</div>
+      ${conAd.length?`<p class="status-line" style="margin-bottom:2px">Marcaje</p><div class="big-bars">${marcajeBars}</div>`:''}
+      <div class="grid2" style="margin-top:${conAd.length?'10px':'0'}">
+        ${conNps.length?`<div><p class="status-line" style="margin-bottom:2px">NPS</p><div class="big-bars">${npsBars}</div></div>`:''}
+        ${conTk.length?`<div><p class="status-line" style="margin-bottom:2px">Tickets (incidencias 30d)</p><div class="big-bars">${tkBars}</div></div>`:''}
+      </div>
+      <p class="status-line" style="margin-top:8px">Ve el historial completo en <strong>Salud semanal</strong>.</p>
+    </div>`;
+  })();
+  const catBase=h?(h.categoria||h.flag||'sin clasificar'):null;
+  const catLbl=h&&h.flag==='critico'&&rz&&!/sin\s*uso/i.test(catBase)?esc(catBase)+'-'+rz:(catBase?esc(catBase):null);
+  const saludDetailHtml=`<div class="card"><div class="sec-title" style="margin-top:0">Semáforo de salud (detalle)</div>
+    <dl class="dl-grid">${dlRow('Categoría (tablero)',catLbl)}${dlRow('Cuadrante (MARE)',a.cuadrante)}${dlRow('Estado salud (cartera)',a.estadoSalud)}${dlRow('Riesgo',a.riesgo)}${h?dlRow('CS (tablero de salud)',h.css):''}${h&&h.raw?Object.entries(h.raw).map(([k,v])=>dlRow(k,v)).join(''):''}</dl>
+    ${!h?'<p class="legend" style="margin-top:6px">Sin datos del tablero de salud para esta cuenta.</p>':''}
+  </div>`;
   $('modal').innerHTML=`
     <div class="modal-head"><h2>${esc(a.cliente)}</h2><button class="close-x" onclick="closeDetail()">×</button></div>
-    <div style="margin-bottom:6px">${carteraBadge(a.cartera)} ${fugaCell(a)} <span class="badge b-gray">${esc(a.kam)}${a._kamReasignado?' · reasignado':''}</span> ${csLine} ${a.estado?`<span class="chip">${esc(a.estado)}</span>`:''} ${a.rubro?`<span class="chip">${esc(a.rubro)}</span>`:''}</div>
-    ${a.desc?`<p style="font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:6px">${esc(a.desc)}</p>`:''}
-    <div class="sec-title">Prioridad</div>
-    <div style="display:flex;align-items:center;gap:14px"><div style="font-size:30px;font-weight:600;color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-primary)'}">${a._score}</div><div>${(a._drivers||[]).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')||'<span class="legend">Sin factores destacados.</span>'}</div></div>
-    <div class="grid2" style="margin-top:8px">
-      <div><div class="sec-title">Ventas (facturación mensual USD)</div><div class="big-bars">${bars}</div><p class="status-line">MRR actual <strong>${fmtUSD(a.mrr)}</strong>${delta?` · ${delta}`:''}</p>${facturDropHtml}</div>
-      <div><div class="sec-title">Semáforo de salud</div><dl class="dl-grid">${dlRow('Usuarios activos',usersOf(a)!=null?String(usersOf(a)):null)}${dlRow('Cuadrante (MARE)',a.cuadrante)}${dlRow('Estado salud',a.estadoSalud)}${dlRow('Riesgo',a.riesgo)}</dl>${healthHtml}</div>
+    <div style="margin-bottom:10px">${carteraBadge(a.cartera)} ${fugaCell(a)} <span class="badge b-gray">${esc(a.kam)}${a._kamReasignado?' · reasignado':''}</span> ${hasCS(a)?`<span class="badge b-teal">Customer Success: ${esc(a.css)}</span>`:'<span class="badge b-gray">Sin Customer Success</span>'} ${a.estado?`<span class="chip">${esc(a.estado)}</span>`:''} ${a.rubro?`<span class="chip">${esc(a.rubro)}</span>`:''}</div>
+    ${a.desc?`<p style="font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:10px">${esc(a.desc)}</p>`:''}
+    ${metricsHtml}
+    ${alertsHtml}
+    <div class="card"><div class="sec-title" style="margin-top:0">Ventas y fuga</div><div class="big-bars">${bars}</div>
+      <p class="status-line" style="margin-top:6px">${fugaCell(a)} <span class="legend">— ${a._cambioRazon?'marcada como cambio de razón social: no se cuenta como fuga ni como crítica.':'derivada de la tendencia '+MONTHS_SHORT[0]+'→'+(MONTHS_SHORT[a.meses.length-1]||'')+'.'}</span></p>
+      ${branchesHtml}
     </div>
-    ${branchesHtml}
-    <div class="sec-title">Fuga</div><p style="font-size:13px">${fugaCell(a)} <span class="legend">— ${a._cambioRazon?'marcada como cambio de razón social: no se cuenta como fuga ni como crítica.':'derivada de la tendencia '+MONTHS_SHORT[0]+'→'+(MONTHS_SHORT[a.meses.length-1]||'')+'.'}</span></p>
-    ${(function(){const serie=weeklyMarcajeSeries(a);const conDato=serie.filter(w=>w.ad!=null);if(!serie.length||!conDato.length)return`<div class="sec-title">Marcaje semanal</div><p class="legend">No encontramos esta cuenta en el historial de Salud semanal (por nombre). Revisa la pestaña <strong>Salud semanal</strong> directamente si crees que sí debería estar, o compara el nombre exacto contra <strong>Datos → Cartera de salud</strong>.</p>`;
-      const shown=serie.slice(-12);
-      const bars=shown.map(w=>{const pct=w.ad!=null?Math.round(w.ad*100):null;const h=pct!=null?Math.max(4,Math.round(pct/100*70)):2;const col=pct==null?'var(--color-border-secondary)':pct<30?'#E24B4A':pct<60?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${pct!=null?pct+'%':'—'}</div><div class="bar" style="height:${h}px;background:${col};${pct==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
-      return`<div class="sec-title">Marcaje semanal ${serie.length>12?`<span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· últimas 12 de ${serie.length} semanas guardadas</span>`:''}</div><div class="big-bars">${bars}</div><p class="status-line">Ve el historial completo y compáralo con otras cuentas en <strong>Salud semanal → % Marcaje</strong>.</p>`;
-    })()}
-    ${(function(){const serie=weeklyMarcajeSeries(a);const conNps=serie.filter(w=>w.nps!=null),conTk=serie.filter(w=>w.inc30!=null);if(!serie.length||(!conNps.length&&!conTk.length))return'';
-      const shown=serie.slice(-12);
-      const npsBars=shown.map(w=>{const v=w.nps;const h=v!=null?Math.max(4,Math.round(Math.max(0,Math.min(10,v))/10*70)):2;const col=v==null?'var(--color-border-secondary)':v<=6?'#E24B4A':v<=8?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${h}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
-      const tkVals=shown.map(w=>w.inc30).filter(v=>v!=null);const tkMax=Math.max(3,...tkVals,1);
-      const tkBars=shown.map(w=>{const v=w.inc30;const h=v!=null?Math.max(4,Math.round(v/tkMax*70)):2;const col=v==null?'var(--color-border-secondary)':v===0?'#639922':v<=2?'#EF9F27':'#E24B4A';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${h}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
-      return`<div class="grid2" style="margin-top:8px">
-        <div><div class="sec-title">NPS semanal ${!conNps.length?'<span class="legend">· sin dato</span>':''}</div><div class="big-bars">${npsBars}</div></div>
-        <div><div class="sec-title">Tickets (incidencias 30d) semanal ${!conTk.length?'<span class="legend">· sin dato</span>':''}</div><div class="big-bars">${tkBars}</div></div>
-      </div>`;
-    })()}
-    <div class="sec-title">Acción recomendada · Playbook CSS</div>
-    ${(function(){const pb=playbookFor(a);if(!pb)return'<p class="legend">Sin señales de playbook con los datos actuales. PB-02 (Detractor NPS) requiere el dato de NPS, que no está en esta cartera.</p>';const noCS=!hasCS(a)?'<div class="callout" style="margin-bottom:8px"><strong>Sin CSS asignado.</strong> Primer paso: asignar gestión de Customer Success antes de ejecutar el playbook — toda alerta necesita un responsable de monitoreo.</div>':'';return`${noCS}<div class="rec-box"><div class="rec-title">${esc(pb.code)} — ${esc(pb.name)} · SLA primera acción ${esc(pb.sla)}</div><div class="rec-body">${a._signals.length?'<strong>Señales detectadas:</strong> '+a._signals.map(esc).join(' · ')+'<br>':''}<strong>Acción a realizar:</strong> ${esc(pb.first)}<br><strong>Plan:</strong> ${esc(pb.plan)}<br><strong>Escalación:</strong> ${esc(pb.escala)}</div></div>`;})()}
-    <div class="sec-title">Referidos</div><p style="font-size:13px">${a.referido?esc(a.referido):'<span class="legend">Sin referido/referencia registrado.</span>'}</p>
-    <div class="sec-title">Módulos (cross / up-sell)</div>
-    <p class="status-line" style="margin-bottom:8px">Puntaje cross <strong>${a.puntajeCross??'—'}</strong> · ${a.okCount||0} activos (OK) · ${a.opCount||0} oportunidades (OP)</p>
-    ${modsHtml}
-    <div class="sec-title">Métricas y contexto</div>
-    <dl class="dl-grid">${dlRow('Grupo',a.grupo)}${dlRow('ID Geo',a.id)}${dlRow('Usuarios potenciales',a.usuarios)}${dlRow('Escala comunicación',a.escala)}${dlRow('Paga nómina con GV',a.nomina)}${dlRow('Sistema de nómina',a.sistemaNomina)}${dlRow('Arrienda equipos',a.arrienda)}</dl>
-    ${a.comentario?`<div class="sec-title">Comentario</div><p style="font-size:13px;color:var(--color-text-secondary)">${esc(a.comentario)}</p>`:''}
-    <div class="sec-title">📝 Nota de equipo <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">(en vivo para todos — ${ANNOT_STATUS==='conectado'?'<span style="color:#3B6D11">conectado</span>':ANNOT_STATUS==='sin-configurar'?'<span style="color:#854F0B">sin configurar, ver Datos</span>':ANNOT_STATUS==='error'?'<span style="color:#A32D2D">error de conexión, ver Datos</span>':'conectando…'})</span></div>
-    ${a._anot?`<p class="legend" style="margin-bottom:6px">Última actualización: ${new Date(a._anot.actualizado).toLocaleString('es-MX')} — ${esc(a._anot.autor||'')}</p>`:''}
-    <div class="urlrow" style="align-items:flex-start">
+    ${semanaHtml}
+    ${saludDetailHtml}
+    <div class="card"><div class="sec-title" style="margin-top:0">Acción recomendada · Playbook CSS</div>
+      ${(function(){const pb=playbookFor(a);if(!pb)return'<p class="legend">Sin señales de playbook con los datos actuales. PB-02 (Detractor NPS) requiere el dato de NPS, que no está en esta cartera.</p>';return`<div class="rec-box"><div class="rec-title">${esc(pb.code)} — ${esc(pb.name)} · SLA primera acción ${esc(pb.sla)}</div><div class="rec-body">${a._signals.length?'<strong>Señales detectadas:</strong> '+a._signals.map(esc).join(' · ')+'<br>':''}<strong>Acción a realizar:</strong> ${esc(pb.first)}<br><strong>Plan:</strong> ${esc(pb.plan)}<br><strong>Escalación:</strong> ${esc(pb.escala)}</div></div>`;})()}
+    </div>
+    <div class="card"><div class="sec-title" style="margin-top:0">Cross-sell y módulos</div>
+      <p class="status-line" style="margin-bottom:8px">Puntaje cross <strong>${a.puntajeCross??'—'}</strong> · ${a.okCount||0} activos (OK) · ${a.opCount||0} oportunidades (OP)</p>
+      ${modsHtml}
+      ${a.referido?`<p class="status-line" style="margin-top:8px"><strong>Referido/Referencia:</strong> ${esc(a.referido)}</p>`:''}
+    </div>
+    <div class="card"><div class="sec-title" style="margin-top:0">Información general</div>
+      <dl class="dl-grid">${dlRow('Grupo',a.grupo)}${dlRow('ID Geo',a.id)}${dlRow('Usuarios potenciales',a.usuarios)}${dlRow('Escala comunicación',a.escala)}${dlRow('Paga nómina con GV',a.nomina)}${dlRow('Sistema de nómina',a.sistemaNomina)}${dlRow('Arrienda equipos',a.arrienda)}</dl>
+      ${a.comentario?`<p style="font-size:13px;color:var(--color-text-secondary);margin-top:8px"><strong>Comentario:</strong> ${esc(a.comentario)}</p>`:''}
+    </div>
+    <div class="card" style="margin-bottom:0"><div class="sec-title" style="margin-top:0">📝 Nota de equipo <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">(en vivo para todos — ${ANNOT_STATUS==='conectado'?'<span style="color:#3B6D11">conectado</span>':ANNOT_STATUS==='sin-configurar'?'<span style="color:#854F0B">sin configurar, ver Datos</span>':ANNOT_STATUS==='error'?'<span style="color:#A32D2D">error de conexión, ver Datos</span>':'conectando…'})</span></div>
+      ${a._anot?`<p class="legend" style="margin-bottom:6px">Última actualización: ${new Date(a._anot.actualizado).toLocaleString('es-MX')} — ${esc(a._anot.autor||'')}</p>`:''}
       <select id="anotEstado" style="max-width:190px">
         <option value="">Sin marcar</option>
         <option value="seguimiento">En seguimiento</option>
         <option value="resuelta">Resuelta</option>
         <option value="excluir">Excluir de críticas</option>
       </select>
-    </div>
-    <textarea id="anotNota" placeholder="Anota aquí lo que hiciste / lo que falta con esta cuenta…" style="width:100%;min-height:70px;margin-top:8px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;resize:vertical"></textarea>
-    <div style="margin-top:8px"><button class="btn btn-primary" id="anotSaveBtn">Guardar nota</button></div>
-    <p class="legend" style="margin-top:4px">"Excluir de críticas" saca esta cuenta del semáforo rojo/ámbar en todo el dashboard hasta que cambies el estado.</p>`;
+      <textarea id="anotNota" placeholder="Anota aquí lo que hiciste / lo que falta con esta cuenta…" style="width:100%;min-height:70px;margin-top:8px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;resize:vertical"></textarea>
+      <div style="margin-top:8px"><button class="btn btn-primary" id="anotSaveBtn">Guardar nota</button></div>
+      <p class="legend" style="margin-top:4px">"Excluir de críticas" saca esta cuenta del semáforo rojo/ámbar en todo el dashboard hasta que cambies el estado.</p>
+    </div>`;
   $('overlay').classList.add('open');
   $('anotEstado').value=(a._anot&&a._anot.estado)||'';
   $('anotNota').value=(a._anot&&a._anot.nota)||'';
