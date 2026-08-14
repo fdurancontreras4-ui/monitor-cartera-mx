@@ -296,14 +296,20 @@ const CONFIG = {
   // de este archivo, junto a la función initAnnotations(). Déjalo como null para
   // desactivar la función (el dashboard funciona igual sin esto, y gestionUrl de arriba
   // es la vía recomendada si no quieres configurar un proyecto Firebase).
-  // firebase: null,
-  implementacionesUrl: '', // vacío = auto-detecta ./implementaciones.xlsx
-  implementacionesAutoTry: ['./implementaciones.xlsx'],
   firebase: {
     apiKey: "AIzaSyCy1rUmQHy2wBjpuy9F3kDNXdh4NutTRGo",
     databaseURL: "https://cartera-mx-default-rtdb.firebaseio.com",
     projectId: "cartera-mx",
+  },
+  implementacionesUrl: '', // vacío = auto-detecta ./implementaciones.xlsx
+  implementacionesAutoTry: ['./implementaciones.xlsx']
+  /* Ejemplo, una vez creado tu proyecto en https://console.firebase.google.com :
+  firebase: {
+    apiKey: "AIza...",
+    databaseURL: "https://TU-PROYECTO-default-rtdb.firebaseio.com",
+    projectId: "TU-PROYECTO"
   }
+  */
 };
 
 // ===== CONSIDERACIONES DE NEGOCIO (editable en consideraciones.json del repo) =====
@@ -1415,7 +1421,12 @@ async function saveAnnotation(a,estado,nota){
   if(!fbDb){toast('Anotaciones de equipo no están configuradas todavía (ver pestaña Datos).',true);return false;}
   const key=annotKey(a);
   const payload={estado:estado||'',nota:nota||'',autor:getAutor(),cliente:a.cliente,actualizado:Date.now()};
-  try{await fbDb.ref('anotaciones/'+key).set(payload);toast('Nota guardada — visible para todo el equipo al instante.');return true;}
+  try{
+    await fbDb.ref('anotaciones/'+key).set(payload); // estado actual (lo que ya existía) — se sobrescribe cada vez
+    await fbDb.ref('historial/'+key).push(payload); // + registro en el historial completo — nunca se sobrescribe, queda el rastro de todos los comentarios anteriores
+    toast('Nota guardada — visible para todo el equipo al instante.');
+    return true;
+  }
   catch(e){toast('No se pudo guardar la nota: '+e.message,true);return false;}
 }
 function initAnnotations(){
