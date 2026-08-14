@@ -2373,18 +2373,26 @@ function openDetail(uid){
     const serie=weeklyMarcajeSeries(a);const conAd=serie.filter(w=>w.ad!=null),conNps=serie.filter(w=>w.nps!=null),conTk=serie.filter(w=>w.inc30!=null);
     if(!serie.length||(!conAd.length&&!conNps.length&&!conTk.length))return`<div class="card"><div class="sec-title" style="margin-top:0">Salud semanal</div><p class="legend">No encontramos esta cuenta en el historial de Salud semanal (por nombre). Revisa la pestaña <strong>Salud semanal</strong> directamente si crees que sí debería estar, o compara el nombre exacto contra <strong>Datos → Cartera de salud</strong>.</p></div>`;
     const shown=serie.slice(-12);
-    const marcajeBars=conAd.length?shown.map(w=>{const pct=w.ad!=null?Math.round(w.ad*100):null;const hgt=pct!=null?Math.max(4,Math.round(pct/100*70)):2;const col=pct==null?'var(--color-border-secondary)':pct<30?'#E24B4A':pct<60?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${pct!=null?pct+'%':'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${pct==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join(''):'';
-    const npsBars=conNps.length?shown.map(w=>{const v=w.nps;const hgt=v!=null?Math.max(4,Math.round(Math.max(0,Math.min(10,v))/10*70)):2;const col=v==null?'var(--color-border-secondary)':v<=6?'#E24B4A':v<=8?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join(''):'';
-    const tkVals=shown.map(w=>w.inc30).filter(v=>v!=null);const tkMax=Math.max(3,...tkVals,1);
-    const tkBars=conTk.length?shown.map(w=>{const v=w.inc30;const hgt=v!=null?Math.max(4,Math.round(v/tkMax*70)):2;const col=v==null?'var(--color-border-secondary)':v===0?'#639922':v<=2?'#EF9F27':'#E24B4A';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join(''):'';
-    return`<div class="card"><div class="sec-title" style="margin-top:0">Salud semanal ${serie.length>12?`<span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· últimas 12 de ${serie.length} semanas guardadas</span>`:''}</div>
-      ${conAd.length?`<p class="status-line" style="margin-bottom:2px">Marcaje</p><div class="big-bars">${marcajeBars}</div>`:''}
-      <div class="grid2" style="margin-top:${conAd.length?'10px':'0'}">
-        ${conNps.length?`<div><p class="status-line" style="margin-bottom:2px">NPS</p><div class="big-bars">${npsBars}</div></div>`:''}
-        ${conTk.length?`<div><p class="status-line" style="margin-bottom:2px">Tickets (incidencias 30d)</p><div class="big-bars">${tkBars}</div></div>`:''}
-      </div>
-      <p class="status-line" style="margin-top:8px">Ve el historial completo en <strong>Salud semanal</strong>.</p>
-    </div>`;
+    const semLbl=serie.length>12?`<span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· últimas 12 de ${serie.length} semanas guardadas</span>`:'';
+    const foot=`<p class="status-line" style="margin-top:8px">Ve el historial completo en <strong>Salud semanal</strong>.</p>`;
+    // las 3 tarjetas usan SIEMPRE el mismo arreglo "shown" (mismas semanas, mismo largo) para que las barras
+    // midan igual entre sí — antes NPS y Tickets iban en una grilla de 2 columnas mientras Marcaje ocupaba el
+    // ancho completo, así que aunque tuvieran las mismas semanas, las barras salían de distinto tamaño.
+    let out='';
+    if(conAd.length){
+      const marcajeBars=shown.map(w=>{const pct=w.ad!=null?Math.round(w.ad*100):null;const hgt=pct!=null?Math.max(4,Math.round(pct/100*70)):2;const col=pct==null?'var(--color-border-secondary)':pct<30?'#E24B4A':pct<60?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${pct!=null?pct+'%':'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${pct==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
+      out+=`<div class="card"><div class="sec-title" style="margin-top:0">Marcaje semanal ${semLbl}</div><div class="big-bars">${marcajeBars}</div>${foot}</div>`;
+    }
+    if(conNps.length){
+      const npsBars=shown.map(w=>{const v=w.nps;const hgt=v!=null?Math.max(4,Math.round(Math.max(0,Math.min(10,v))/10*70)):2;const col=v==null?'var(--color-border-secondary)':v<=6?'#E24B4A':v<=8?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
+      out+=`<div class="card"><div class="sec-title" style="margin-top:0">NPS semanal ${semLbl}</div><div class="big-bars">${npsBars}</div>${foot}</div>`;
+    }
+    if(conTk.length){
+      const tkVals=shown.map(w=>w.inc30).filter(v=>v!=null);const tkMax=Math.max(3,...tkVals,1);
+      const tkBars=shown.map(w=>{const v=w.inc30;const hgt=v!=null?Math.max(4,Math.round(v/tkMax*70)):2;const col=v==null?'var(--color-border-secondary)':v===0?'#639922':v<=2?'#EF9F27':'#E24B4A';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
+      out+=`<div class="card"><div class="sec-title" style="margin-top:0">Tickets (incidencias 30d) semanal ${semLbl}</div><div class="big-bars">${tkBars}</div>${foot}</div>`;
+    }
+    return out;
   })();
   const catBase=h?(h.categoria||h.flag||'sin clasificar'):null;
   const catLbl=h&&h.flag==='critico'&&rz&&!/sin\s*uso/i.test(catBase)?esc(catBase)+'-'+rz:(catBase?esc(catBase):null);
