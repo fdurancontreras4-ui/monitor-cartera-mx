@@ -296,7 +296,11 @@ const CONFIG = {
   // de este archivo, junto a la función initAnnotations(). Déjalo como null para
   // desactivar la función (el dashboard funciona igual sin esto, y gestionUrl de arriba
   // es la vía recomendada si no quieres configurar un proyecto Firebase).
-  firebase: null,
+  firebase: {
+    apiKey: "AIzaSyCy1rUmQHy2wBjpuy9F3kDNXdh4NutTRGo",
+    databaseURL: "https://cartera-mx-default-rtdb.firebaseio.com",
+    projectId: "cartera-mx",
+  },
   implementacionesUrl: '', // vacío = auto-detecta ./implementaciones.xlsx
   implementacionesAutoTry: ['./implementaciones.xlsx']
   /* Ejemplo, una vez creado tu proyecto en https://console.firebase.google.com :
