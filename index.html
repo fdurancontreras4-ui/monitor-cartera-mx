@@ -296,11 +296,7 @@ const CONFIG = {
   // de este archivo, junto a la función initAnnotations(). Déjalo como null para
   // desactivar la función (el dashboard funciona igual sin esto, y gestionUrl de arriba
   // es la vía recomendada si no quieres configurar un proyecto Firebase).
-  firebase: {
-    apiKey: "AIzaSyCy1rUmQHy2wBjpuy9F3kDNXdh4NutTRGo",
-    databaseURL: "https://cartera-mx-default-rtdb.firebaseio.com",
-    projectId: "cartera-mx",
-  },
+  firebase: null,
   implementacionesUrl: '', // vacío = auto-detecta ./implementaciones.xlsx
   implementacionesAutoTry: ['./implementaciones.xlsx']
   /* Ejemplo, una vez creado tu proyecto en https://console.firebase.google.com :
@@ -1429,6 +1425,31 @@ async function saveAnnotation(a,estado,nota){
   }
   catch(e){toast('No se pudo guardar la nota: '+e.message,true);return false;}
 }
+// trae el historial completo de una cuenta (historial/{key}) y lo pinta ordenado de más nueva a más vieja.
+// se llama al abrir el detalle; si el modal ya se cerró para cuando responde Firebase, no hace nada (evita
+// pintar el historial de una cuenta en el detalle de otra si el usuario abre varias rápido).
+function loadHistorial(key){
+  const wrap=$('historialWrap');
+  if(!wrap)return;
+  if(!fbDb){wrap.innerHTML='<p class="legend">El historial necesita las anotaciones de equipo conectadas — ver pestaña Datos.</p>';return;}
+  fbDb.ref('historial/'+key).once('value').then(snap=>{
+    const cur=$('historialWrap');if(!cur)return; // el modal se cerró o cambió de cuenta mientras cargaba
+    const val=snap.val()||{};
+    const entries=Object.values(val).sort((x,y)=>(y.actualizado||0)-(x.actualizado||0)); // más nueva primero
+    if(!entries.length){cur.innerHTML='<p class="legend">Sin historial todavía — la próxima nota que guardes será la primera.</p>';return;}
+    cur.innerHTML=entries.map(e=>{
+      const es=ANNOT_ESTADOS[e.estado];
+      const badge=es?`<span class="badge ${es.badge}">${es.label}</span>`:'<span class="badge b-gray">Sin marcar</span>';
+      return `<div style="padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          ${badge}
+          <span class="legend" style="white-space:nowrap">${e.actualizado?new Date(e.actualizado).toLocaleString('es-MX'):''} — ${esc(e.autor||'')}</span>
+        </div>
+        ${e.nota?`<p style="font-size:13px;margin-top:4px;line-height:1.5">${esc(e.nota)}</p>`:'<p class="legend" style="margin-top:4px">Sin comentario, solo cambio de estado.</p>'}
+      </div>`;
+    }).join('');
+  }).catch(err=>{const cur=$('historialWrap');if(cur)cur.innerHTML=`<p class="legend" style="color:#A32D2D">No se pudo cargar el historial: ${esc(err.message)}</p>`;});
+}
 function initAnnotations(){
   if(!CONFIG.firebase||!CONFIG.firebase.databaseURL){ANNOT_STATUS='sin-configurar';return;}
   if(typeof firebase==='undefined'){ANNOT_STATUS='error';ANNOT_ERROR='No cargó el SDK de Firebase (revisa tu conexión o bloqueadores de script).';return;}
@@ -2435,20 +2456,24 @@ function openDetail(uid){
     </div>
     <div class="card" style="margin-bottom:0"><div class="sec-title" style="margin-top:0">📝 Nota de equipo <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">(en vivo para todos — ${ANNOT_STATUS==='conectado'?'<span style="color:#3B6D11">conectado</span>':ANNOT_STATUS==='sin-configurar'?'<span style="color:#854F0B">sin configurar, ver Datos</span>':ANNOT_STATUS==='error'?'<span style="color:#A32D2D">error de conexión, ver Datos</span>':'conectando…'})</span></div>
       ${a._anot?`<p class="legend" style="margin-bottom:6px">Última actualización: ${new Date(a._anot.actualizado).toLocaleString('es-MX')} — ${esc(a._anot.autor||'')}</p>`:''}
-      <select id="anotEstado" style="max-width:190px">
-        <option value="">Sin marcar</option>
-        <option value="seguimiento">En seguimiento</option>
-        <option value="resuelta">Resuelta</option>
-        <option value="excluir">Excluir de críticas</option>
-      </select>
+      <div class="urlrow" style="margin-bottom:0">
+        <select id="anotEstado">
+          <option value="">Sin marcar</option>
+          <option value="seguimiento">En seguimiento</option>
+          <option value="resuelta">Resuelta</option>
+          <option value="excluir">Excluir de críticas</option>
+        </select>
+      </div>
       <textarea id="anotNota" placeholder="Anota aquí lo que hiciste / lo que falta con esta cuenta…" style="width:100%;min-height:70px;margin-top:8px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;resize:vertical"></textarea>
       <div style="margin-top:8px"><button class="btn btn-primary" id="anotSaveBtn">Guardar nota</button></div>
       <p class="legend" style="margin-top:4px">"Excluir de críticas" saca esta cuenta del semáforo rojo/ámbar en todo el dashboard hasta que cambies el estado.</p>
-    </div>`;
+    </div>
+    <div class="card" style="margin-bottom:0"><div class="sec-title" style="margin-top:0">Historial de comentarios</div><div id="historialWrap"><p class="legend">Cargando historial…</p></div></div>`;
   $('overlay').classList.add('open');
   $('anotEstado').value=(a._anot&&a._anot.estado)||'';
   $('anotNota').value=(a._anot&&a._anot.nota)||'';
-  $('anotSaveBtn').onclick=async()=>{const ok=await saveAnnotation(a,$('anotEstado').value,$('anotNota').value.trim());if(ok)closeDetail();};
+  $('anotSaveBtn').onclick=async()=>{const ok=await saveAnnotation(a,$('anotEstado').value,$('anotNota').value.trim());if(ok){closeDetail();}};
+  loadHistorial(annotKey(a));
 }
 function closeDetail(){$('overlay').classList.remove('open');}
 $('overlay').onclick=e=>{if(e.target.id==='overlay')closeDetail();};
