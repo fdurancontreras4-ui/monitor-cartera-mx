@@ -1605,21 +1605,34 @@ function renderSemanal(){
   const head=weeks.map(w=>`<th class="hm-date"><div class="hm-datelbl">${fmtWeek(w.date)}${!transient?` <span class="hm-x" title="Borrar semana" onclick="delWeek('${w.date}')">✕</span>`:''}</div></th>`).join('');
   const body=empresas.map(nm=>`<tr><td class="hm-emp" title="${esc(nm)}">${esc(nm)}</td>${weeks.map(w=>cellHtml(w.snap[nm])).join('')}</tr>`).join('');
   const selStyle=f=>semFilter===f?'outline:2px solid var(--color-border-primary);outline-offset:-2px':'';
-  // críticas por semana, desglosadas por segmento (Enterprise / SMB Medium / SMB Small) — usa las MISMAS
-  // semanas (columnas) que el mapa de calor de abajo, para que se puedan leer una junto a la otra.
+  // cuentas por semana, desglosadas por estado (Crítico/En riesgo/Saludable) y por segmento (Enterprise/SMB
+  // Medium/SMB Small) — usa las MISMAS semanas (columnas) que el mapa de calor de abajo, para poder leer una
+  // tabla junto a la otra. El % de cada fila de segmento es sobre el total de ESE segmento esa semana (qué
+  // tan concentrado está el problema ahí); el % de la fila Total es sobre el total de la cartera esa semana
+  // (igual que las tarjetas "Saludable/En riesgo/Crítico" de arriba de todo del dashboard).
   const SEG_ORDER=['Enterprise','SMB Medium','SMB Small'];
-  const critBySeg=weeks.map(w=>{
-    const c={total:0,'Enterprise':0,'SMB Medium':0,'SMB Small':0,'Sin segmento':0};
-    Object.values(w.snap).forEach(v=>{const f=snapFlag(v);if(f==null||f==='ok'||f==='aten')return;c.total++;const seg=snapSeg(v);if(seg&&c[seg]!=null)c[seg]++;else c['Sin segmento']++;});
-    return c;
+  const STATES=[{key:'critico',label:'🔴 Crítico',color:'#A32D2D'},{key:'aten',label:'🟡 En riesgo',color:'#854F0B'},{key:'ok',label:'🟢 Saludable',color:'#3B6D11'}];
+  const weekStats=weeks.map(w=>{
+    const segTotals={total:0,'Enterprise':0,'SMB Medium':0,'SMB Small':0,'Sin segmento':0};
+    const byState={};STATES.forEach(s=>byState[s.key]={total:0,'Enterprise':0,'SMB Medium':0,'SMB Small':0,'Sin segmento':0});
+    Object.values(w.snap).forEach(v=>{
+      const f=snapFlag(v);if(f==null)return;
+      const stKey=f==='ok'?'ok':f==='aten'?'aten':'critico';
+      const seg=snapSeg(v);const segKey=(seg==='Enterprise'||seg==='SMB Medium'||seg==='SMB Small')?seg:'Sin segmento';
+      segTotals.total++;segTotals[segKey]++;
+      byState[stKey].total++;byState[stKey][segKey]++;
+    });
+    return{segTotals,byState};
   });
-  const haySinSeg=critBySeg.some(c=>c['Sin segmento']>0);
-  const critTableRow=(lbl,getter,bold)=>`<tr>${bold?`<td style="font-weight:700">${lbl}</td>`:`<td style="color:var(--color-text-secondary)">${lbl}</td>`}${critBySeg.map(c=>`<td style="text-align:center;${bold?'font-weight:700;color:#A32D2D':''}">${getter(c)}</td>`).join('')}</tr>`;
-  const critTable=weeks.length?`<div class="card"><h3>Cuentas críticas por semana</h3><div class="table-wrap"><table><thead><tr><th>Segmento</th>${weeks.map(w=>`<th style="text-align:center">${fmtWeek(w.date)}</th>`).join('')}</tr></thead><tbody>
-    ${critTableRow('Total',c=>c.total,true)}
-    ${SEG_ORDER.map(seg=>critTableRow(seg,c=>c[seg])).join('')}
-    ${haySinSeg?critTableRow('Sin segmento',c=>c['Sin segmento']):''}
-  </tbody></table></div><p class="legend" style="margin-top:6px">Cuenta crítica = estado "Crítico" en el archivo de salud de esa semana (no incluye "Sin Uso"). El segmento (Enterprise / SMB Medium / SMB Small) es el que trae cada archivo de salud semanal — si una cuenta cambió de segmento entre semanas, cada columna refleja el segmento que tenía <em>esa</em> semana, no el actual.</p></div>`:'';
+  const haySinSeg=weekStats.some(ws=>ws.segTotals['Sin segmento']>0);
+  const pctCell=(n,d)=>d>0?`${n} <span style="opacity:.6;font-size:11px">(${(n/d*100).toFixed(1)}%)</span>`:`${n}`;
+  const statRow=(lbl,stKey,segKey,bold,color)=>`<tr>${bold?`<td style="font-weight:700">${lbl}</td>`:`<td style="color:var(--color-text-secondary);padding-left:18px">${lbl}</td>`}${weekStats.map(ws=>{
+    const n=ws.byState[stKey][segKey];const d=segKey==='total'?ws.segTotals.total:ws.segTotals[segKey];
+    return`<td style="text-align:center;${bold?`font-weight:700;color:${color}`:''}">${pctCell(n,d)}</td>`;
+  }).join('')}</tr>`;
+  const critTable=weeks.length?`<div class="card"><h3>Cuentas por semana — estado y segmento</h3><div class="table-wrap"><table><thead><tr><th>Estado / segmento</th>${weeks.map(w=>`<th style="text-align:center">${fmtWeek(w.date)}</th>`).join('')}</tr></thead><tbody>
+    ${STATES.map(s=>statRow(s.label,s.key,'total',true,s.color)+SEG_ORDER.map(seg=>statRow(seg,s.key,seg,false)).join('')+(haySinSeg?statRow('Sin segmento',s.key,'Sin segmento',false):'')).join('')}
+  </tbody></table></div><p class="legend" style="margin-top:6px">El % de <strong>Total</strong> es sobre todas las cuentas de esa semana (cualquier segmento); el % de cada segmento (Enterprise/SMB Medium/SMB Small) es sobre el total de ESE segmento esa semana — así se ve qué tan concentrado está cada estado dentro de cada uno. "Sin Uso" no cuenta como ninguno de los 3 estados. El segmento es el que trae cada archivo de salud semanal — si una cuenta cambió de segmento entre semanas, cada columna refleja el segmento que tenía <em>esa</em> semana, no el actual.</p></div>`:'';
   $('semanal').innerHTML=`
   <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). ${semView==='marcaje'?'Vista de <strong>% de marcaje</strong>: número = adopción esa semana; rojo &lt;30%, amarillo 30–60%, verde ≥60%. "s/d" = esa semana no trajo el dato de marcaje (quedó guardada solo con el estado de salud).':'Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets.'}${CURRENT_HEALTH_DATE?` Las <strong>métricas del dashboard</strong> usan la salud más reciente: <strong>${CURRENT_HEALTH_DATE}</strong>${CURRENT_HEALTH_FILE?' — archivo <strong>'+esc(CURRENT_HEALTH_FILE)+'</strong>':''}; las fechas anteriores alimentan solo este historial.`:''} Carga la salud de la semana en <strong>Datos</strong> (con la fecha en el nombre, ej. <em>salud-30junio.xlsx</em>) y se añade sola; o usa <strong>Guardar semana</strong> para tomar la actual.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''} Las tarjetas de abajo filtran las filas según el estado de la <strong>última semana</strong> — clic de nuevo para quitar el filtro.</div>
   <div class="metrics">
