@@ -57,6 +57,8 @@ h1{font-size:27px;font-weight:800;letter-spacing:-.02em;margin-bottom:.2rem;colo
 .subnav button:hover{border-color:var(--color-border-secondary);color:var(--color-text-primary);}
 .subnav button.active{background:var(--accent-strong);color:#fff;border-color:var(--accent-strong);}
 .toggle-chip{font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:999px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;font-family:var(--font-sans);transition:all .12s;box-shadow:var(--shadow-sm);}
+.hist-icon-btn{background:none;border:none;cursor:pointer;font-size:13px;padding:2px 5px;border-radius:5px;color:var(--color-text-secondary);line-height:1;}
+.hist-icon-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary);}
 .toggle-chip:hover{border-color:var(--color-border-primary);}
 .section{display:none;}.section.active{display:block;}
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:1.5rem;}
@@ -1429,9 +1431,24 @@ async function saveAnnotation(a,estado,nota){
   }
   catch(e){toast('No se pudo guardar la nota: '+e.message,true);return false;}
 }
-// trae el historial completo de una cuenta (historial/{key}) y lo pinta ordenado de más nueva a más vieja.
-// se llama al abrir el detalle; si el modal ya se cerró para cuando responde Firebase, no hace nada (evita
-// pintar el historial de una cuenta en el detalle de otra si el usuario abre varias rápido).
+// después de editar o borrar una entrada del historial, "anotaciones/{key}" (el estado ACTUAL que se usa en
+// todo el resto del dashboard — badges, tag de responsable, etc.) puede quedar desactualizado. Esta función
+// vuelve a leer el historial completo y deja anotaciones/{key} igual a la entrada más reciente que quede —
+// o la borra por completo si ya no queda ninguna.
+async function syncCurrentFromHistorial(key){
+  if(!fbDb)return;
+  const snap=await fbDb.ref('historial/'+key).once('value');
+  const val=snap.val()||{};
+  const entries=Object.values(val);
+  if(!entries.length){await fbDb.ref('anotaciones/'+key).remove();return;}
+  const latest=entries.reduce((a,b)=>(b.actualizado||0)>(a.actualizado||0)?b:a);
+  await fbDb.ref('anotaciones/'+key).set(latest);
+}
+let HISTORIAL_CACHE={};
+// trae el historial completo de una cuenta (historial/{key}) y lo pinta ordenado de más nueva a más vieja,
+// con acciones de editar/eliminar por cada entrada. se llama al abrir el detalle; si el modal ya se cerró
+// para cuando responde Firebase, no hace nada (evita pintar el historial de una cuenta en el detalle de otra
+// si el usuario abre varias rápido).
 function loadHistorial(key){
   const wrap=$('historialWrap');
   if(!wrap)return;
@@ -1439,20 +1456,69 @@ function loadHistorial(key){
   fbDb.ref('historial/'+key).once('value').then(snap=>{
     const cur=$('historialWrap');if(!cur)return; // el modal se cerró o cambió de cuenta mientras cargaba
     const val=snap.val()||{};
-    const entries=Object.values(val).sort((x,y)=>(y.actualizado||0)-(x.actualizado||0)); // más nueva primero
+    const entries=Object.entries(val).map(([pid,e])=>Object.assign({},e,{_pid:pid})).sort((x,y)=>(y.actualizado||0)-(x.actualizado||0)); // más nueva primero
     if(!entries.length){cur.innerHTML='<p class="legend">Sin historial todavía — la próxima nota que guardes será la primera.</p>';return;}
-    cur.innerHTML=entries.map(e=>{
-      const es=ANNOT_ESTADOS[e.estado];
-      const badge=es?`<span class="badge ${es.badge}">${es.label}</span>`:'<span class="badge b-gray">Sin marcar</span>';
-      return `<div style="padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
-          ${badge}
-          <span class="legend" style="white-space:nowrap">${e.actualizado?new Date(e.actualizado).toLocaleString('es-MX'):''} — ${esc(e.autor||'')}</span>
-        </div>
-        ${e.nota?`<p style="font-size:13px;margin-top:4px;line-height:1.5">${esc(e.nota)}</p>`:'<p class="legend" style="margin-top:4px">Sin comentario, solo cambio de estado.</p>'}
-      </div>`;
-    }).join('');
+    HISTORIAL_CACHE={};entries.forEach(e=>{HISTORIAL_CACHE[e._pid]=e;});
+    cur.innerHTML=entries.map(e=>renderHistorialEntry(key,e)).join('');
   }).catch(err=>{const cur=$('historialWrap');if(cur)cur.innerHTML=`<p class="legend" style="color:#A32D2D">No se pudo cargar el historial: ${esc(err.message)}</p>`;});
+}
+function renderHistorialEntry(key,e){
+  const es=ANNOT_ESTADOS[e.estado];
+  const badge=es?`<span class="badge ${es.badge}">${es.label}</span>`:'<span class="badge b-gray">Sin marcar</span>';
+  return `<div class="hist-entry" id="hist-${esc(e._pid)}" style="padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+      <div>${badge}</div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="legend" style="white-space:nowrap">${e.actualizado?new Date(e.actualizado).toLocaleString('es-MX'):''} — ${esc(e.autor||'')}</span>
+        <button class="hist-icon-btn" title="Editar este comentario" onclick="editHistorialEntry('${esc(key)}','${esc(e._pid)}')">✎</button>
+        <button class="hist-icon-btn" title="Eliminar este comentario" onclick="deleteHistorialEntry('${esc(key)}','${esc(e._pid)}')">🗑</button>
+      </div>
+    </div>
+    <div class="hist-view">${e.nota?`<p style="font-size:13px;margin-top:4px;line-height:1.5">${esc(e.nota)}</p>`:'<p class="legend" style="margin-top:4px">Sin comentario, solo cambio de estado.</p>'}</div>
+  </div>`;
+}
+// reemplaza el cuerpo de una entrada del historial por un formulario inline para editarla, sin recargar el resto
+function editHistorialEntry(key,pid){
+  const e=HISTORIAL_CACHE[pid];const el=document.getElementById('hist-'+pid);
+  if(!e||!el)return;
+  const view=el.querySelector('.hist-view');if(!view)return;
+  view.innerHTML=`
+    <div class="urlrow" style="margin-top:6px;margin-bottom:0">
+      <select id="edit-estado-${esc(pid)}">
+        <option value="">Sin marcar</option>
+        <option value="seguimiento">En seguimiento</option>
+        <option value="resuelta">Resuelta</option>
+        <option value="excluir">Excluir de críticas</option>
+      </select>
+    </div>
+    <textarea id="edit-nota-${esc(pid)}" style="width:100%;min-height:60px;margin-top:6px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;resize:vertical"></textarea>
+    <div style="margin-top:6px;display:flex;gap:8px">
+      <button class="btn btn-primary" style="font-size:12px;padding:5px 12px" onclick="saveHistorialEdit('${esc(key)}','${esc(pid)}')">Guardar cambios</button>
+      <button class="btn" style="font-size:12px;padding:5px 12px" onclick="loadHistorial('${esc(key)}')">Cancelar</button>
+    </div>`;
+  $('edit-estado-'+pid).value=e.estado||'';
+  $('edit-nota-'+pid).value=e.nota||'';
+}
+async function saveHistorialEdit(key,pid){
+  if(!fbDb)return;
+  const estadoEl=$('edit-estado-'+pid),notaEl=$('edit-nota-'+pid);
+  if(!estadoEl||!notaEl)return;
+  try{
+    await fbDb.ref('historial/'+key+'/'+pid).update({estado:estadoEl.value,nota:notaEl.value.trim()});
+    await syncCurrentFromHistorial(key);
+    toast('Comentario actualizado.');
+    loadHistorial(key);
+  }catch(e){toast('No se pudo actualizar: '+e.message,true);}
+}
+async function deleteHistorialEntry(key,pid){
+  if(!fbDb)return;
+  if(!confirm('¿Eliminar este comentario del historial? No se puede deshacer.'))return;
+  try{
+    await fbDb.ref('historial/'+key+'/'+pid).remove();
+    await syncCurrentFromHistorial(key);
+    toast('Comentario eliminado.');
+    loadHistorial(key);
+  }catch(e){toast('No se pudo eliminar: '+e.message,true);}
 }
 function initAnnotations(){
   if(!CONFIG.firebase||!CONFIG.firebase.databaseURL){ANNOT_STATUS='sin-configurar';return;}
@@ -1499,13 +1565,14 @@ function adjustedAdForRow(r){
 }
 function snapshotFromHealth(parsed){
   const rows=((parsed||HEALTH_CACHE)||{}).rows||[];const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;const snap={};
-  rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;const f=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);const adAdj=adjustedAdForRow(r);snap[nm]={f,ad:(adAdj!=null?Math.round(adAdj*1000)/1000:null),nps:(r.nps!=null?r.nps:null),inc30:(r.inc30!=null?r.inc30:null)};});
+  rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;const f=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);const adAdj=adjustedAdForRow(r);snap[nm]={f,ad:(adAdj!=null?Math.round(adAdj*1000)/1000:null),nps:(r.nps!=null?r.nps:null),inc30:(r.inc30!=null?r.inc30:null),seg:(r.seg||null)};});
   return snap;
 }
 function snapFlag(v){if(v==null)return null;return typeof v==='string'?v:v.f;}
 function snapAd(v){if(v==null||typeof v==='string')return null;return v.ad;}
 function snapNps(v){if(v==null||typeof v==='string')return null;return v.nps!=null?v.nps:null;}
 function snapInc30(v){if(v==null||typeof v==='string')return null;return v.inc30!=null?v.inc30:null;}
+function snapSeg(v){if(v==null||typeof v==='string')return null;return v.seg||null;}
 function saveWeekSnap(date,snap){if(!date||!snap||!Object.keys(snap).length)return false;const i=WEEKS.findIndex(w=>w.date===date);if(i>=0)WEEKS[i]={date,snap};else WEEKS.push({date,snap});WEEKS.sort((a,b)=>a.date<b.date?-1:1);if(WEEKS.length>40)WEEKS=WEEKS.slice(WEEKS.length-40);persist('health_weeks',WEEKS);return true;}
 // aplica una salud fechada: siempre la guarda como semana; usa para métricas solo si es la más reciente
 function applyHealthDated(parsed,date,file){
@@ -1538,6 +1605,21 @@ function renderSemanal(){
   const head=weeks.map(w=>`<th class="hm-date"><div class="hm-datelbl">${fmtWeek(w.date)}${!transient?` <span class="hm-x" title="Borrar semana" onclick="delWeek('${w.date}')">✕</span>`:''}</div></th>`).join('');
   const body=empresas.map(nm=>`<tr><td class="hm-emp" title="${esc(nm)}">${esc(nm)}</td>${weeks.map(w=>cellHtml(w.snap[nm])).join('')}</tr>`).join('');
   const selStyle=f=>semFilter===f?'outline:2px solid var(--color-border-primary);outline-offset:-2px':'';
+  // críticas por semana, desglosadas por segmento (Enterprise / SMB Medium / SMB Small) — usa las MISMAS
+  // semanas (columnas) que el mapa de calor de abajo, para que se puedan leer una junto a la otra.
+  const SEG_ORDER=['Enterprise','SMB Medium','SMB Small'];
+  const critBySeg=weeks.map(w=>{
+    const c={total:0,'Enterprise':0,'SMB Medium':0,'SMB Small':0,'Sin segmento':0};
+    Object.values(w.snap).forEach(v=>{const f=snapFlag(v);if(f==null||f==='ok'||f==='aten')return;c.total++;const seg=snapSeg(v);if(seg&&c[seg]!=null)c[seg]++;else c['Sin segmento']++;});
+    return c;
+  });
+  const haySinSeg=critBySeg.some(c=>c['Sin segmento']>0);
+  const critTableRow=(lbl,getter,bold)=>`<tr>${bold?`<td style="font-weight:700">${lbl}</td>`:`<td style="color:var(--color-text-secondary)">${lbl}</td>`}${critBySeg.map(c=>`<td style="text-align:center;${bold?'font-weight:700;color:#A32D2D':''}">${getter(c)}</td>`).join('')}</tr>`;
+  const critTable=weeks.length?`<div class="card"><h3>Cuentas críticas por semana</h3><div class="table-wrap"><table><thead><tr><th>Segmento</th>${weeks.map(w=>`<th style="text-align:center">${fmtWeek(w.date)}</th>`).join('')}</tr></thead><tbody>
+    ${critTableRow('Total',c=>c.total,true)}
+    ${SEG_ORDER.map(seg=>critTableRow(seg,c=>c[seg])).join('')}
+    ${haySinSeg?critTableRow('Sin segmento',c=>c['Sin segmento']):''}
+  </tbody></table></div><p class="legend" style="margin-top:6px">Cuenta crítica = estado "Crítico" en el archivo de salud de esa semana (no incluye "Sin Uso"). El segmento (Enterprise / SMB Medium / SMB Small) es el que trae cada archivo de salud semanal — si una cuenta cambió de segmento entre semanas, cada columna refleja el segmento que tenía <em>esa</em> semana, no el actual.</p></div>`:'';
   $('semanal').innerHTML=`
   <div class="note-box"><strong>Salud semanal.</strong> Cada empresa en una fila y cada semana en una columna (fecha en diagonal). ${semView==='marcaje'?'Vista de <strong>% de marcaje</strong>: número = adopción esa semana; rojo &lt;30%, amarillo 30–60%, verde ≥60%. "s/d" = esa semana no trajo el dato de marcaje (quedó guardada solo con el estado de salud).':'Verde = saludable, amarillo = en riesgo, rojo = crítico; en las críticas la letra indica el motivo: <strong>A</strong> adopción/marcaje (incluye Sin Uso), <strong>N</strong> NPS detractor, <strong>T</strong> tickets.'}${CURRENT_HEALTH_DATE?` Las <strong>métricas del dashboard</strong> usan la salud más reciente: <strong>${CURRENT_HEALTH_DATE}</strong>${CURRENT_HEALTH_FILE?' — archivo <strong>'+esc(CURRENT_HEALTH_FILE)+'</strong>':''}; las fechas anteriores alimentan solo este historial.`:''} Carga la salud de la semana en <strong>Datos</strong> (con la fecha en el nombre, ej. <em>salud-30junio.xlsx</em>) y se añade sola; o usa <strong>Guardar semana</strong> para tomar la actual.${transient?' <em>Aún no has guardado semanas: esta columna es la salud actual sin guardar.</em>':''} Las tarjetas de abajo filtran las filas según el estado de la <strong>última semana</strong> — clic de nuevo para quitar el filtro.</div>
   <div class="metrics">
@@ -1554,6 +1636,7 @@ function renderSemanal(){
     <input type="text" id="semQ" placeholder="Buscar empresa…" value="${esc(semQ)}" style="flex:1;min-width:160px;font-size:13px;padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)">
     <span class="legend">${empresas.length} empresas mostradas</span>
   </div>
+  ${critTable}
   <div class="card" style="padding:0;overflow:hidden">
     <div class="hm-wrap"><table class="hm"><thead><tr><th class="hm-emp hm-corner">Empresa</th>${head}</tr></thead><tbody>${body||'<tr><td class="hm-emp">Sin empresas con este filtro.</td></tr>'}</tbody></table></div>
   </div>`;
