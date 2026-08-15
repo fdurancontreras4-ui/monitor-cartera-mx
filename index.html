@@ -1414,10 +1414,23 @@ let ANNOTATIONS={};
 let ANNOT_STATUS='sin-configurar'; // 'sin-configurar' | 'conectando' | 'conectado' | 'error'
 let ANNOT_ERROR='';
 let fbDb=null;
+let APOYO={}; // apoyo/{key}/{persona} = {autor,fecha} — cuentas donde alguien da soporte puntual sin ser el CS/KAM formal
 const ANNOT_ESTADOS={seguimiento:{label:'En seguimiento',color:'#EF9F27',badge:'b-amber'},resuelta:{label:'Resuelta',color:'#639922',badge:'b-green'},excluir:{label:'Excluida de críticas',color:'#7F77DD',badge:'b-purple'}};
 function annotKey(a){const id=cleanId(a.id);return id?('id_'+id):('n_'+normName(a.cliente||''));}
 function getAnnot(a){return ANNOTATIONS[annotKey(a)]||null;}
 function applyAnnotationsToAccounts(){ACCOUNTS.forEach(a=>{a._anot=getAnnot(a);a._anotExcluir=!!(a._anot&&a._anot.estado==='excluir');});applyGestionToAccounts();}
+// marca en cada cuenta si tiene apoyo de Tony — separado de si es su CS formal o no. No cambia css/kam/cartera,
+// solo agrega esta bandera para que la vista de Tony (y quien más la necesite) sepa que él también participa ahí.
+function applyApoyoToAccounts(){ACCOUNTS.forEach(a=>{const ap=APOYO[annotKey(a)];a._apoyoTony=!!(ap&&ap.tony);});}
+async function toggleApoyoTony(a,activo){
+  if(!fbDb){toast('Necesitas las anotaciones de equipo conectadas para esto — ver pestaña Datos.',true);return;}
+  const key=annotKey(a);
+  try{
+    if(activo)await fbDb.ref('apoyo/'+key+'/tony').set({autor:getAutor(),fecha:Date.now()});
+    else await fbDb.ref('apoyo/'+key+'/tony').remove();
+    toast(activo?'Marcado: Tony da apoyo en esta cuenta.':'Se quitó el apoyo de Tony en esta cuenta.');
+  }catch(e){toast('No se pudo guardar: '+e.message,true);}
+}
 function getAutor(){let n=localStorage.getItem('gv_anot_autor');if(!n){n=prompt('¿Cómo te llamas? (para identificar quién dejó cada nota — se pregunta una sola vez en este navegador)')||'Equipo';localStorage.setItem('gv_anot_autor',n);}return n;}
 async function saveAnnotation(a,estado,nota){
   if(!fbDb){toast('Anotaciones de equipo no están configuradas todavía (ver pestaña Datos).',true);return false;}
@@ -1531,6 +1544,10 @@ function initAnnotations(){
       ANNOTATIONS=snap.val()||{};ANNOT_STATUS='conectado';
       applyAnnotationsToAccounts();renderAll();
     },err=>{ANNOT_STATUS='error';ANNOT_ERROR=err&&err.message||String(err);renderAll();});
+    fbDb.ref('apoyo').on('value',snap=>{
+      APOYO=snap.val()||{};
+      applyApoyoToAccounts();renderAll();
+    });
   }catch(e){ANNOT_STATUS='error';ANNOT_ERROR=e&&e.message||String(e);}
 }
 function todayISO(){return new Date().toISOString().slice(0,10);}
@@ -1667,33 +1684,32 @@ function isTony(name){
   return n.includes('antonio garnica')||n.includes('tony');
 }
 function renderTony(){
-  const rows=ACCOUNTS.filter(a=>isTony(a.health&&a.health.css)||isTony(a._anot&&a._anot.autor));
+  const rows=ACCOUNTS.filter(a=>isTony(a.health&&a.health.css)||a._apoyoTony);
   rows.sort((x,y)=>{
     const fx=x.health?x.health.flag:null,fy=y.health?y.health.flag:null;
     const rank=f=>f==='critico'?0:f==='atencion'?1:f==='ok'?2:3;
     return rank(fx)-rank(fy)||(y.mrr||0)-(x.mrr||0);
   });
   const nSalud=rows.filter(a=>isTony(a.health&&a.health.css)).length;
-  const nGestion=rows.filter(a=>isTony(a._anot&&a._anot.autor)).length;
-  const nAmbos=rows.filter(a=>isTony(a.health&&a.health.css)&&isTony(a._anot&&a._anot.autor)).length;
+  const nApoyo=rows.filter(a=>a._apoyoTony).length;
+  const nAmbos=rows.filter(a=>isTony(a.health&&a.health.css)&&a._apoyoTony).length;
   const nCriticas=rows.filter(a=>isCritica(a)).length;
   $('tony').innerHTML=`
-  <div class="note-box">Todas las cuentas donde <strong>Tony (José Antonio Garnica)</strong> aparece asignado, de dos fuentes distintas — una cuenta puede tener uno de los dos tags, o ambos: <span class="badge b-blue">🩺 CS en salud</span> viene de la columna <strong>CSS</strong> del archivo de salud vigente; <span class="badge b-purple">👤 Responsable en gestión</span> viene de la columna <strong>Responsable</strong> de <code>gestion.xlsx</code> — puede ser una cuenta que Tony está atendiendo puntualmente aunque el CS formal sea otra persona, o viceversa.</div>
+  <div class="note-box">Todas las cuentas donde <strong>Tony (José Antonio Garnica)</strong> aparece asignado, de dos fuentes distintas — una cuenta puede tener uno de los dos tags, o ambos: <span class="badge b-blue">🩺 CS en salud</span> viene de la columna <strong>CSS</strong> del archivo de salud vigente; <span class="badge b-purple">🤝 Apoyo</span> se marca a mano desde el detalle de cada cuenta (casilla "Tony da apoyo en esta cuenta") — para cuando participa en una cuenta sin ser el CS/KAM formal, sin que eso la mueva a su cartera.</div>
   <div class="metrics">
     <div class="metric"><div class="label">Cuentas de Tony</div><div class="value">${rows.length}</div><div class="sub">${nCriticas} críticas</div></div>
     <div class="metric"><div class="label">Solo CS en salud</div><div class="value" style="color:#185FA5">${nSalud-nAmbos}</div></div>
-    <div class="metric"><div class="label">Solo responsable en gestión</div><div class="value" style="color:#3C3489">${nGestion-nAmbos}</div></div>
+    <div class="metric"><div class="label">Solo apoyo</div><div class="value" style="color:#3C3489">${nApoyo-nAmbos}</div></div>
     <div class="metric"><div class="label">Con ambos tags</div><div class="value" style="color:#3B6D11">${nAmbos}</div></div>
   </div>
   ${rows.length?`<div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">Estado de salud</th><th class="nosort">Marcaje</th><th class="nosort">MRR</th><th class="nosort">Tags</th></tr></thead><tbody>
     ${rows.map(a=>{
       const enSalud=isTony(a.health&&a.health.css);
-      const enGestion=isTony(a._anot&&a._anot.autor);
-      const tags=(enSalud?'<span class="badge b-blue" title="Columna CSS del archivo de salud">🩺 CS en salud</span> ':'')+(enGestion?'<span class="badge b-purple" title="Columna Responsable de gestion.xlsx">👤 Responsable en gestión</span>':'');
+      const tags=(enSalud?'<span class="badge b-blue" title="Columna CSS del archivo de salud">🩺 CS en salud</span> ':'')+(a._apoyoTony?'<span class="badge b-purple" title="Marcado a mano desde el detalle de la cuenta">🤝 Apoyo</span>':'');
       const ad=a.health&&a.health.adopcion!=null?Math.round(a.health.adopcion*100)+'%':'—';
       return `<tr onclick="openDetail('${a._uid}')"><td style="max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td>${saludBadgeFor(a)}</td><td>${ad}</td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${tags}</td></tr>`;
     }).join('')}
-    </tbody></table></div></div>`:'<p class="legend">No encontramos ninguna cuenta asignada a Tony ni en el archivo de salud ni en gestion.xlsx.</p>'}
+    </tbody></table></div></div>`:'<p class="legend">No encontramos ninguna cuenta asignada a Tony por CSS de salud ni marcada de apoyo.</p>'}
   `;
 }
 // ---------- Cuentas ----------
@@ -2554,6 +2570,7 @@ function openDetail(uid){
       <dl class="dl-grid">${dlRow('Grupo',a.grupo)}${dlRow('ID Geo',a.id)}${dlRow('Usuarios potenciales',a.usuarios)}${dlRow('Escala comunicación',a.escala)}${dlRow('Paga nómina con GV',a.nomina)}${dlRow('Sistema de nómina',a.sistemaNomina)}${dlRow('Arrienda equipos',a.arrienda)}</dl>
       ${a.comentario?`<p style="font-size:13px;color:var(--color-text-secondary);margin-top:8px"><strong>Comentario:</strong> ${esc(a.comentario)}</p>`:''}
     </div>
+    <div class="card" style="margin-bottom:0"><label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin:0"><input type="checkbox" id="apoyoTonyChk"${a._apoyoTony?' checked':''} style="width:16px;height:16px;cursor:pointer">🤝 Tony (José Antonio Garnica) da apoyo en esta cuenta <span class="legend">— aparece en su vista sin entrar a su cartera ni cambiar el CS/KAM formal</span></label></div>
     <div class="card" style="margin-bottom:0"><div class="sec-title" style="margin-top:0">📝 Nota de equipo <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">(en vivo para todos — ${ANNOT_STATUS==='conectado'?'<span style="color:#3B6D11">conectado</span>':ANNOT_STATUS==='sin-configurar'?'<span style="color:#854F0B">sin configurar, ver Datos</span>':ANNOT_STATUS==='error'?'<span style="color:#A32D2D">error de conexión, ver Datos</span>':'conectando…'})</span></div>
       ${a._anot?`<p class="legend" style="margin-bottom:6px">Última actualización: ${new Date(a._anot.actualizado).toLocaleString('es-MX')} — ${esc(a._anot.autor||'')}</p>`:''}
       <div class="urlrow" style="margin-bottom:0">
@@ -2570,6 +2587,7 @@ function openDetail(uid){
     </div>
     <div class="card" style="margin-bottom:0"><div class="sec-title" style="margin-top:0">Historial de comentarios</div><div id="historialWrap"><p class="legend">Cargando historial…</p></div></div>`;
   $('overlay').classList.add('open');
+  $('apoyoTonyChk').onchange=e=>toggleApoyoTony(a,e.target.checked);
   $('anotEstado').value=(a._anot&&a._anot.estado)||'';
   $('anotNota').value=(a._anot&&a._anot.nota)||'';
   $('anotSaveBtn').onclick=async()=>{const ok=await saveAnnotation(a,$('anotEstado').value,$('anotNota').value.trim());if(ok){closeDetail();}};
