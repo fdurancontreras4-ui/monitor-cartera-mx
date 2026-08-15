@@ -1425,11 +1425,31 @@ function applyApoyoToAccounts(){ACCOUNTS.forEach(a=>{const ap=APOYO[annotKey(a)]
 async function toggleApoyoTony(a,activo){
   if(!fbDb){toast('Necesitas las anotaciones de equipo conectadas para esto — ver pestaña Datos.',true);return;}
   const key=annotKey(a);
+  const evento={evento:activo?'agregado':'quitado',autor:getAutor(),fecha:Date.now()};
   try{
-    if(activo)await fbDb.ref('apoyo/'+key+'/tony').set({autor:getAutor(),fecha:Date.now()});
-    else await fbDb.ref('apoyo/'+key+'/tony').remove();
+    if(activo)await fbDb.ref('apoyo/'+key+'/tony').set({autor:evento.autor,fecha:evento.fecha}); // estado actual — se sobrescribe
+    else await fbDb.ref('apoyo/'+key+'/tony').remove(); // estado actual — se borra al quitar el apoyo
+    await fbDb.ref('apoyo_historial/'+key+'/tony').push(evento); // + registro permanente de cada vez que entró o salió
     toast(activo?'Marcado: Tony da apoyo en esta cuenta.':'Se quitó el apoyo de Tony en esta cuenta.');
+    loadApoyoHistorial(key);
   }catch(e){toast('No se pudo guardar: '+e.message,true);}
+}
+// trae y pinta el historial de altas/bajas de apoyo de una cuenta (apoyo_historial/{key}/tony), más nuevo primero
+function loadApoyoHistorial(key){
+  const wrap=$('apoyoHistWrap');
+  if(!wrap)return;
+  if(!fbDb){wrap.innerHTML='';return;}
+  fbDb.ref('apoyo_historial/'+key+'/tony').once('value').then(snap=>{
+    const cur=$('apoyoHistWrap');if(!cur)return; // el modal se cerró o cambió de cuenta mientras cargaba
+    const val=snap.val()||{};
+    const entries=Object.values(val).sort((x,y)=>(y.fecha||0)-(x.fecha||0));
+    if(!entries.length){cur.innerHTML='';return;}
+    cur.innerHTML='<p class="legend" style="margin:8px 0 2px;font-weight:600">Historial de apoyo</p>'+entries.map(e=>{
+      const icon=e.evento==='agregado'?'✅':'❌';
+      const lbl=e.evento==='agregado'?'Agregado como apoyo':'Quitado de apoyo';
+      return `<p class="legend" style="margin:2px 0">${icon} ${lbl} — ${e.fecha?new Date(e.fecha).toLocaleString('es-MX'):''} — ${esc(e.autor||'')}</p>`;
+    }).join('');
+  }).catch(()=>{const cur=$('apoyoHistWrap');if(cur)cur.innerHTML='';});
 }
 function getAutor(){let n=localStorage.getItem('gv_anot_autor');if(!n){n=prompt('¿Cómo te llamas? (para identificar quién dejó cada nota — se pregunta una sola vez en este navegador)')||'Equipo';localStorage.setItem('gv_anot_autor',n);}return n;}
 async function saveAnnotation(a,estado,nota){
@@ -2570,7 +2590,7 @@ function openDetail(uid){
       <dl class="dl-grid">${dlRow('Grupo',a.grupo)}${dlRow('ID Geo',a.id)}${dlRow('Usuarios potenciales',a.usuarios)}${dlRow('Escala comunicación',a.escala)}${dlRow('Paga nómina con GV',a.nomina)}${dlRow('Sistema de nómina',a.sistemaNomina)}${dlRow('Arrienda equipos',a.arrienda)}</dl>
       ${a.comentario?`<p style="font-size:13px;color:var(--color-text-secondary);margin-top:8px"><strong>Comentario:</strong> ${esc(a.comentario)}</p>`:''}
     </div>
-    <div class="card" style="margin-bottom:0"><label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin:0"><input type="checkbox" id="apoyoTonyChk"${a._apoyoTony?' checked':''} style="width:16px;height:16px;cursor:pointer">🤝 Tony (José Antonio Garnica) da apoyo en esta cuenta <span class="legend">— aparece en su vista sin entrar a su cartera ni cambiar el CS/KAM formal</span></label></div>
+    <div class="card" style="margin-bottom:0"><label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin:0"><input type="checkbox" id="apoyoTonyChk"${a._apoyoTony?' checked':''} style="width:16px;height:16px;cursor:pointer">🤝 Tony (José Antonio Garnica) da apoyo en esta cuenta <span class="legend">— aparece en su vista sin entrar a su cartera ni cambiar el CS/KAM formal</span></label><div id="apoyoHistWrap"></div></div>
     <div class="card" style="margin-bottom:0"><div class="sec-title" style="margin-top:0">📝 Nota de equipo <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">(en vivo para todos — ${ANNOT_STATUS==='conectado'?'<span style="color:#3B6D11">conectado</span>':ANNOT_STATUS==='sin-configurar'?'<span style="color:#854F0B">sin configurar, ver Datos</span>':ANNOT_STATUS==='error'?'<span style="color:#A32D2D">error de conexión, ver Datos</span>':'conectando…'})</span></div>
       ${a._anot?`<p class="legend" style="margin-bottom:6px">Última actualización: ${new Date(a._anot.actualizado).toLocaleString('es-MX')} — ${esc(a._anot.autor||'')}</p>`:''}
       <div class="urlrow" style="margin-bottom:0">
@@ -2592,6 +2612,7 @@ function openDetail(uid){
   $('anotNota').value=(a._anot&&a._anot.nota)||'';
   $('anotSaveBtn').onclick=async()=>{const ok=await saveAnnotation(a,$('anotEstado').value,$('anotNota').value.trim());if(ok){closeDetail();}};
   loadHistorial(annotKey(a));
+  loadApoyoHistorial(annotKey(a));
 }
 function closeDetail(){$('overlay').classList.remove('open');}
 $('overlay').onclick=e=>{if(e.target.id==='overlay')closeDetail();};
