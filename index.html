@@ -2494,10 +2494,36 @@ function weeklyMarcajeSeries(a){
   if(!key)return[];
   return WEEKS.map(w=>({date:w.date,ad:snapAd(w.snap[key]),nps:snapNps(w.snap[key]),inc30:snapInc30(w.snap[key])}));
 }
+// gráfico de línea en SVG puro (no hay librería de charts cargada en este dashboard). points = [{label,value}],
+// value=null se trata como dato faltante: no se dibuja el punto y la línea se corta ahí en vez de interpolar
+// por encima de un hueco. dotColor(value) permite pintar cada punto según su propio umbral (rojo/ámbar/verde)
+// mientras la línea que conecta se mantiene de un solo color neutro — mismo criterio que ya usaban las barras.
+function lineChartSVG(points,opts){
+  opts=opts||{};
+  const w=opts.width||600,h=opts.height||130;
+  const padTop=20,padBottom=18,padLR=14;
+  const plotW=w-padLR*2,plotH=h-padTop-padBottom;
+  const vals=points.map(p=>p.value).filter(v=>v!=null);
+  let vMin=opts.yMin!=null?opts.yMin:Math.min(0,...vals);
+  let vMax=opts.yMax!=null?opts.yMax:Math.max(1,...vals);
+  if(vMax<=vMin)vMax=vMin+1;
+  const n=points.length;
+  const xAt=i=>n>1?padLR+(plotW*i/(n-1)):padLR+plotW/2;
+  const yAt=v=>padTop+plotH-((v-vMin)/(vMax-vMin))*plotH;
+  const lineColor=opts.lineColor||'#0e7d6e';
+  let segs=[],cur=[];
+  points.forEach((p,i)=>{if(p.value==null){if(cur.length)segs.push(cur);cur=[];return;}cur.push(xAt(i)+','+yAt(p.value));});
+  if(cur.length)segs.push(cur);
+  const pathsHtml=segs.map(seg=>`<polyline points="${seg.join(' ')}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`).join('');
+  const dotsHtml=points.map((p,i)=>{if(p.value==null)return'';const col=opts.dotColor?opts.dotColor(p.value):lineColor;return`<circle cx="${xAt(i)}" cy="${yAt(p.value)}" r="3.5" fill="${col}" stroke="var(--color-background-primary)" stroke-width="1.5"/>`;}).join('');
+  const valLabelsHtml=points.map((p,i)=>{if(p.value==null)return`<text x="${xAt(i)}" y="${padTop-7}" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)" opacity=".45">—</text>`;const txt=opts.formatValue?opts.formatValue(p.value):String(p.value);return`<text x="${xAt(i)}" y="${padTop-7}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--color-text-primary)">${esc(txt)}</text>`;}).join('');
+  const xLabelsHtml=points.map((p,i)=>`<text x="${xAt(i)}" y="${h-3}" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)">${esc(p.label)}</text>`).join('');
+  return`<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;display:block;overflow:visible">${pathsHtml}${dotsHtml}${valLabelsHtml}${xLabelsHtml}</svg>`;
+}
 function openDetail(uid){
   const a=ACCOUNTS.find(x=>x._uid===uid);if(!a)return;priority(a);
-  const mx=Math.max(...a.meses.map(m=>m||0),1),labels=MONTHS_SHORT;
-  const bars=a.meses.map((m,i)=>`<div class="bb"><div class="amt">${m==null?'—':Math.round(m)}</div><div class="bar" style="height:${m==null?2:Math.max(4,Math.round(m/mx*70))}px;${m==null?'opacity:.25':''}"></div><div class="lbl">${labels[i]||('M'+(i+1))}</div></div>`).join('');
+  const labels=MONTHS_SHORT;
+  const ventasChart=lineChartSVG(a.meses.map((m,i)=>({label:labels[i]||('M'+(i+1)),value:m})),{formatValue:v=>String(Math.round(v))});
   const pres=a.meses.filter(m=>m!=null);let delta='';if(pres.length>=2&&pres[0]>0){const d=Math.round((pres[pres.length-1]-pres[0])/pres[0]*100);delta=`${d>0?'+':''}${d}% ${MONTHS_SHORT[0]}→${MONTHS_SHORT[a.meses.length-1]||''}`;}
   const modsHtml=Object.keys(a.mods).length?`<div class="mod-grid">${Object.entries(a.mods).map(([m,v])=>`<div class="mod-item"><span>${esc(m)} ${v.raw&&v.raw!==v.s?`<span class="raw">${esc(v.raw)}</span>`:''}</span><span class="badge ${v.s==='OK'?'b-green':v.s==='OP'?'b-amber':'b-gray'}">${v.s}</span></div>`).join('')}</div>`:'<p class="legend">Sin módulos adicionales registrados.</p>';
   const h=a.health;
@@ -2546,17 +2572,17 @@ function openDetail(uid){
     // ancho completo, así que aunque tuvieran las mismas semanas, las barras salían de distinto tamaño.
     let out='';
     if(conAd.length){
-      const marcajeBars=shown.map(w=>{const pct=w.ad!=null?Math.round(w.ad*100):null;const hgt=pct!=null?Math.max(4,Math.round(pct/100*70)):2;const col=pct==null?'var(--color-border-secondary)':pct<30?'#E24B4A':pct<60?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${pct!=null?pct+'%':'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${pct==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
-      out+=`<div class="card"><div class="sec-title" style="margin-top:0">Marcaje semanal ${semLbl}</div><div class="big-bars">${marcajeBars}</div>${foot}</div>`;
+      const marcajeChart=lineChartSVG(shown.map(w=>({label:fmtWeek(w.date),value:w.ad!=null?Math.round(w.ad*100):null})),{yMin:0,yMax:100,formatValue:v=>v+'%',dotColor:v=>v<30?'#E24B4A':v<60?'#EF9F27':'#639922'});
+      out+=`<div class="card"><div class="sec-title" style="margin-top:0">Marcaje semanal ${semLbl}</div>${marcajeChart}${foot}</div>`;
     }
     if(conNps.length){
-      const npsBars=shown.map(w=>{const v=w.nps;const hgt=v!=null?Math.max(4,Math.round(Math.max(0,Math.min(10,v))/10*70)):2;const col=v==null?'var(--color-border-secondary)':v<=6?'#E24B4A':v<=8?'#EF9F27':'#639922';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
-      out+=`<div class="card"><div class="sec-title" style="margin-top:0">NPS semanal ${semLbl}</div><div class="big-bars">${npsBars}</div>${foot}</div>`;
+      const npsChart=lineChartSVG(shown.map(w=>({label:fmtWeek(w.date),value:w.nps})),{yMin:0,yMax:10,dotColor:v=>v<=6?'#E24B4A':v<=8?'#EF9F27':'#639922'});
+      out+=`<div class="card"><div class="sec-title" style="margin-top:0">NPS semanal ${semLbl}</div>${npsChart}${foot}</div>`;
     }
     if(conTk.length){
       const tkVals=shown.map(w=>w.inc30).filter(v=>v!=null);const tkMax=Math.max(3,...tkVals,1);
-      const tkBars=shown.map(w=>{const v=w.inc30;const hgt=v!=null?Math.max(4,Math.round(v/tkMax*70)):2;const col=v==null?'var(--color-border-secondary)':v===0?'#639922':v<=2?'#EF9F27':'#E24B4A';return`<div class="bb"><div class="amt">${v!=null?v:'—'}</div><div class="bar" style="height:${hgt}px;background:${col};${v==null?'opacity:.25':''}"></div><div class="lbl">${fmtWeek(w.date)}</div></div>`;}).join('');
-      out+=`<div class="card"><div class="sec-title" style="margin-top:0">Tickets (incidencias 30d) semanal ${semLbl}</div><div class="big-bars">${tkBars}</div>${foot}</div>`;
+      const tkChart=lineChartSVG(shown.map(w=>({label:fmtWeek(w.date),value:w.inc30})),{yMin:0,yMax:tkMax,dotColor:v=>v===0?'#639922':v<=2?'#EF9F27':'#E24B4A'});
+      out+=`<div class="card"><div class="sec-title" style="margin-top:0">Tickets (incidencias 30d) semanal ${semLbl}</div>${tkChart}${foot}</div>`;
     }
     return out;
   })();
@@ -2572,7 +2598,7 @@ function openDetail(uid){
     ${a.desc?`<p style="font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:10px">${esc(a.desc)}</p>`:''}
     ${metricsHtml}
     ${alertsHtml}
-    <div class="card"><div class="sec-title" style="margin-top:0">Ventas y fuga</div><div class="big-bars">${bars}</div>
+    <div class="card"><div class="sec-title" style="margin-top:0">Ventas y fuga</div>${ventasChart}
       <p class="status-line" style="margin-top:6px">${fugaCell(a)} <span class="legend">— ${a._cambioRazon?'marcada como cambio de razón social: no se cuenta como fuga ni como crítica.':'derivada de la tendencia '+MONTHS_SHORT[0]+'→'+(MONTHS_SHORT[a.meses.length-1]||'')+'.'}</span></p>
       ${branchesHtml}
     </div>
@@ -2627,7 +2653,7 @@ function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');
 // ---------- navegación / init ----------
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
 const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,implementacion:renderImplementacion,sinuso:renderSinUso,datos:renderDatos};
-function renderAll(){applyAnnotationsToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
+function renderAll(){applyAnnotationsToAccounts();applyApoyoToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11" title="${CURRENT_HEALTH_FILE?esc(CURRENT_HEALTH_FILE):''}">salud vigente: ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'activa'}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 // mapa: id de sección real -> id de grupo (pestaña principal) al que pertenece
 const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',tony:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',implementacion:'implementacion',datos:'datos'};
