@@ -2500,8 +2500,8 @@ function weeklyMarcajeSeries(a){
 // mientras la línea que conecta se mantiene de un solo color neutro — mismo criterio que ya usaban las barras.
 function lineChartSVG(points,opts){
   opts=opts||{};
-  const w=opts.width||600,h=opts.height||130;
-  const padTop=20,padBottom=18,padLR=14;
+  const w=opts.width||600,h=opts.height||144;
+  const padTop=28,padBottom=18,padLR=14;
   const plotW=w-padLR*2,plotH=h-padTop-padBottom;
   const vals=points.map(p=>p.value).filter(v=>v!=null);
   let vMin=opts.yMin!=null?opts.yMin:Math.min(0,...vals);
@@ -2512,13 +2512,34 @@ function lineChartSVG(points,opts){
   const yAt=v=>padTop+plotH-((v-vMin)/(vMax-vMin))*plotH;
   const lineColor=opts.lineColor||'#0e7d6e';
   let segs=[],cur=[];
-  points.forEach((p,i)=>{if(p.value==null){if(cur.length)segs.push(cur);cur=[];return;}cur.push(xAt(i)+','+yAt(p.value));});
+  // % de cambio entre cada par de puntos consecutivos CON dato (si hay un hueco entre ellos, no hay segmento
+  // de línea que los conecte, así que tampoco se calcula % ahí) — se ubica a la mitad del segmento, con un
+  // piso mínimo (padTop+10) para que nunca choque con la fila de valores de arriba, aunque la línea esté alta.
+  const pctLabels=[];
+  points.forEach((p,i)=>{
+    if(p.value==null){if(cur.length)segs.push(cur);cur=[];return;}
+    cur.push(xAt(i)+','+yAt(p.value));
+    if(i>0&&points[i-1].value!=null){
+      const prev=points[i-1].value,curr=p.value;
+      if(prev!==0){
+        const chg=(curr-prev)/prev*100;
+        const rawY=(yAt(prev)+yAt(curr))/2;
+        pctLabels.push({x:(xAt(i-1)+xAt(i))/2,y:Math.max(padTop+10,rawY),chg});
+      }
+    }
+  });
   if(cur.length)segs.push(cur);
   const pathsHtml=segs.map(seg=>`<polyline points="${seg.join(' ')}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`).join('');
   const dotsHtml=points.map((p,i)=>{if(p.value==null)return'';const col=opts.dotColor?opts.dotColor(p.value):lineColor;return`<circle cx="${xAt(i)}" cy="${yAt(p.value)}" r="3.5" fill="${col}" stroke="var(--color-background-primary)" stroke-width="1.5"/>`;}).join('');
+  const pctHtml=pctLabels.map(pl=>{
+    const col=pl.chg>0?'#3B6D11':pl.chg<0?'#A32D2D':'var(--color-text-secondary)';
+    const txt=(pl.chg>0?'+':'')+Math.round(pl.chg)+'%';
+    const bw=Math.max(24,txt.length*6.5);
+    return`<g><rect x="${pl.x-bw/2}" y="${pl.y-6}" width="${bw}" height="12" rx="3" fill="var(--color-background-primary)" opacity=".9"/><text x="${pl.x}" y="${pl.y+3}" text-anchor="middle" font-size="9" font-weight="700" fill="${col}">${esc(txt)}</text></g>`;
+  }).join('');
   const valLabelsHtml=points.map((p,i)=>{if(p.value==null)return`<text x="${xAt(i)}" y="${padTop-7}" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)" opacity=".45">—</text>`;const txt=opts.formatValue?opts.formatValue(p.value):String(p.value);return`<text x="${xAt(i)}" y="${padTop-7}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--color-text-primary)">${esc(txt)}</text>`;}).join('');
   const xLabelsHtml=points.map((p,i)=>`<text x="${xAt(i)}" y="${h-3}" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)">${esc(p.label)}</text>`).join('');
-  return`<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;display:block;overflow:visible">${pathsHtml}${dotsHtml}${valLabelsHtml}${xLabelsHtml}</svg>`;
+  return`<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;display:block;overflow:visible">${pathsHtml}${dotsHtml}${pctHtml}${valLabelsHtml}${xLabelsHtml}</svg>`;
 }
 function openDetail(uid){
   const a=ACCOUNTS.find(x=>x._uid===uid);if(!a)return;priority(a);
