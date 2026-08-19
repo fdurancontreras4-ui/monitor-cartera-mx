@@ -2146,10 +2146,11 @@ function renderTiempoRegistrar(){
     </div>
     ${tiempoState.kam?`
     <div class="sec-title">Cliente</div>
-    <div class="urlrow" style="margin-bottom:0"><select id="tiempoCliente">
-      <option value="">Selecciona una cuenta de tu cartera…</option>
-      ${clientesDelKam.map(a=>`<option value="${esc(a._uid)}">${esc(a.cliente)}</option>`).join('')}
-    </select></div>
+    <div id="tiempoClienteWrap" style="position:relative;max-width:420px">
+      <input type="text" id="tiempoClienteInput" placeholder="Escribe para buscar en la cartera de ${esc(kamShort(tiempoState.kam))}…" autocomplete="off" style="width:100%;font-family:var(--font-sans);font-size:13px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)">
+      <input type="hidden" id="tiempoClienteId" value="">
+      <div id="tiempoClienteDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:20;max-height:240px;overflow-y:auto;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);box-shadow:var(--shadow-md);margin-top:4px"></div>
+    </div>
     <div class="sec-title">Fecha</div>
     <input type="date" id="tiempoFecha" value="${tiempoState.fecha}" max="${todayISO()}" style="font-family:var(--font-sans);font-size:13px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)">
     <div class="sec-title">Duración</div>
@@ -2172,6 +2173,30 @@ function renderTiempoRegistrar(){
     btn.onclick=()=>{tiempoState.kam=btn.dataset.kam;renderTiempoRegistrar();};
   });
   if(!tiempoState.kam)return;
+  // combobox de cliente: escribir filtra en vivo, pero SIEMPRE dentro de clientesDelKam (ya acotado al KAM
+  // elegido arriba) — solo se puede guardar si el texto quedó emparejado a una cuenta real (tiempoClienteId).
+  const clienteInput=$('tiempoClienteInput'),clienteIdField=$('tiempoClienteId'),clienteDD=$('tiempoClienteDropdown');
+  function renderClienteOpts(filterText){
+    const q=normName(filterText||'');
+    const matches=clientesDelKam.filter(a=>!q||normName(a.cliente).includes(q)).slice(0,40);
+    if(!matches.length){clienteDD.innerHTML='<div style="padding:8px 10px;color:var(--color-text-secondary);font-size:13px">Sin resultados en esta cartera</div>';clienteDD.style.display='block';return;}
+    clienteDD.innerHTML=matches.map(a=>`<div class="tiempo-cliente-opt" data-uid="${esc(a._uid)}" style="padding:7px 10px;cursor:pointer;font-size:13px">${esc(a.cliente)}</div>`).join('');
+    clienteDD.style.display='block';
+    clienteDD.querySelectorAll('.tiempo-cliente-opt').forEach(opt=>{
+      opt.onmouseenter=()=>{opt.style.background='var(--color-background-secondary)';};
+      opt.onmouseleave=()=>{opt.style.background='';};
+      opt.onmousedown=e=>{ // mousedown (no click) para que gane a la ejecución del blur del input
+        e.preventDefault();
+        const acc=clientesDelKam.find(a=>a._uid===opt.dataset.uid);
+        clienteInput.value=acc.cliente;clienteIdField.value=acc._uid;
+        clienteDD.style.display='none';
+      };
+    });
+  }
+  clienteInput.oninput=()=>{clienteIdField.value='';renderClienteOpts(clienteInput.value);};
+  clienteInput.onfocus=()=>{renderClienteOpts(clienteInput.value);};
+  clienteInput.onblur=()=>{setTimeout(()=>{clienteDD.style.display='none';},150);};
+  clienteInput.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const first=clienteDD.querySelector('.tiempo-cliente-opt');if(first)first.onmousedown(e);}else if(e.key==='Escape'){clienteDD.style.display='none';}};
   $('tiempoFecha').onchange=e=>{tiempoState.fecha=e.target.value;};
   const minRow=$('tiempoMinRow');
   minRow.querySelectorAll('.toggle-chip[data-min]').forEach(btn=>{
@@ -2183,11 +2208,11 @@ function renderTiempoRegistrar(){
   });
   $('tiempoMinCustom').oninput=()=>{minRow.querySelectorAll('.toggle-chip').forEach(b=>{b.style.background='transparent';b.style.color='var(--color-text-secondary)';b.style.borderColor='var(--color-border-secondary)';});};
   $('tiempoSaveBtn').onclick=async()=>{
-    const clienteSel=$('tiempoCliente'),clienteAcc=clienteSel.value?ACCOUNTS.find(a=>a._uid===clienteSel.value):null;
+    const clienteAcc=clienteIdField.value?ACCOUNTS.find(a=>a._uid===clienteIdField.value):null;
     const minutos=parseInt($('tiempoMinCustom').value,10);
     const motivo=$('tiempoMotivo').value;
     const fecha=$('tiempoFecha').value||todayISO();
-    if(!clienteAcc){toast('Elige un cliente.',true);return;}
+    if(!clienteAcc){toast('Elige un cliente de la lista (escribe y selecciona una opción).',true);return;}
     if(!minutos||minutos<=0){toast('Ingresa una duración válida.',true);return;}
     if(!motivo){toast('Elige un motivo.',true);return;}
     const ok=await saveTiempoOperativo({kam:tiempoState.kam,clienteId:clienteAcc.id||'',clienteNombre:clienteAcc.cliente,minutos,motivo,fecha,nota:$('tiempoNota').value.trim()});
