@@ -216,6 +216,7 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
     <button data-group="fugag">Fuga</button>
     <button data-group="venta">Venta</button>
     <button data-group="kams">KAMs</button>
+    <button data-group="tiempo">Tiempo Operativo</button>
     <button data-sec="implementacion">Implementaciones</button>
     <button data-sec="datos">Datos</button>
   </div>
@@ -243,6 +244,10 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
     <button data-sec="kam-dafne">Dafne</button>
     <button data-sec="kam-karla">Karla</button>
   </div>
+  <div class="subnav" id="subnav-tiempo">
+    <button data-sec="tiempoRegistrar">Registrar</button>
+    <button data-sec="tiempoRecuento">Recuento</button>
+  </div>
 
   <div id="resumen" class="section active"></div>
   <div id="prioridad" class="section"></div>
@@ -260,6 +265,8 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
   <div id="kam-karla" class="section"></div>
   <div id="implementacion" class="section"></div>
   <div id="sinuso" class="section"></div>
+  <div id="tiempoRegistrar" class="section"></div>
+  <div id="tiempoRecuento" class="section"></div>
   <div id="datos" class="section"></div>
 </div>
 
@@ -552,6 +559,32 @@ function applyConsideraciones(){
     else{a.kam=a._kamOrig;a._kamReasignado=false;}
   });
   ACCOUNTS.forEach(a=>{if(!a._congelada&&isCritica(a))a._razonCritico=razonCritico(a);});
+}
+// varias razones sociales (filas de cartera) que comparten el MISMO ID Geo son, en la práctica, una sola
+// cuenta operativa en el modelo de salud (mismos usuarios, mismo marcaje) — distinto del caso de sucursales
+// con "-" en el ID, que ya se maneja aparte. Sin esto, cada razón social entraba por separado como "crítica"
+// aunque las dos compartan exactamente la misma señal de salud, inflando el conteo. Se agrupan bajo la de
+// mayor MRR (la "principal"), que pasa a cargar el MRR y la facturación mensual combinada de todo el grupo;
+// las demás quedan marcadas _esRazonSocialSecundaria para que Salud Segmentada no las cuente ni las muestre
+// aparte — siguen existiendo tal cual en Cuentas, KAMs, Cross-sell, etc., esto no las toca.
+function applyRazonSocialGroups(){
+  ACCOUNTS.forEach(a=>{a._razonesSociales=null;a._mrrCombinado=null;a._mesesCombinados=null;a._esRazonSocialSecundaria=false;});
+  const byId={};
+  ACCOUNTS.forEach(a=>{
+    if(a._idList&&a._idList.length>1)return; // ya es multi-sucursal (ID con "-"), mecanismo aparte, no tocar
+    const pid=cleanId(a.id);
+    if(!pid)return;
+    (byId[pid]=byId[pid]||[]).push(a);
+  });
+  Object.values(byId).forEach(group=>{
+    if(group.length<2)return;
+    group.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
+    const primary=group[0];
+    primary._razonesSociales=group.map(g=>({cliente:g.cliente,mrr:g.mrr,_uid:g._uid}));
+    primary._mrrCombinado=group.reduce((s,g)=>s+(g.mrr||0),0);
+    primary._mesesCombinados=primary.meses.map((_,i)=>{const vals=group.map(g=>g.meses[i]).filter(v=>v!=null);return vals.length?vals.reduce((s,v)=>s+v,0):null;});
+    for(let i=1;i<group.length;i++)group[i]._esRazonSocialSecundaria=true;
+  });
 }
 function riesgoState(a){return isCritica(a)?'critica':isRiesgo(a)?'riesgo':'estable';}
 const MONTHS_FULL=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -909,6 +942,7 @@ function applyHealth(parsed){
   HEALTH={loaded:true,matched,total:parsed.rows.length,unmatched,keyHeader:parsed.keyHeader,signalHeaders:parsed.signalHeaders};
   HEALTH_CACHE=parsed;persist('mare_health',parsed);
   applyConsideraciones();
+  applyRazonSocialGroups();
 }
 
 
@@ -970,11 +1004,12 @@ function prCard(a,rank,branch){
   else if(gb==='resuelto')gestionClass='gestion-resuelta';
   else if(gb==='seguimiento')gestionClass='gestion-seguimiento';
   else if(st==='critica')gestionClass='gestion-sin';
-  const nameHtml=branch?`${esc(branch.nombre||a.cliente)}<div class="legend" style="margin-top:1px;font-weight:400">Razón social/facturación: ${esc(a.cliente)}</div>`:esc(a.cliente);
+  const nameHtml=branch?`${esc(branch.nombre||a.cliente)}<div class="legend" style="margin-top:1px;font-weight:400">Razón social/facturación: ${esc(a.cliente)}</div>`:(a._razonesSociales?`${esc(a.cliente)}<div class="legend" style="margin-top:1px;font-weight:400">+ ${a._razonesSociales.length-1} razón social más con el mismo ID Geo: ${a._razonesSociales.slice(1).map(r=>esc(r.cliente)).join(', ')}</div>`:esc(a.cliente));
+  const mrrShown=a._mrrCombinado!=null?a._mrrCombinado:a.mrr;
   return`<div class="pr-card ${gap} ${gestionClass}" onclick="openDetail('${a._uid}')">
     <div class="pr-rank">${rank}</div>
     <div class="pr-main"><div class="pr-name">${nameHtml}</div>
-    <div class="pr-meta">${carteraBadge(a.cartera)} · ${esc(a.kam)} · ${fmtUSD(a.mrr)}/mes${marc}${usuariosTxt} · ${csBadge(a)}</div>
+    <div class="pr-meta">${carteraBadge(a.cartera)} · ${esc(a.kam)} · ${fmtUSD(mrrShown)}/mes${a._mrrCombinado!=null?' <span class="legend">(combinado)</span>':''}${marc}${usuariosTxt} · ${csBadge(a)}</div>
     <div style="margin-top:5px">${stBadge}${implBadge}${anotBadge}${responsableBadge}${trackBadge}${(a._drivers||[]).slice(0,3).map(d=>`<span class="badge ${d[1]}">${d[0]}</span> `).join('')}</div>${accion}${a._anot&&a._anot.nota?`<div class="pr-accion" style="color:var(--color-text-secondary)">📝 <em>"${esc(a._anot.nota.length>140?a._anot.nota.slice(0,140)+'…':a._anot.nota)}"</em> — ${esc(a._anot.autor||'')}</div>`:''}</div>
     <div class="pr-score" style="color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-secondary)'}">${a._score}</div>
   </div>`;
@@ -1166,7 +1201,7 @@ function renderPriorizar(){
     return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500">${esc(a.cliente)}</td><td>${b.join(' ')}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(com)}</td></tr>`;};
   const excHtml=`<details class="card" style="padding:0"><summary style="cursor:pointer;padding:1rem 1.25rem;font-size:14px;font-weight:500;color:var(--color-text-secondary)">Excepciones <span class="badge b-gray">${exc.length}</span> <span style="font-weight:400;font-size:12px">— cuentas con un ajuste de consideraciones aplicado</span></summary><div style="padding:0 1.25rem 1rem">${exc.length?`<div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Excepción</th><th class="nosort">Comentario</th></tr></thead><tbody>${exc.map(excRow).join('')}</tbody></table></div>`:'<p class="legend">Sin excepciones aplicadas. Se gestionan en <code>consideraciones.json</code> (pestaña Datos).</p>'}</div></details>`;
   $('priorizar').innerHTML=`
-  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar — el de <strong>motivo</strong> deja ver solo las críticas por adopción/marcaje bajo, por tickets sin resolver o por NPS detractor. Debajo, los 4 <strong>botones de gestión</strong> (Sin comentario / Seguimiento / Resuelto / Implementación) funcionan como casillas independientes — clic para mostrar u ocultar cada categoría, se pueden combinar como quieras; solo afectan a las críticas. El botón <strong>"📋 Copiar cuentas"</strong> de cada KAM copia exactamente lo que está viendo en ese momento con todos estos filtros aplicados (Estado, CS, motivo, antigüedad y gestión) — si quieres copiar solo lo que aún no tiene comentario, apaga Seguimiento/Resuelto/Implementación en los botones de gestión antes de copiar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones.<br><br>Lo crítico de esta pestaña viene <strong>solo del archivo de salud vigente</strong> (marcaje, NPS, tickets, o <strong>% Variación</strong> — este último se etiqueta "crítico por % variación 30 días", es variación de <em>adopción</em>, no de facturación). Las caídas de <strong>facturación</strong> ya no se mezclan aquí — tienen su propia pestaña <strong>Fuga → Críticas por facturación</strong>, con el mismo agrupado por KAM.<br><br><strong>Seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"). Cuando hay nota, aparece el tag <strong>👤 Responsable</strong> — es la columna <strong>Responsable</strong> de <code>gestion.xlsx</code>, que puede ser distinta del KAM asignado (por ejemplo, si un CS está llevando el seguimiento puntual). Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como "Sin comentario" aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo. Las tarjetas se pintan igual que los 4 botones: <strong style="color:#3B6D11">verde</strong> si está "Resuelto", <strong style="color:#854F0B">amarillo</strong> si está "En seguimiento" (incluye notas sin Estado formal elegido todavía), <strong style="color:#A32D2D">rojo</strong> si es crítica y no tiene ningún comentario, y <strong style="color:#185FA5">celeste</strong> si la cartera trae <code>Implementando? = Sí</code> para esa cuenta.</div>
+  <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar — el de <strong>motivo</strong> deja ver solo las críticas por adopción/marcaje bajo, por tickets sin resolver o por NPS detractor. Debajo, los 4 <strong>botones de gestión</strong> (Sin comentario / Seguimiento / Resuelto / Implementación) funcionan como casillas independientes — clic para mostrar u ocultar cada categoría, se pueden combinar como quieras; solo afectan a las críticas. El botón <strong>"📋 Copiar cuentas"</strong> de cada KAM copia exactamente lo que está viendo en ese momento con todos estos filtros aplicados (Estado, CS, motivo, antigüedad y gestión) — si quieres copiar solo lo que aún no tiene comentario, apaga Seguimiento/Resuelto/Implementación en los botones de gestión antes de copiar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones. Si varias razones sociales de cartera comparten el mismo ID Geo (la misma cuenta operativa en el modelo de salud, solo con distinta facturación/RFC), se agrupan bajo una sola tarjeta — la de mayor MRR — con el MRR combinado; las demás no se cuentan aparte para evitar inflar el número de críticas. El detalle de esa tarjeta muestra el desglose completo en "Razones sociales agrupadas". Esto solo afecta esta pestaña — en Cuentas, KAMs y el resto del dashboard cada razón social sigue apareciendo por separado, tal como está en tu cartera.<br><br>Lo crítico de esta pestaña viene <strong>solo del archivo de salud vigente</strong> (marcaje, NPS, tickets, o <strong>% Variación</strong> — este último se etiqueta "crítico por % variación 30 días", es variación de <em>adopción</em>, no de facturación). Las caídas de <strong>facturación</strong> ya no se mezclan aquí — tienen su propia pestaña <strong>Fuga → Críticas por facturación</strong>, con el mismo agrupado por KAM.<br><br><strong>Seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"). Cuando hay nota, aparece el tag <strong>👤 Responsable</strong> — es la columna <strong>Responsable</strong> de <code>gestion.xlsx</code>, que puede ser distinta del KAM asignado (por ejemplo, si un CS está llevando el seguimiento puntual). Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como "Sin comentario" aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo. Las tarjetas se pintan igual que los 4 botones: <strong style="color:#3B6D11">verde</strong> si está "Resuelto", <strong style="color:#854F0B">amarillo</strong> si está "En seguimiento" (incluye notas sin Estado formal elegido todavía), <strong style="color:#A32D2D">rojo</strong> si es crítica y no tiene ningún comentario, y <strong style="color:#185FA5">celeste</strong> si la cartera trae <code>Implementando? = Sí</code> para esa cuenta.</div>
   ${excHtml}
   <div class="controls">
     <select id="prEstado"><option value="atrisk">Críticas + en riesgo</option><option value="critica">Solo críticas</option><option value="riesgo">Solo en riesgo</option><option value="sano">Solo saludables</option><option value="all">Todas las cuentas</option></select>
@@ -1190,7 +1225,7 @@ function renderPriorizar(){
 }
 function prSet(estado,cs){prState.estado=estado;prState.cs=cs;show('priorizar');}
 function drawPrList(){
-  let accRows=ACCOUNTS.slice().filter(a=>!isSinUso(a));
+  let accRows=ACCOUNTS.slice().filter(a=>!isSinUso(a)&&!a._esRazonSocialSecundaria);
   // expandir: una cuenta con varias sucursales de salud (ID Geo "29157-37879-...") genera una entrada por
   // sucursal, cada una con su propio estado/marcaje; el resto (el caso normal) genera una sola entrada,
   // exactamente como antes.
@@ -1415,6 +1450,17 @@ let ANNOT_STATUS='sin-configurar'; // 'sin-configurar' | 'conectando' | 'conecta
 let ANNOT_ERROR='';
 let fbDb=null;
 let APOYO={}; // apoyo/{key}/{persona} = {autor,fecha} — cuentas donde alguien da soporte puntual sin ser el CS/KAM formal
+let TIEMPO_OP={}; // tiempo_operativo/{pushId} = {kam,clienteId,clienteNombre,minutos,motivo,fecha,nota,creado,autor}
+const TIEMPO_KAMS=['Dafne de la Rosa','Raúl Campos','Karla Patiño'];
+const TIEMPO_MOTIVOS={duda:'Duda',ticket:'Ticket / problema técnico',capacitacion:'Capacitación',reunion:'Reunión interna',otro:'Otro'};
+async function saveTiempoOperativo(entry){
+  if(!fbDb){toast('Necesitas las anotaciones de equipo conectadas para esto — ver pestaña Datos.',true);return false;}
+  try{
+    await fbDb.ref('tiempo_operativo').push(Object.assign({},entry,{creado:Date.now(),autor:getAutor()}));
+    toast('Tiempo registrado.');
+    return true;
+  }catch(e){toast('No se pudo guardar: '+e.message,true);return false;}
+}
 const ANNOT_ESTADOS={seguimiento:{label:'En seguimiento',color:'#EF9F27',badge:'b-amber'},resuelta:{label:'Resuelta',color:'#639922',badge:'b-green'},excluir:{label:'Excluida de críticas',color:'#7F77DD',badge:'b-purple'}};
 function annotKey(a){const id=cleanId(a.id);return id?('id_'+id):('n_'+normName(a.cliente||''));}
 function getAnnot(a){return ANNOTATIONS[annotKey(a)]||null;}
@@ -1568,9 +1614,18 @@ function initAnnotations(){
       APOYO=snap.val()||{};
       applyApoyoToAccounts();renderAll();
     });
+    fbDb.ref('tiempo_operativo').on('value',snap=>{
+      TIEMPO_OP=snap.val()||{};
+      if($('tiempoRecuento')&&$('tiempoRecuento').classList.contains('active'))renderTiempoRecuento();
+      if($('tiempoRegistrar')&&$('tiempoRegistrar').classList.contains('active'))renderTiempoHoyList();
+    });
   }catch(e){ANNOT_STATUS='error';ANNOT_ERROR=e&&e.message||String(e);}
 }
-function todayISO(){return new Date().toISOString().slice(0,10);}
+// fecha de HOY en la zona horaria LOCAL del navegador — OJO: new Date().toISOString() sola da la fecha en UTC,
+// que en México (varias horas detrás) se adelanta un día entero pasado cierto punto de la tarde/noche. El truco
+// es correr el reloj interno por el offset de zona horaria antes de pedir el ISO, así toISOString() (que siempre
+// imprime en UTC) termina mostrando el día que realmente es en la hora local.
+function todayISO(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
 function detectDateFromName(name){
   if(!name)return null;
   const s=String(name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -2076,6 +2131,139 @@ function renderKamTab(kam,sectionId){
 function renderKamRaul(){renderKamTab('Ra\u00fal Campos','kam-raul');}
 function renderKamDafne(){renderKamTab('Dafne de la Rosa','kam-dafne');}
 function renderKamKarla(){renderKamTab('Karla Pati\u00f1o','kam-karla');}
+// ---------- Tiempo operativo ----------
+let tiempoState={kam:'',fecha:''};
+function fmtMin(min){const h=Math.floor(min/60),m=min%60;if(h<=0)return m+' min';if(m===0)return h+'h';return h+'h '+m+'min';}
+function renderTiempoRegistrar(){
+  if(!tiempoState.fecha)tiempoState.fecha=todayISO();
+  const clientesDelKam=tiempoState.kam?ACCOUNTS.filter(a=>a.kam===tiempoState.kam&&!a._esRazonSocialSecundaria).slice().sort((x,y)=>x.cliente.localeCompare(y.cliente)):[];
+  $('tiempoRegistrar').innerHTML=`
+  <div class="note-box">Registra el tiempo que dedicaste a temas operativos (dudas, tickets, problemas, capacitación) — <strong>un registro por bloque, después de que pasó</strong>, no en vivo con cronómetro. Se guarda en Firebase, en vivo para todo el equipo, y alimenta <strong>Recuento</strong>.</div>
+  <div class="card">
+    <div class="sec-title" style="margin-top:0">¿Quién eres?</div>
+    <div id="tiempoKamRow" style="display:flex;gap:8px;flex-wrap:wrap">
+      ${TIEMPO_KAMS.map(k=>{const on=tiempoState.kam===k;return`<button class="toggle-chip" data-kam="${esc(k)}" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#185FA5':'var(--color-text-secondary)'};border-color:${on?'#185FA5':'var(--color-border-secondary)'}">${esc(kamShort(k))}</button>`;}).join('')}
+    </div>
+    ${tiempoState.kam?`
+    <div class="sec-title">Cliente</div>
+    <div class="urlrow" style="margin-bottom:0"><select id="tiempoCliente">
+      <option value="">Selecciona una cuenta de tu cartera…</option>
+      ${clientesDelKam.map(a=>`<option value="${esc(a._uid)}">${esc(a.cliente)}</option>`).join('')}
+    </select></div>
+    <div class="sec-title">Fecha</div>
+    <input type="date" id="tiempoFecha" value="${tiempoState.fecha}" max="${todayISO()}" style="font-family:var(--font-sans);font-size:13px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)">
+    <div class="sec-title">Duración</div>
+    <div id="tiempoMinRow" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      ${[5,15,30,60].map(m=>`<button class="toggle-chip" data-min="${m}">${m} min</button>`).join('')}
+      <input type="number" id="tiempoMinCustom" placeholder="otra cantidad (min)" min="1" style="width:150px;font-family:var(--font-sans);font-size:13px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)">
+    </div>
+    <div class="sec-title">Motivo</div>
+    <div class="urlrow" style="margin-bottom:0"><select id="tiempoMotivo">
+      <option value="">Selecciona…</option>
+      ${Object.entries(TIEMPO_MOTIVOS).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('')}
+    </select></div>
+    <div class="sec-title">Nota (opcional)</div>
+    <textarea id="tiempoNota" placeholder="Detalle breve, si hace falta…" style="width:100%;min-height:55px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;resize:vertical"></textarea>
+    <div style="margin-top:10px"><button class="btn btn-primary" id="tiempoSaveBtn">Guardar registro</button></div>
+    `:'<p class="legend" style="margin-top:10px">Elige quién eres para continuar.</p>'}
+  </div>
+  <div class="card" id="tiempoHoyCard" style="${tiempoState.kam?'':'display:none'}"><div class="sec-title" style="margin-top:0">Tus registros de hoy</div><div id="tiempoHoyList"></div></div>`;
+  $('tiempoKamRow').querySelectorAll('.toggle-chip').forEach(btn=>{
+    btn.onclick=()=>{tiempoState.kam=btn.dataset.kam;renderTiempoRegistrar();};
+  });
+  if(!tiempoState.kam)return;
+  $('tiempoFecha').onchange=e=>{tiempoState.fecha=e.target.value;};
+  const minRow=$('tiempoMinRow');
+  minRow.querySelectorAll('.toggle-chip[data-min]').forEach(btn=>{
+    btn.onclick=()=>{
+      minRow.querySelectorAll('.toggle-chip').forEach(b=>{b.style.background='transparent';b.style.color='var(--color-text-secondary)';b.style.borderColor='var(--color-border-secondary)';});
+      btn.style.background='#E6F1FB';btn.style.color='#185FA5';btn.style.borderColor='#185FA5';
+      $('tiempoMinCustom').value=btn.dataset.min;
+    };
+  });
+  $('tiempoMinCustom').oninput=()=>{minRow.querySelectorAll('.toggle-chip').forEach(b=>{b.style.background='transparent';b.style.color='var(--color-text-secondary)';b.style.borderColor='var(--color-border-secondary)';});};
+  $('tiempoSaveBtn').onclick=async()=>{
+    const clienteSel=$('tiempoCliente'),clienteAcc=clienteSel.value?ACCOUNTS.find(a=>a._uid===clienteSel.value):null;
+    const minutos=parseInt($('tiempoMinCustom').value,10);
+    const motivo=$('tiempoMotivo').value;
+    const fecha=$('tiempoFecha').value||todayISO();
+    if(!clienteAcc){toast('Elige un cliente.',true);return;}
+    if(!minutos||minutos<=0){toast('Ingresa una duración válida.',true);return;}
+    if(!motivo){toast('Elige un motivo.',true);return;}
+    const ok=await saveTiempoOperativo({kam:tiempoState.kam,clienteId:clienteAcc.id||'',clienteNombre:clienteAcc.cliente,minutos,motivo,fecha,nota:$('tiempoNota').value.trim()});
+    if(ok){tiempoState.fecha=fecha;renderTiempoRegistrar();}
+  };
+  renderTiempoHoyList();
+}
+function renderTiempoHoyList(){
+  const wrap=$('tiempoHoyList');
+  if(!wrap||!tiempoState.kam)return;
+  const hoy=todayISO();
+  const entries=Object.entries(TIEMPO_OP).map(([id,e])=>Object.assign({},e,{_id:id})).filter(e=>e.kam===tiempoState.kam&&e.fecha===hoy).sort((x,y)=>(y.creado||0)-(x.creado||0));
+  if(!entries.length){wrap.innerHTML='<p class="legend">Todavía no registras nada hoy.</p>';return;}
+  const total=entries.reduce((s,e)=>s+(e.minutos||0),0);
+  wrap.innerHTML=`<p class="status-line" style="margin-bottom:8px">Total hoy: <strong>${fmtMin(total)}</strong></p>`+entries.map(e=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><div><strong>${esc(e.clienteNombre)}</strong> <span class="legend">· ${esc(TIEMPO_MOTIVOS[e.motivo]||e.motivo)} · ${fmtMin(e.minutos)}</span>${e.nota?`<div class="legend">${esc(e.nota)}</div>`:''}</div><button class="hist-icon-btn" title="Eliminar" onclick="deleteTiempoEntry('${esc(e._id)}')">🗑</button></div>`).join('');
+}
+async function deleteTiempoEntry(id){
+  if(!fbDb)return;
+  if(!confirm('¿Eliminar este registro de tiempo?'))return;
+  try{await fbDb.ref('tiempo_operativo/'+id).remove();toast('Registro eliminado.');}catch(e){toast('No se pudo eliminar: '+e.message,true);}
+}
+// lunes de la semana ISO que contiene refISO (YYYY-MM-DD) -> {monday, sunday} como strings ISO
+function weekBoundsISO(refISO){
+  const d=new Date(refISO+'T00:00:00');
+  const dow=(d.getDay()+6)%7; // 0=lunes … 6=domingo
+  const monday=new Date(d);monday.setDate(d.getDate()-dow);
+  const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+  const iso=x=>x.toISOString().slice(0,10);
+  return{monday:iso(monday),sunday:iso(sunday)};
+}
+let recuentoRef=todayISO();
+function renderTiempoRecuento(){
+  const {monday,sunday}=weekBoundsISO(recuentoRef);
+  const dias=[];for(let i=0;i<7;i++){const d=new Date(monday+'T00:00:00');d.setDate(d.getDate()+i);dias.push(d.toISOString().slice(0,10));}
+  const DIA_LBL=['Lun','Mar','Mi\u00e9','Jue','Vie','S\u00e1b','Dom'];
+  const entries=Object.values(TIEMPO_OP).filter(e=>e.fecha>=monday&&e.fecha<=sunday);
+  const porDiaKam={};dias.forEach(d=>{porDiaKam[d]={};TIEMPO_KAMS.forEach(k=>porDiaKam[d][k]=0);});
+  const totKam={};TIEMPO_KAMS.forEach(k=>totKam[k]=0);
+  const porMotivo={};
+  entries.forEach(e=>{
+    if(porDiaKam[e.fecha]&&porDiaKam[e.fecha][e.kam]!=null)porDiaKam[e.fecha][e.kam]+=(e.minutos||0);
+    if(totKam[e.kam]!=null)totKam[e.kam]+=(e.minutos||0);
+    porMotivo[e.motivo]=(porMotivo[e.motivo]||0)+(e.minutos||0);
+  });
+  const totSemana=TIEMPO_KAMS.reduce((s,k)=>s+totKam[k],0);
+  const hoy=todayISO();
+  const esActual=monday<=hoy&&hoy<=sunday;
+  $('tiempoRecuento').innerHTML=`
+  <div class="controls" style="align-items:center">
+    <button class="btn" id="recuentoPrev">\u2190 Semana anterior</button>
+    <strong style="font-size:14px">Semana del ${monday} al ${sunday}${esActual?' <span class="legend">(actual)</span>':''}</strong>
+    <button class="btn" id="recuentoNext"${sunday>=hoy?' disabled':''}>Semana siguiente \u2192</button>
+    ${!esActual?'<button class="btn" id="recuentoHoy">Volver a esta semana</button>':''}
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="label">Total equipo esta semana</div><div class="value">${fmtMin(totSemana)}</div><div class="sub">${entries.length} registros</div></div>
+    ${TIEMPO_KAMS.map(k=>`<div class="metric"><div class="label">${esc(kamShort(k))}</div><div class="value">${fmtMin(totKam[k])}</div></div>`).join('')}
+  </div>
+  <div class="card"><h3>Horas por d\u00eda</h3><div class="table-wrap"><table><thead><tr><th>D\u00eda</th>${TIEMPO_KAMS.map(k=>`<th style="text-align:center">${esc(kamShort(k))}</th>`).join('')}<th style="text-align:center">Total</th></tr></thead><tbody>
+    ${dias.map((d,i)=>{const totDia=TIEMPO_KAMS.reduce((s,k)=>s+porDiaKam[d][k],0);return`<tr${d===hoy?' style="background:var(--color-background-secondary)"':''}><td>${DIA_LBL[i]} ${d.slice(5)}</td>${TIEMPO_KAMS.map(k=>`<td style="text-align:center">${porDiaKam[d][k]?fmtMin(porDiaKam[d][k]):'\u2014'}</td>`).join('')}<td style="text-align:center;font-weight:700">${totDia?fmtMin(totDia):'\u2014'}</td></tr>`;}).join('')}
+  </tbody></table></div></div>
+  <div class="card"><h3>Por motivo (toda la semana)</h3>${Object.keys(porMotivo).length?`<div class="table-wrap"><table><thead><tr><th>Motivo</th><th class="nosort">Tiempo</th><th class="nosort">%</th></tr></thead><tbody>
+    ${Object.entries(porMotivo).sort((a,b)=>b[1]-a[1]).map(([k,min])=>`<tr><td>${esc(TIEMPO_MOTIVOS[k]||k)}</td><td>${fmtMin(min)}</td><td>${totSemana?Math.round(min/totSemana*100):0}%</td></tr>`).join('')}
+  </tbody></table></div>`:'<p class="legend">Sin registros esta semana.</p>'}</div>
+  <div class="card"><h3>Top cuentas por tiempo (esta semana)</h3>${(function(){
+    const porCliente={};
+    entries.forEach(e=>{const k=e.clienteNombre||'(sin nombre)';porCliente[k]=(porCliente[k]||0)+(e.minutos||0);});
+    const top=Object.entries(porCliente).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    if(!top.length)return'<p class="legend">Sin registros esta semana.</p>';
+    return`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Tiempo</th></tr></thead><tbody>${top.map(([n,min])=>`<tr><td>${esc(n)}</td><td>${fmtMin(min)}</td></tr>`).join('')}</tbody></table></div>`;
+  })()}</div>`;
+  $('recuentoPrev').onclick=()=>{const d=new Date(monday+'T00:00:00');d.setDate(d.getDate()-7);recuentoRef=d.toISOString().slice(0,10);renderTiempoRecuento();};
+  $('recuentoNext').onclick=()=>{if(sunday>=hoy)return;const d=new Date(monday+'T00:00:00');d.setDate(d.getDate()+7);recuentoRef=d.toISOString().slice(0,10);renderTiempoRecuento();};
+  if($('recuentoHoy'))$('recuentoHoy').onclick=()=>{recuentoRef=todayISO();renderTiempoRecuento();};
+}
+
 
 
 let implFilter='';
@@ -2544,8 +2732,10 @@ function lineChartSVG(points,opts){
 function openDetail(uid){
   const a=ACCOUNTS.find(x=>x._uid===uid);if(!a)return;priority(a);
   const labels=MONTHS_SHORT;
-  const ventasChart=lineChartSVG(a.meses.map((m,i)=>({label:labels[i]||('M'+(i+1)),value:m})),{formatValue:v=>String(Math.round(v))});
-  const pres=a.meses.filter(m=>m!=null);let delta='';if(pres.length>=2&&pres[0]>0){const d=Math.round((pres[pres.length-1]-pres[0])/pres[0]*100);delta=`${d>0?'+':''}${d}% ${MONTHS_SHORT[0]}→${MONTHS_SHORT[a.meses.length-1]||''}`;}
+  const mesesShown=a._mesesCombinados||a.meses;
+  const mrrShown=a._mrrCombinado!=null?a._mrrCombinado:a.mrr;
+  const ventasChart=lineChartSVG(mesesShown.map((m,i)=>({label:labels[i]||('M'+(i+1)),value:m})),{formatValue:v=>String(Math.round(v))});
+  const pres=mesesShown.filter(m=>m!=null);let delta='';if(pres.length>=2&&pres[0]>0){const d=Math.round((pres[pres.length-1]-pres[0])/pres[0]*100);delta=`${d>0?'+':''}${d}% ${MONTHS_SHORT[0]}→${MONTHS_SHORT[a.meses.length-1]||''}`;}
   const modsHtml=Object.keys(a.mods).length?`<div class="mod-grid">${Object.entries(a.mods).map(([m,v])=>`<div class="mod-item"><span>${esc(m)} ${v.raw&&v.raw!==v.s?`<span class="raw">${esc(v.raw)}</span>`:''}</span><span class="badge ${v.s==='OK'?'b-green':v.s==='OP'?'b-amber':'b-gray'}">${v.s}</span></div>`).join('')}</div>`:'<p class="legend">Sin módulos adicionales registrados.</p>';
   const h=a.health;
   const rz=a._razonCritico||razonCritico(a);
@@ -2567,7 +2757,7 @@ function openDetail(uid){
   const usuariosV=usersOf(a);
   const metricsHtml=`<div class="metrics">
     <div class="metric"><div class="label">Puntaje</div><div class="value" style="color:${a._score>=55?'#E24B4A':a._score>=35?'#EF9F27':'var(--color-text-primary)'}">${a._score}</div><div class="sub">${(a._drivers||[]).slice(0,2).map(d=>d[0]).join(' · ')||'sin factores destacados'}</div></div>
-    <div class="metric"><div class="label">MRR actual</div><div class="value">${fmtUSD(a.mrr)}</div><div class="sub">${delta||'sin tendencia'}</div></div>
+    <div class="metric"><div class="label">MRR actual</div><div class="value">${fmtUSD(mrrShown)}</div><div class="sub">${a._mrrCombinado!=null?'combinado, '+a._razonesSociales.length+' razones sociales · ':''}${delta||'sin tendencia'}</div></div>
     <div class="metric"><div class="label">Marcaje</div><div class="value" style="color:${adCol}">${adv!=null?adv+'%':'—'}</div><div class="sub">${h&&h.variacion!=null?(h.variacion>0?'+':'')+Math.round(h.variacion*100)+'pp variación':'sin variación'}</div></div>
     <div class="metric"><div class="label">Usuarios activos</div><div class="value">${usuariosV!=null?usuariosV:'—'}</div><div class="sub">${a.usuarios!=null?a.usuarios+' potenciales':''}</div></div>
     <div class="metric"><div class="label">Estado de salud</div><div class="value" style="color:${flagCol};font-size:20px">${flagLbl}</div><div class="sub">${h&&h.flag==='critico'&&rz?razonLabel(rz):(h&&h.score!=null?'Score '+h.score:'')}</div></div>
@@ -2581,6 +2771,11 @@ function openDetail(uid){
     }).join('');
     return `<div class="sec-title">Sucursales (ID Geo concatenados) <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· ${a._healthBranches.length} sucursales del modelo de salud asociadas a esta razón social — la facturación/MRR de arriba es una sola, para toda la cuenta</span></div>
     <div class="table-wrap"><table><thead><tr><th>Sucursal (modelo de salud)</th><th class="nosort">Estado</th><th class="nosort">Marcaje</th><th class="nosort">NPS</th><th class="nosort">Inc. 30d</th><th class="nosort">ID</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  })():'';
+  const razonesSocialesHtml=(a._razonesSociales&&a._razonesSociales.length>1)?(function(){
+    const rows=a._razonesSociales.map(r=>`<tr${r._uid===a._uid?' style="font-weight:700"':''}><td>${esc(r.cliente)}${r._uid===a._uid?' <span class="legend">(principal)</span>':''}</td><td>${fmtUSD(r.mrr)}</td></tr>`).join('');
+    return `<div class="sec-title">Razones sociales agrupadas <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· mismo ID Geo (${esc(a.id)}) — mismo marcaje/salud en el modelo, distinta facturación cada una. El MRR y el gráfico de arriba son la suma de todas.</span></div>
+    <div class="table-wrap"><table><thead><tr><th>Razón social</th><th class="nosort">MRR</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   })():'';
   const semanaHtml=(function(){
     const serie=weeklyMarcajeSeries(a);const conAd=serie.filter(w=>w.ad!=null),conNps=serie.filter(w=>w.nps!=null),conTk=serie.filter(w=>w.inc30!=null);
@@ -2622,6 +2817,7 @@ function openDetail(uid){
     <div class="card"><div class="sec-title" style="margin-top:0">Ventas y fuga</div>${ventasChart}
       <p class="status-line" style="margin-top:6px">${fugaCell(a)} <span class="legend">— ${a._cambioRazon?'marcada como cambio de razón social: no se cuenta como fuga ni como crítica.':'derivada de la tendencia '+MONTHS_SHORT[0]+'→'+(MONTHS_SHORT[a.meses.length-1]||'')+'.'}</span></p>
       ${branchesHtml}
+      ${razonesSocialesHtml}
     </div>
     ${semanaHtml}
     ${saludDetailHtml}
@@ -2673,11 +2869,11 @@ function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');
 
 // ---------- navegación / init ----------
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
-const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,implementacion:renderImplementacion,sinuso:renderSinUso,datos:renderDatos};
+const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,tiempoRegistrar:renderTiempoRegistrar,tiempoRecuento:renderTiempoRecuento,implementacion:renderImplementacion,sinuso:renderSinUso,datos:renderDatos};
 function renderAll(){applyAnnotationsToAccounts();applyApoyoToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11" title="${CURRENT_HEALTH_FILE?esc(CURRENT_HEALTH_FILE):''}">salud vigente: ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'activa'}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 // mapa: id de sección real -> id de grupo (pestaña principal) al que pertenece
-const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',tony:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',implementacion:'implementacion',datos:'datos'};
+const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',tony:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',tiempoRegistrar:'tiempo',tiempoRecuento:'tiempo',implementacion:'implementacion',datos:'datos'};
 let NAV_LAST_CHILD={}; // recuerda qué sub-pestaña se vio por última vez en cada grupo con hijos
 // clic en una pestaña principal con sub-pestañas: abre la última vista o, si es la primera vez, la primera opción
 function showGroup(gid){
