@@ -2118,6 +2118,7 @@ const KAM_META={'Ra\u00fal Campos':{m1:26250,m2:32800,m3:39350},'Dafne de la Ros
 // mantenga si vas de uno a otro (ej. dejar "Cross" activo y comparar el pipeline de cross entre KAMs).
 let dealsProyFilter='todo'; // 'todo' | 'cross' | 'upsell' | 'arriendo'
 let dealsSelected={}; // {[kam]: Set(índices en VENTAS_DATA)} — selección de deals para sumar USD, por KAM
+let dealsProySort={campo:'usd',dir:-1}; // orden compartido entre los grupos de mes de la tabla de deals proyectados
 const fmtMXN=n=>(n==null||isNaN(n))?'—':'$'+Math.round(n).toLocaleString('en-US')+' MXN';
 function metaTiersHTML(achieved,m1,m2,m3){
   const cap=Math.max(m3,achieved)*1.02||1;
@@ -2148,15 +2149,19 @@ function renderKamTab(kam,sectionId){
   const meta=KAM_META[kam]||{m1:0,m2:0,m3:0};
   const q3MXN=sumMXN(cross.filter(r=>r.q==='Q3'))+sumMXN(upsell.filter(r=>r.q==='Q3'))+sumMXN(arriendo.filter(r=>r.q==='Q3'));
   // deals PROYECTADOS (pipeline, todavía no facturados) de este KAM — agrupados por el mes marcado como
-  // proyección, cada grupo ordenado de mayor a menor facturación; los que no traen mes van aparte en "Sin mes".
+  // proyección; dentro de cada grupo se ordena según la columna que se haya elegido (por defecto, USD
+  // descendente); los que no traen mes van aparte en "Sin mes".
   const proyectadosSinFiltro=VENTAS_DATA.filter(r=>r.estado==='Proyectado'&&r.kam===kam);
   const proyectados=dealsProyFilter==='todo'?proyectadosSinFiltro:proyectadosSinFiltro.filter(r=>r.categoria===dealsProyFilter);
   const proyectadosPorMes={};
   proyectados.forEach(r=>{const m=r.mes||'Sin mes';(proyectadosPorMes[m]=proyectadosPorMes[m]||[]).push(r);});
-  Object.values(proyectadosPorMes).forEach(arr=>arr.sort((a,b)=>(b.usd||0)-(a.usd||0)));
+  const dealSortFns={cliente:r=>(r.cliente||'').toLowerCase(),producto:r=>(r.producto||'').toLowerCase(),categoria:r=>r.categoria||'',segmento:r=>(r.segmento||'').toLowerCase(),usd:r=>r.usd||0};
+  const dealSF=dealSortFns[dealsProySort.campo]||dealSortFns.usd;
+  Object.values(proyectadosPorMes).forEach(arr=>arr.sort((a,b)=>{const A=dealSF(a),B=dealSF(b);return A<B?-1*dealsProySort.dir:A>B?dealsProySort.dir:0;}));
   const gruposProyectados=[...MONTHS_FULL.filter(m=>proyectadosPorMes[m]),...(proyectadosPorMes['Sin mes']?['Sin mes']:[])];
   const totalProyectado=proyectados.reduce((s,r)=>s+(r.usd||0),0);
   const thMonths=MONTHS_SHORT.map(m=>`<th class="nosort">${m}</th>`).join('');
+  const thDeal=(k,l)=>`<th data-sort-deal="${k}">${l}${dealsProySort.campo===k?(dealsProySort.dir>0?' \u25b2':' \u25bc'):''}</th>`;
   const rowHTML=(label,vals)=>{const total=vals.reduce((a,b)=>a+b,0);return `<tr style="cursor:default"><td style="font-weight:500">`+label+`</td>`+vals.map(c=>`<td>`+fmtUSDz(c)+`</td>`).join('')+`<td style="font-weight:600">`+fmtUSDz(total)+`</td></tr>`;};
   const rowQHTML=(label,q)=>`<tr style="cursor:default"><td style="font-weight:500">`+label+`</td><td>`+fmtUSDz(q.Q1)+`</td><td>`+fmtUSDz(q.Q2)+`</td><td>`+fmtUSDz(q.Q3)+`</td><td>`+fmtUSDz(q.Q4)+`</td></tr>`;
   $(sectionId).innerHTML=`
@@ -2193,7 +2198,7 @@ function renderKamTab(kam,sectionId){
     const totalMes=arr.reduce((s,r)=>s+(r.usd||0),0);
     return `<div style="margin-top:14px">
       <p style="font-weight:600;font-size:13px;margin-bottom:6px">${esc(mes)} <span class="legend" style="font-weight:400">· ${arr.length} deal${arr.length===1?'':'s'} · ${fmtUSD(totalMes)}</span></p>
-      <div class="table-wrap"><table><thead><tr><th class="nosort" style="width:28px"></th><th>Cliente</th><th class="nosort">Producto</th><th class="nosort">Categoría</th><th class="nosort">Segmento</th><th class="nosort">USD</th></tr></thead><tbody>
+      <div class="table-wrap"><table><thead><tr><th class="nosort" style="width:28px"></th>${thDeal('cliente','Cliente')}${thDeal('producto','Producto')}${thDeal('categoria','Categoría')}${thDeal('segmento','Segmento')}${thDeal('usd','USD')}</tr></thead><tbody>
         ${arr.map(r=>{const idx=VENTAS_DATA.indexOf(r);const sel=dealsSelected[kam]&&dealsSelected[kam].has(idx);return`<tr style="cursor:default"><td><input type="checkbox" class="deal-chk" data-idx="${idx}"${sel?' checked':''} style="width:15px;height:15px;cursor:pointer"></td><td style="max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.cliente||'—')}</td><td style="font-size:12px;color:var(--color-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.producto||'—')}</td><td><span class="badge b-gray">${esc(r.categoria==='cross'?'Cross':r.categoria==='upsell'?'Upsell':r.categoria==='arriendo'?'Arriendo':r.categoria)}</span></td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.segmento||'—')}</td><td style="font-weight:500">${fmtUSD(r.usd||0)}</td></tr>`;}).join('')}
       </tbody></table></div>
     </div>`;
@@ -2217,6 +2222,15 @@ function renderKamTab(kam,sectionId){
     };
   });
   $('dealsClearSel').onclick=()=>{dealsSelected[kam]=new Set();document.querySelectorAll('#'+sectionId+' .deal-chk').forEach(chk=>{chk.checked=false;});updateDealsSelectedSummary();};
+  document.querySelectorAll('#'+sectionId+' th[data-sort-deal]').forEach(th=>{
+    th.style.cursor='pointer';
+    th.onclick=()=>{
+      const k=th.dataset.sortDeal;
+      if(dealsProySort.campo===k)dealsProySort.dir*=-1;
+      else{dealsProySort.campo=k;dealsProySort.dir=k==='usd'?-1:1;}
+      renderKamTab(kam,sectionId);
+    };
+  });
   updateDealsSelectedSummary();
 }
 function renderKamRaul(){renderKamTab('Ra\u00fal Campos','kam-raul');}
