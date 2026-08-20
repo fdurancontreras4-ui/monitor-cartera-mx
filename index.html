@@ -2081,6 +2081,9 @@ function renderUpsell(){
 
 // ---------- Por KAM ----------
 const KAM_META={'Ra\u00fal Campos':{m1:26250,m2:32800,m3:39350},'Dafne de la Rosa':{m1:22750,m2:28400,m3:34100},'Karla Pati\u00f1o':{m1:15750,m2:19650,m3:24600}};
+// filtro de categoría para la tabla de "Deals proyectados" — compartido entre los 3 tabs de KAM, para que se
+// mantenga si vas de uno a otro (ej. dejar "Cross" activo y comparar el pipeline de cross entre KAMs).
+let dealsProyFilter='todo'; // 'todo' | 'cross' | 'upsell' | 'arriendo'
 const fmtMXN=n=>(n==null||isNaN(n))?'—':'$'+Math.round(n).toLocaleString('en-US')+' MXN';
 function metaTiersHTML(achieved,m1,m2,m3){
   const cap=Math.max(m3,achieved)*1.02||1;
@@ -2112,7 +2115,8 @@ function renderKamTab(kam,sectionId){
   const q3MXN=sumMXN(cross.filter(r=>r.q==='Q3'))+sumMXN(upsell.filter(r=>r.q==='Q3'))+sumMXN(arriendo.filter(r=>r.q==='Q3'));
   // deals PROYECTADOS (pipeline, todavía no facturados) de este KAM — agrupados por el mes marcado como
   // proyección, cada grupo ordenado de mayor a menor facturación; los que no traen mes van aparte en "Sin mes".
-  const proyectados=VENTAS_DATA.filter(r=>r.estado==='Proyectado'&&r.kam===kam);
+  const proyectadosSinFiltro=VENTAS_DATA.filter(r=>r.estado==='Proyectado'&&r.kam===kam);
+  const proyectados=dealsProyFilter==='todo'?proyectadosSinFiltro:proyectadosSinFiltro.filter(r=>r.categoria===dealsProyFilter);
   const proyectadosPorMes={};
   proyectados.forEach(r=>{const m=r.mes||'Sin mes';(proyectadosPorMes[m]=proyectadosPorMes[m]||[]).push(r);});
   Object.values(proyectadosPorMes).forEach(arr=>arr.sort((a,b)=>(b.usd||0)-(a.usd||0)));
@@ -2142,6 +2146,9 @@ function renderKamTab(kam,sectionId){
   </div>
   <div class="card"><h3>Deals proyectados (pipeline, aún sin facturar)</h3>
   <p class="legend">Todo lo marcado Estado = Proyectado en Ventas 2026 para ${esc(kamShort(kam))}, agrupado por el mes de proyección y ordenado de mayor a menor facturación dentro de cada mes. Los deals sin mes asignado quedan en "Sin mes", al final. Esto no cuenta para "Avance a la meta" de arriba — esa tarjeta es solo lo ya facturado.</p>
+  <div id="dealsProyFiltroRow" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+    ${[['todo','Todo'],['cross','Cross'],['upsell','Up'],['arriendo','Arriendo']].map(([k,l])=>{const on=dealsProyFilter===k;return`<button class="toggle-chip" data-filtro="${k}" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#185FA5':'var(--color-text-secondary)'};border-color:${on?'#185FA5':'var(--color-border-secondary)'}">${l}</button>`;}).join('')}
+  </div>
   <p class="status-line" style="margin:8px 0"><strong>${proyectados.length}</strong> deals proyectados · <strong>${fmtUSD(totalProyectado)}</strong> en total</p>
   ${gruposProyectados.length?gruposProyectados.map(mes=>{
     const arr=proyectadosPorMes[mes];
@@ -2152,8 +2159,11 @@ function renderKamTab(kam,sectionId){
         ${arr.map(r=>`<tr style="cursor:default"><td style="max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.cliente||'—')}</td><td style="font-size:12px;color:var(--color-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.producto||'—')}</td><td><span class="badge b-gray">${esc(r.categoria==='cross'?'Cross':r.categoria==='upsell'?'Upsell':r.categoria==='arriendo'?'Arriendo':r.categoria)}</span></td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.segmento||'—')}</td><td style="font-weight:500">${fmtUSD(r.usd||0)}</td></tr>`).join('')}
       </tbody></table></div>
     </div>`;
-  }).join(''):'<p class="legend" style="margin-top:8px">Sin deals proyectados registrados para este KAM en este momento.</p>'}
+  }).join(''):`<p class="legend" style="margin-top:8px">${dealsProyFilter==='todo'?'Sin deals proyectados registrados para este KAM en este momento.':'Sin deals proyectados de esta categoría para este KAM en este momento.'}</p>`}
   </div>`;
+  $('dealsProyFiltroRow').querySelectorAll('.toggle-chip').forEach(btn=>{
+    btn.onclick=()=>{dealsProyFilter=btn.dataset.filtro;renderKamTab(kam,sectionId);};
+  });
 }
 function renderKamRaul(){renderKamTab('Ra\u00fal Campos','kam-raul');}
 function renderKamDafne(){renderKamTab('Dafne de la Rosa','kam-dafne');}
