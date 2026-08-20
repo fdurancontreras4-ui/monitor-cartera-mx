@@ -1031,6 +1031,12 @@ function renderResumen(){
   const sinKam=A.filter(a=>/no asignado/i.test(a.kam)).length;
   const kamMap={};A.forEach(a=>{kamMap[a.kam]=kamMap[a.kam]||{mrr:0,n:0};kamMap[a.kam].mrr+=a.mrr||0;kamMap[a.kam].n++;});
   const kams=Object.entries(kamMap).sort((x,y)=>y[1].mrr-x[1].mrr);const kamMax=Math.max(...kams.map(k=>k[1].mrr),1);
+  // cuentas vs. razones sociales por KAM: si varias filas de cartera comparten el mismo ID Geo (mismo grupo,
+  // ver applyRazonSocialGroups), cuentan como UNA sola cuenta — "razones sociales" es el total de filas sin
+  // agrupar, tal cual vienen en cartera.
+  const kamCuentasMap={};A.forEach(a=>{const k=a.kam||'Sin KAM';if(!kamCuentasMap[k])kamCuentasMap[k]={cuentas:0,razones:0};kamCuentasMap[k].razones++;if(!a._esRazonSocialSecundaria)kamCuentasMap[k].cuentas++;});
+  const kamCuentasEntries=Object.entries(kamCuentasMap).sort((x,y)=>y[1].cuentas-x[1].cuentas);
+  const totCuentas=kamCuentasEntries.reduce((s,[,v])=>s+v.cuentas,0),totRazones=kamCuentasEntries.reduce((s,[,v])=>s+v.razones,0);
   const cuMap={};A.forEach(a=>{const k=a.cuadrante||'Sin clasificar';cuMap[k]=(cuMap[k]||0)+1;});
   const cus=Object.entries(cuMap).sort((x,y)=>y[1]-x[1]);const cuMax=Math.max(...cus.map(c=>c[1]),1);
   const nomYes=A.filter(a=>/^s[ií]$/i.test(String(a.nomina||'').trim())).length;
@@ -1056,6 +1062,13 @@ function renderResumen(){
   <div class="grid2">
     <div class="card"><h3>MRR por KAM</h3>${kams.map(([k,v])=>`<div class="bar-row"><div class="bar-label">${esc(k)} <span style="opacity:.6">(${v.n})</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.mrr/kamMax*100)}%;background:var(--accent)"></div></div><div class="bar-num">${fmtUSD(v.mrr)}</div></div>`).join('')}</div>
     <div class="card"><h3>Cuentas por cuadrante (semáforo MARE)</h3>${cus.map(([k,v])=>`<div class="bar-row"><div class="bar-label">${esc(k)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/cuMax*100)}%;background:#639922"></div></div><div class="bar-num">${v}</div></div>`).join('')}</div>
+  </div>
+  <div class="card"><h3>Cuentas y razones sociales por KAM</h3>
+    <p class="legend">Si varias filas de cartera comparten el mismo ID Geo (mismo cliente en el modelo de salud, distinta razón social/facturación), cuentan como <strong>una sola cuenta</strong> — el grupo. "Razones sociales" es el total de filas de cartera tal cual, sin agrupar.</p>
+    <div class="table-wrap"><table><thead><tr><th>KAM</th><th class="nosort">Cuentas</th><th class="nosort">Razones sociales</th><th class="nosort">Diferencia</th></tr></thead><tbody>
+      ${kamCuentasEntries.map(([k,v])=>`<tr style="cursor:default"><td style="font-weight:500">${esc(k)}</td><td>${v.cuentas}</td><td>${v.razones}</td><td style="color:var(--color-text-secondary)">${v.razones>v.cuentas?'+'+(v.razones-v.cuentas):'—'}</td></tr>`).join('')}
+      <tr style="font-weight:700;border-top:1.5px solid var(--color-border-secondary)"><td>Total</td><td>${totCuentas}</td><td>${totRazones}</td><td style="color:var(--color-text-secondary)">${totRazones>totCuentas?'+'+(totRazones-totCuentas):'—'}</td></tr>
+    </tbody></table></div>
   </div>
   <div class="card"><h3>Sistema de nómina</h3>
     <div class="metrics" style="margin-bottom:.9rem">
@@ -1763,24 +1776,39 @@ function isTony(name){
   const n=normName(name);
   return n.includes('antonio garnica')||n.includes('tony');
 }
+let tonyState={enSalud:true,apoyo:true,q:''};
 function renderTony(){
-  const rows=ACCOUNTS.filter(a=>isTony(a.health&&a.health.css)||a._apoyoTony);
+  const base=ACCOUNTS.filter(a=>isTony(a.health&&a.health.css)||a._apoyoTony);
+  // filtro de tags: casillas independientes — si ambas están activas (default) se ve todo, si apagas una se
+  // esconden las cuentas que SOLO tengan esa señal (las que tengan ambas se ven mientras quede al menos una activa)
+  let rows=base.filter(a=>{
+    const enSalud=isTony(a.health&&a.health.css),apoyo=!!a._apoyoTony;
+    return(tonyState.enSalud&&enSalud)||(tonyState.apoyo&&apoyo);
+  });
+  if(tonyState.q.trim()){const q=normName(tonyState.q);rows=rows.filter(a=>normName(a.cliente).includes(q));}
   rows.sort((x,y)=>{
     const fx=x.health?x.health.flag:null,fy=y.health?y.health.flag:null;
     const rank=f=>f==='critico'?0:f==='atencion'?1:f==='ok'?2:3;
     return rank(fx)-rank(fy)||(y.mrr||0)-(x.mrr||0);
   });
-  const nSalud=rows.filter(a=>isTony(a.health&&a.health.css)).length;
-  const nApoyo=rows.filter(a=>a._apoyoTony).length;
-  const nAmbos=rows.filter(a=>isTony(a.health&&a.health.css)&&a._apoyoTony).length;
-  const nCriticas=rows.filter(a=>isCritica(a)).length;
+  const nSalud=base.filter(a=>isTony(a.health&&a.health.css)).length;
+  const nApoyo=base.filter(a=>a._apoyoTony).length;
+  const nAmbos=base.filter(a=>isTony(a.health&&a.health.css)&&a._apoyoTony).length;
+  const nCriticas=base.filter(a=>isCritica(a)).length;
   $('tony').innerHTML=`
   <div class="note-box">Todas las cuentas donde <strong>Tony (José Antonio Garnica)</strong> aparece asignado, de dos fuentes distintas — una cuenta puede tener uno de los dos tags, o ambos: <span class="badge b-blue">🩺 CS en salud</span> viene de la columna <strong>CSS</strong> del archivo de salud vigente; <span class="badge b-purple">🤝 Apoyo</span> se marca a mano desde el detalle de cada cuenta (casilla "Tony da apoyo en esta cuenta") — para cuando participa en una cuenta sin ser el CS/KAM formal, sin que eso la mueva a su cartera.</div>
   <div class="metrics">
-    <div class="metric"><div class="label">Cuentas de Tony</div><div class="value">${rows.length}</div><div class="sub">${nCriticas} críticas</div></div>
+    <div class="metric"><div class="label">Cuentas de Tony</div><div class="value">${base.length}</div><div class="sub">${nCriticas} críticas</div></div>
     <div class="metric"><div class="label">Solo CS en salud</div><div class="value" style="color:#185FA5">${nSalud-nAmbos}</div></div>
     <div class="metric"><div class="label">Solo apoyo</div><div class="value" style="color:#3C3489">${nApoyo-nAmbos}</div></div>
     <div class="metric"><div class="label">Con ambos tags</div><div class="value" style="color:#3B6D11">${nAmbos}</div></div>
+  </div>
+  <div class="controls" style="align-items:center">
+    <div id="tonyFiltroTags" style="display:flex;gap:8px">
+      <button class="toggle-chip" data-tag="enSalud" style="background:${tonyState.enSalud?'#E6F1FB':'transparent'};color:${tonyState.enSalud?'#185FA5':'var(--color-text-secondary)'};border-color:${tonyState.enSalud?'#185FA5':'var(--color-border-secondary)'}">🩺 CS en salud</button>
+      <button class="toggle-chip" data-tag="apoyo" style="background:${tonyState.apoyo?'#EEEDFE':'transparent'};color:${tonyState.apoyo?'#3C3489':'var(--color-text-secondary)'};border-color:${tonyState.apoyo?'#3C3489':'var(--color-border-secondary)'}">🤝 Apoyo</button>
+    </div>
+    <input type="text" id="tonyBuscar" value="${esc(tonyState.q)}" placeholder="Buscar cliente…" style="font-family:var(--font-sans);font-size:13px;padding:7px 12px;border-radius:999px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);min-width:200px">
   </div>
   ${rows.length?`<div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">Estado de salud</th><th class="nosort">Marcaje</th><th class="nosort">MRR</th><th class="nosort">Tags</th></tr></thead><tbody>
     ${rows.map(a=>{
@@ -1789,8 +1817,13 @@ function renderTony(){
       const ad=a.health&&a.health.adopcion!=null?Math.round(a.health.adopcion*100)+'%':'—';
       return `<tr onclick="openDetail('${a._uid}')"><td style="max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td>${saludBadgeFor(a)}</td><td>${ad}</td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${tags}</td></tr>`;
     }).join('')}
-    </tbody></table></div></div>`:'<p class="legend">No encontramos ninguna cuenta asignada a Tony por CSS de salud ni marcada de apoyo.</p>'}
+    </tbody></table></div></div>`:`<p class="legend">${base.length?'Ninguna cuenta coincide con estos filtros.':'No encontramos ninguna cuenta asignada a Tony por CSS de salud ni marcada de apoyo.'}</p>`}
   `;
+  $('tonyFiltroTags').querySelectorAll('.toggle-chip').forEach(btn=>{
+    btn.onclick=()=>{tonyState[btn.dataset.tag]=!tonyState[btn.dataset.tag];renderTony();};
+  });
+  const buscarInput=$('tonyBuscar');
+  buscarInput.oninput=()=>{tonyState.q=buscarInput.value;renderTony();buscarInput.focus();buscarInput.setSelectionRange(buscarInput.value.length,buscarInput.value.length);};
 }
 // ---------- Cuentas ----------
 let cuState={q:'',cartera:'',kam:'',fuga:'',sort:'mrr',dir:-1};
@@ -2084,6 +2117,7 @@ const KAM_META={'Ra\u00fal Campos':{m1:26250,m2:32800,m3:39350},'Dafne de la Ros
 // filtro de categoría para la tabla de "Deals proyectados" — compartido entre los 3 tabs de KAM, para que se
 // mantenga si vas de uno a otro (ej. dejar "Cross" activo y comparar el pipeline de cross entre KAMs).
 let dealsProyFilter='todo'; // 'todo' | 'cross' | 'upsell' | 'arriendo'
+let dealsSelected={}; // {[kam]: Set(índices en VENTAS_DATA)} — selección de deals para sumar USD, por KAM
 const fmtMXN=n=>(n==null||isNaN(n))?'—':'$'+Math.round(n).toLocaleString('en-US')+' MXN';
 function metaTiersHTML(achieved,m1,m2,m3){
   const cap=Math.max(m3,achieved)*1.02||1;
@@ -2145,18 +2179,22 @@ function renderKamTab(kam,sectionId){
   ${metaTiersHTML(q3MXN,meta.m1,meta.m2,meta.m3)}
   </div>
   <div class="card"><h3>Deals proyectados (pipeline, aún sin facturar)</h3>
-  <p class="legend">Todo lo marcado Estado = Proyectado en Ventas 2026 para ${esc(kamShort(kam))}, agrupado por el mes de proyección y ordenado de mayor a menor facturación dentro de cada mes. Los deals sin mes asignado quedan en "Sin mes", al final. Esto no cuenta para "Avance a la meta" de arriba — esa tarjeta es solo lo ya facturado.</p>
+  <p class="legend">Todo lo marcado Estado = Proyectado en Ventas 2026 para ${esc(kamShort(kam))}, agrupado por el mes de proyección y ordenado de mayor a menor facturación dentro de cada mes. Los deals sin mes asignado quedan en "Sin mes", al final. Esto no cuenta para "Avance a la meta" de arriba — esa tarjeta es solo lo ya facturado. Marca las casillas para sumar el USD de los deals que elijas.</p>
   <div id="dealsProyFiltroRow" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
     ${[['todo','Todo'],['cross','Cross'],['upsell','Up'],['arriendo','Arriendo']].map(([k,l])=>{const on=dealsProyFilter===k;return`<button class="toggle-chip" data-filtro="${k}" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#185FA5':'var(--color-text-secondary)'};border-color:${on?'#185FA5':'var(--color-border-secondary)'}">${l}</button>`;}).join('')}
   </div>
   <p class="status-line" style="margin:8px 0"><strong>${proyectados.length}</strong> deals proyectados · <strong>${fmtUSD(totalProyectado)}</strong> en total</p>
+  <div class="callout" id="dealsSelectedBar" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+    <span id="dealsSelectedSummary"></span>
+    <button class="btn" style="font-size:11px;padding:4px 10px" id="dealsClearSel">Limpiar selección</button>
+  </div>
   ${gruposProyectados.length?gruposProyectados.map(mes=>{
     const arr=proyectadosPorMes[mes];
     const totalMes=arr.reduce((s,r)=>s+(r.usd||0),0);
     return `<div style="margin-top:14px">
       <p style="font-weight:600;font-size:13px;margin-bottom:6px">${esc(mes)} <span class="legend" style="font-weight:400">· ${arr.length} deal${arr.length===1?'':'s'} · ${fmtUSD(totalMes)}</span></p>
-      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Producto</th><th class="nosort">Categoría</th><th class="nosort">Segmento</th><th class="nosort">USD</th></tr></thead><tbody>
-        ${arr.map(r=>`<tr style="cursor:default"><td style="max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.cliente||'—')}</td><td style="font-size:12px;color:var(--color-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.producto||'—')}</td><td><span class="badge b-gray">${esc(r.categoria==='cross'?'Cross':r.categoria==='upsell'?'Upsell':r.categoria==='arriendo'?'Arriendo':r.categoria)}</span></td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.segmento||'—')}</td><td style="font-weight:500">${fmtUSD(r.usd||0)}</td></tr>`).join('')}
+      <div class="table-wrap"><table><thead><tr><th class="nosort" style="width:28px"></th><th>Cliente</th><th class="nosort">Producto</th><th class="nosort">Categoría</th><th class="nosort">Segmento</th><th class="nosort">USD</th></tr></thead><tbody>
+        ${arr.map(r=>{const idx=VENTAS_DATA.indexOf(r);const sel=dealsSelected[kam]&&dealsSelected[kam].has(idx);return`<tr style="cursor:default"><td><input type="checkbox" class="deal-chk" data-idx="${idx}"${sel?' checked':''} style="width:15px;height:15px;cursor:pointer"></td><td style="max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.cliente||'—')}</td><td style="font-size:12px;color:var(--color-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.producto||'—')}</td><td><span class="badge b-gray">${esc(r.categoria==='cross'?'Cross':r.categoria==='upsell'?'Upsell':r.categoria==='arriendo'?'Arriendo':r.categoria)}</span></td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.segmento||'—')}</td><td style="font-weight:500">${fmtUSD(r.usd||0)}</td></tr>`;}).join('')}
       </tbody></table></div>
     </div>`;
   }).join(''):`<p class="legend" style="margin-top:8px">${dealsProyFilter==='todo'?'Sin deals proyectados registrados para este KAM en este momento.':'Sin deals proyectados de esta categoría para este KAM en este momento.'}</p>`}
@@ -2164,6 +2202,22 @@ function renderKamTab(kam,sectionId){
   $('dealsProyFiltroRow').querySelectorAll('.toggle-chip').forEach(btn=>{
     btn.onclick=()=>{dealsProyFilter=btn.dataset.filtro;renderKamTab(kam,sectionId);};
   });
+  function updateDealsSelectedSummary(){
+    const set=dealsSelected[kam]||new Set();
+    let n=0,sum=0;
+    set.forEach(idx=>{const r=VENTAS_DATA[idx];if(r){n++;sum+=(r.usd||0);}});
+    $('dealsSelectedSummary').innerHTML=n?`<strong>${n}</strong> deal${n===1?'':'s'} seleccionado${n===1?'':'s'} · <strong>${fmtUSD(sum)}</strong>`:'Ningún deal seleccionado — marca las casillas de la tabla para sumar.';
+  }
+  document.querySelectorAll('#'+sectionId+' .deal-chk').forEach(chk=>{
+    chk.onchange=()=>{
+      const idx=parseInt(chk.dataset.idx,10);
+      if(!dealsSelected[kam])dealsSelected[kam]=new Set();
+      if(chk.checked)dealsSelected[kam].add(idx);else dealsSelected[kam].delete(idx);
+      updateDealsSelectedSummary();
+    };
+  });
+  $('dealsClearSel').onclick=()=>{dealsSelected[kam]=new Set();document.querySelectorAll('#'+sectionId+' .deal-chk').forEach(chk=>{chk.checked=false;});updateDealsSelectedSummary();};
+  updateDealsSelectedSummary();
 }
 function renderKamRaul(){renderKamTab('Ra\u00fal Campos','kam-raul');}
 function renderKamDafne(){renderKamTab('Dafne de la Rosa','kam-dafne');}
