@@ -93,14 +93,18 @@ h1{font-size:27px;font-weight:800;letter-spacing:-.02em;margin-bottom:.2rem;colo
 .bar-num{font-size:12px;font-weight:500;color:var(--color-text-secondary);white-space:nowrap;min-width:70px;text-align:right;}
 .table-wrap{overflow-x:auto;border-radius:var(--border-radius-md);}
 table{width:100%;border-collapse:collapse;font-size:13px;}
-table:not(.hm) thead th{background:var(--gv-navy);color:#fff;font-size:11px;font-weight:700;text-align:left;padding:10px 12px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;cursor:pointer;user-select:none;}
-table:not(.hm) thead th:first-child{border-top-left-radius:var(--border-radius-md);}
-table:not(.hm) thead th:last-child{border-top-right-radius:var(--border-radius-md);}
+table:not(.hm) thead th{background:transparent;color:var(--color-text-secondary);font-size:10.5px;font-weight:700;text-align:left;padding:8px 14px 12px;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;cursor:pointer;user-select:none;border-bottom:1.5px solid var(--color-border-secondary);}
+table:not(.hm) thead th:hover{color:var(--color-text-primary);}
 th.nosort{cursor:default;}
-td{padding:9px 12px;border-bottom:.5px solid var(--color-border-tertiary);vertical-align:middle;}
+td{padding:13px 14px;border-bottom:.5px solid var(--color-border-tertiary);vertical-align:middle;}
 tbody tr{cursor:pointer;}
 tbody tr:hover{background:var(--color-background-secondary);}
 tr:last-child td{border-bottom:none;}
+.cell-bar{display:inline-flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:56px;}
+.cell-bar .cell-bar-track{width:100%;height:4px;background:var(--color-background-secondary);border-radius:999px;overflow:hidden;}
+.cell-bar .cell-bar-fill{height:100%;border-radius:999px;display:block;}
+.cell-bar .cell-bar-pill{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;}
+.pill-num{display:inline-block;font-size:12px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);}
 .badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;font-weight:600;white-space:nowrap;}
 .b-red{background:#FCEBEB;color:#A32D2D;}.b-amber{background:#FAEEDA;color:#854F0B;}.b-green{background:#EAF3DE;color:#3B6D11;}
 .b-blue{background:#E6F1FB;color:#185FA5;}.b-gray{background:#EEF1F0;color:#566461;}.b-purple{background:#EEEDFE;color:#3C3489;}
@@ -403,6 +407,14 @@ const fmtUSD=n=>(n==null||isNaN(n))?'—':'$'+Math.round(n).toLocaleString('en-U
 // montos reales. fmtUSD normal se deja intacto para el resto del dashboard (ahí un $0 sí puede ser un dato
 // real que interesa distinguir de "no sabemos", por ejemplo el MRR de una cuenta).
 const fmtUSDz=n=>(n==null||isNaN(n)||n===0)?'—':fmtUSD(n);
+// celda de % con barra + píldora de color, siguiendo el estilo de referencia del producto (barra fina arriba,
+// píldora con el número abajo). colorFn(pct) devuelve {bar, bg, fg} — el color de la barra y de la píldora.
+function cellBarHTML(pct,colorFn){
+  if(pct==null)return'<span style="color:var(--color-text-secondary);font-size:11px">—</span>';
+  const c=colorFn(pct);
+  return`<span class="cell-bar"><span class="cell-bar-track"><span class="cell-bar-fill" style="width:${Math.max(0,Math.min(100,pct))}%;background:${c.bar}"></span></span><span class="cell-bar-pill" style="background:${c.bg};color:${c.fg}">${Math.round(pct)}%</span></span>`;
+}
+function marcajeColor(pct){return pct<30?{bar:'#E24B4A',bg:'#FCEBEB',fg:'#A32D2D'}:pct<60?{bar:'#EF9F27',bg:'#FAEEDA',fg:'#854F0B'}:{bar:'#639922',bg:'#EAF3DE',fg:'#3B6D11'};}
 const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 let VENTAS_SOURCE='snapshot congelado (Cuentas_Postventa.xlsx original)';
@@ -1748,9 +1760,9 @@ function renderSemanal(){
   let empresas=Object.keys(set).sort((a,b)=>a.toLowerCase()<b.toLowerCase()?-1:1);
   if(semQ){const q=semQ.toLowerCase();empresas=empresas.filter(n=>n.toLowerCase().includes(q));}
   const last=weeks[weeks.length-1];
-  const cnt={ok:0,aten:0,crit:0};
-  if(last)Object.values(last.snap).forEach(v=>{const f=snapFlag(v);if(f==='ok')cnt.ok++;else if(f==='aten')cnt.aten++;else cnt.crit++;});
-  if(semFilter&&last){empresas=empresas.filter(nm=>{const f=snapFlag(last.snap[nm]);if(semFilter==='crit')return f&&f!=='ok'&&f!=='aten';return f===semFilter;});}
+  const cnt={ok:0,aten:0,crit:0,sinuso:0};
+  if(last)Object.values(last.snap).forEach(v=>{if(snapSinUso(v)){cnt.sinuso++;return;}const f=snapFlag(v);if(f==='ok')cnt.ok++;else if(f==='aten')cnt.aten++;else cnt.crit++;});
+  if(semFilter&&last){empresas=empresas.filter(nm=>{const v=last.snap[nm];if(semFilter==='sinuso')return snapSinUso(v);if(semFilter==='crit'&&snapSinUso(v))return false;const f=snapFlag(v);if(semFilter==='crit')return f&&f!=='ok'&&f!=='aten';return f===semFilter;});}
   const cellHtmlSalud=(v)=>{const code=snapFlag(v);if(!code)return'<td class="hm-cell hm-empty"></td>';if(code==='ok')return'<td class="hm-cell c-ok"></td>';if(code==='aten')return'<td class="hm-cell c-aten"></td>';return`<td class="hm-cell c-crit">${esc(code)}</td>`;};
   const cellHtmlMarcaje=(v)=>{const ad=snapAd(v);if(v==null)return'<td class="hm-cell hm-empty"></td>';if(ad==null)return'<td class="hm-cell hm-empty" style="font-size:9px;color:var(--color-text-secondary)" title="Sin dato de marcaje esa semana">s/d</td>';const pct=Math.round(ad*100);const cls=pct<30?'c-crit':pct<60?'c-aten':'c-ok';return`<td class="hm-cell ${cls}" style="font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;padding:0">${pct}%</td>`;};
   const cellHtml=semView==='marcaje'?cellHtmlMarcaje:cellHtmlSalud;
@@ -1794,6 +1806,7 @@ function renderSemanal(){
     <div class="metric" style="cursor:pointer;${selStyle('ok')}" onclick="semSetFilter('ok')"><div class="label">Saludables</div><div class="value" style="color:#3B6D11">${cnt.ok}</div><div class="sub">última semana · clic para filtrar</div></div>
     <div class="metric" style="cursor:pointer;${selStyle('aten')}" onclick="semSetFilter('aten')"><div class="label">En riesgo</div><div class="value" style="color:#854F0B">${cnt.aten}</div><div class="sub">última semana · clic para filtrar</div></div>
     <div class="metric" style="cursor:pointer;${selStyle('crit')}" onclick="semSetFilter('crit')"><div class="label">Críticas</div><div class="value" style="color:#A32D2D">${cnt.crit}</div><div class="sub">última semana · clic para filtrar</div></div>
+    <div class="metric" style="cursor:pointer;${selStyle('sinuso')}" onclick="semSetFilter('sinuso')"><div class="label">Sin Uso</div><div class="value" style="color:#566461">${cnt.sinuso}</div><div class="sub">última semana · no cuenta como crítica</div></div>
   </div>
   <div class="controls" style="align-items:center">
     <div class="nav" style="margin:0"><button class="${semView==='salud'?'active':''}" id="semViewSalud" style="font-size:12px;padding:6px 12px">Estado de salud</button><button class="${semView==='marcaje'?'active':''}" id="semViewMarcaje" style="font-size:12px;padding:6px 12px">% Marcaje</button></div>
@@ -1857,8 +1870,8 @@ function renderTony(){
     ${rows.map(a=>{
       const enSalud=isTony(a.health&&a.health.css);
       const tags=(enSalud?'<span class="badge b-blue" title="Columna CSS del archivo de salud">🩺 CS en salud</span> ':'')+(a._apoyoTony?'<span class="badge b-purple" title="Marcado a mano desde el detalle de la cuenta">🤝 Apoyo</span>':'');
-      const ad=a.health&&a.health.adopcion!=null?Math.round(a.health.adopcion*100)+'%':'—';
-      return `<tr onclick="openDetail('${a._uid}')"><td style="max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td>${saludBadgeFor(a)}</td><td>${ad}</td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${tags}</td></tr>`;
+      const adPct=a.health&&a.health.adopcion!=null?Math.round(a.health.adopcion*100):null;
+      return `<tr onclick="openDetail('${a._uid}')"><td style="max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td>${saludBadgeFor(a)}</td><td>${cellBarHTML(adPct,marcajeColor)}</td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${tags}</td></tr>`;
     }).join('')}
     </tbody></table></div></div>`:`<p class="legend">${base.length?'Ninguna cuenta coincide con estos filtros.':'No encontramos ninguna cuenta asignada a Tony por CSS de salud ni marcada de apoyo.'}</p>`}
   `;
