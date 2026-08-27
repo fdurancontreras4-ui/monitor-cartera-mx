@@ -67,7 +67,24 @@ h1{font-size:27px;font-weight:800;letter-spacing:-.02em;margin-bottom:.2rem;colo
 .metric .value{font-size:26px;font-weight:800;letter-spacing:-.01em;}
 .metric .sub{font-size:12px;color:var(--color-text-secondary);margin-top:3px;}
 .card{background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.15rem 1.35rem;margin-bottom:1.1rem;box-shadow:var(--shadow-sm);}
-.card h3{font-size:14.5px;font-weight:700;color:var(--color-text-primary);margin-bottom:1rem;}
+.card h3{font-size:17px;font-weight:700;color:var(--color-text-primary);margin-bottom:1rem;letter-spacing:-.01em;}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:1.5rem;}
+.panel-head h1{font-size:25px;font-weight:700;letter-spacing:-.015em;margin-bottom:.3rem;}
+.panel-head .subtitle{font-size:13px;color:var(--color-text-secondary);font-weight:500;margin-bottom:0;}
+.stat-row{display:flex;align-items:center;gap:14px;padding:13px 2px;border-bottom:.5px solid var(--color-border-tertiary);}
+.stat-row:last-child{border-bottom:none;padding-bottom:2px;}
+.stat-row:first-child{padding-top:2px;}
+.stat-row .stat-num{font-size:26px;font-weight:800;color:var(--color-text-primary);min-width:38px;letter-spacing:-.01em;}
+.stat-row .stat-body{flex:1;min-width:0;}
+.stat-row .stat-desc{font-size:11.5px;color:var(--color-text-secondary);margin-top:2px;}
+.stat-row .stat-arrow{color:var(--color-text-secondary);font-size:15px;flex:none;opacity:.6;}
+.trend-pill{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;}
+.trend-pill.up{background:#FCEBEB;color:#A32D2D;}
+.trend-pill.down{background:#EAF3DE;color:#3B6D11;}
+.trend-pill.flat{background:var(--color-background-secondary);color:var(--color-text-secondary);}
+.pct-hero{display:flex;align-items:center;gap:7px;}
+.pct-hero .dot-lg{width:11px;height:11px;border-radius:50%;flex:none;}
+.pct-hero .pct-num{font-size:28px;font-weight:800;letter-spacing:-.01em;}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .bar-label{font-size:12px;color:var(--color-text-secondary);min-width:180px;max-width:180px;line-height:1.3;}
 .bar-label-sm{font-size:12px;color:var(--color-text-secondary);line-height:1.3;}
@@ -433,7 +450,14 @@ function facturacionDropInfo(a){
 function facturacionCritica(a){const d=facturacionDropInfo(a);return !!(d.mes||d.acum);}
 function normName(s){if(!s)return'';let t=String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');t=t.replace(/\(.*?\)/g,' ');t=t.replace(/\b(s\.?a\.?\s*de\s*c\.?v\.?|sapi|s\.?a\.?|s\.?c\.?|de cv)\b/g,' ');t=t.replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();return t;}
 // claves de emparejamiento: nombre principal + cada alias entre paréntesis (en ambos lados)
-function nameKeys(s){if(!s)return[];const raw=String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');const keys=[];const add=x=>{const k=normName(x);if(k&&k.length>3&&keys.indexOf(k)<0)keys.push(k);};add(raw);(raw.match(/\(([^)]*)\)/g)||[]).forEach(p=>add(p.replace(/[()]/g,' ')));return keys;}
+// palabras que NUNCA deben quedar como clave sola de emparejamiento — son calificadores genéricos de
+// ubicación/forma legal que aparecen en decenas de razones sociales distintas (ej. "(México)" como alias de
+// sucursal). Sin este filtro, cualquier cuenta que contenga "México" en el nombre (la gran mayoría) puede
+// terminar emparejando por accidente con OTRA empresa cuyo alias entre paréntesis se reduzca a esa misma
+// palabra — confirmado con datos reales: "NSF DE MEXICO" perdía su propio registro semana a semana porque
+// "TK Elevadores (México)" reducía su alias a la palabra suelta "mexico" y se la robaba.
+const NAME_KEY_BLOCKLIST=new Set(['mexico','cdmx','mx','sa','sc','sapi','srl','sofom','oficina','sucursal','matriz','corporativo','office','group','grupo']);
+function nameKeys(s){if(!s)return[];const raw=String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');const keys=[];const add=x=>{const k=normName(x);if(k&&k.length>3&&!NAME_KEY_BLOCKLIST.has(k)&&keys.indexOf(k)<0)keys.push(k);};add(raw);(raw.match(/\(([^)]*)\)/g)||[]).forEach(p=>add(p.replace(/[()]/g,' ')));return keys;}
 function cleanId(v){if(v==null||v==='')return null;const f=parseFloat(v);return isNaN(f)?String(v).trim():String(Math.round(f));}
 // permite poner varios ID Geo en una sola celda, separados por "-" (ej. "29157-37879-36085"), para
 // asociar varias sucursales del modelo de salud a la misma razón social/línea de cartera.
@@ -1046,18 +1070,32 @@ function renderResumen(){
   const sisMax=Math.max(...sisEntries.map(([,v])=>v),1);
   const sisConDato=sisEntries.reduce((s,[,v])=>s+v,0);
   const sisSinDato=A.length-sisConDato;
+  const hoyDate=new Date();
+  const fechaLarga=hoyDate.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const horaCorta=hoyDate.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  const mrrSerie=monthlyMRR();
+  let mrrTrendPill='';
+  if(mrrSerie.length>=2){
+    const prevM=mrrSerie[mrrSerie.length-2].mrr,curM=mrrSerie[mrrSerie.length-1].mrr;
+    if(prevM>0){const d=Math.round((curM-prevM)/prevM*100);mrrTrendPill=`<span class="trend-pill ${d>0?'up':d<0?'down':'flat'}">${d>0?'↑':d<0?'↓':'—'} ${d>0?'+':''}${d}%</span>`;}
+  }
   $('resumen').innerHTML=`
+  <div class="panel-head"><div><h1 style="font-size:25px;font-weight:700;letter-spacing:-.015em;margin-bottom:.3rem">Hola, esto es lo que necesitas saber hoy</h1><p class="subtitle" style="text-transform:capitalize">${esc(fechaLarga)} · Última actualización ${esc(horaCorta)}</p></div></div>
   ${HEALTH.loaded?`<div class="note-box" style="font-size:13px"><strong>Salud vigente para todas las métricas:</strong> ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'(sin fecha detectada)'} ${CURRENT_HEALTH_FILE?`— archivo <strong>${esc(CURRENT_HEALTH_FILE)}</strong>`:'— archivo no identificado (salud cargada sin nombre de archivo con fecha)'}${CURRENT_HEALTH_SOURCE?` · elegido por: ${esc(CURRENT_HEALTH_SOURCE)}`:''}. Revisa/depura o cambia esto en <strong>Datos → Cartera de salud</strong>.</div>`:''}
   <div class="metrics">
     <div class="metric"><div class="label">Cuentas activas</div><div class="value">${A.length}</div><div class="sub">${A.filter(a=>a.cartera==='ENTERPRISE').length} Ent · ${A.filter(a=>a.cartera==='SMB').length} SMB</div></div>
     <div class="metric"><div class="label">MRR cartera</div><div class="value">${fmtUSD(mrrTotal)}</div><div class="sub">facturación mensual USD</div></div>
     <div class="metric"><div class="label">Con cross activo</div><div class="value">${Math.round(conCross/N*100)}%</div><div class="sub">${conCross} con módulo OK</div></div>
-    <div class="metric"><div class="label">Críticas (salud)</div><div class="value" style="color:#E24B4A">${criticas}</div><div class="sub">semáforo en rojo</div></div>
-    <div class="metric"><div class="label">En riesgo sin CS</div><div class="value" style="color:#EF9F27">${atRiskSinCS.length}</div><div class="sub">${fmtUSD(atRiskSinCS.reduce((s,a)=>s+(a.mrr||0),0))} sin cobertura</div></div>
-    <div class="metric"><div class="label">Sin KAM</div><div class="value" style="color:#EF9F27">${sinKam}</div><div class="sub">${Math.round(sinKam/N*100)}% de la cartera</div></div>
   </div>
-  <div class="card"><h3>MRR mensual <span style="font-weight:400;color:var(--color-text-secondary)">· enero → ${(function(){const m=monthlyMRR();return m.length?m[m.length-1].mes:'—';})()}</span></h3>
-    ${(function(){const m=monthlyMRR();const mx=Math.max(...m.map(x=>x.mrr),1);return`<div class="big-bars" style="height:124px">${m.map(x=>`<div class="bb"><div class="amt">${fmtUSD(x.mrr)}</div><div class="bar" style="height:${Math.max(4,Math.round(x.mrr/mx*92))}px"></div><div class="lbl">${x.corto}</div></div>`).join('')}</div><p class="status-line">Suma de facturación de las ${A.length} cuentas por mes. ${m.length<5?'La cartera base llega hasta Abril; al cargar un Excel con la columna <strong>Mayo</strong> (y siguientes) el gráfico y el cross-sell se extienden solos.':''}</p>`;})()}
+  <div class="grid2" style="align-items:stretch">
+    <div class="card"><h3>MRR mensual ${mrrTrendPill} <span style="font-weight:400;color:var(--color-text-secondary);font-size:13px">· enero → ${mrrSerie.length?mrrSerie[mrrSerie.length-1].mes:'—'}</span></h3>
+      ${(function(){const m=mrrSerie;const mx=Math.max(...m.map(x=>x.mrr),1);return`<div class="big-bars" style="height:124px">${m.map(x=>`<div class="bb"><div class="amt">${fmtUSD(x.mrr)}</div><div class="bar" style="height:${Math.max(4,Math.round(x.mrr/mx*92))}px"></div><div class="lbl">${x.corto}</div></div>`).join('')}</div><p class="status-line">Suma de facturación de las ${A.length} cuentas por mes. ${m.length<5?'La cartera base llega hasta Abril; al cargar un Excel con la columna <strong>Mayo</strong> (y siguientes) el gráfico y el cross-sell se extienden solos.':''}</p>`;})()}
+    </div>
+    <div class="card"><h3>Necesita tu atención hoy</h3>
+      <div class="stat-row" style="cursor:pointer" onclick="show('priorizar')"><div class="stat-num" style="color:#A32D2D">${criticas}</div><div class="stat-body"><span class="badge b-red">Críticas</span><div class="stat-desc">En semáforo rojo de salud</div></div><div class="stat-arrow">→</div></div>
+      <div class="stat-row" style="cursor:pointer" onclick="show('priorizar')"><div class="stat-num" style="color:#854F0B">${atRiskSinCS.length}</div><div class="stat-body"><span class="badge b-amber">En riesgo sin CS</span><div class="stat-desc">${fmtUSD(atRiskSinCS.reduce((s,a)=>s+(a.mrr||0),0))} sin cobertura</div></div><div class="stat-arrow">→</div></div>
+      <div class="stat-row" style="cursor:pointer" onclick="show('cuentas')"><div class="stat-num" style="color:#185FA5">${sinKam}</div><div class="stat-body"><span class="badge b-blue">Sin KAM</span><div class="stat-desc">${Math.round(sinKam/N*100)}% de la cartera</div></div><div class="stat-arrow">→</div></div>
+    </div>
   </div>
   <div class="grid2">
     <div class="card"><h3>MRR por KAM</h3>${kams.map(([k,v])=>`<div class="bar-row"><div class="bar-label">${esc(k)} <span style="opacity:.6">(${v.n})</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.mrr/kamMax*100)}%;background:var(--accent)"></div></div><div class="bar-num">${fmtUSD(v.mrr)}</div></div>`).join('')}</div>
@@ -1675,7 +1713,7 @@ function adjustedAdForRow(r){
 }
 function snapshotFromHealth(parsed){
   const rows=((parsed||HEALTH_CACHE)||{}).rows||[];const testRe=/piloto|prueba|demo|test|geovictoria|checador|jealt/i;const snap={};
-  rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;const f=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);const adAdj=adjustedAdForRow(r);snap[nm]={f,ad:(adAdj!=null?Math.round(adAdj*1000)/1000:null),nps:(r.nps!=null?r.nps:null),inc30:(r.inc30!=null?r.inc30:null),seg:(r.seg||null)};});
+  rows.forEach(r=>{const nm=(r.key||'').trim();if(!nm||testRe.test(nm))return;const fl=r.flag;if(!fl)return;const f=fl==='ok'?'ok':fl==='atencion'?'aten':weekLetter(r);const adAdj=adjustedAdForRow(r);const sinUso=!!((r.cat&&/sin\s*uso/i.test(r.cat))||r.ad===0);snap[nm]={f,ad:(adAdj!=null?Math.round(adAdj*1000)/1000:null),nps:(r.nps!=null?r.nps:null),inc30:(r.inc30!=null?r.inc30:null),seg:(r.seg||null),sinUso};});
   return snap;
 }
 function snapFlag(v){if(v==null)return null;return typeof v==='string'?v:v.f;}
@@ -1683,6 +1721,10 @@ function snapAd(v){if(v==null||typeof v==='string')return null;return v.ad;}
 function snapNps(v){if(v==null||typeof v==='string')return null;return v.nps!=null?v.nps:null;}
 function snapInc30(v){if(v==null||typeof v==='string')return null;return v.inc30!=null?v.inc30:null;}
 function snapSeg(v){if(v==null||typeof v==='string')return null;return v.seg||null;}
+// "Sin Uso" queda marcada flag='critico' a propósito (para verse en rojo en el mapa de calor semanal), pero
+// NO debe contarse como "Crítico" en ningún conteo — tiene su propia categoría y su propia pestaña en el
+// resto del dashboard. snapEstado() ya usa esto para no inflar los conteos de críticas por semana.
+function snapSinUso(v){if(v==null||typeof v==='string')return false;return !!v.sinUso;}
 function saveWeekSnap(date,snap){if(!date||!snap||!Object.keys(snap).length)return false;const i=WEEKS.findIndex(w=>w.date===date);if(i>=0)WEEKS[i]={date,snap};else WEEKS.push({date,snap});WEEKS.sort((a,b)=>a.date<b.date?-1:1);if(WEEKS.length>40)WEEKS=WEEKS.slice(WEEKS.length-40);persist('health_weeks',WEEKS);return true;}
 // aplica una salud fechada: siempre la guarda como semana; usa para métricas solo si es la más reciente
 function applyHealthDated(parsed,date,file){
@@ -1726,6 +1768,7 @@ function renderSemanal(){
     const segTotals={total:0,'Enterprise':0,'SMB Medium':0,'SMB Small':0,'Sin segmento':0};
     const byState={};STATES.forEach(s=>byState[s.key]={total:0,'Enterprise':0,'SMB Medium':0,'SMB Small':0,'Sin segmento':0});
     Object.values(w.snap).forEach(v=>{
+      if(snapSinUso(v))return; // "Sin Uso" trae flag='critico' a propósito (para el mapa de calor), pero no cuenta como Crítico aquí — mismo criterio que el resto del dashboard
       const f=snapFlag(v);if(f==null)return;
       const stKey=f==='ok'?'ok':f==='aten'?'aten':'critico';
       const seg=snapSeg(v);const segKey=(seg==='Enterprise'||seg==='SMB Medium'||seg==='SMB Small')?seg:'Sin segmento';
