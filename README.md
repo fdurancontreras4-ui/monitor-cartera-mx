@@ -19,7 +19,7 @@ El correo semanal trae el enlace al tablero de salud (un deployment de Replit, c
 python3 scripts/subir-salud.py
 ```
 
-Toma el `.xlsx` más reciente de `~/Downloads` que parezca un reporte de salud, lo valida, lo compara contra la semana vigente, lo renombra a `salud-mx-DDmes.xlsx`, actualiza `salud_semanas.json`, commitea y hace push. No hay que instalar nada — solo Python 3.
+Toma el `directorio-empresas.xlsx` más reciente de `~/Downloads` (incluidas las copias que Chrome numera `directorio-empresas (1).xlsx`, `(2)`…), lo valida, lo compara contra la semana vigente, lo renombra a `salud-mx-DDmes.xlsx`, actualiza `salud_semanas.json`, commitea y hace push. No hay que instalar nada — solo Python 3.
 
 Antes de escribir nada verifica que el archivo sea el correcto: que tenga la hoja **Directorio** y las columnas que el dashboard necesita, que **todas** las filas sean de la unidad de negocio México (si te olvidaste el filtro, se detiene y te lo dice), que el total de cuentas sea razonable, que al menos el 85 % de las cuentas coincidan con la semana pasada, y que no sea el mismo reporte ya publicado. Después imprime el diff de la semana: altas, bajas y cómo se movió cada categoría (`Crítico 95 → 100`, etc.).
 

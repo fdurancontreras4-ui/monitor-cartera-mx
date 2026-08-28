@@ -49,6 +49,7 @@ COLUMNAS_REQUERIDAS = [
     "Score Total", "Categoría", "CSS",
 ]
 UNIDAD_ESPERADA = "México"
+NOMBRE_EXPORT = "directorio-empresas"   # el tablero siempre exporta con este nombre
 FILAS_MIN, FILAS_MAX = 350, 900      # rango sano de la cartera MX (~500 cuentas)
 DELTA_FILAS_MAX = 0.15               # 15% de variación semanal como tope razonable
 SOLAPAMIENTO_MIN = 0.85              # 85% de los IDs deben coincidir con la semana anterior
@@ -166,9 +167,24 @@ def parece_salud(path):
 
 
 def buscar_descarga(horas=48):
-    """El .xlsx más reciente de ~/Downloads que huela a reporte de salud."""
+    """El reporte descargado más reciente en ~/Downloads.
+
+    El tablero siempre exporta como `directorio-empresas.xlsx`, así que ese nombre
+    manda. Chrome no pisa la descarga anterior: le agrega " (1)", " (2)"… — por eso
+    se toma el más reciente por fecha de modificación y no el de nombre exacto."""
     if not DESCARGAS.is_dir():
         return None
+
+    exactos = [
+        p for p in DESCARGAS.glob("*.xlsx")
+        if p.name.lower().startswith(NOMBRE_EXPORT) and not p.name.startswith("~$")
+    ]
+    for p in sorted(exactos, key=lambda p: p.stat().st_mtime, reverse=True):
+        if parece_salud(p):
+            return p
+        aviso(f"{p.name} se llama como el export pero no parece el reporte de salud — lo salto")
+
+    # Respaldo por si algún día cambia el nombre del export: cualquier xlsx reciente que huela a salud
     limite = dt.datetime.now().timestamp() - horas * 3600
     candidatos = [
         p for p in DESCARGAS.glob("*.xlsx")
@@ -346,9 +362,12 @@ def main():
     else:
         origen = buscar_descarga()
         if not origen:
-            morir("No encontré ningún reporte de salud en ~/Downloads de las últimas 48 h.",
+            morir(f"No encontré ningún {NOMBRE_EXPORT}.xlsx en ~/Downloads.",
                   "Descárgalo del tablero y vuelve a correr esto, o pásame la ruta como argumento.")
         print(f"{GRIS}Usando la descarga más reciente: {origen}{FIN_COLOR}")
+        dias = (dt.datetime.now().timestamp() - origen.stat().st_mtime) / 86400
+        if dias > 3:
+            aviso(f"esa descarga tiene {dias:.0f} días — ¿bajaste el reporte de esta semana?")
 
     encabezado, filas = leer_hoja(origen, HOJA)
     registros, idx = a_registros(encabezado, filas)

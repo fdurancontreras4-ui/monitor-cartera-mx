@@ -1694,6 +1694,15 @@ function initAnnotations(){
 // es correr el reloj interno por el offset de zona horaria antes de pedir el ISO, así toISOString() (que siempre
 // imprime en UTC) termina mostrando el día que realmente es en la hora local.
 function todayISO(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
+// Los archivos de salud se nombran sin año (salud-mx-24agosto.xlsx). Tomar siempre el año en curso
+// rompía en el cambio de año: en enero, "salud-mx-28diciembre" se leía como diciembre del año nuevo y
+// el snapshot se iba al futuro, desordenando el histórico de Salud semanal. Se elige el año que deja la
+// fecha en el pasado, con 7 días de margen por si un archivo viene fechado unos días adelante.
+function inferYear(mon,day){
+  const hoy=new Date(),yr=hoy.getFullYear();
+  const cand=new Date(yr,mon-1,day);
+  return String(cand.getTime()-hoy.getTime()>7*864e5?yr-1:yr);
+}
 function detectDateFromName(name){
   if(!name)return null;
   const s=String(name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -1704,9 +1713,9 @@ function detectDateFromName(name){
   m=s.match(new RegExp('(\\d{1,2})\\s*(?:de\\s*)?[-_ ]?'+mre));
   if(!m)m=s.match(new RegExp(mre+'\\s*[-_ ]?(\\d{1,2})'));
   if(m){let day,mon;if(/^\d/.test(m[1])){day=+m[1];mon=months[m[2]];}else{mon=months[m[1]];day=+m[2];}
-    if(mon&&day>=1&&day<=31){const yr=(s.match(/20\d{2}/)||[])[0]||String(new Date().getFullYear());return `${yr}-${String(mon).padStart(2,'0')}-${String(day).padStart(2,'0')}`;}}
+    if(mon&&day>=1&&day<=31){const yr=(s.match(/20\d{2}/)||[])[0]||inferYear(mon,day);return `${yr}-${String(mon).padStart(2,'0')}-${String(day).padStart(2,'0')}`;}}
   m=s.match(/(0?[1-9]|[12]\d|3[01])[-_./](0?[1-9]|1[0-2])(?:[-_./](20\d{2}))?/);
-  if(m){const yr=m[3]||String(new Date().getFullYear());return `${yr}-${String(+m[2]).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;}
+  if(m){const yr=m[3]||inferYear(+m[2],+m[1]);return `${yr}-${String(+m[2]).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;}
   return null;
 }
 function weekLetter(r){const cat=(r.cat||'').toLowerCase(),ad=adjustedAdForRow(r),nps=r.nps,inc=r.inc30;
