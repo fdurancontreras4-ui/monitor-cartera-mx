@@ -42,6 +42,20 @@ Si prefieres hacerlo sin el script: sube el `.xlsx` al repo como `salud-mx-DDmes
 
 El archivo base vive en SharePoint y **no se puede cargar por URL** (los enlaces privados de SharePoint/OneDrive exigen sesión). Exporta ese archivo a `.xlsx`, súbelo al repo como `cartera.xlsx`, y pulsa **↻ Recargar datos**. No hay que tocar el HTML.
 
+## Seguimiento y recordatorios en Teams (`seguimiento.json`)
+
+Los pendientes que salen de reuniones y correos se anotan en **`seguimiento.json`** y se publican como tarjeta en el canal de Teams.
+
+```bash
+python3 scripts/recordatorios.py                    # los abiertos, vencidos primero
+python3 scripts/recordatorios.py agregar --titulo "…" --cuenta "…" --compromiso +1s
+python3 scripts/recordatorios.py cerrar <id> --nota "cómo se resolvió"
+python3 scripts/recordatorios.py publicar --dry-run # revisa la tarjeta antes de mandarla
+python3 scripts/recordatorios.py publicar           # la manda al canal
+```
+
+El webhook del canal se crea en Teams (`···` del canal → **Workflows** → *Publicar en un canal cuando se reciba una solicitud de webhook*) y la URL se guarda **fuera del repo**, en `~/.config/monitor-cartera/teams-webhook` o en la variable `TEAMS_WEBHOOK_URL`. Quien tenga esa URL puede publicar en el canal.
+
 ## Consideraciones de negocio (`consideraciones.json`)
 
 Reglas y excepciones que el monitor aplica al calcular salud y criticidad. Viven en **`consideraciones.json`** en el repo (se carga solo al abrir) y se editan sin tocar el HTML. Tras editar, vuelve a subir el archivo y pulsa ↻ Recargar datos. También puedes arrastrarlo en la pestaña Datos.
