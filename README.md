@@ -9,10 +9,37 @@ Dashboard interactivo de un solo archivo para monitorear la cartera de postventa
 3. Activa Pages en **Settings → Pages → Branch: `main` / root**.
 4. Tu equipo entra en `https://<usuario>.github.io/<repo>/`.
 
-## Actualización semanal (lunes)
+## Actualización semanal (lunes o martes)
 
-- **Cartera (SharePoint):** el archivo base vive en SharePoint y **no se puede cargar por URL** (los enlaces privados de SharePoint/OneDrive exigen sesión). Exporta ese archivo a `.xlsx`, súbelo al repo como `cartera.xlsx`, y pulsa **↻ Recargar datos**. No hay que tocar el HTML.
-- **Salud:** sube el modelo de salud semanal en la pestaña **Datos** (arrastrar el archivo) o como `salud.xlsx` en el repo. Empareja por ID + nombre y reclasifica el semáforo de cada cuenta.
+### Salud — con el script (recomendado)
+
+El correo semanal trae el enlace al tablero de salud (un deployment de Replit, con contraseña y URL distinta cada semana). El único paso manual es ese: abrir el enlace, entrar, filtrar **México** y descargar el reporte. Todo lo que viene después lo hace un comando:
+
+```bash
+python3 scripts/subir-salud.py
+```
+
+Toma el `.xlsx` más reciente de `~/Downloads` que parezca un reporte de salud, lo valida, lo compara contra la semana vigente, lo renombra a `salud-mx-DDmes.xlsx`, actualiza `salud_semanas.json`, commitea y hace push. No hay que instalar nada — solo Python 3.
+
+Antes de escribir nada verifica que el archivo sea el correcto: que tenga la hoja **Directorio** y las columnas que el dashboard necesita, que **todas** las filas sean de la unidad de negocio México (si te olvidaste el filtro, se detiene y te lo dice), que el total de cuentas sea razonable, que al menos el 85 % de las cuentas coincidan con la semana pasada, y que no sea el mismo reporte ya publicado. Después imprime el diff de la semana: altas, bajas y cómo se movió cada categoría (`Crítico 95 → 100`, etc.).
+
+Opciones útiles:
+
+| Opción | Para qué |
+|---|---|
+| `--dry-run` | Valida y muestra el diff sin escribir, commitear ni pushear. |
+| `--fecha 2026-08-31` | Fecha del snapshot distinta de hoy (también acepta `lunes`). |
+| `--no-push` | Commitea local y no pushea. |
+| `--forzar` | Reemplaza el archivo de esa semana o sube un reporte repetido. |
+| `ruta/al.xlsx` | Usa ese archivo en vez de buscar en `~/Downloads`. |
+
+### Salud — a mano
+
+Si prefieres hacerlo sin el script: sube el `.xlsx` al repo como `salud-mx-DDmes.xlsx` (ej. `salud-mx-24agosto.xlsx`) y **agrega ese nombre a `salud_semanas.json`**, tanto en `vigente` como al final de `archivos`. Si no actualizas el manifiesto, el dashboard no ve el archivo nuevo.
+
+### Cartera
+
+El archivo base vive en SharePoint y **no se puede cargar por URL** (los enlaces privados de SharePoint/OneDrive exigen sesión). Exporta ese archivo a `.xlsx`, súbelo al repo como `cartera.xlsx`, y pulsa **↻ Recargar datos**. No hay que tocar el HTML.
 
 ## Consideraciones de negocio (`consideraciones.json`)
 
