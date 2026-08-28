@@ -285,6 +285,19 @@ def comparar(registros, ids_nuevos, vigente_path):
 
 # ---------------------------------------------------------------- manifiesto y git
 
+def fecha_de_url(url):
+    """La URL del tablero trae la fecha de la semana, y es la que manda para nombrar el archivo:
+    el correo puede llegar el martes pero el enlace dice 24-agosto, igual que el nombre del xlsx.
+    Ej: https://dashboard-de-salud-24-agosto-2026.replit.app/ -> 2026-08-24"""
+    patron = r"(\d{1,2})[-_ ]?(" + "|".join(MESES) + r")[-_ ]?(20\d{2})"
+    m = re.search(patron, url.lower())
+    if not m:
+        morir(f"No pude sacar la fecha de {url}",
+              "El enlace debería verse como dashboard-de-salud-24-agosto-2026.replit.app. "
+              "Si cambió el formato, pasa la fecha a mano con --fecha YYYY-MM-DD.")
+    return dt.date(int(m.group(3)), MESES.index(m.group(2)) + 1, int(m.group(1)))
+
+
 def nombre_destino(fecha):
     return f"salud-mx-{fecha.day:02d}{MESES[fecha.month - 1]}.xlsx"
 
@@ -339,12 +352,15 @@ def main():
     ap = argparse.ArgumentParser(description="Sube el reporte de salud semanal al Monitor de Cartera MX.")
     ap.add_argument("archivo", nargs="?", help="xlsx descargado (default: el más reciente de ~/Downloads)")
     ap.add_argument("--fecha", default="hoy", help="fecha del snapshot: YYYY-MM-DD, 'hoy' o 'lunes' (default: hoy)")
+    ap.add_argument("--url", help="enlace del tablero de esa semana; la fecha se saca de ahí (gana sobre --fecha)")
     ap.add_argument("--dry-run", action="store_true", help="valida y muestra el diff sin escribir ni commitear")
     ap.add_argument("--no-push", action="store_true", help="commitea pero no pushea")
     ap.add_argument("--forzar", action="store_true", help="sobreescribe el archivo de la semana si ya existe")
     args = ap.parse_args()
 
-    if args.fecha == "hoy":
+    if args.url:
+        fecha = fecha_de_url(args.url)
+    elif args.fecha == "hoy":
         fecha = dt.date.today()
     elif args.fecha == "lunes":
         hoy = dt.date.today()

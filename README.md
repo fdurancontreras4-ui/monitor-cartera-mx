@@ -13,7 +13,7 @@ Dashboard interactivo de un solo archivo para monitorear la cartera de postventa
 
 ### Salud — con el script (recomendado)
 
-El correo semanal trae el enlace al tablero de salud (un deployment de Replit, con contraseña y URL distinta cada semana). El único paso manual es ese: abrir el enlace, entrar, filtrar **México** y descargar el reporte. Todo lo que viene después lo hace un comando:
+El correo semanal lo manda Francisco Escobar con el asunto "Dashboard de Salud …", y trae el enlace al tablero (un deployment de Replit, con contraseña y URL distinta cada semana) más la contraseña. El único paso manual es ese: abrir el enlace, entrar, filtrar **México** y descargar el reporte, que siempre se llama `directorio-empresas.xlsx`. Todo lo que viene después lo hace un comando:
 
 ```bash
 python3 scripts/subir-salud.py
@@ -28,7 +28,8 @@ Opciones útiles:
 | Opción | Para qué |
 |---|---|
 | `--dry-run` | Valida y muestra el diff sin escribir, commitear ni pushear. |
-| `--fecha 2026-08-31` | Fecha del snapshot distinta de hoy (también acepta `lunes`). |
+| `--url "https://dashboard-de-salud-24-agosto-2026.replit.app/"` | Saca la fecha del enlace del correo. Es lo correcto: el correo puede llegar el martes con un enlace fechado el lunes, y el archivo se nombra por el enlace. |
+| `--fecha 2026-08-31` | Fecha del snapshot a mano (también acepta `hoy` o `lunes`). |
 | `--no-push` | Commitea local y no pushea. |
 | `--forzar` | Reemplaza el archivo de esa semana o sube un reporte repetido. |
 | `ruta/al.xlsx` | Usa ese archivo en vez de buscar en `~/Downloads`. |
