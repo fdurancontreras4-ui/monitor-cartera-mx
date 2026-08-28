@@ -3051,7 +3051,7 @@ function openDetail(uid){
   $('overlay').classList.add('open');
   $('apoyoTonyChk').onchange=e=>toggleApoyoTony(a,e.target.checked);
   $('anotEstado').value=(a._anot&&a._anot.estado)||'';
-  $('anotNota').value=(a._anot&&a._anot.nota)||'';
+  $('anotNota').value=''; // siempre arranca vacío — el último comentario ya se ve abajo en "Historial de comentarios"; precargarlo aquí solo tapaba el placeholder y arriesgaba volver a guardarlo sin querer como si fuera nuevo
   $('anotSaveBtn').onclick=async()=>{const ok=await saveAnnotation(a,$('anotEstado').value,$('anotNota').value.trim());if(ok){closeDetail();}};
   loadHistorial(annotKey(a));
   loadApoyoHistorial(annotKey(a));
