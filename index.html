@@ -1358,7 +1358,7 @@ function drawPrList(){
     const copiable=copySetFor(g);
     const copiableN=copiable.length;
     const copyLabel=prState.estado==='riesgo'?'en riesgo':prState.estado==='sano'?'saludables':prState.estado==='all'?'(todas)':prState.estado==='critica'?'críticas':'críticas + en riesgo';
-    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} cuentas ${copyLabel} de ${esc(kamShort(g.kam))} que se están mostrando con los filtros actuales (Estado/CS/motivo/antigüedad/gestión): Cliente / ID / Marcaje / Crítico por / CSS.`:`${esc(kamShort(g.kam))} no tiene cuentas ${copyLabel} visibles con estos filtros`}" onclick="event.stopPropagation();event.preventDefault();copyKamCuentasTSV(${gi})">📋 Copiar cuentas</button>`;
+    const copyBtn=`<button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto"${copiableN?'':' disabled'} title="${copiableN?`Copia las ${copiableN} cuentas ${copyLabel} de ${esc(kamShort(g.kam))} que se están mostrando con los filtros actuales (Estado/CS/motivo/antigüedad/gestión): Fecha inicio salud / ID / Cuenta / Estado / Nota / KAM / Responsable / Razón / MRR / N° usuarios.`:`${esc(kamShort(g.kam))} no tiene cuentas ${copyLabel} visibles con estos filtros`}" onclick="event.stopPropagation();event.preventDefault();copyKamCuentasTSV(${gi})">📋 Copiar cuentas</button>`;
     return`<details class="kam-group">
       <summary class="kam-head">
         <span class="chev">▸</span>
@@ -1411,25 +1411,23 @@ function copySetFor(g){
   if(prState.estado==='all')return g.crit.concat(g.ries,g.resto);
   return g.crit.concat(g.ries); // 'atrisk' (críticas + en riesgo), el filtro por defecto
 }
-// tabla TSV con las columnas: Cliente | ID | Marcaje | Crítico por | CSS
+// tabla TSV con las columnas: Fecha inicio salud | ID | Cuenta | Estado | Nota | KAM | Responsable | Razón | MRR | N° usuarios
 function buildKamCuentasTSV(g){
   const rowsSrc=copySetFor(g); // ya viene filtrado igual que lo que se muestra en pantalla
   if(!rowsSrc.length)return '';
-  // % de marcaje (adopción) de la rama de salud que se está mostrando; 's/d' si la cuenta no tiene match de salud
-  const marcajeTxt=h=>(h&&h.adopcion!=null)?Math.round(h.adopcion*100)+'%':'s/d';
-  // "Crítico por": el motivo de criticidad si la fila es crítica; si no, en qué estado está
-  const criticoPorTxt=(a,h)=>{
-    if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return 'Excluida';
-    const flag=h?h.flag:null;
-    if(flag==='critico')return razonLabel(razonCriticoFor(a,h));
-    if(flag==='atencion')return 'En riesgo';
-    return 'Saludable';
-  };
-  const header=['Cliente','ID','Marcaje','Crítico por','CSS'];
+  const ESTADO_LABEL={seguimiento:'Seguimiento',resuelta:'Resuelta'};
+  // "Marcaje X% - NPS X - Tickets X": los 3 números clave del modelo de salud en una sola celda
+  const razonTxt=a=>{const h=a.health;if(!h)return'Sin dato de salud';const marc=h.adopcion!=null?Math.round(h.adopcion*100)+'%':'s/d';const nps=h.nps!=null?h.nps:'s/d';const tk=h.inc30!=null?h.inc30:'s/d';return`Marcaje ${marc} - NPS ${nps} - Tickets ${tk}`;};
+  // fecha en que empezó el estado de salud ACTUAL (crítico/en riesgo/saludable) + semanas que lleva, ej "2026-06-22 (6 semanas)"
+  const fechaInicioTxt=a=>{const st=stateStreak(a);const fecha=st.startDate||'s/d';return`${fecha} (${st.streak} semana${st.streak===1?'':'s'})`;};
+  const header=['Fecha inicio salud','ID','Cuenta','Estado','Nota','KAM','Responsable','Razón','MRR','N° usuarios'];
   const rows=[header.join('\t')];
   rowsSrc.forEach(e=>{
-    const a=e.a,h=e.branch||a.health;
-    rows.push([a.cliente,a.id||'',marcajeTxt(h),criticoPorTxt(a,h),csOf(a)||''].map(tsvCell).join('\t'));
+    const a=e.a,anot=a._anot;
+    const estado=anot&&anot.estado?(ESTADO_LABEL[anot.estado]||anot.estado):'';
+    const nota=anot&&anot.nota?anot.nota:'';
+    const responsable=(anot&&anot.autor)?anot.autor:(a.kam||'');
+    rows.push([fechaInicioTxt(a),a.id||'',a.cliente,estado,nota,a.kam||'',responsable,razonTxt(a),Math.round(a.mrr||0),usersOf(a)!=null?usersOf(a):''].map(tsvCell).join('\t'));
   });
   return rows.join('\n');
 }
@@ -2050,21 +2048,25 @@ function renderFacturCritica(){
         <span class="chev">▸</span>
         <span class="kam-name">${esc(g.kam)}</span>
         <span class="kam-stats"><strong style="color:#E24B4A">${g.arr.length}</strong> cuentas · <strong>${fmtUSD(g.montoRiesgo)}/mes</strong> expuesto${g.sinCSn?` · <strong style="color:#E24B4A">${g.sinCSn} sin CS</strong>`:''}</span>
-        <button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto" title="Copia las ${g.arr.length} cuentas de ${esc(kamShort(g.kam))} — mismas columnas que en Salud (Cliente / ID / Marcaje / Crítico por / CSS), con la columna Crítico por describiendo la caída de facturación." onclick="event.stopPropagation();event.preventDefault();copyKamFacturTSV(${gi})">📋 Copiar cuentas</button>
+        <button class="btn" style="font-size:11px;padding:4px 10px;margin-left:auto" title="Copia las ${g.arr.length} cuentas de ${esc(kamShort(g.kam))} — mismas columnas que en Salud (Fecha inicio salud / ID / Cuenta / Estado / Nota / KAM / Responsable / Razón / MRR / N° usuarios), con la Razón describiendo la caída de facturación." onclick="event.stopPropagation();event.preventDefault();copyKamFacturTSV(${gi})">📋 Copiar cuentas</button>
       </summary>
       <div class="kam-body">${g.arr.map((a,i)=>prCardFactur(a,i+1)).join('')}</div>
     </details>`).join(''):'<p class="legend">Ninguna cuenta cumple los umbrales de caída de facturación en este momento.</p>'}
   `;
 }
-// mismas 5 columnas que en Salud; aquí la criticidad viene de la caída de facturación, no del archivo de salud
 function buildKamFacturTSV(g){
   if(!g||!g.arr||!g.arr.length)return '';
-  const criticoPorTxt=a=>{const d=facturacionDropInfo(a);const parts=[];if(d.mes)parts.push(`Caída ${d.mes.pct}% facturación (mes a mes)`);if(d.acum)parts.push(`Caída ${d.acum.pct}% facturación acumulada (6 meses)`);return parts.join(' · ')||'—';};
-  const marcajeTxt=a=>{const h=a.health;return (h&&h.adopcion!=null)?Math.round(h.adopcion*100)+'%':'s/d';};
-  const header=['Cliente','ID','Marcaje','Crítico por','CSS'];
+  const ESTADO_LABEL={seguimiento:'Seguimiento',resuelta:'Resuelta'};
+  const razonTxt=a=>{const d=facturacionDropInfo(a);const parts=[];if(d.mes)parts.push(`Caída ${d.mes.pct}% facturación (mes a mes)`);if(d.acum)parts.push(`Caída ${d.acum.pct}% facturación acumulada (6 meses)`);return parts.join(' · ')||'—';};
+  const fechaInicioTxt=a=>{const st=stateStreak(a);const fecha=st.startDate||'s/d';return`${fecha} (${st.streak} semana${st.streak===1?'':'s'})`;};
+  const header=['Fecha inicio salud','ID','Cuenta','Estado','Nota','KAM','Responsable','Razón','MRR','N° usuarios'];
   const rows=[header.join('\t')];
   g.arr.forEach(a=>{
-    rows.push([a.cliente,a.id||'',marcajeTxt(a),criticoPorTxt(a),csOf(a)||''].map(tsvCell).join('\t'));
+    const anot=a._anot;
+    const estado=anot&&anot.estado?(ESTADO_LABEL[anot.estado]||anot.estado):'';
+    const nota=anot&&anot.nota?anot.nota:'';
+    const responsable=(anot&&anot.autor)?anot.autor:(a.kam||'');
+    rows.push([fechaInicioTxt(a),a.id||'',a.cliente,estado,nota,a.kam||'',responsable,razonTxt(a),Math.round(a.mrr||0),usersOf(a)!=null?usersOf(a):''].map(tsvCell).join('\t'));
   });
   return rows.join('\n');
 }
