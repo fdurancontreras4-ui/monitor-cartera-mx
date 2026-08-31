@@ -239,6 +239,7 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
     <button data-group="kams">KAMs</button>
     <button data-group="tiempo">Tiempo Operativo</button>
     <button data-sec="implementacion">Implementaciones</button>
+    <button data-sec="pipeline">Pipeline</button>
     <button data-sec="datos">Datos</button>
   </div>
   <div class="subnav" id="subnav-salud">
@@ -288,6 +289,7 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
   <div id="sinuso" class="section"></div>
   <div id="tiempoRegistrar" class="section"></div>
   <div id="tiempoRecuento" class="section"></div>
+  <div id="pipeline" class="section"></div>
   <div id="datos" class="section"></div>
 </div>
 
@@ -332,7 +334,10 @@ const CONFIG = {
     projectId: "cartera-mx",
   },
   implementacionesUrl: '', // vacío = auto-detecta ./implementaciones.xlsx
-  implementacionesAutoTry: ['./implementaciones.xlsx']
+  implementacionesAutoTry: ['./implementaciones.xlsx'],
+  // ===== Pipeline de Zoho CRM (Deals) — lo publica scripts/subir-deals-zoho.py, ver pestaña Pipeline =====
+  dealsUrl: '', // vacío = auto-detecta ./deals-mx.json
+  dealsAutoTry: ['./deals-mx.json']
   /* Ejemplo, una vez creado tu proyecto en https://console.firebase.google.com :
   firebase: {
     apiKey: "AIza...",
@@ -389,8 +394,11 @@ let ACCOUNTS=[];
 let SOURCE='Cartera base (cuentas0206.xlsx)';
 let HEALTH={loaded:false,matched:0,total:0,unmatched:[],keyHeader:'',signalHeaders:[]};
 let HEALTH_CACHE=null;
-let LAST={portfolioUrl:'',healthUrl:'',consideracionesUrl:'',implementacionesUrl:'',gestionUrl:''};
+let LAST={portfolioUrl:'',healthUrl:'',consideracionesUrl:'',implementacionesUrl:'',gestionUrl:'',dealsUrl:''};
 let LAST_RELOAD=null;
+// pipeline de Zoho CRM (Deals), publicado por scripts/subir-deals-zoho.py en deals-mx.json
+let DEALS_DATA=[];
+let DEALS_META={generado:'',total:0};
 function markReload(){LAST_RELOAD=new Date();try{persist('last_reload',LAST_RELOAD.toISOString());}catch(e){}}
 function fmtReload(){if(!LAST_RELOAD)return'—';try{return LAST_RELOAD.toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return LAST_RELOAD.toLocaleString();}}
 const WEIGHTS={mrr:30,fugaBaja:30,fugaDism:20,saludCritico:25,healthCritico:30,healthAtencion:12,cuadRetener:15,cuadExpandir:10,cuadAlcanzar:5,cuadMantener:3,upside:4,churnGap:20};
@@ -2599,6 +2607,87 @@ function renderSinUso(){
   $('sinUsoDownloadBtn').onclick=()=>sinUsoDownloadExcel(muInfo,uu);
 }
 
+// ---------- Pipeline (Zoho CRM) ----------
+let plState={kam:'',stage:'',bucket:'',q:''};
+const ETAPA_ORDEN=['1. Trato Creado','2. Primera Reunion Realizada','3. En Levantamiento','4. Propuesta Enviada / En Negociación','5. Piloto','6. Listo para Cierre','7. Implementando','8. Facturando','Facturación congelada','Cierre Perdido'];
+const ETAPAS_CERRADAS=new Set(['Cierre Perdido','Facturación congelada']);
+function etapaRank(e){const i=ETAPA_ORDEN.indexOf(e);return i<0?ETAPA_ORDEN.length:i;}
+function dealBucket(d){if(d.etapa==='8. Facturando')return'facturando';if(ETAPAS_CERRADAS.has(d.etapa))return'perdido';return'proceso';}
+function stageBadge(etapa){
+  const map={'1. Trato Creado':'b-gray','2. Primera Reunion Realizada':'b-blue','3. En Levantamiento':'b-blue','4. Propuesta Enviada / En Negociación':'b-amber','5. Piloto':'b-amber','6. Listo para Cierre':'b-amber','7. Implementando':'b-teal','8. Facturando':'b-green','Cierre Perdido':'b-red','Facturación congelada':'b-gray'};
+  return`<span class="badge ${map[etapa]||'b-gray'}">${esc(etapa)}</span>`;
+}
+function dealCard(d,rank){
+  return`<div class="pr-card">
+    <div class="pr-rank">${rank}</div>
+    <div class="pr-main">
+      <div class="pr-name">${esc(d.trato||d.cuenta)}</div>
+      <div class="pr-meta">${esc(d.cuenta)}${d.producto?' · '+esc(d.producto):''}</div>
+      <div style="margin-top:5px">${stageBadge(d.etapa)}</div>
+    </div>
+    <div class="pr-score" style="font-size:15px;color:${d.cerrado?'var(--color-text-secondary)':'inherit'}">${fmtMXN(d.valor)}</div>
+  </div>`;
+}
+function plToggleAll(open){document.querySelectorAll('#plList details.kam-group').forEach(d=>d.open=open);}
+function renderPipeline(){
+  const kamOpts=[...new Set(DEALS_DATA.map(d=>d.kam))].sort();
+  const stageOpts=ETAPA_ORDEN.filter(e=>DEALS_DATA.some(d=>d.etapa===e));
+  $('pipeline').innerHTML=`
+  <div class="note-box"><strong>Pipeline de Zoho CRM.</strong> Deals de México con dueño <strong>${DEALS_DATA.length?esc(DEALS_DATA[0].owner||'KAM México'):'KAM México'}</strong>, agrupados por el KAM de la cuenta. Se publica con <code>scripts/subir-deals-zoho.py</code> (manual o por tarea programada) — usa "↻ Recargar datos" para traer la última versión.</div>
+  ${DEALS_DATA.length?'':'<p class="legend">Todavía no hay deals-mx.json cargado. Corre <code>scripts/subir-deals-zoho.py</code> o súbelo a mano en la pestaña Datos.</p>'}
+  <div class="controls">
+    <input type="text" id="plQ" placeholder="Buscar trato o cuenta…" value="${esc(plState.q)}">
+    <select id="plKam"><option value="">Todo KAM</option>${kamOpts.map(k=>`<option>${esc(k)}</option>`).join('')}</select>
+    <select id="plStage"><option value="">Toda etapa</option>${stageOpts.map(e=>`<option>${esc(e)}</option>`).join('')}</select>
+    <select id="plBucket"><option value="">En proceso, facturando y perdidos</option><option value="proceso">Solo en proceso</option><option value="facturando">Solo facturando</option><option value="perdido">Solo cerrado perdido</option></select>
+  </div>
+  <div class="card"><h3 id="plTitle"></h3><div id="plList"></div></div>`;
+  $('plKam').value=plState.kam;$('plStage').value=plState.stage;$('plBucket').value=plState.bucket;
+  $('plQ').oninput=e=>{plState.q=e.target.value;drawPlList();};
+  $('plKam').onchange=e=>{plState.kam=e.target.value;drawPlList();};
+  $('plStage').onchange=e=>{plState.stage=e.target.value;drawPlList();};
+  $('plBucket').onchange=e=>{plState.bucket=e.target.value;drawPlList();};
+  drawPlList();
+}
+function drawPlList(){
+  let rows=DEALS_DATA.slice();
+  if(plState.kam)rows=rows.filter(d=>d.kam===plState.kam);
+  if(plState.stage)rows=rows.filter(d=>d.etapa===plState.stage);
+  if(plState.bucket)rows=rows.filter(d=>dealBucket(d)===plState.bucket);
+  if(plState.q){const q=plState.q.toLowerCase();rows=rows.filter(d=>((d.trato||'')+' '+(d.cuenta||'')).toLowerCase().includes(q));}
+  const KAM_ORDER=['raul','dafne','karla'];
+  const kamRank=name=>{const n=normName(name);for(let i=0;i<KAM_ORDER.length;i++){if(n.includes(KAM_ORDER[i]))return i;}return KAM_ORDER.length;};
+  const groups={};
+  rows.forEach(d=>{const k=d.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(d);});
+  const ordered=Object.entries(groups).map(([kam,arr])=>{
+    const proceso=arr.filter(d=>dealBucket(d)==='proceso');
+    const facturando=arr.filter(d=>dealBucket(d)==='facturando');
+    const perdido=arr.filter(d=>dealBucket(d)==='perdido');
+    const valorProceso=proceso.reduce((s,d)=>s+(d.valor||0),0);
+    const valorFacturando=facturando.reduce((s,d)=>s+(d.valor||0),0);
+    return{kam,proceso,facturando,perdido,valorProceso,valorFacturando,total:arr.length};
+  }).sort((x,y)=>kamRank(x.kam)-kamRank(y.kam)||y.total-x.total);
+  $('plTitle').textContent=`${rows.length} deals en ${ordered.length} KAM`;
+  if(!ordered.length){$('plList').innerHTML='<p class="legend">No hay deals con estos filtros.</p>';return;}
+  const tools=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="plToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="plToggleAll(false)">Colapsar todo</button></div>`;
+  const groupsHtml=ordered.map(g=>{
+    g.proceso.sort((x,y)=>etapaRank(x.etapa)-etapaRank(y.etapa)||(y.valor||0)-(x.valor||0));
+    g.facturando.sort((x,y)=>(y.valor||0)-(x.valor||0));
+    g.perdido.sort((x,y)=>(y.modificado||'').localeCompare(x.modificado||''));
+    let rank=0;
+    const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(d=>dealCard(d,++rank)).join('')}`:'';
+    return`<details class="kam-group">
+      <summary class="kam-head">
+        <span class="chev">▸</span>
+        <span class="kam-name">${esc(g.kam)}</span>
+        <span class="kam-stats"><strong style="color:#854F0B">${g.proceso.length}</strong> en proceso (${fmtMXN(g.valorProceso)}) · <strong style="color:#3B6D11">${g.facturando.length}</strong> facturando (${fmtMXN(g.valorFacturando)})${g.perdido.length?` · <strong style="color:var(--color-text-secondary)">${g.perdido.length}</strong> cerrado perdido`:''}</span>
+      </summary>
+      <div class="kam-body">${block(g.proceso,'🟡 En proceso')}${block(g.facturando,'🟢 Facturando')}${block(g.perdido,'⚪ Cerrado perdido')}</div>
+    </details>`;
+  }).join('');
+  $('plList').innerHTML=tools+groupsHtml;
+}
+
 // ---------- Datos ----------
 function renderDatos(){
   $('datos').innerHTML=`
@@ -2781,6 +2870,22 @@ async function loadConsideraciones(url,opts){
     return true;
   }catch(err){if(!silent&&!probe)toast('Consideraciones: '+err.message,true);return false;}
 }
+// carga el pipeline de Zoho (deals-mx.json, publicado por scripts/subir-deals-zoho.py) — ver pestaña Pipeline
+async function loadDealsURL(url,opts){
+  opts=opts||{};const silent=opts.silent,probe=opts.probe;
+  if(!url)return false;
+  try{
+    const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
+    const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const json=await resp.json();
+    if(!json||!Array.isArray(json.deals))throw new Error('formato inesperado (falta el arreglo "deals")');
+    DEALS_DATA=json.deals;
+    DEALS_META={generado:json.generado||'',total:json.total||json.deals.length};
+    LAST.dealsUrl=url;persist('last_deals_url',url);
+    renderAll();
+    return true;
+  }catch(err){if(!silent&&!probe)toast('Pipeline: '+err.message,true);return false;}
+}
 // lee la hoja de gestión (gestion.xlsx): columnas por nombre, insensible a mayúsculas/orden —
 // ID | Cuenta | Estado | Nota | Responsable | Fecha
 function parseGestionSheet(wb){
@@ -2846,6 +2951,9 @@ async function reloadData(){
   let ok=false;const url=CONFIG.portfolioUrl||LAST.portfolioUrl;
   if(url){ok=await loadURL(url,{silent:true});}
   else{for(const u of CONFIG.autoTryFiles){if(await loadURL(u,{silent:true,probe:true})){ok=true;break;}}}
+  const durl=CONFIG.dealsUrl||LAST.dealsUrl;
+  if(durl){await loadDealsURL(durl,{silent:true,probe:true});}
+  else{for(const u of (CONFIG.dealsAutoTry||['./deals-mx.json'])){if(await loadDealsURL(u,{silent:true,probe:true}))break;}}
   btn.disabled=false;btn.textContent=old;
   toast(ok?'Datos actualizados ✓':'La fuente actual es un archivo subido. Vuelve a subirlo en Datos o configura una URL/ruta para recargar.',!ok);
 }
@@ -3077,11 +3185,11 @@ function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');
 
 // ---------- navegación / init ----------
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
-const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,tiempoRegistrar:renderTiempoRegistrar,tiempoRecuento:renderTiempoRecuento,implementacion:renderImplementacion,sinuso:renderSinUso,datos:renderDatos};
+const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,tiempoRegistrar:renderTiempoRegistrar,tiempoRecuento:renderTiempoRecuento,implementacion:renderImplementacion,sinuso:renderSinUso,pipeline:renderPipeline,datos:renderDatos};
 function renderAll(){applyAnnotationsToAccounts();applyApoyoToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11" title="${CURRENT_HEALTH_FILE?esc(CURRENT_HEALTH_FILE):''}">salud vigente: ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'activa'}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 // mapa: id de sección real -> id de grupo (pestaña principal) al que pertenece
-const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',tony:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',tiempoRegistrar:'tiempo',tiempoRecuento:'tiempo',implementacion:'implementacion',datos:'datos'};
+const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',tony:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',tiempoRegistrar:'tiempo',tiempoRecuento:'tiempo',implementacion:'implementacion',pipeline:'pipeline',datos:'datos'};
 let NAV_LAST_CHILD={}; // recuerda qué sub-pestaña se vio por última vez en cada grupo con hijos
 // clic en una pestaña principal con sub-pestañas: abre la última vista o, si es la primera vez, la primera opción
 function showGroup(gid){
@@ -3180,6 +3288,9 @@ async function autoLoad(){
   const gurl=CONFIG.gestionUrl||LAST.gestionUrl;
   if(gurl){await loadGestionURL(gurl,{silent:true,probe:true});}
   else{for(const u of (CONFIG.gestionAutoTry||['./gestion.xlsx'])){if(await loadGestionURL(u,{silent:true,probe:true}))break;}}
+  const durl=CONFIG.dealsUrl||LAST.dealsUrl;
+  if(durl){await loadDealsURL(durl,{silent:true,probe:true});}
+  else{for(const u of (CONFIG.dealsAutoTry||['./deals-mx.json'])){if(await loadDealsURL(u,{silent:true,probe:true}))break;}}
 }
 async function init(){
   try{if(window.storage&&window.storage.get){

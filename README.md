@@ -42,6 +42,26 @@ Si prefieres hacerlo sin el script: sube el `.xlsx` al repo como `salud-mx-DDmes
 
 El archivo base vive en SharePoint y **no se puede cargar por URL** (los enlaces privados de SharePoint/OneDrive exigen sesión). Exporta ese archivo a `.xlsx`, súbelo al repo como `cartera.xlsx`, y pulsa **↻ Recargar datos**. No hay que tocar el HTML.
 
+## Pipeline de Zoho CRM (`deals-mx.json`)
+
+La pestaña **Pipeline** muestra los deals de México de Zoho CRM (dueño **KAM
+México**), agrupados por el KAM de cuenta — **Dafne de la Rosa**, **Raúl
+Campos** y **Karla Patiño** — con filtros de KAM, etapa y búsqueda.
+
+El repo es público, así que este flujo nunca mete credenciales de Zoho en el
+código: `scripts/subir-deals-zoho.py` no se conecta a Zoho, solo valida y
+publica lo que ya se leyó con el conector MCP de Zoho (autorizado en la
+cuenta) desde fuera del script. El procedimiento completo — criterio exacto
+de búsqueda, campos, paginación — está en la skill `/deals-zoho`. Se corre
+solo, todos los días, con la tarea programada `deals-mx-diario`; también se
+puede pedir a mano diciendo "actualiza el pipeline" o "sube los deals de
+Zoho".
+
+```bash
+python3 scripts/subir-deals-zoho.py /tmp/deals-zoho-raw.json          # publica
+python3 scripts/subir-deals-zoho.py /tmp/deals-zoho-raw.json --dry-run # solo valida y muestra el diff
+```
+
 ## Seguimiento y recordatorios en Teams (`seguimiento.json`)
 
 Los pendientes que salen de reuniones y correos se anotan en **`seguimiento.json`** y se publican como tarjeta en el canal de Teams.
@@ -82,6 +102,7 @@ Detalles de presentación derivados de las consideraciones: el tag de criticidad
 - **Cuentas** — Tabla buscable y filtrable; clic abre el detalle (incluye % adopción, NPS y tickets/incidencias).
 - **Fuga** — Bajas y disminuciones por monto.
 - **Cross-sell** — Penetración mensual; **Mayo** y meses siguientes aparecen solos al cargar un Excel con esas columnas.
+- **Pipeline** — Deals de Zoho CRM (México, KAM México), agrupados por KAM en en proceso / facturando / cerrado perdido, con filtros de KAM, etapa y búsqueda. Se publica con `scripts/subir-deals-zoho.py` (ver arriba).
 - **Datos** — Carga de cartera y salud (con listado de filas de salud sin emparejar y su estado), e instrucciones de publicación.
 
 ### Salud semanal (heatmap histórico)
