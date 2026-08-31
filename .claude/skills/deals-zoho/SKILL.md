@@ -66,6 +66,9 @@ Si el script se detiene por solape/rango sospechoso y el cambio es real
 
 ## Dónde se ve
 
-Pestaña **Pipeline** del dashboard, agrupada por KAM (en proceso / facturando
-/ cerrado perdido), con filtros de KAM, etapa y búsqueda. El botón
-"↻ Recargar datos" también refresca `deals-mx.json` sin recargar la página.
+Pestaña **Pipeline** del dashboard: tablero en columnas por etapa (estilo
+kanban), con filtro de KAM y buscador, más un resumen "Pipeline y Forecast
+por mes" (Pipeline = etapa 4-5, Forecast = etapa 6-7, agrupado por mes de
+última actualización — no hay fecha de cierre estimada cargada en Zoho). El
+botón "↻ Recargar datos" también refresca `deals-mx.json` sin recargar la
+página.

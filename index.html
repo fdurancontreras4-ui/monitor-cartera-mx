@@ -216,6 +216,19 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
 .stat3-it{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:9px 10px;text-align:center;}
 .stat3-v{font-size:20px;font-weight:700;}
 .stat3-l{font-size:10.5px;color:var(--color-text-secondary);margin-top:2px;line-height:1.25;}
+/* ---- Pipeline (tablero por etapa) ---- */
+.pl-board{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;}
+.pl-col{flex:0 0 250px;min-width:0;background:var(--color-background-secondary);border-radius:var(--border-radius-md);display:flex;flex-direction:column;max-height:74vh;}
+.pl-col-head{padding:10px 12px;border-top:3px solid var(--color-border-secondary);border-radius:var(--border-radius-md) var(--border-radius-md) 0 0;background:var(--color-background-primary);box-shadow:var(--shadow-sm);}
+.pl-col-title{font-size:12px;font-weight:700;color:var(--color-text-primary);line-height:1.3;}
+.pl-col-stats{font-size:11px;color:var(--color-text-secondary);margin-top:3px;}
+.pl-col-body{overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;}
+.pl-card{background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:9px 10px;box-shadow:var(--shadow-sm);min-width:0;}
+.pl-card-name{font-size:12.5px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pl-card-meta{font-size:11px;color:var(--color-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pl-card-foot{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:6px;font-size:11px;min-width:0;}
+.pl-card-kam{color:var(--color-text-secondary);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pl-card-valor{font-weight:700;white-space:nowrap;flex:none;}
 </style>
 </head>
 <body>
@@ -2608,84 +2621,93 @@ function renderSinUso(){
 }
 
 // ---------- Pipeline (Zoho CRM) ----------
-let plState={kam:'',stage:'',bucket:'',q:''};
+let plState={kam:'',q:''};
 const ETAPA_ORDEN=['1. Trato Creado','2. Primera Reunion Realizada','3. En Levantamiento','4. Propuesta Enviada / En Negociación','5. Piloto','6. Listo para Cierre','7. Implementando','8. Facturando','Facturación congelada','Cierre Perdido'];
 const ETAPAS_CERRADAS=new Set(['Cierre Perdido','Facturación congelada']);
+const ETAPA_COLOR={'1. Trato Creado':'#67718c','2. Primera Reunion Realizada':'#185FA5','3. En Levantamiento':'#185FA5','4. Propuesta Enviada / En Negociación':'#854F0B','5. Piloto':'#854F0B','6. Listo para Cierre':'#0090cc','7. Implementando':'#036a92','8. Facturando':'#3B6D11','Cierre Perdido':'#A32D2D','Facturación congelada':'#67718c'};
+// pipeline = etapas 4-5 (propuesta/negociación, piloto) · forecast = etapas 6-7 (listo para cierre, implementando)
+const ETAPAS_PIPELINE=new Set(['4. Propuesta Enviada / En Negociación','5. Piloto']);
+const ETAPAS_FORECAST=new Set(['6. Listo para Cierre','7. Implementando']);
 function etapaRank(e){const i=ETAPA_ORDEN.indexOf(e);return i<0?ETAPA_ORDEN.length:i;}
-function dealBucket(d){if(d.etapa==='8. Facturando')return'facturando';if(ETAPAS_CERRADAS.has(d.etapa))return'perdido';return'proceso';}
-function stageBadge(etapa){
-  const map={'1. Trato Creado':'b-gray','2. Primera Reunion Realizada':'b-blue','3. En Levantamiento':'b-blue','4. Propuesta Enviada / En Negociación':'b-amber','5. Piloto':'b-amber','6. Listo para Cierre':'b-amber','7. Implementando':'b-teal','8. Facturando':'b-green','Cierre Perdido':'b-red','Facturación congelada':'b-gray'};
-  return`<span class="badge ${map[etapa]||'b-gray'}">${esc(etapa)}</span>`;
-}
-function dealCard(d,rank){
-  return`<div class="pr-card">
-    <div class="pr-rank">${rank}</div>
-    <div class="pr-main">
-      <div class="pr-name">${esc(d.trato||d.cuenta)}</div>
-      <div class="pr-meta">${esc(d.cuenta)}${d.producto?' · '+esc(d.producto):''}</div>
-      <div style="margin-top:5px">${stageBadge(d.etapa)}</div>
-    </div>
-    <div class="pr-score" style="font-size:15px;color:${d.cerrado?'var(--color-text-secondary)':'inherit'}">${fmtMXN(d.valor)}</div>
+function dealBucket(d){if(ETAPAS_PIPELINE.has(d.etapa))return'pipeline';if(ETAPAS_FORECAST.has(d.etapa))return'forecast';if(d.etapa==='8. Facturando')return'facturando';if(ETAPAS_CERRADAS.has(d.etapa))return'perdido';return'temprano';}
+function dealCardCompact(d){
+  return`<div class="pl-card">
+    <div class="pl-card-name">${esc(d.trato||d.cuenta)}</div>
+    <div class="pl-card-meta">${esc(d.cuenta)}</div>
+    <div class="pl-card-foot"><span class="pl-card-kam">${esc(kamShort(d.kam))}</span><span class="pl-card-valor">${fmtMXN(d.valor)}</span></div>
   </div>`;
 }
-function plToggleAll(open){document.querySelectorAll('#plList details.kam-group').forEach(d=>d.open=open);}
+const MES_CORTO=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function pfMesKey(iso){return iso?iso.slice(0,7):null;} // "YYYY-MM"
+function pfMesLabel(key){const[y,m]=key.split('-').map(Number);return`${MES_CORTO[m-1]} ${y}`;}
 function renderPipeline(){
   const kamOpts=[...new Set(DEALS_DATA.map(d=>d.kam))].sort();
-  const stageOpts=ETAPA_ORDEN.filter(e=>DEALS_DATA.some(d=>d.etapa===e));
   $('pipeline').innerHTML=`
-  <div class="note-box"><strong>Pipeline de Zoho CRM.</strong> Deals de México con dueño <strong>${DEALS_DATA.length?esc(DEALS_DATA[0].owner||'KAM México'):'KAM México'}</strong>, agrupados por el KAM de la cuenta. Se publica con <code>scripts/subir-deals-zoho.py</code> (manual o por tarea programada) — usa "↻ Recargar datos" para traer la última versión.</div>
+  <div class="note-box"><strong>Pipeline de Zoho CRM.</strong> Deals de México con dueño <strong>${DEALS_DATA.length?esc(DEALS_DATA[0].owner||'KAM México'):'KAM México'}</strong>, en columnas por etapa. Se publica con <code>scripts/subir-deals-zoho.py</code> (manual o por tarea programada) — usa "↻ Recargar datos" para traer la última versión.</div>
   ${DEALS_DATA.length?'':'<p class="legend">Todavía no hay deals-mx.json cargado. Corre <code>scripts/subir-deals-zoho.py</code> o súbelo a mano en la pestaña Datos.</p>'}
   <div class="controls">
     <input type="text" id="plQ" placeholder="Buscar trato o cuenta…" value="${esc(plState.q)}">
     <select id="plKam"><option value="">Todo KAM</option>${kamOpts.map(k=>`<option>${esc(k)}</option>`).join('')}</select>
-    <select id="plStage"><option value="">Toda etapa</option>${stageOpts.map(e=>`<option>${esc(e)}</option>`).join('')}</select>
-    <select id="plBucket"><option value="">En proceso, facturando y perdidos</option><option value="proceso">Solo en proceso</option><option value="facturando">Solo facturando</option><option value="perdido">Solo cerrado perdido</option></select>
   </div>
-  <div class="card"><h3 id="plTitle"></h3><div id="plList"></div></div>`;
-  $('plKam').value=plState.kam;$('plStage').value=plState.stage;$('plBucket').value=plState.bucket;
+  <div class="card">
+    <h3>Pipeline y Forecast por mes</h3>
+    <p class="note-box" style="margin-bottom:12px"><strong>Pipeline</strong> = etapas 4-5 (Propuesta enviada/En negociación, Piloto) · <strong>Forecast</strong> = etapas 6-7 (Listo para cierre, Implementando). El mes es el de la <strong>última actualización</strong> del deal (no hay fecha de cierre esperada cargada en Zoho todavía) — un deal en un mes viejo es un deal que lleva tiempo sin moverse.</p>
+    <div class="table-wrap" id="plMes"></div>
+  </div>
+  <p class="status-line" id="plTitle"></p>
+  <div id="plBoard"></div>`;
+  $('plKam').value=plState.kam;
   $('plQ').oninput=e=>{plState.q=e.target.value;drawPlList();};
   $('plKam').onchange=e=>{plState.kam=e.target.value;drawPlList();};
-  $('plStage').onchange=e=>{plState.stage=e.target.value;drawPlList();};
-  $('plBucket').onchange=e=>{plState.bucket=e.target.value;drawPlList();};
   drawPlList();
+}
+function drawPlMes(rows){
+  const relevantes=rows.filter(d=>{const b=dealBucket(d);return b==='pipeline'||b==='forecast';});
+  if(!relevantes.length){$('plMes').innerHTML='<p class="legend">No hay deals en pipeline (etapa 4-5) ni forecast (etapa 6-7) con estos filtros.</p>';return;}
+  const porMes={};
+  relevantes.forEach(d=>{
+    const key=pfMesKey(d.modificado);
+    if(!key)return;
+    const m=porMes[key]=porMes[key]||{pipelineN:0,pipelineV:0,forecastN:0,forecastV:0};
+    if(dealBucket(d)==='pipeline'){m.pipelineN++;m.pipelineV+=(d.valor||0);}
+    else{m.forecastN++;m.forecastV+=(d.valor||0);}
+  });
+  const meses=Object.keys(porMes).sort().reverse(); // más reciente primero
+  const maxV=Math.max(1,...meses.map(k=>Math.max(porMes[k].pipelineV,porMes[k].forecastV)));
+  const barCell=(n,v,color)=>`<div class="bar-row" style="margin:0"><div class="bar-label-sm" style="min-width:20px;max-width:20px">${n}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/maxV*100)}%;background:${color}"></div></div><div class="bar-num">${fmtMXN(v)}</div></div>`;
+  const totPipelineN=relevantes.filter(d=>dealBucket(d)==='pipeline').length;
+  const totForecastN=relevantes.filter(d=>dealBucket(d)==='forecast').length;
+  const totPipelineV=relevantes.filter(d=>dealBucket(d)==='pipeline').reduce((s,d)=>s+(d.valor||0),0);
+  const totForecastV=relevantes.filter(d=>dealBucket(d)==='forecast').reduce((s,d)=>s+(d.valor||0),0);
+  $('plMes').innerHTML=`<table>
+    <thead><tr><th>Mes</th><th class="nosort">Pipeline (etapa 4-5)</th><th class="nosort">Forecast (etapa 6-7)</th></tr></thead>
+    <tbody>
+      ${meses.map(key=>{const m=porMes[key];return`<tr style="cursor:default"><td style="font-weight:500">${esc(pfMesLabel(key))}</td><td>${barCell(m.pipelineN,m.pipelineV,'#854F0B')}</td><td>${barCell(m.forecastN,m.forecastV,'#0090cc')}</td></tr>`;}).join('')}
+      <tr style="cursor:default;font-weight:700"><td>Total</td><td>${totPipelineN} deals · ${fmtMXN(totPipelineV)}</td><td>${totForecastN} deals · ${fmtMXN(totForecastV)}</td></tr>
+    </tbody>
+  </table>`;
 }
 function drawPlList(){
   let rows=DEALS_DATA.slice();
   if(plState.kam)rows=rows.filter(d=>d.kam===plState.kam);
-  if(plState.stage)rows=rows.filter(d=>d.etapa===plState.stage);
-  if(plState.bucket)rows=rows.filter(d=>dealBucket(d)===plState.bucket);
   if(plState.q){const q=plState.q.toLowerCase();rows=rows.filter(d=>((d.trato||'')+' '+(d.cuenta||'')).toLowerCase().includes(q));}
-  const KAM_ORDER=['raul','dafne','karla'];
-  const kamRank=name=>{const n=normName(name);for(let i=0;i<KAM_ORDER.length;i++){if(n.includes(KAM_ORDER[i]))return i;}return KAM_ORDER.length;};
-  const groups={};
-  rows.forEach(d=>{const k=d.kam||'Sin KAM';(groups[k]=groups[k]||[]).push(d);});
-  const ordered=Object.entries(groups).map(([kam,arr])=>{
-    const proceso=arr.filter(d=>dealBucket(d)==='proceso');
-    const facturando=arr.filter(d=>dealBucket(d)==='facturando');
-    const perdido=arr.filter(d=>dealBucket(d)==='perdido');
-    const valorProceso=proceso.reduce((s,d)=>s+(d.valor||0),0);
-    const valorFacturando=facturando.reduce((s,d)=>s+(d.valor||0),0);
-    return{kam,proceso,facturando,perdido,valorProceso,valorFacturando,total:arr.length};
-  }).sort((x,y)=>kamRank(x.kam)-kamRank(y.kam)||y.total-x.total);
-  $('plTitle').textContent=`${rows.length} deals en ${ordered.length} KAM`;
-  if(!ordered.length){$('plList').innerHTML='<p class="legend">No hay deals con estos filtros.</p>';return;}
-  const tools=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn" style="font-size:12px;padding:5px 11px" onclick="plToggleAll(true)">Expandir todo</button><button class="btn" style="font-size:12px;padding:5px 11px" onclick="plToggleAll(false)">Colapsar todo</button></div>`;
-  const groupsHtml=ordered.map(g=>{
-    g.proceso.sort((x,y)=>etapaRank(x.etapa)-etapaRank(y.etapa)||(y.valor||0)-(x.valor||0));
-    g.facturando.sort((x,y)=>(y.valor||0)-(x.valor||0));
-    g.perdido.sort((x,y)=>(y.modificado||'').localeCompare(x.modificado||''));
-    let rank=0;
-    const block=(arr,label)=>arr.length?`<div class="kam-sub">${label} · ${arr.length}</div>${arr.map(d=>dealCard(d,++rank)).join('')}`:'';
-    return`<details class="kam-group">
-      <summary class="kam-head">
-        <span class="chev">▸</span>
-        <span class="kam-name">${esc(g.kam)}</span>
-        <span class="kam-stats"><strong style="color:#854F0B">${g.proceso.length}</strong> en proceso (${fmtMXN(g.valorProceso)}) · <strong style="color:#3B6D11">${g.facturando.length}</strong> facturando (${fmtMXN(g.valorFacturando)})${g.perdido.length?` · <strong style="color:var(--color-text-secondary)">${g.perdido.length}</strong> cerrado perdido`:''}</span>
-      </summary>
-      <div class="kam-body">${block(g.proceso,'🟡 En proceso')}${block(g.facturando,'🟢 Facturando')}${block(g.perdido,'⚪ Cerrado perdido')}</div>
-    </details>`;
-  }).join('');
-  $('plList').innerHTML=tools+groupsHtml;
+  drawPlMes(rows);
+  const valorTotal=rows.reduce((s,d)=>s+(d.valor||0),0);
+  $('plTitle').textContent=`${rows.length} deals · ${fmtMXN(valorTotal)}`;
+  if(!rows.length){$('plBoard').innerHTML='<p class="legend">No hay deals con estos filtros.</p>';return;}
+  const cols=ETAPA_ORDEN.map(etapa=>{
+    const arr=rows.filter(d=>d.etapa===etapa).sort((x,y)=>(y.valor||0)-(x.valor||0));
+    const valor=arr.reduce((s,d)=>s+(d.valor||0),0);
+    return{etapa,arr,valor};
+  }).filter(c=>c.arr.length);
+  $('plBoard').innerHTML=`<div class="pl-board">${cols.map(c=>`
+    <div class="pl-col">
+      <div class="pl-col-head" style="border-top-color:${ETAPA_COLOR[c.etapa]||'#67718c'}">
+        <div class="pl-col-title">${esc(c.etapa)}</div>
+        <div class="pl-col-stats">${c.arr.length} · ${fmtMXN(c.valor)}</div>
+      </div>
+      <div class="pl-col-body">${c.arr.map(dealCardCompact).join('')}</div>
+    </div>`).join('')}</div>`;
 }
 
 // ---------- Datos ----------

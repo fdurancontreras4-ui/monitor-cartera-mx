@@ -45,8 +45,17 @@ El archivo base vive en SharePoint y **no se puede cargar por URL** (los enlaces
 ## Pipeline de Zoho CRM (`deals-mx.json`)
 
 La pestaña **Pipeline** muestra los deals de México de Zoho CRM (dueño **KAM
-México**), agrupados por el KAM de cuenta — **Dafne de la Rosa**, **Raúl
-Campos** y **Karla Patiño** — con filtros de KAM, etapa y búsqueda.
+México**) en un tablero **en columnas por etapa** (estilo kanban — Trato
+Creado, Primera Reunión, … Facturando, Cierre Perdido), con filtro de KAM
+(**Dafne de la Rosa**, **Raúl Campos**, **Karla Patiño**) y buscador.
+
+Arriba del tablero, **"Pipeline y Forecast por mes"** suma el valor de los
+deals en **Pipeline** (etapas 4-5: Propuesta enviada/En negociación, Piloto)
+y en **Forecast** (etapas 6-7: Listo para cierre, Implementando), agrupado
+por el mes de su **última actualización** — Zoho no trae cargada la fecha
+estimada de cierre para estos deals, así que un mes viejo en esa tabla es una
+señal de que el deal lleva tiempo sin moverse, no una fecha de cierre
+esperada. El resumen respeta los filtros de KAM/búsqueda del tablero.
 
 El repo es público, así que este flujo nunca mete credenciales de Zoho en el
 código: `scripts/subir-deals-zoho.py` no se conecta a Zoho, solo valida y
@@ -102,7 +111,7 @@ Detalles de presentación derivados de las consideraciones: el tag de criticidad
 - **Cuentas** — Tabla buscable y filtrable; clic abre el detalle (incluye % adopción, NPS y tickets/incidencias).
 - **Fuga** — Bajas y disminuciones por monto.
 - **Cross-sell** — Penetración mensual; **Mayo** y meses siguientes aparecen solos al cargar un Excel con esas columnas.
-- **Pipeline** — Deals de Zoho CRM (México, KAM México), agrupados por KAM en en proceso / facturando / cerrado perdido, con filtros de KAM, etapa y búsqueda. Se publica con `scripts/subir-deals-zoho.py` (ver arriba).
+- **Pipeline** — Deals de Zoho CRM (México, KAM México) en columnas por etapa, con filtro de KAM y buscador, más un resumen de Pipeline (etapa 4-5) y Forecast (etapa 6-7) por mes de última actualización. Se publica con `scripts/subir-deals-zoho.py` (ver arriba).
 - **Datos** — Carga de cartera y salud (con listado de filas de salud sin emparejar y su estado), e instrucciones de publicación.
 
 ### Salud semanal (heatmap histórico)
