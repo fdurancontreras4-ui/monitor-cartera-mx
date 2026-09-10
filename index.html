@@ -1867,6 +1867,18 @@ function isTony(name){
   return n.includes('antonio garnica')||n.includes('tony');
 }
 let tonyState={enSalud:true,apoyo:true,q:''};
+// Última nota guardada en el detalle de la cuenta. `_anot` es siempre la entrada más reciente del historial:
+// saveAnnotation la sobrescribe al guardar, y syncCurrentFromHistorial la recalcula si se edita o borra una
+// entrada — así que no hace falta leer `historial/` para saber cuál fue el último comentario.
+function ultimoComentarioCell(a){
+  const an=a._anot;
+  const nota=((an&&an.nota)||'').trim();
+  if(!nota)return '<td style="color:var(--color-text-secondary)">—</td>';
+  const quien=(an.autor||'').trim();
+  const cuando=an.actualizado?new Date(an.actualizado).toLocaleDateString('es-MX',{day:'2-digit',month:'short'}):'';
+  const meta=[quien,cuando].filter(Boolean).join(' · ');
+  return `<td style="max-width:280px"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(nota)}${meta?' — '+esc(meta):''}">${esc(nota)}</div>${meta?`<div style="font-size:11px;color:var(--color-text-secondary)">${esc(meta)}</div>`:''}</td>`;
+}
 function renderTony(){
   const base=ACCOUNTS.filter(a=>isTony(a.health&&a.health.css)||a._apoyoTony);
   // filtro de tags: casillas independientes — si ambas están activas (default) se ve todo, si apagas una se
@@ -1886,7 +1898,7 @@ function renderTony(){
   const nAmbos=base.filter(a=>isTony(a.health&&a.health.css)&&a._apoyoTony).length;
   const nCriticas=base.filter(a=>isCritica(a)).length;
   $('tony').innerHTML=`
-  <div class="note-box">Todas las cuentas donde <strong>Tony (José Antonio Garnica)</strong> aparece asignado, de dos fuentes distintas — una cuenta puede tener uno de los dos tags, o ambos: <span class="badge b-blue">🩺 CS en salud</span> viene de la columna <strong>CSS</strong> del archivo de salud vigente; <span class="badge b-purple">🤝 Apoyo</span> se marca a mano desde el detalle de cada cuenta (casilla "Tony da apoyo en esta cuenta") — para cuando participa en una cuenta sin ser el CS/KAM formal, sin que eso la mueva a su cartera.</div>
+  <div class="note-box">Todas las cuentas donde <strong>Tony (José Antonio Garnica)</strong> aparece asignado, de dos fuentes distintas — una cuenta puede tener uno de los dos tags, o ambos: <span class="badge b-blue">🩺 CS en salud</span> viene de la columna <strong>CSS</strong> del archivo de salud vigente; <span class="badge b-purple">🤝 Apoyo</span> se marca a mano desde el detalle de cada cuenta (casilla "Tony da apoyo en esta cuenta") — para cuando participa en una cuenta sin ser el CS/KAM formal, sin que eso la mueva a su cartera.<br><br>La columna <strong>Último comentario</strong> muestra la nota más reciente que alguien dejó en el detalle de esa cuenta, con quién la escribió y cuándo. Se actualiza sola en cuanto se guarda una nota nueva — pasa el mouse por encima para leerla completa, o haz clic en la fila para abrir el detalle y ver todo el historial.</div>
   <div class="metrics">
     <div class="metric"><div class="label">Cuentas de Tony</div><div class="value">${base.length}</div><div class="sub">${nCriticas} críticas</div></div>
     <div class="metric"><div class="label">Solo CS en salud</div><div class="value" style="color:#185FA5">${nSalud-nAmbos}</div></div>
@@ -1900,12 +1912,12 @@ function renderTony(){
     </div>
     <input type="text" id="tonyBuscar" value="${esc(tonyState.q)}" placeholder="Buscar cliente…" style="font-family:var(--font-sans);font-size:13px;padding:7px 12px;border-radius:999px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);min-width:200px">
   </div>
-  ${rows.length?`<div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">Estado de salud</th><th class="nosort">Marcaje</th><th class="nosort">MRR</th><th class="nosort">Tags</th></tr></thead><tbody>
+  ${rows.length?`<div class="card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">Cartera</th><th class="nosort">KAM</th><th class="nosort">Estado de salud</th><th class="nosort">Marcaje</th><th class="nosort">MRR</th><th class="nosort">Tags</th><th class="nosort" title="La última nota guardada en el detalle de la cuenta. Se actualiza sola cuando alguien del equipo deja un comentario nuevo.">Último comentario</th></tr></thead><tbody>
     ${rows.map(a=>{
       const enSalud=isTony(a.health&&a.health.css);
       const tags=(enSalud?'<span class="badge b-blue" title="Columna CSS del archivo de salud">🩺 CS en salud</span> ':'')+(a._apoyoTony?'<span class="badge b-purple" title="Marcado a mano desde el detalle de la cuenta">🤝 Apoyo</span>':'');
       const adPct=a.health&&a.health.adopcion!=null?Math.round(a.health.adopcion*100):null;
-      return `<tr onclick="openDetail('${a._uid}')"><td style="max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td>${saludBadgeFor(a)}</td><td>${cellBarHTML(adPct,marcajeColor)}</td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${tags}</td></tr>`;
+      return `<tr onclick="openDetail('${a._uid}')"><td style="max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(a.cliente)}</td><td>${carteraBadge(a.cartera)}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(a.kam)}</td><td>${saludBadgeFor(a)}</td><td>${cellBarHTML(adPct,marcajeColor)}</td><td style="font-weight:500">${fmtUSD(a.mrr)}</td><td>${tags}</td>${ultimoComentarioCell(a)}</tr>`;
     }).join('')}
     </tbody></table></div></div>`:`<p class="legend">${base.length?'Ninguna cuenta coincide con estos filtros.':'No encontramos ninguna cuenta asignada a Tony por CSS de salud ni marcada de apoyo.'}</p>`}
   `;
