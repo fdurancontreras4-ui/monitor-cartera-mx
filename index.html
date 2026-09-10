@@ -229,6 +229,15 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
 .pl-card-foot{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:6px;font-size:11px;min-width:0;}
 .pl-card-kam{color:var(--color-text-secondary);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .pl-card-valor{font-weight:700;white-space:nowrap;flex:none;}
+.coment-cell{max-width:280px;}
+.coment-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.coment-cell.abierto{max-width:420px;}
+.coment-cell.abierto .coment-txt{white-space:pre-wrap;overflow:visible;text-overflow:clip;word-break:break-word;}
+.coment-vermas{background:none;border:none;padding:0;margin-top:3px;font-family:inherit;font-size:11px;font-weight:500;color:#0e7d6e;cursor:pointer;text-decoration:underline;}
+.coment-vermas:hover{opacity:.75;}
+/* el teal de marca queda en 3.2:1 sobre el fondo oscuro (bajo el mínimo AA de 4.5), así que en dark se aclara */
+@media (prefers-color-scheme:dark){.coment-vermas{color:#4db8a8;}}
+.coment-meta{font-size:11px;color:var(--color-text-secondary);}
 </style>
 </head>
 <body>
@@ -1870,6 +1879,19 @@ let tonyState={enSalud:true,apoyo:true,q:''};
 // Última nota guardada en el detalle de la cuenta. `_anot` es siempre la entrada más reciente del historial:
 // saveAnnotation la sobrescribe al guardar, y syncCurrentFromHistorial la recalcula si se edita o borra una
 // entrada — así que no hace falta leer `historial/` para saber cuál fue el último comentario.
+// El comentario largo se despliega en la propia celda con "ver más" en vez de mandar al modal. Los uids
+// abiertos viven fuera de renderTony porque el listener de anotaciones llama renderAll() y volvería a
+// colapsarlos: al re-pintar, la celda nace abierta si el uid sigue en el set.
+let TONY_COMENT_ABIERTOS=new Set();
+const COMENT_CORTE=60; // arriba de esto la nota no cabe en el ancho de la columna y ofrecemos desplegarla
+function toggleComentario(uid,ev){
+  if(ev){ev.stopPropagation();ev.preventDefault();} // la fila entera abre el detalle; el botón no debe dispararlo
+  const abierto=TONY_COMENT_ABIERTOS.has(uid);
+  if(abierto)TONY_COMENT_ABIERTOS.delete(uid);else TONY_COMENT_ABIERTOS.add(uid);
+  const cell=$('coment-'+uid),btn=$('vermas-'+uid);
+  if(cell)cell.classList.toggle('abierto',!abierto);
+  if(btn)btn.textContent=abierto?'ver más':'ver menos';
+}
 function ultimoComentarioCell(a){
   const an=a._anot;
   const nota=((an&&an.nota)||'').trim();
@@ -1877,7 +1899,14 @@ function ultimoComentarioCell(a){
   const quien=(an.autor||'').trim();
   const cuando=an.actualizado?new Date(an.actualizado).toLocaleDateString('es-MX',{day:'2-digit',month:'short'}):'';
   const meta=[quien,cuando].filter(Boolean).join(' · ');
-  return `<td style="max-width:280px"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(nota)}${meta?' — '+esc(meta):''}">${esc(nota)}</div>${meta?`<div style="font-size:11px;color:var(--color-text-secondary)">${esc(meta)}</div>`:''}</td>`;
+  const largo=nota.length>COMENT_CORTE||/[\r\n]/.test(nota);
+  const abierto=TONY_COMENT_ABIERTOS.has(a._uid);
+  const verMas=largo?`<button type="button" class="coment-vermas" id="vermas-${a._uid}" onclick="toggleComentario('${a._uid}',event)">${abierto?'ver menos':'ver más'}</button>`:'';
+  return `<td class="coment-cell${abierto?' abierto':''}" id="coment-${a._uid}">`
+    +`<div class="coment-txt"${largo&&!abierto?` title="${esc(nota)}"`:''}>${esc(nota)}</div>`
+    +(meta?`<div class="coment-meta">${esc(meta)}</div>`:'')
+    +verMas
+    +'</td>';
 }
 function renderTony(){
   const base=ACCOUNTS.filter(a=>isTony(a.health&&a.health.css)||a._apoyoTony);
@@ -1898,7 +1927,7 @@ function renderTony(){
   const nAmbos=base.filter(a=>isTony(a.health&&a.health.css)&&a._apoyoTony).length;
   const nCriticas=base.filter(a=>isCritica(a)).length;
   $('tony').innerHTML=`
-  <div class="note-box">Todas las cuentas donde <strong>Tony (José Antonio Garnica)</strong> aparece asignado, de dos fuentes distintas — una cuenta puede tener uno de los dos tags, o ambos: <span class="badge b-blue">🩺 CS en salud</span> viene de la columna <strong>CSS</strong> del archivo de salud vigente; <span class="badge b-purple">🤝 Apoyo</span> se marca a mano desde el detalle de cada cuenta (casilla "Tony da apoyo en esta cuenta") — para cuando participa en una cuenta sin ser el CS/KAM formal, sin que eso la mueva a su cartera.<br><br>La columna <strong>Último comentario</strong> muestra la nota más reciente que alguien dejó en el detalle de esa cuenta, con quién la escribió y cuándo. Se actualiza sola en cuanto se guarda una nota nueva — pasa el mouse por encima para leerla completa, o haz clic en la fila para abrir el detalle y ver todo el historial.</div>
+  <div class="note-box">Todas las cuentas donde <strong>Tony (José Antonio Garnica)</strong> aparece asignado, de dos fuentes distintas — una cuenta puede tener uno de los dos tags, o ambos: <span class="badge b-blue">🩺 CS en salud</span> viene de la columna <strong>CSS</strong> del archivo de salud vigente; <span class="badge b-purple">🤝 Apoyo</span> se marca a mano desde el detalle de cada cuenta (casilla "Tony da apoyo en esta cuenta") — para cuando participa en una cuenta sin ser el CS/KAM formal, sin que eso la mueva a su cartera.<br><br>La columna <strong>Último comentario</strong> muestra la nota más reciente que alguien dejó en el detalle de esa cuenta, con quién la escribió y cuándo. Se actualiza sola en cuanto se guarda una nota nueva — si es larga aparece un <strong>ver más</strong> que la despliega completa ahí mismo, sin salir de la tabla. Para ver el historial completo de la cuenta, haz clic en la fila y se abre el detalle.</div>
   <div class="metrics">
     <div class="metric"><div class="label">Cuentas de Tony</div><div class="value">${base.length}</div><div class="sub">${nCriticas} críticas</div></div>
     <div class="metric"><div class="label">Solo CS en salud</div><div class="value" style="color:#185FA5">${nSalud-nAmbos}</div></div>
