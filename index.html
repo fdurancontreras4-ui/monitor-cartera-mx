@@ -246,6 +246,13 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
 .tarea-extra{font-size:11px;color:var(--color-text-secondary);margin-top:3px;}
 .tarea-venc{color:#A32D2D;font-weight:600;}
 .tarea-pronto{color:#854F0B;font-weight:600;}
+.tarea-board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:12px;overflow-x:auto;align-items:start;padding-bottom:6px;}
+.tarea-col{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px;}
+.tarea-col-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:13px;font-weight:600;margin-bottom:8px;}
+.tarea-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:9px 10px;margin-bottom:8px;font-size:12px;cursor:pointer;}
+.tarea-card:last-child{margin-bottom:0;}
+.tarea-card-cuenta{font-weight:600;margin-bottom:2px;line-height:1.3;}
+.tarea-card-txt{color:var(--color-text-secondary);line-height:1.4;}
 </style>
 </head>
 <body>
@@ -1566,14 +1573,14 @@ let TIEMPO_OP={}; // tiempo_operativo/{pushId} = {kam,clienteId,clienteNombre,mi
 const TIEMPO_KAMS=['Dafne de la Rosa','Raúl Campos','Karla Patiño'];
 let TAREAS={}; // tareas/{pushId} = {cuentaKey,cuentaNombre,cuentaId,responsable,texto,fechaLimite,+campos de Tony,creado,autor}
 const TAREA_RESPONSABLES=['Fer','Raúl','Dafne','Tony','Karla'];
-// Campos de seguimiento de CS que solo aplican a las tareas de Tony. Por ahora son texto libre a propósito:
-// todavía no hay catálogo cerrado de playbooks/subestados, y encasillarlos antes de tiempo obligaría a migrar.
+// Campos de seguimiento de CS que solo aplican a las tareas de Tony. Catálogo cerrado: se eligen de una lista
+// para que la vista de tareas y el Excel sean agrupables. Se guarda el texto tal cual, no un código.
 const TAREA_CAMPOS_TONY=[
-  {k:'playbook',label:'Playbook asociado'},
-  {k:'subestadoSmb',label:'Subestado SMB'},
-  {k:'causaRaiz',label:'Causa raíz del riesgo'},
-  {k:'estadoTarea',label:'Estado de tarea'},
-  {k:'estadoLlamada',label:'Estado de llamada'}
+  {k:'playbook',label:'Playbook asociado',opts:['Cliente Crítico','Cliente en Riesgo']},
+  {k:'subestadoSmb',label:'Subestado SMB',opts:['Por contactar','En Diagnóstico','Plan de Rescate Activo','Monitoreo de Estabilidad','Cerrado Estabilizado','No Aplica']},
+  {k:'causaRaiz',label:'Causa raíz del riesgo',opts:['Técnica','Operativa - Capacitación','Comportamental - De Uso','Soporte','No Identificada']},
+  {k:'estadoTarea',label:'Estado de tarea',opts:['Pendiente','En Proceso','Agendado','Realizado','Cancelado','Reagendado']},
+  {k:'estadoLlamada',label:'Estado de llamada',opts:['Pendiente','Contactado','Sin Respuesta','Reprogramado','Contacto Erróneo']}
 ];
 const esTareaTony=r=>String(r||'').trim().toLowerCase()==='tony';
 let TAREA_CUENTA_UID=null; // cuenta abierta en el modal, para refrescar su lista cuando llega un cambio de Firebase
@@ -3299,7 +3306,7 @@ function openDetail(uid){
       <textarea id="tareaTexto" class="tarea-input" placeholder="¿Qué hay que hacer en esta cuenta?" style="min-height:64px;resize:vertical"></textarea>
       <div id="tareaCamposTony" style="display:none;margin-top:10px">
         <p class="legend" style="margin-bottom:6px">Seguimiento de CS — estos campos solo se piden cuando la tarea es de Tony.</p>
-        <div class="tarea-grid">${TAREA_CAMPOS_TONY.map(c=>`<div><label class="tarea-label" for="tarea_${c.k}">${esc(c.label)}</label><input type="text" id="tarea_${c.k}" class="tarea-input"></div>`).join('')}</div>
+        <div class="tarea-grid">${TAREA_CAMPOS_TONY.map(c=>`<div><label class="tarea-label" for="tarea_${c.k}">${esc(c.label)}</label><select id="tarea_${c.k}" class="tarea-input"><option value="">Sin definir</option>${c.opts.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join('')}</select></div>`).join('')}</div>
       </div>
       <div style="margin-top:10px"><button class="btn btn-primary" id="tareaSaveBtn">Crear tarea</button></div>
       <div id="tareaListWrap" style="margin-top:12px"></div>
@@ -3365,31 +3372,76 @@ function toast(msg,err){let t=$('toast');if(!t){t=document.createElement('div');
 
 // ---------- navegación / init ----------
 function hydrate(arr){return arr.map((a,i)=>{const o=Object.assign({},a);o._uid='a'+i;if(!o.fuga)o.fuga=fugaFromMonths(o.meses);return o;});}
-let tareasState={resp:'',q:'',soloVencidas:false};
-function renderTareas(){
-  const todas=tareasList();
+let tareasState={resp:'',q:'',soloVencidas:false,vista:'tablero'};
+// filtros compartidos por el tablero y la lista — lo que se ve es lo que se descarga
+function tareasFiltradas(){
   const hoy=todayISO();
-  const esVencida=t=>!!t.fechaLimite&&t.fechaLimite<hoy;
-  // mapa cuentaKey -> cuenta, para poder abrir el detalle desde la fila
-  const porKey={};ACCOUNTS.forEach(a=>{const k=annotKey(a);if(!porKey[k])porKey[k]=a;});
-
-  let rows=todas.slice();
+  let rows=tareasList();
   if(tareasState.resp)rows=rows.filter(t=>t.responsable===tareasState.resp);
-  if(tareasState.soloVencidas)rows=rows.filter(esVencida);
+  if(tareasState.soloVencidas)rows=rows.filter(t=>!!t.fechaLimite&&t.fechaLimite<hoy);
   if(tareasState.q.trim()){
     const q=normName(tareasState.q);
     rows=rows.filter(t=>normName(t.cuentaNombre||'').includes(q)||normName(t.texto||'').includes(q));
   }
+  return rows;
+}
+// una columna por responsable, en el orden del catálogo; al final una columna extra si quedó
+// alguna tarea con un responsable que ya no está en la lista (no se pierde de vista)
+function tareasPorResponsable(rows){
+  const cols=TAREA_RESPONSABLES.map(r=>({resp:r,items:rows.filter(t=>t.responsable===r)}));
+  const otros=rows.filter(t=>!TAREA_RESPONSABLES.includes(t.responsable));
+  if(otros.length)cols.push({resp:'Otros',items:otros});
+  return cols;
+}
+function tareaCardHTML(t,porKey){
+  const a=porKey[t.cuentaKey];
+  const click=a?` onclick="openDetail('${a._uid}')"`:'';
+  return `<div class="tarea-card"${click}>
+    <div class="tarea-card-cuenta">${esc(t.cuentaNombre||'(sin nombre)')}${a?'':' <span class="badge b-gray">fuera de cartera</span>'}</div>
+    <div class="tarea-card-txt">${esc(t.texto||'')}</div>
+    ${tareaExtrasHTML(t)}
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:5px">
+      <span class="legend">${fechaLimiteHTML(t.fechaLimite)}</span>
+      <button class="hist-icon-btn" title="Eliminar esta tarea" onclick="event.stopPropagation();deleteTarea('${esc(t._id)}')">🗑</button>
+    </div>
+  </div>`;
+}
+function renderTareas(){
+  const todas=tareasList();
+  const hoy=todayISO();
+  const esVencida=t=>!!t.fechaLimite&&t.fechaLimite<hoy;
+  const porKey={};ACCOUNTS.forEach(a=>{const k=annotKey(a);if(!porKey[k])porKey[k]=a;});
+  const rows=tareasFiltradas();
 
   const nVencidas=todas.filter(esVencida).length;
   const enSemana=todas.filter(t=>t.fechaLimite&&t.fechaLimite>=hoy&&(new Date(t.fechaLimite+'T00:00:00')-new Date(hoy+'T00:00:00'))/864e5<=7).length;
   const sinFecha=todas.filter(t=>!t.fechaLimite).length;
   const porResp={};todas.forEach(t=>{const r=t.responsable||'—';porResp[r]=(porResp[r]||0)+1;});
-
   const estado=ANNOT_STATUS==='conectado'?'':`<div class="note-box" style="color:#854F0B">Las tareas viven en Firebase y ahora mismo <strong>no hay conexión</strong> (${esc(ANNOT_STATUS)}). Revisa la pestaña Datos — hasta que conecte no vas a ver ni poder crear tareas.</div>`;
+  const chip=(activo,color,fondo)=>`background:${activo?fondo:'transparent'};color:${activo?color:'var(--color-text-secondary)'};border-color:${activo?color:'var(--color-border-secondary)'}`;
+
+  const cuerpo=tareasState.vista==='tablero'
+    ? (rows.length?`<div class="tarea-board">${tareasPorResponsable(rows).map(c=>`
+        <div class="tarea-col">
+          <div class="tarea-col-head"><span>${esc(c.resp)}</span><span class="badge b-gray">${c.items.length}</span></div>
+          ${c.items.length?c.items.map(t=>tareaCardHTML(t,porKey)).join(''):'<p class="legend">Sin tareas.</p>'}
+        </div>`).join('')}</div>`:'')
+    : (rows.length?`<div class="card"><div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Responsable</th><th class="nosort">Tarea</th><th class="nosort">Fecha límite</th><th class="nosort">Creada</th><th class="nosort"></th></tr></thead><tbody>
+        ${rows.map(t=>{
+          const a=porKey[t.cuentaKey];
+          const click=a?` style="cursor:pointer" onclick="openDetail('${a._uid}')"`:'';
+          return `<tr${click}>
+            <td style="font-weight:500;max-width:200px">${esc(t.cuentaNombre||'(cuenta sin nombre)')}${a?'':' <span class="badge b-gray" title="La tarea existe en Firebase pero la cuenta ya no está en la cartera cargada">fuera de cartera</span>'}</td>
+            <td><span class="badge b-gray">${esc(t.responsable||'—')}</span></td>
+            <td style="max-width:420px">${esc(t.texto||'')}${tareaExtrasHTML(t)}</td>
+            <td style="white-space:nowrap">${fechaLimiteHTML(t.fechaLimite)}</td>
+            <td class="legend" style="white-space:nowrap">${t.creado?new Date(t.creado).toLocaleDateString('es-MX',{day:'2-digit',month:'short'}):''}${t.autor?'<br>'+esc(t.autor):''}</td>
+            <td><button class="hist-icon-btn" title="Eliminar esta tarea" onclick="event.stopPropagation();deleteTarea('${esc(t._id)}')">🗑</button></td>
+          </tr>`;}).join('')}
+        </tbody></table></div></div>`:'');
 
   $('tareas').innerHTML=`
-  <div class="note-box">Todas las tareas creadas desde el detalle de cada cuenta, <strong>la más urgente primero</strong> (por fecha límite; las que no tienen fecha van al final). Se guardan en Firebase, así que se ven en vivo para todo el equipo. Para crear una, abre cualquier cuenta y usa la sección <strong>Nueva tarea</strong>. Las tareas de <strong>Tony</strong> llevan además los campos de seguimiento de CS (playbook, subestado SMB, causa raíz, estado de tarea y de llamada), que aparecen debajo del texto cuando están llenos. Clic en la fila para abrir la cuenta.</div>
+  <div class="note-box">Todas las tareas creadas desde el detalle de cada cuenta. En <strong>Tablero</strong> hay una columna por responsable; en <strong>Lista</strong>, una sola tabla ordenada por urgencia (fecha límite ascendente, las sin fecha al final). Se guardan en Firebase, así que se ven en vivo para todo el equipo. Para crear una, abre cualquier cuenta y usa la sección <strong>Nueva tarea</strong>. Las tareas de <strong>Tony</strong> llevan además los campos de CS (playbook, subestado SMB, causa raíz, estado de tarea y de llamada), que aparecen bajo el texto. El botón <strong>Descargar Excel</strong> baja exactamente lo que estás viendo con los filtros puestos, con una columna por cada campo de Tony.</div>
   ${estado}
   <div class="metrics">
     <div class="metric"><div class="label">Tareas abiertas</div><div class="value">${todas.length}</div><div class="sub">${sinFecha} sin fecha límite</div></div>
@@ -3398,32 +3450,53 @@ function renderTareas(){
     <div class="metric"><div class="label">Responsables activos</div><div class="value">${Object.keys(porResp).length}</div><div class="sub">${Object.entries(porResp).sort((x,y)=>y[1]-x[1]).map(([r,n])=>esc(r)+' '+n).join(' · ')||'—'}</div></div>
   </div>
   <div class="controls" style="align-items:center">
+    <div style="display:flex;gap:8px">
+      <button class="toggle-chip" id="tareasVistaTablero" style="${chip(tareasState.vista==='tablero','#185FA5','#E6F1FB')}">Tablero</button>
+      <button class="toggle-chip" id="tareasVistaLista" style="${chip(tareasState.vista==='lista','#185FA5','#E6F1FB')}">Lista</button>
+    </div>
     <select id="tareasResp">
       <option value="">Todos los responsables</option>
       ${TAREA_RESPONSABLES.map(r=>`<option value="${esc(r)}"${tareasState.resp===r?' selected':''}>${esc(r)}${porResp[r]?' ('+porResp[r]+')':''}</option>`).join('')}
     </select>
-    <button class="toggle-chip" id="tareasVenc" style="background:${tareasState.soloVencidas?'#FBECEC':'transparent'};color:${tareasState.soloVencidas?'#A32D2D':'var(--color-text-secondary)'};border-color:${tareasState.soloVencidas?'#A32D2D':'var(--color-border-secondary)'}">Solo vencidas</button>
-    <input type="text" id="tareasBuscar" value="${esc(tareasState.q)}" placeholder="Buscar cuenta o texto…" style="font-family:var(--font-sans);font-size:13px;padding:7px 12px;border-radius:999px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);min-width:220px">
+    <button class="toggle-chip" id="tareasVenc" style="${chip(tareasState.soloVencidas,'#A32D2D','#FBECEC')}">Solo vencidas</button>
+    <input type="text" id="tareasBuscar" value="${esc(tareasState.q)}" placeholder="Buscar cuenta o texto…" style="font-family:var(--font-sans);font-size:13px;padding:7px 12px;border-radius:999px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);min-width:200px">
+    <button class="btn" id="tareasExcelBtn" style="font-size:12px;padding:6px 14px"${rows.length?'':' disabled'} title="${rows.length?'Descarga las '+rows.length+' tareas que se ven con estos filtros, con todos los campos de Tony en columnas aparte.':'No hay tareas que descargar con estos filtros'}">⬇ Descargar Excel</button>
   </div>
-  ${rows.length?`<div class="card"><div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Responsable</th><th class="nosort">Tarea</th><th class="nosort">Fecha límite</th><th class="nosort">Creada</th><th class="nosort"></th></tr></thead><tbody>
-    ${rows.map(t=>{
-      const a=porKey[t.cuentaKey];
-      const click=a?` style="cursor:pointer" onclick="openDetail('${a._uid}')"`:'';
-      return `<tr${click}>
-        <td style="font-weight:500;max-width:200px">${esc(t.cuentaNombre||'(cuenta sin nombre)')}${a?'':' <span class="badge b-gray" title="La tarea existe en Firebase pero la cuenta ya no está en la cartera cargada">fuera de cartera</span>'}</td>
-        <td><span class="badge b-gray">${esc(t.responsable||'—')}</span></td>
-        <td style="max-width:420px">${esc(t.texto||'')}${tareaExtrasHTML(t)}</td>
-        <td style="white-space:nowrap">${fechaLimiteHTML(t.fechaLimite)}</td>
-        <td class="legend" style="white-space:nowrap">${t.creado?new Date(t.creado).toLocaleDateString('es-MX',{day:'2-digit',month:'short'}):''}${t.autor?'<br>'+esc(t.autor):''}</td>
-        <td><button class="hist-icon-btn" title="Eliminar esta tarea" onclick="event.stopPropagation();deleteTarea('${esc(t._id)}')">🗑</button></td>
-      </tr>`;
-    }).join('')}
-    </tbody></table></div></div>`:`<p class="legend">${todas.length?'Ninguna tarea coincide con estos filtros.':'Todavía no hay tareas. Abre una cuenta y créala desde la sección "Nueva tarea" del detalle.'}</p>`}
+  ${cuerpo||`<p class="legend">${todas.length?'Ninguna tarea coincide con estos filtros.':'Todavía no hay tareas. Abre una cuenta y créala desde la sección "Nueva tarea" del detalle.'}</p>`}
   `;
+  $('tareasVistaTablero').onclick=()=>{tareasState.vista='tablero';renderTareas();};
+  $('tareasVistaLista').onclick=()=>{tareasState.vista='lista';renderTareas();};
   $('tareasResp').onchange=e=>{tareasState.resp=e.target.value;renderTareas();};
   $('tareasVenc').onclick=()=>{tareasState.soloVencidas=!tareasState.soloVencidas;renderTareas();};
+  $('tareasExcelBtn').onclick=()=>tareasDownloadExcel(rows);
   const buscar=$('tareasBuscar');
   buscar.oninput=e=>{tareasState.q=e.target.value;renderTareas();$('tareasBuscar').focus();};
+}
+// Excel de lo que está filtrado en pantalla. Los 5 campos de Tony van siempre como columnas propias
+// (vacías en las tareas de los demás) para que la hoja se pueda filtrar y tabular sin reacomodar nada.
+function tareasDownloadExcel(rows){
+  if(!rows||!rows.length){toast('No hay tareas para descargar con estos filtros.',true);return;}
+  const hoy=todayISO();
+  const data=rows.map(t=>{
+    const fila={
+      'Cuenta':t.cuentaNombre||'',
+      'ID Geo':t.cuentaId||'',
+      'Responsable':t.responsable||'',
+      'Tarea':t.texto||'',
+      'Fecha límite':t.fechaLimite||'',
+      'Situación':!t.fechaLimite?'Sin fecha':t.fechaLimite<hoy?'Vencida':t.fechaLimite===hoy?'Vence hoy':'En plazo'
+    };
+    TAREA_CAMPOS_TONY.forEach(c=>{fila[c.label]=t[c.k]||'';});
+    fila['Creada']=t.creado?new Date(t.creado).toLocaleDateString('es-MX'):'';
+    fila['Creada por']=t.autor||'';
+    return fila;
+  });
+  const ws=XLSX.utils.json_to_sheet(data);
+  ws['!cols']=[{wch:34},{wch:14},{wch:12},{wch:46},{wch:13},{wch:12},{wch:18},{wch:24},{wch:24},{wch:14},{wch:16},{wch:12},{wch:14}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Tareas');
+  XLSX.writeFile(wb,`tareas_${tareasState.resp?normName(tareasState.resp):'todas'}_${hoy}.xlsx`);
+  toast('Descargando '+rows.length+' tareas…');
 }
 const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,tiempoRegistrar:renderTiempoRegistrar,tiempoRecuento:renderTiempoRecuento,implementacion:renderImplementacion,tareas:renderTareas,sinuso:renderSinUso,pipeline:renderPipeline,datos:renderDatos};
 function renderAll(){applyAnnotationsToAccounts();applyApoyoToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
