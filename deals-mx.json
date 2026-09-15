@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-30T21:39:59-06:00",
+  "generado": "2026-09-14T21:58:11-06:00",
   "fuente": "Zoho CRM · Deals",
   "propietario": "KAM México",
   "territorio": "México",
@@ -8,7 +8,7 @@
     "Raúl Campos",
     "Karla Patiño"
   ],
-  "total": 429,
+  "total": 447,
   "deals": [
     {
       "id": "3525045000656787073",
@@ -20,10 +20,25 @@
       "etapa": "1. Trato Creado",
       "cerrado": false,
       "producto": "Optimizador de Turnos",
-      "valor": 0,
+      "valor": 35000,
       "owner": "KAM México",
       "creado": "2026-08-28T11:00:05-06:00",
-      "modificado": "2026-08-28T11:02:47-06:00"
+      "modificado": "2026-08-31T23:12:13-06:00"
+    },
+    {
+      "id": "3525045000656787052",
+      "trato": "Cross - ALERTASJYT",
+      "cuenta": "J&T EXPRESS",
+      "cuenta_id": "3525045000260992026",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Control de Acceso",
+      "valor": 28000,
+      "owner": "KAM México",
+      "creado": "2026-08-28T09:58:37-06:00",
+      "modificado": "2026-09-10T14:47:29-06:00"
     },
     {
       "id": "3525045000656787063",
@@ -35,25 +50,25 @@
       "etapa": "1. Trato Creado",
       "cerrado": false,
       "producto": "Módulo Vacaciones",
-      "valor": 0,
+      "valor": 28000,
       "owner": "KAM México",
       "creado": "2026-08-28T10:58:59-06:00",
-      "modificado": "2026-08-28T11:01:47-06:00"
+      "modificado": "2026-08-31T23:11:32-06:00"
     },
     {
-      "id": "3525045000656787052",
-      "trato": "ALERTAS",
-      "cuenta": "J&T EXPRESS",
-      "cuenta_id": "3525045000260992026",
+      "id": "3525045000660670635",
+      "trato": "ALERTAS GFR",
+      "cuenta": "Grupo ferrocarrilero del sureste",
+      "cuenta_id": "3525045000478422670",
       "kam": "Dafne de la Rosa",
-      "correo_kam": "",
+      "correo_kam": "ddelarosa@geovictoria.com",
       "etapa": "1. Trato Creado",
       "cerrado": false,
-      "producto": "Control de Acceso",
-      "valor": 0,
+      "producto": "Alertas",
+      "valor": 4800,
       "owner": "KAM México",
-      "creado": "2026-08-28T09:58:37-06:00",
-      "modificado": "2026-08-28T10:57:44-06:00"
+      "creado": "2026-09-10T12:53:52-06:00",
+      "modificado": "2026-09-10T12:55:54-06:00"
     },
     {
       "id": "3525045000656377035",
@@ -87,22 +102,22 @@
     },
     {
       "id": "3525045000656377136",
-      "trato": "OPTIMIZADOR",
+      "trato": "ALERTAS IDINSA",
       "cuenta": "IDINSA",
       "cuenta_id": "3525045000416193121",
       "kam": "Dafne de la Rosa",
       "correo_kam": "ddelarosa@geovictoria.com",
       "etapa": "2. Primera Reunion Realizada",
       "cerrado": false,
-      "producto": "Optimizador de Turnos",
+      "producto": "Alertas",
       "valor": 7200,
       "owner": "KAM México",
       "creado": "2026-08-27T12:34:41-06:00",
-      "modificado": "2026-08-27T12:36:02-06:00"
+      "modificado": "2026-09-08T10:02:21-06:00"
     },
     {
       "id": "3525045000656377129",
-      "trato": "CALENDARIO",
+      "trato": "CALENDARIO IDINSA",
       "cuenta": "IDINSA",
       "cuenta_id": "3525045000416193121",
       "kam": "Dafne de la Rosa",
@@ -113,7 +128,7 @@
       "valor": 7200,
       "owner": "KAM México",
       "creado": "2026-08-27T12:33:36-06:00",
-      "modificado": "2026-08-27T12:35:01-06:00"
+      "modificado": "2026-09-07T16:34:03-06:00"
     },
     {
       "id": "3525045000656377028",
@@ -131,6 +146,51 @@
       "modificado": "2026-08-27T11:40:01-06:00"
     },
     {
+      "id": "3525045000656377118",
+      "trato": "Cross - CALENDARIO INTELIGENTEJYT",
+      "cuenta": "J&T EXPRESS",
+      "cuenta_id": "3525045000260992026",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "",
+      "etapa": "2. Primera Reunion Realizada",
+      "cerrado": false,
+      "producto": "Calendario Inteligente",
+      "valor": 6800,
+      "owner": "KAM México",
+      "creado": "2026-08-27T12:28:07-06:00",
+      "modificado": "2026-09-10T14:53:14-06:00"
+    },
+    {
+      "id": "3525045000657385818",
+      "trato": "CALENDARIO INTELIGENTE BLANTEX",
+      "cuenta": "Blantex",
+      "cuenta_id": "3525045000476572360",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "2. Primera Reunion Realizada",
+      "cerrado": false,
+      "producto": "Alertas",
+      "valor": 2770,
+      "owner": "KAM México",
+      "creado": "2026-09-01T09:54:41-06:00",
+      "modificado": "2026-09-03T13:25:33-06:00"
+    },
+    {
+      "id": "3525045000656377042",
+      "trato": "ALERTAS BLANTEX",
+      "cuenta": "Blantex",
+      "cuenta_id": "3525045000476572360",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "2. Primera Reunion Realizada",
+      "cerrado": false,
+      "producto": "Alertas",
+      "valor": 2770,
+      "owner": "KAM México",
+      "creado": "2026-08-27T11:57:11-06:00",
+      "modificado": "2026-09-03T13:21:42-06:00"
+    },
+    {
       "id": "3525045000656377053",
       "trato": "ALERTAS",
       "cuenta": "IPISA",
@@ -146,19 +206,19 @@
       "modificado": "2026-08-27T12:01:38-06:00"
     },
     {
-      "id": "3525045000656377042",
-      "trato": "ALERTAS",
-      "cuenta": "Blantex",
-      "cuenta_id": "3525045000476572360",
+      "id": "3525045000656377075",
+      "trato": "INTEGRACION",
+      "cuenta": "POLYMAT",
+      "cuenta_id": "3525045000079485146",
       "kam": "Dafne de la Rosa",
       "correo_kam": "ddelarosa@geovictoria.com",
       "etapa": "2. Primera Reunion Realizada",
       "cerrado": false,
-      "producto": "Alertas",
-      "valor": 2770,
+      "producto": "Integraciones Victoria Connect",
+      "valor": 2000,
       "owner": "KAM México",
-      "creado": "2026-08-27T11:57:11-06:00",
-      "modificado": "2026-08-27T11:59:20-06:00"
+      "creado": "2026-08-27T12:09:23-06:00",
+      "modificado": "2026-09-09T12:13:13-06:00"
     },
     {
       "id": "3525045000656787019",
@@ -173,7 +233,52 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2026-08-28T09:38:35-06:00",
-      "modificado": "2026-08-28T09:40:25-06:00"
+      "modificado": "2026-09-09T12:12:51-06:00"
+    },
+    {
+      "id": "3525045000657385950",
+      "trato": "ALERTAS Polymat",
+      "cuenta": "POLYMAT",
+      "cuenta_id": "3525045000079485146",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "2. Primera Reunion Realizada",
+      "cerrado": false,
+      "producto": "Alertas",
+      "valor": 2000,
+      "owner": "KAM México",
+      "creado": "2026-09-01T17:05:52-06:00",
+      "modificado": "2026-09-09T12:12:50-06:00"
+    },
+    {
+      "id": "3525045000657385847",
+      "trato": "CALENDARIO INTELIGENTE",
+      "cuenta": "POLYMAT",
+      "cuenta_id": "3525045000079485146",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "2. Primera Reunion Realizada",
+      "cerrado": false,
+      "producto": "Calendario Inteligente",
+      "valor": 2000,
+      "owner": "KAM México",
+      "creado": "2026-09-01T10:25:31-06:00",
+      "modificado": "2026-09-09T12:12:50-06:00"
+    },
+    {
+      "id": "3525045000656377086",
+      "trato": "ALERTAS",
+      "cuenta": "Transmal",
+      "cuenta_id": "3525045000094546145",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "2. Primera Reunion Realizada",
+      "cerrado": false,
+      "producto": "Alertas",
+      "valor": 2000,
+      "owner": "KAM México",
+      "creado": "2026-08-27T12:15:52-06:00",
+      "modificado": "2026-08-31T23:07:00-06:00"
     },
     {
       "id": "3525045000656377158",
@@ -191,21 +296,6 @@
       "modificado": "2026-08-27T12:44:10-06:00"
     },
     {
-      "id": "3525045000656377075",
-      "trato": "INTEGRACION",
-      "cuenta": "POLYMAT",
-      "cuenta_id": "3525045000079485146",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "ddelarosa@geovictoria.com",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Integraciones Victoria Connect",
-      "valor": 2000,
-      "owner": "KAM México",
-      "creado": "2026-08-27T12:09:23-06:00",
-      "modificado": "2026-08-27T12:11:32-06:00"
-    },
-    {
       "id": "3525045000656377064",
       "trato": "ALERTAS",
       "cuenta": "Distribuidora Clabeck S.A DE C.V",
@@ -221,68 +311,23 @@
       "modificado": "2026-08-27T12:07:28-06:00"
     },
     {
-      "id": "3525045000656787029",
-      "trato": "ALERTAS",
-      "cuenta": "CITY TOUR",
-      "cuenta_id": "3525045000521739559",
+      "id": "3525045000656377097",
+      "trato": "Cross - Calendario Inteligente",
+      "cuenta": "Transmal",
+      "cuenta_id": "3525045000094546145",
       "kam": "Dafne de la Rosa",
-      "correo_kam": "",
+      "correo_kam": "ddelarosa@geovictoria.com",
       "etapa": "2. Primera Reunion Realizada",
       "cerrado": false,
       "producto": "Alertas",
-      "valor": 0,
+      "valor": 1200,
       "owner": "KAM México",
-      "creado": "2026-08-28T09:45:56-06:00",
-      "modificado": "2026-08-28T09:50:31-06:00"
-    },
-    {
-      "id": "3525045000656787036",
-      "trato": "VACACIONES",
-      "cuenta": "CITY TOUR",
-      "cuenta_id": "3525045000521739559",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Módulo Vacaciones",
-      "valor": 0,
-      "owner": "KAM México",
-      "creado": "2026-08-28T09:47:27-06:00",
-      "modificado": "2026-08-28T09:49:33-06:00"
-    },
-    {
-      "id": "3525045000656787008",
-      "trato": "UP Selling",
-      "cuenta": "IDINSA",
-      "cuenta_id": "3525045000416193121",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Control de Asistencia",
-      "valor": 0,
-      "owner": "KAM México",
-      "creado": "2026-08-28T09:28:49-06:00",
-      "modificado": "2026-08-28T09:36:35-06:00"
-    },
-    {
-      "id": "3525045000656377118",
-      "trato": "CALENDARIO INTELIGENTE",
-      "cuenta": "J&T EXPRESS",
-      "cuenta_id": "3525045000260992026",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Calendario Inteligente",
-      "valor": 0,
-      "owner": "KAM México",
-      "creado": "2026-08-27T12:28:07-06:00",
-      "modificado": "2026-08-27T12:30:58-06:00"
+      "creado": "2026-08-27T12:17:49-06:00",
+      "modificado": "2026-08-31T23:07:57-06:00"
     },
     {
       "id": "3525045000656377107",
-      "trato": "ALERTAS",
+      "trato": "Cross - ALERTAS",
       "cuenta": "FORBO",
       "cuenta_id": "3525045000487258080",
       "kam": "Dafne de la Rosa",
@@ -290,40 +335,55 @@
       "etapa": "2. Primera Reunion Realizada",
       "cerrado": false,
       "producto": "Alertas",
-      "valor": 0,
+      "valor": 1000,
       "owner": "KAM México",
       "creado": "2026-08-27T12:21:55-06:00",
-      "modificado": "2026-08-27T12:23:44-06:00"
+      "modificado": "2026-08-31T23:08:18-06:00"
     },
     {
-      "id": "3525045000656377097",
-      "trato": "CALENDARIO",
-      "cuenta": "Transmal",
-      "cuenta_id": "3525045000094546145",
+      "id": "3525045000656787029",
+      "trato": "Cross - ALERTAS",
+      "cuenta": "CITY TOUR",
+      "cuenta_id": "3525045000521739559",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "",
+      "etapa": "2. Primera Reunion Realizada",
+      "cerrado": false,
+      "producto": "Alertas",
+      "valor": 750,
+      "owner": "KAM México",
+      "creado": "2026-08-28T09:45:56-06:00",
+      "modificado": "2026-08-31T23:10:21-06:00"
+    },
+    {
+      "id": "3525045000656787036",
+      "trato": "Cross - VACACIONES",
+      "cuenta": "CITY TOUR",
+      "cuenta_id": "3525045000521739559",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "",
+      "etapa": "2. Primera Reunion Realizada",
+      "cerrado": false,
+      "producto": "Módulo Vacaciones",
+      "valor": 750,
+      "owner": "KAM México",
+      "creado": "2026-08-28T09:47:27-06:00",
+      "modificado": "2026-08-31T23:10:03-06:00"
+    },
+    {
+      "id": "3525045000657777283",
+      "trato": "Marcaje WA POLYMAT",
+      "cuenta": "POLYMAT",
+      "cuenta_id": "3525045000079485146",
       "kam": "Dafne de la Rosa",
       "correo_kam": "ddelarosa@geovictoria.com",
       "etapa": "2. Primera Reunion Realizada",
       "cerrado": false,
-      "producto": "Alertas",
-      "valor": 0,
+      "producto": "Marcaje WhatsApp",
+      "valor": 200,
       "owner": "KAM México",
-      "creado": "2026-08-27T12:17:49-06:00",
-      "modificado": "2026-08-27T12:19:41-06:00"
-    },
-    {
-      "id": "3525045000656377086",
-      "trato": "ALERTAS",
-      "cuenta": "Transmal",
-      "cuenta_id": "3525045000094546145",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "ddelarosa@geovictoria.com",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Alertas",
-      "valor": 0,
-      "owner": "KAM México",
-      "creado": "2026-08-27T12:15:52-06:00",
-      "modificado": "2026-08-27T12:17:38-06:00"
+      "creado": "2026-09-02T13:46:19-06:00",
+      "modificado": "2026-09-09T12:12:51-06:00"
     },
     {
       "id": "3525045000654550038",
@@ -353,7 +413,22 @@
       "valor": 4500,
       "owner": "KAM México",
       "creado": "2026-05-18T11:52:47-06:00",
-      "modificado": "2026-08-28T11:51:58-06:00"
+      "modificado": "2026-09-11T12:08:04-06:00"
+    },
+    {
+      "id": "3525045000621513434",
+      "trato": "MODULO DE VACACIONES",
+      "cuenta": "Gtc Termo Control México",
+      "cuenta_id": "3525045000363350205",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "4. Propuesta Enviada / En Negociación",
+      "cerrado": false,
+      "producto": "Módulo Vacaciones",
+      "valor": 4000,
+      "owner": "KAM México",
+      "creado": "2026-04-27T13:33:13-06:00",
+      "modificado": "2026-09-11T12:07:03-06:00"
     },
     {
       "id": "3525045000654550010",
@@ -369,21 +444,6 @@
       "owner": "KAM México",
       "creado": "2026-08-19T17:28:46-06:00",
       "modificado": "2026-08-19T17:30:06-06:00"
-    },
-    {
-      "id": "3525045000621513434",
-      "trato": "MODULO DE VACACIONES",
-      "cuenta": "Gtc Termo Control México",
-      "cuenta_id": "3525045000363350205",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "ddelarosa@geovictoria.com",
-      "etapa": "4. Propuesta Enviada / En Negociación",
-      "cerrado": false,
-      "producto": "Módulo Vacaciones",
-      "valor": 4000,
-      "owner": "KAM México",
-      "creado": "2026-04-27T13:33:13-06:00",
-      "modificado": "2026-08-19T17:27:28-06:00"
     },
     {
       "id": "3525045000652108042",
@@ -428,7 +488,7 @@
       "valor": 1875,
       "owner": "KAM México",
       "creado": "2025-03-27T11:58:50-06:00",
-      "modificado": "2026-08-10T19:33:56-06:00"
+      "modificado": "2026-09-11T12:07:03-06:00"
     },
     {
       "id": "3525045000654550024",
@@ -476,19 +536,19 @@
       "modificado": "2026-08-19T17:23:59-06:00"
     },
     {
-      "id": "3525045000632551189",
-      "trato": "J& T EXPRESS DASHBOARD BI",
-      "cuenta": "J&T EXPRESS",
-      "cuenta_id": "3525045000260992026",
+      "id": "3525045000656787008",
+      "trato": "UP Selling",
+      "cuenta": "IDINSA",
+      "cuenta_id": "3525045000416193121",
       "kam": "Dafne de la Rosa",
-      "correo_kam": "ddelarosa@geovictoria.com",
-      "etapa": "5. Piloto",
+      "correo_kam": "",
+      "etapa": "6. Listo para Cierre",
       "cerrado": false,
-      "producto": "Dashboard BI",
-      "valor": 0,
+      "producto": "Control de Asistencia",
+      "valor": 6000,
       "owner": "KAM México",
-      "creado": "2026-06-04T15:27:04-06:00",
-      "modificado": "2026-06-04T15:29:27-06:00"
+      "creado": "2026-08-28T09:28:49-06:00",
+      "modificado": "2026-09-10T16:34:25-06:00"
     },
     {
       "id": "3525045000654561001",
@@ -548,7 +608,7 @@
       "valor": 5600,
       "owner": "KAM México",
       "creado": "2026-03-18T17:57:03-06:00",
-      "modificado": "2026-05-19T11:47:46-06:00"
+      "modificado": "2026-09-11T12:07:03-06:00"
     },
     {
       "id": "3525045000625765113",
@@ -1871,6 +1931,21 @@
       "modificado": "2026-03-23T13:24:44-06:00"
     },
     {
+      "id": "3525045000632551189",
+      "trato": "J& T EXPRESS DASHBOARD BI",
+      "cuenta": "J&T EXPRESS",
+      "cuenta_id": "3525045000260992026",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Dashboard BI",
+      "valor": 0,
+      "owner": "KAM México",
+      "creado": "2026-06-04T15:27:04-06:00",
+      "modificado": "2026-09-02T07:03:21-06:00"
+    },
+    {
       "id": "3525045000647942371",
       "trato": "UP Selling",
       "cuenta": "Saavi energia",
@@ -2021,21 +2096,6 @@
       "modificado": "2026-08-28T12:45:46-06:00"
     },
     {
-      "id": "3525045000656803177",
-      "trato": "Planificador WeeMedic",
-      "cuenta": "WeeMedic",
-      "cuenta_id": "3525045000408599588",
-      "kam": "Karla Patiño",
-      "correo_kam": "kpatino@geovictoria.com",
-      "etapa": "1. Trato Creado",
-      "cerrado": false,
-      "producto": "Calendario Inteligente",
-      "valor": 2700,
-      "owner": "KAM México",
-      "creado": "2026-08-28T12:34:21-06:00",
-      "modificado": "2026-08-28T12:36:36-06:00"
-    },
-    {
       "id": "3525045000656803042",
       "trato": "Weemedic Modulo de Vacaciones",
       "cuenta": "WeeMedic",
@@ -2096,6 +2156,21 @@
       "modificado": "2026-08-28T11:30:22-06:00"
     },
     {
+      "id": "3525045000656803177",
+      "trato": "Planificador WeeMedic",
+      "cuenta": "WeeMedic",
+      "cuenta_id": "3525045000408599588",
+      "kam": "Karla Patiño",
+      "correo_kam": "kpatino@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Calendario Inteligente",
+      "valor": 2500,
+      "owner": "KAM México",
+      "creado": "2026-08-28T12:34:21-06:00",
+      "modificado": "2026-09-10T13:22:04-06:00"
+    },
+    {
       "id": "3525045000656803062",
       "trato": "Planificador SIES",
       "cuenta": "SOCIEDAD INDUSTRIAL EQUIPOS Y SERVICIOS SAPI DE CV",
@@ -2124,6 +2199,21 @@
       "owner": "KAM México",
       "creado": "2026-08-28T11:45:38-06:00",
       "modificado": "2026-08-28T11:47:31-06:00"
+    },
+    {
+      "id": "3525045000656803217",
+      "trato": "Vacaciones Pentel",
+      "cuenta": "PENTEL DE MEXICO, S.A. DE C.V.",
+      "cuenta_id": "3525045000025416166",
+      "kam": "Karla Patiño",
+      "correo_kam": "kpatino@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Módulo Vacaciones",
+      "valor": 1625,
+      "owner": "KAM México",
+      "creado": "2026-08-31T03:39:48-06:00",
+      "modificado": "2026-08-31T03:41:12-06:00"
     },
     {
       "id": "3525045000654478133",
@@ -2270,40 +2360,10 @@
       "etapa": "1. Trato Creado",
       "cerrado": false,
       "producto": "Calendario Inteligente",
-      "valor": 0,
+      "valor": 200,
       "owner": "KAM México",
       "creado": "2026-08-28T12:55:45-06:00",
-      "modificado": "2026-08-28T12:57:57-06:00"
-    },
-    {
-      "id": "3525045000648952329",
-      "trato": "Upselling DOMUS",
-      "cuenta": "Casas Domus",
-      "cuenta_id": "3525045000347552003",
-      "kam": "Karla Patiño",
-      "correo_kam": "kpatino@geovictoria.com",
-      "etapa": "1. Trato Creado",
-      "cerrado": false,
-      "producto": "Control de Asistencia",
-      "valor": 0,
-      "owner": "KAM México",
-      "creado": "2026-08-03T17:36:42-06:00",
-      "modificado": "2026-08-03T17:38:57-06:00"
-    },
-    {
-      "id": "3525045000631317127",
-      "trato": "Up Selling TUSSAN",
-      "cuenta": "TUSSAN",
-      "cuenta_id": "3525045000617025181",
-      "kam": "Karla Patiño",
-      "correo_kam": "kpatino@geovictoria.com",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Control de Asistencia",
-      "valor": 1125,
-      "owner": "KAM México",
-      "creado": "2026-06-02T12:37:10-06:00",
-      "modificado": "2026-06-02T12:39:32-06:00"
+      "modificado": "2026-08-31T23:12:55-06:00"
     },
     {
       "id": "3525045000654478083",
@@ -2319,21 +2379,6 @@
       "owner": "KAM México",
       "creado": "2026-08-19T15:05:58-06:00",
       "modificado": "2026-08-19T15:07:23-06:00"
-    },
-    {
-      "id": "3525045000648952322",
-      "trato": "Alertas Vertiv",
-      "cuenta": "VERTIV MEXICO SOCIEDAD ANONIMA DE CAPITAL VARIABLE",
-      "cuenta_id": "3525045000493749885",
-      "kam": "Karla Patiño",
-      "correo_kam": "",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Módulo Vacaciones",
-      "valor": 93,
-      "owner": "KAM México",
-      "creado": "2026-08-03T17:29:36-06:00",
-      "modificado": "2026-08-03T17:31:50-06:00"
     },
     {
       "id": "3525045000654478109",
@@ -2378,7 +2423,7 @@
       "valor": 4908,
       "owner": "KAM México",
       "creado": "2026-06-01T12:56:54-06:00",
-      "modificado": "2026-07-23T13:17:43-06:00"
+      "modificado": "2026-09-11T12:08:04-06:00"
     },
     {
       "id": "3525045000640693036",
@@ -2408,7 +2453,7 @@
       "valor": 512,
       "owner": "KAM México",
       "creado": "2026-08-19T15:26:40-06:00",
-      "modificado": "2026-08-19T15:28:40-06:00"
+      "modificado": "2026-09-14T20:02:28-06:00"
     },
     {
       "id": "3525045000650438136",
@@ -2483,7 +2528,7 @@
       "valor": 2133,
       "owner": "KAM México",
       "creado": "2025-11-03T16:01:51-06:00",
-      "modificado": "2026-07-06T14:54:07-06:00"
+      "modificado": "2026-09-11T12:07:03-06:00"
     },
     {
       "id": "3525045000604694655",
@@ -3176,6 +3221,21 @@
       "modificado": "2026-06-01T08:56:19-06:00"
     },
     {
+      "id": "3525045000631317127",
+      "trato": "Up Selling TUSSAN",
+      "cuenta": "TUSSAN",
+      "cuenta_id": "3525045000617025181",
+      "kam": "Karla Patiño",
+      "correo_kam": "kpatino@geovictoria.com",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Control de Asistencia",
+      "valor": 1125,
+      "owner": "KAM México",
+      "creado": "2026-06-02T12:37:10-06:00",
+      "modificado": "2026-08-31T07:01:46-06:00"
+    },
+    {
       "id": "3525045000490627865",
       "trato": "Modulo de vacaciones",
       "cuenta": "PERI Cimbras y Andamios",
@@ -3551,6 +3611,21 @@
       "modificado": "2026-06-05T07:03:14-06:00"
     },
     {
+      "id": "3525045000648952322",
+      "trato": "Alertas Vertiv",
+      "cuenta": "VERTIV MEXICO SOCIEDAD ANONIMA DE CAPITAL VARIABLE",
+      "cuenta_id": "3525045000493749885",
+      "kam": "Karla Patiño",
+      "correo_kam": "",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Módulo Vacaciones",
+      "valor": 93,
+      "owner": "KAM México",
+      "creado": "2026-08-03T17:29:36-06:00",
+      "modificado": "2026-09-10T13:16:29-06:00"
+    },
+    {
       "id": "3525045000559247028",
       "trato": "Marcaje Whatsapp",
       "cuenta": "Vivo Jardín",
@@ -3641,6 +3716,21 @@
       "modificado": "2026-03-23T13:24:44-06:00"
     },
     {
+      "id": "3525045000648952329",
+      "trato": "Upselling DOMUS",
+      "cuenta": "Casas Domus",
+      "cuenta_id": "3525045000347552003",
+      "kam": "Karla Patiño",
+      "correo_kam": "kpatino@geovictoria.com",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Control de Asistencia",
+      "valor": 0,
+      "owner": "KAM México",
+      "creado": "2026-08-03T17:36:42-06:00",
+      "modificado": "2026-09-02T07:03:19-06:00"
+    },
+    {
       "id": "3525045000630207042",
       "trato": "RAM SIEMENS",
       "cuenta": "SIEMENS México",
@@ -3671,6 +3761,51 @@
       "modificado": "2026-08-26T16:37:48-06:00"
     },
     {
+      "id": "3525045000659812026",
+      "trato": "Optimizador- Julio",
+      "cuenta": "Grupo JULIO - Asistencia",
+      "cuenta_id": "3525045000446689264",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Optimizador de Turnos",
+      "valor": 19200,
+      "owner": "KAM México",
+      "creado": "2026-09-08T10:06:08-06:00",
+      "modificado": "2026-09-08T10:08:48-06:00"
+    },
+    {
+      "id": "3525045000659235035",
+      "trato": "Centro de Ops- Eulen",
+      "cuenta": "Grupo Eulen México",
+      "cuenta_id": "3525045000269312009",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Centro de Operaciones",
+      "valor": 18000,
+      "owner": "KAM México",
+      "creado": "2026-09-07T09:32:41-06:00",
+      "modificado": "2026-09-07T09:49:13-06:00"
+    },
+    {
+      "id": "3525045000659812019",
+      "trato": "Planif Int Julio",
+      "cuenta": "Grupo JULIO - Asistencia",
+      "cuenta_id": "3525045000446689264",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Calendario Inteligente",
+      "valor": 11200,
+      "owner": "KAM México",
+      "creado": "2026-09-08T10:03:49-06:00",
+      "modificado": "2026-09-08T10:05:44-06:00"
+    },
+    {
       "id": "3525045000656215026",
       "trato": "Cross - Planificador Inteligente",
       "cuenta": "Corporativo Kosmos",
@@ -3684,6 +3819,66 @@
       "owner": "KAM México",
       "creado": "2026-08-26T16:33:32-06:00",
       "modificado": "2026-08-26T16:35:47-06:00"
+    },
+    {
+      "id": "3525045000659235049",
+      "trato": "Centro de Ops- Julio",
+      "cuenta": "Grupo JULIO - Asistencia",
+      "cuenta_id": "3525045000446689264",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Centro de Operaciones",
+      "valor": 9480,
+      "owner": "KAM México",
+      "creado": "2026-09-07T09:42:50-06:00",
+      "modificado": "2026-09-07T09:44:20-06:00"
+    },
+    {
+      "id": "3525045000659235042",
+      "trato": "RAM Ley Silla",
+      "cuenta": "Office Max",
+      "cuenta_id": "3525045000349800122",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Reporte a Medida",
+      "valor": 8860,
+      "owner": "KAM México",
+      "creado": "2026-09-07T09:37:10-06:00",
+      "modificado": "2026-09-07T09:39:14-06:00"
+    },
+    {
+      "id": "3525045000659235021",
+      "trato": "Centro de Ops- Aleatica",
+      "cuenta": "Grupo Aleática",
+      "cuenta_id": "3525045000135979256",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Centro de Operaciones",
+      "valor": 8400,
+      "owner": "KAM México",
+      "creado": "2026-09-07T09:28:54-06:00",
+      "modificado": "2026-09-07T09:45:38-06:00"
+    },
+    {
+      "id": "3525045000657353131",
+      "trato": "Cross - Vacaciones - Fruehauf",
+      "cuenta": "Fruehauf",
+      "cuenta_id": "3525045000199863226",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Calendario Inteligente",
+      "valor": 7000,
+      "owner": "KAM México",
+      "creado": "2026-08-31T23:18:02-06:00",
+      "modificado": "2026-08-31T23:20:36-06:00"
     },
     {
       "id": "3525045000656705963",
@@ -3761,6 +3956,66 @@
       "modificado": "2026-08-28T16:19:01-06:00"
     },
     {
+      "id": "3525045000657353141",
+      "trato": "Cross - Vacaciones - Puratos",
+      "cuenta": "Puratos de México SA de CV",
+      "cuenta_id": "3525045000025416632",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Calendario Inteligente",
+      "valor": 5000,
+      "owner": "KAM México",
+      "creado": "2026-08-31T23:18:46-06:00",
+      "modificado": "2026-08-31T23:20:36-06:00"
+    },
+    {
+      "id": "3525045000657353151",
+      "trato": "Cross - Victoria Connect - Puratos",
+      "cuenta": "Puratos de México SA de CV",
+      "cuenta_id": "3525045000025416632",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Integraciones Victoria Connect",
+      "valor": 4000,
+      "owner": "KAM México",
+      "creado": "2026-08-31T23:19:21-06:00",
+      "modificado": "2026-08-31T23:21:37-06:00"
+    },
+    {
+      "id": "3525045000657884499",
+      "trato": "RAM Ley Silla Fruehauf",
+      "cuenta": "Fruehauf",
+      "cuenta_id": "3525045000199863226",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Reporte a Medida",
+      "valor": 3500,
+      "owner": "KAM México",
+      "creado": "2026-09-03T16:33:52-06:00",
+      "modificado": "2026-09-03T16:35:50-06:00"
+    },
+    {
+      "id": "3525045000659235028",
+      "trato": "Centro de Ops- Ustorage",
+      "cuenta": "U-Storage",
+      "cuenta_id": "3525045000273930332",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Centro de Operaciones",
+      "valor": 3000,
+      "owner": "KAM México",
+      "creado": "2026-09-07T09:30:57-06:00",
+      "modificado": "2026-09-07T09:48:32-06:00"
+    },
+    {
       "id": "3525045000656705625",
       "trato": "Planificador Fruehauf de Mexico",
       "cuenta": "Fruehauf",
@@ -3804,6 +4059,36 @@
       "owner": "KAM México",
       "creado": "2026-08-28T16:27:49-06:00",
       "modificado": "2026-08-28T16:29:11-06:00"
+    },
+    {
+      "id": "3525045000656883065",
+      "trato": "Vacaciones MAXIMUS RESTAURANTE",
+      "cuenta": "MAXIMUS RESTAURANTE",
+      "cuenta_id": "3525045000189898076",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Módulo Vacaciones",
+      "valor": 1360,
+      "owner": "KAM México",
+      "creado": "2026-08-28T17:24:25-06:00",
+      "modificado": "2026-08-31T23:13:27-06:00"
+    },
+    {
+      "id": "3525045000656883055",
+      "trato": "Alertas MAXIMUS RESTAURANTE",
+      "cuenta": "MAXIMUS RESTAURANTE",
+      "cuenta_id": "3525045000189898076",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Alertas",
+      "valor": 1360,
+      "owner": "KAM México",
+      "creado": "2026-08-28T17:23:38-06:00",
+      "modificado": "2026-08-31T23:13:17-06:00"
     },
     {
       "id": "3525045000656705661",
@@ -3860,40 +4145,10 @@
       "etapa": "1. Trato Creado",
       "cerrado": false,
       "producto": "Calendario Inteligente",
-      "valor": 0,
+      "valor": 680,
       "owner": "KAM México",
       "creado": "2026-08-28T17:25:09-06:00",
-      "modificado": "2026-08-28T17:27:08-06:00"
-    },
-    {
-      "id": "3525045000656883065",
-      "trato": "Vacaciones MAXIMUS RESTAURANTE",
-      "cuenta": "MAXIMUS RESTAURANTE",
-      "cuenta_id": "3525045000189898076",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "1. Trato Creado",
-      "cerrado": false,
-      "producto": "Módulo Vacaciones",
-      "valor": 0,
-      "owner": "KAM México",
-      "creado": "2026-08-28T17:24:25-06:00",
-      "modificado": "2026-08-28T17:26:08-06:00"
-    },
-    {
-      "id": "3525045000656883055",
-      "trato": "Alertas MAXIMUS RESTAURANTE",
-      "cuenta": "MAXIMUS RESTAURANTE",
-      "cuenta_id": "3525045000189898076",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "1. Trato Creado",
-      "cerrado": false,
-      "producto": "Alertas",
-      "valor": 0,
-      "owner": "KAM México",
-      "creado": "2026-08-28T17:23:38-06:00",
-      "modificado": "2026-08-28T17:25:06-06:00"
+      "modificado": "2026-08-31T23:13:39-06:00"
     },
     {
       "id": "3525045000649952832",
@@ -3923,22 +4178,7 @@
       "valor": 128,
       "owner": "KAM México",
       "creado": "2026-08-19T11:12:19-06:00",
-      "modificado": "2026-08-27T13:09:47-06:00"
-    },
-    {
-      "id": "3525045000640263241",
-      "trato": "Alertas 2.0 Aleatica",
-      "cuenta": "Grupo Aleática",
-      "cuenta_id": "3525045000135979256",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "4. Propuesta Enviada / En Negociación",
-      "cerrado": false,
-      "producto": "Alertas",
-      "valor": 11360,
-      "owner": "KAM México",
-      "creado": "2026-07-03T14:57:07-06:00",
-      "modificado": "2026-08-28T13:30:52-06:00"
+      "modificado": "2026-09-10T12:59:05-06:00"
     },
     {
       "id": "3525045000644512040",
@@ -3950,10 +4190,25 @@
       "etapa": "4. Propuesta Enviada / En Negociación",
       "cerrado": false,
       "producto": "Integraciones Victoria Connect",
-      "valor": 11312,
+      "valor": 11360,
       "owner": "KAM México",
       "creado": "2026-07-17T15:43:05-06:00",
-      "modificado": "2026-07-17T15:45:34-06:00"
+      "modificado": "2026-09-11T12:10:23-06:00"
+    },
+    {
+      "id": "3525045000630888026",
+      "trato": "Vacaciones y Permisos",
+      "cuenta": "Corporativo Kosmos",
+      "cuenta_id": "3525045000094546230",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "4. Propuesta Enviada / En Negociación",
+      "cerrado": false,
+      "producto": "Módulo Vacaciones",
+      "valor": 10000,
+      "owner": "KAM México",
+      "creado": "2026-05-29T11:19:02-06:00",
+      "modificado": "2026-09-11T12:08:04-06:00"
     },
     {
       "id": "3525045000654308099",
@@ -3971,6 +4226,21 @@
       "modificado": "2026-08-19T11:11:52-06:00"
     },
     {
+      "id": "3525045000627572048",
+      "trato": "Victoria Connect Innova 2.0",
+      "cuenta": "Innova Schools",
+      "cuenta_id": "3525045000188435082",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "4. Propuesta Enviada / En Negociación",
+      "cerrado": false,
+      "producto": "Integraciones Victoria Connect",
+      "valor": 9120,
+      "owner": "KAM México",
+      "creado": "2026-05-15T16:39:16-06:00",
+      "modificado": "2026-09-11T12:08:04-06:00"
+    },
+    {
       "id": "3525045000654308113",
       "trato": "Alertas Innova",
       "cuenta": "Innova Schools",
@@ -3986,21 +4256,6 @@
       "modificado": "2026-08-28T13:39:30-06:00"
     },
     {
-      "id": "3525045000627572048",
-      "trato": "Victoria Connect Innova 2.0",
-      "cuenta": "Innova Schools",
-      "cuenta_id": "3525045000188435082",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "4. Propuesta Enviada / En Negociación",
-      "cerrado": false,
-      "producto": "Integraciones Victoria Connect",
-      "valor": 9120,
-      "owner": "KAM México",
-      "creado": "2026-05-15T16:39:16-06:00",
-      "modificado": "2026-08-18T23:23:11-06:00"
-    },
-    {
       "id": "3525045000648042053",
       "trato": "Alertas Hagalo",
       "cuenta": "Hagalo México",
@@ -4014,21 +4269,6 @@
       "owner": "KAM México",
       "creado": "2026-07-30T12:41:51-06:00",
       "modificado": "2026-07-30T12:43:04-06:00"
-    },
-    {
-      "id": "3525045000640263246",
-      "trato": "Planificador Int Aleatica",
-      "cuenta": "Grupo Aleática",
-      "cuenta_id": "3525045000135979256",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "4. Propuesta Enviada / En Negociación",
-      "cerrado": false,
-      "producto": "Calendario Inteligente",
-      "valor": 7100,
-      "owner": "KAM México",
-      "creado": "2026-07-03T15:04:05-06:00",
-      "modificado": "2026-08-28T13:31:30-06:00"
     },
     {
       "id": "3525045000640711143",
@@ -4088,7 +4328,7 @@
       "valor": 5472,
       "owner": "KAM México",
       "creado": "2026-05-15T16:44:39-06:00",
-      "modificado": "2026-08-18T23:22:27-06:00"
+      "modificado": "2026-09-11T12:08:04-06:00"
     },
     {
       "id": "3525045000623197167",
@@ -4103,7 +4343,7 @@
       "valor": 5150,
       "owner": "KAM México",
       "creado": "2026-04-28T16:02:57-06:00",
-      "modificado": "2026-08-05T16:43:38-06:00"
+      "modificado": "2026-09-11T12:08:04-06:00"
     },
     {
       "id": "3525045000640711138",
@@ -4196,21 +4436,6 @@
       "modificado": "2026-03-23T12:32:14-06:00"
     },
     {
-      "id": "3525045000626786017",
-      "trato": "Upselling anualidad Darovi",
-      "cuenta": "Farmacos Darovi",
-      "cuenta_id": "3525045000152361120",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "6. Listo para Cierre",
-      "cerrado": false,
-      "producto": "Control de Asistencia",
-      "valor": 6954,
-      "owner": "KAM México",
-      "creado": "2026-05-13T10:11:15-06:00",
-      "modificado": "2026-06-24T22:16:10-06:00"
-    },
-    {
       "id": "3525045000632446183",
       "trato": "Permisos Sura",
       "cuenta": "Sura México",
@@ -4223,22 +4448,7 @@
       "valor": 1888,
       "owner": "KAM México",
       "creado": "2026-06-04T16:13:17-06:00",
-      "modificado": "2026-08-05T16:32:47-06:00"
-    },
-    {
-      "id": "3525045000600118201",
-      "trato": "Planificador inteligente Saberin",
-      "cuenta": "SABERIN",
-      "cuenta_id": "3525045000305241333",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "6. Listo para Cierre",
-      "cerrado": false,
-      "producto": "Calendario Inteligente",
-      "valor": 1452,
-      "owner": "KAM México",
-      "creado": "2026-03-17T11:56:50-06:00",
-      "modificado": "2026-06-01T09:33:57-06:00"
+      "modificado": "2026-08-31T18:01:36-06:00"
     },
     {
       "id": "3525045000649952823",
@@ -4253,22 +4463,52 @@
       "valor": 472,
       "owner": "KAM México",
       "creado": "2026-08-05T16:37:26-06:00",
-      "modificado": "2026-08-20T15:23:07-06:00"
+      "modificado": "2026-08-31T18:01:37-06:00"
     },
     {
-      "id": "3525045000600118001",
-      "trato": "Upselling Netafim",
-      "cuenta": "NETAFIM",
-      "cuenta_id": "3525045000010332421",
+      "id": "3525045000640263241",
+      "trato": "Alertas 2.0 Aleatica",
+      "cuenta": "Grupo Aleática",
+      "cuenta_id": "3525045000135979256",
       "kam": "Raúl Campos",
       "correo_kam": "rcampos@geovictoria.com",
       "etapa": "7. Implementando",
       "cerrado": false,
-      "producto": "Control de Asistencia",
-      "valor": 4185,
+      "producto": "Alertas",
+      "valor": 11360,
       "owner": "KAM México",
-      "creado": "2026-03-17T11:50:01-06:00",
-      "modificado": "2026-06-24T11:02:22-06:00"
+      "creado": "2026-07-03T14:57:07-06:00",
+      "modificado": "2026-09-07T10:01:45-06:00"
+    },
+    {
+      "id": "3525045000640263246",
+      "trato": "Planificador Int Aleatica",
+      "cuenta": "Grupo Aleática",
+      "cuenta_id": "3525045000135979256",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "7. Implementando",
+      "cerrado": false,
+      "producto": "Calendario Inteligente",
+      "valor": 4260,
+      "owner": "KAM México",
+      "creado": "2026-07-03T15:04:05-06:00",
+      "modificado": "2026-09-07T09:57:08-06:00"
+    },
+    {
+      "id": "3525045000658487842",
+      "trato": "RAM Aleatica",
+      "cuenta": "Grupo Aleática",
+      "cuenta_id": "3525045000135979256",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "7. Implementando",
+      "cerrado": false,
+      "producto": "Reporte a Medida",
+      "valor": 4260,
+      "owner": "KAM México",
+      "creado": "2026-09-04T15:02:53-06:00",
+      "modificado": "2026-09-04T15:03:11-06:00"
     },
     {
       "id": "3525045000573675667",
@@ -4280,10 +4520,10 @@
       "etapa": "7. Implementando",
       "cerrado": false,
       "producto": "Módulo Vacaciones",
-      "valor": 2300,
+      "valor": 2410,
       "owner": "KAM México",
       "creado": "2026-01-26T15:20:43-06:00",
-      "modificado": "2026-06-24T11:02:47-06:00"
+      "modificado": "2026-09-11T12:07:03-06:00"
     },
     {
       "id": "3525045000573675642",
@@ -4298,7 +4538,7 @@
       "valor": 1800,
       "owner": "KAM México",
       "creado": "2026-01-26T15:18:45-06:00",
-      "modificado": "2026-06-24T11:03:22-06:00"
+      "modificado": "2026-09-11T12:07:03-06:00"
     },
     {
       "id": "3525045000399258001",
@@ -4451,6 +4691,21 @@
       "modificado": "2026-03-23T12:57:02-06:00"
     },
     {
+      "id": "3525045000626786017",
+      "trato": "Upselling anualidad Darovi",
+      "cuenta": "Farmacos Darovi",
+      "cuenta_id": "3525045000152361120",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "8. Facturando",
+      "cerrado": false,
+      "producto": "Control de Asistencia",
+      "valor": 6954,
+      "owner": "KAM México",
+      "creado": "2026-05-13T10:11:15-06:00",
+      "modificado": "2026-09-14T10:38:08-06:00"
+    },
+    {
       "id": "3525045000397822128",
       "trato": "Asistencia Netafim",
       "cuenta": "Netafim Manufacturing México",
@@ -4479,6 +4734,21 @@
       "owner": "KAM México",
       "creado": "2024-11-11T12:41:50-06:00",
       "modificado": "2026-03-23T12:57:40-06:00"
+    },
+    {
+      "id": "3525045000600118001",
+      "trato": "Upselling Netafim",
+      "cuenta": "NETAFIM",
+      "cuenta_id": "3525045000010332421",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "8. Facturando",
+      "cerrado": false,
+      "producto": "Control de Asistencia",
+      "valor": 5795.5,
+      "owner": "KAM México",
+      "creado": "2026-03-17T11:50:01-06:00",
+      "modificado": "2026-09-14T10:05:09-06:00"
     },
     {
       "id": "3525045000439394246",
@@ -4796,6 +5066,21 @@
       "modificado": "2026-03-23T12:57:02-06:00"
     },
     {
+      "id": "3525045000600118201",
+      "trato": "Planificador inteligente Saberin",
+      "cuenta": "SABERIN",
+      "cuenta_id": "3525045000305241333",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "8. Facturando",
+      "cerrado": false,
+      "producto": "Calendario Inteligente",
+      "valor": 1452,
+      "owner": "KAM México",
+      "creado": "2026-03-17T11:56:50-06:00",
+      "modificado": "2026-09-14T14:37:27-06:00"
+    },
+    {
       "id": "3525045000457891181",
       "trato": "Upselling",
       "cuenta": "Big Smart",
@@ -4928,7 +5213,7 @@
       "valor": 225,
       "owner": "KAM México",
       "creado": "2026-01-09T11:36:45-06:00",
-      "modificado": "2026-03-23T12:27:56-06:00"
+      "modificado": "2026-09-14T14:30:56-06:00"
     },
     {
       "id": "3525045000626305452",
@@ -5274,21 +5559,6 @@
       "owner": "KAM México",
       "creado": "2025-01-16T13:31:53-06:00",
       "modificado": "2026-03-23T13:42:08-06:00"
-    },
-    {
-      "id": "3525045000630888026",
-      "trato": "Vacaciones y Permisos",
-      "cuenta": "Corporativo Kosmos",
-      "cuenta_id": "3525045000094546230",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "Cierre Perdido",
-      "cerrado": true,
-      "producto": "Módulo Vacaciones",
-      "valor": 10000,
-      "owner": "KAM México",
-      "creado": "2026-05-29T11:19:02-06:00",
-      "modificado": "2026-08-27T07:02:47-06:00"
     },
     {
       "id": "3525045000623197367",
