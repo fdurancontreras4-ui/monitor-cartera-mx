@@ -15,14 +15,14 @@ En Replit, `servidor.py` sirve este mismo `index.html`, pero arma dos archivos *
 
 | Archivo que pide el tablero | De dónde sale en Replit |
 |---|---|
-| `cartera.xlsx` | «Cuentas Postventa.xlsx» real, bajado de OneDrive con Microsoft Graph (solo lectura, nunca lo modifica) |
+| `cartera.xlsx` | «Cuentas Postventa.xlsx» real: directo de OneDrive con Microsoft Graph si TI registró la app; si no, la copia que sube la Mac de Fernanda cada vez que cambia (ver abajo). Solo lectura, nunca lo modifica. |
 | `deals-mx.json` | Zoho CRM, mismo criterio y forma que `scripts/subir-deals-zoho.py` |
 
 Lo demás (salud semanal, implementaciones, consideraciones) sigue saliendo de los archivos del repo. Si una credencial falta o vence, ese archivo se sirve desde la copia del repo y el tablero avisa «Sin conexión con …: se muestra la última copia guardada». Para ver qué pasa, abre `/api/estado`. Hay una caché de 60 s para que dos clics seguidos no bajen todo dos veces.
 
 ### Puesta en marcha (una vez)
 
-1. **Credenciales de Microsoft.** TI registra una app en Entra ID: *App registrations → New registration* (Single tenant, sin Redirect URI) → *Authentication → Allow public client flows = Yes* → *API permissions → Microsoft Graph → Delegated → `Files.Read`*. Solo lee los archivos a los que tú tienes acceso. Te pasan el **Application (client) ID** y el **Directory (tenant) ID**. Después corre en tu Mac:
+1. **Credenciales de Microsoft (requiere TI; mientras tanto, usar la sincronización desde la Mac).** TI registra una app en Entra ID: *App registrations → New registration* (Single tenant, sin Redirect URI) → *Authentication → Allow public client flows = Yes* → *API permissions → Microsoft Graph → Delegated → `Files.Read`*. Solo lee los archivos a los que tú tienes acceso. Te pasan el **Application (client) ID** y el **Directory (tenant) ID**. Después corre en tu Mac:
    ```bash
    python3 scripts/obtener-tokens.py microsoft
    ```
@@ -33,6 +33,20 @@ Lo demás (salud semanal, implementaciones, consideraciones) sigue saliendo de l
    Los dos comandos prueban el token contra el archivo y contra Zoho antes de mostrarlo.
 3. **Replit.** *Create Repl → Import from GitHub* → este repo. En *Tools → Secrets* carga los valores que imprimieron los scripts (`MS_TENANT_ID`, `MS_CLIENT_ID`, `MS_REFRESH_TOKEN`, `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET`, `ZOHO_REFRESH_TOKEN`) y además **`TABLERO_CLAVE`**, la contraseña del tablero. El navegador la pide una vez; el usuario puede ser cualquiera.
 4. **Run** para probar y luego **Deploy → Autoscale**. Health check: `/salud-servidor`.
+
+### Cartera sin TI: sincronización desde la Mac
+
+Mientras no exista la app de Entra ID, la Mac de Fernanda (con la app de OneDrive sincronizando `PostVenta/`) le manda el Excel a Replit:
+
+1. En Replit → Secrets, agrega **`CARTERA_SUBIDA_CLAVE`** con una clave larga cualquiera, y vuelve a desplegar.
+2. En la Mac:
+   ```bash
+   python3 scripts/sincronizar-cartera-mac.py configurar
+   ```
+   Pide la URL del tablero y esa clave, hace la primera subida y deja un proceso de launchd que revisa cada 5 minutos. Para leer la carpeta de OneDrive en segundo plano usa una mini app, `~/Applications/Sincronizar Cartera.app`, porque macOS no deja que un proceso de fondo la lea sin permiso. La primera vez aparece «… quiere acceder a archivos de OneDrive»: pulsa **Permitir**.
+3. `… estado` compara lo que hay en la Mac con lo que tiene Replit, y `… desinstalar` lo apaga.
+
+Solo sube si el archivo cambió (compara el hash) y si es un Cuentas Postventa sano (con la hoja «MARE MX» y sin estar a medio guardar). Si Replit reinicia la instancia y pierde la copia, la Mac la vuelve a mandar en la siguiente pasada. **Límite:** solo funciona con la Mac prendida y la sesión abierta. Cuando TI entregue la app, carga los `MS_*` y corre `desinstalar`. En Deploy, deja **Max instances = 1** para que todas las visitas vean la misma copia.
 
 ### Mantenimiento
 

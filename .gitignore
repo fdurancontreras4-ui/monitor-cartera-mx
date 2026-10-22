@@ -2,3 +2,4 @@
 ~$*.xlsx
 teams-webhook*
 __pycache__/
+.datos/

@@ -9,6 +9,11 @@ cada vez que el tablero los pide (o sea, cada vez que alguien pulsa
     /cartera.xlsx   → "Cuentas Postventa.xlsx" bajado de OneDrive (Microsoft Graph)
     /deals-mx.json  → deals de Zoho CRM (KAM México · Dafne / Raúl / Karla)
 
+Mientras no haya credenciales de Microsoft (TI todavía no registra la app),
+la cartera llega por otro camino: la Mac de Fernanda, que tiene OneDrive
+sincronizado, sube el Excel a POST /api/cartera cada vez que cambia
+(scripts/sincronizar-cartera-mac.py). El servidor sirve esa copia.
+
 Si falta una credencial o la fuente falla, responde con el archivo que está en
 el repo y lo marca con el encabezado `X-Fuente: respaldo`, así el tablero nunca
 queda en blanco. /api/estado dice qué está configurado y cuándo fue la última
@@ -25,6 +30,8 @@ nunca del repo:
     ZOHO_CLIENT_SECRET
     ZOHO_REFRESH_TOKEN   (scripts/obtener-tokens.py zoho)
 
+    CARTERA_SUBIDA_CLAVE clave que usa la Mac para subir el Excel (sin ella, la subida está apagada)
+
 Opcionales: POSTVENTA_DRIVE_ID / POSTVENTA_ITEM_ID (si el archivo se mueve),
 ZOHO_ACCOUNTS_URL / ZOHO_API_URL (otro datacenter), CACHE_SEGUNDOS, PORT.
 
@@ -33,7 +40,10 @@ Solo usa la librería estándar de Python 3 — no hay que instalar nada.
 
 import base64
 import datetime as dt
+import hashlib
 import hmac
+import zipfile
+import io
 import importlib.util
 import json
 import mimetypes
@@ -77,6 +87,13 @@ ESTADO = {"cartera": {}, "deals": {}}
 _cache = {}
 _locks = {"cartera": threading.Lock(), "deals": threading.Lock()}
 _tokens = {}
+
+# Copia subida desde la Mac. Vive en disco mientras la instancia viva; si Replit
+# la reinicia, la Mac la vuelve a mandar en su siguiente pasada (compara el hash).
+DATOS = Path(ENV("DATOS_DIR", str(RAIZ / ".datos")))
+SUBIDA = DATOS / "cartera-subida.xlsx"
+SUBIDA_META = DATOS / "cartera-subida.json"
+TAM_MAX_SUBIDA = 15 * 1024 * 1024
 
 
 def ahora_iso():
@@ -220,9 +237,46 @@ FUENTES = {
 }
 
 
+def meta_subida():
+    try:
+        return json.loads(SUBIDA_META.read_text(encoding="utf-8")) if SUBIDA.is_file() else None
+    except (OSError, ValueError):
+        return None
+
+
+def validar_xlsx(datos):
+    """Error en texto si no es un Cuentas Postventa sano; None si está bien."""
+    if not datos.startswith(b"PK"):
+        return "no es un .xlsx"
+    try:
+        with zipfile.ZipFile(io.BytesIO(datos)) as z:
+            libro = z.read("xl/workbook.xml").decode("utf-8", "replace")
+    except (zipfile.BadZipFile, KeyError) as e:
+        return f".xlsx dañado o a medio guardar ({e})"
+    if 'name="MARE MX"' not in libro:
+        return "no tiene la hoja «MARE MX»: ¿es otra copia del archivo?"
+    return None
+
+
+def guardar_subida(datos, modificado):
+    DATOS.mkdir(parents=True, exist_ok=True)
+    tmp = SUBIDA.with_suffix(".tmp")
+    tmp.write_bytes(datos)
+    tmp.replace(SUBIDA)
+    meta = {"sha256": hashlib.sha256(datos).hexdigest(), "bytes": len(datos),
+            "recibido": ahora_iso(), "modificado_en_onedrive": modificado}
+    SUBIDA_META.write_text(json.dumps(meta, ensure_ascii=False), encoding="utf-8")
+    _cache.pop("cartera", None)
+    return meta
+
+
 def obtener(nombre):
-    """Devuelve (bytes, fuente) con fuente 'en-vivo' | 'cache' | 'respaldo'."""
+    """Devuelve (bytes, fuente) con fuente 'en-vivo' | 'cache' | 'sincronizada' | 'respaldo'."""
     f, est = FUENTES[nombre], ESTADO[nombre]
+    if nombre == "cartera" and not microsoft_configurado():
+        m = meta_subida()
+        if m:
+            return SUBIDA.read_bytes(), "sincronizada"
     with _locks[nombre]:  # dos clics seguidos no disparan dos descargas
         c = _cache.get(nombre)
         if c and time.time() - c["t"] < CACHE_SEGUNDOS:
@@ -243,11 +297,16 @@ def obtener(nombre):
         return f["respaldo"].read_bytes(), "respaldo"
 
 
+def microsoft_configurado():
+    return all(ENV(k) for k in ("MS_TENANT_ID", "MS_CLIENT_ID", "MS_REFRESH_TOKEN"))
+
+
 def estado():
     return {
+        "cartera_sincronizada_desde_mac": meta_subida(),
         "servidor": ahora_iso(),
         "clave": bool(ENV("TABLERO_CLAVE")),
-        "microsoft_configurado": all(ENV(k) for k in ("MS_TENANT_ID", "MS_CLIENT_ID", "MS_REFRESH_TOKEN")),
+        "microsoft_configurado": microsoft_configurado(),
         "zoho_configurado": all(ENV(k) for k in ("ZOHO_CLIENT_ID", "ZOHO_CLIENT_SECRET", "ZOHO_REFRESH_TOKEN")),
         "cache_segundos": CACHE_SEGUNDOS,
         "fuentes": ESTADO,
@@ -295,10 +354,45 @@ class Manejador(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self.do_GET()
 
+    # ---- subida desde la Mac (no usa TABLERO_CLAVE: tiene su propia clave)
+    def clave_subida_ok(self):
+        clave = ENV("CARTERA_SUBIDA_CLAVE")
+        dada = self.headers.get("X-Clave-Subida", "")
+        if clave and hmac.compare_digest(dada.encode(), clave.encode()):
+            return True
+        self.responder(json.dumps({"error": "clave de subida incorrecta o no configurada"}).encode(),
+                       "application/json", codigo=403)
+        return False
+
+    def version_subida(self):
+        if not self.clave_subida_ok():
+            return
+        self.responder(json.dumps(meta_subida() or {}).encode(), "application/json")
+
+    def do_POST(self):
+        ruta = urllib.parse.urlparse(self.path).path
+        if ruta != "/api/cartera":
+            return self.responder(b"No encontrado", "text/plain", codigo=404)
+        if not self.clave_subida_ok():
+            return
+        largo = int(self.headers.get("Content-Length") or 0)
+        if not 0 < largo <= TAM_MAX_SUBIDA:
+            return self.responder(b'{"error":"tamano invalido"}', "application/json", codigo=413)
+        datos = self.rfile.read(largo)
+        error = validar_xlsx(datos)
+        if error:
+            return self.responder(json.dumps({"error": error}, ensure_ascii=False).encode(),
+                                  "application/json; charset=utf-8", codigo=422)
+        meta = guardar_subida(datos, self.headers.get("X-Modificado", ""))
+        print(f"[cartera] recibida desde la Mac: {meta['bytes']} bytes, {meta['sha256'][:12]}", flush=True)
+        self.responder(json.dumps(meta).encode(), "application/json")
+
     def do_GET(self):
         ruta = urllib.parse.unquote(urllib.parse.urlparse(self.path).path)
         if ruta == "/salud-servidor":  # para el health check de Replit, sin clave
             return self.responder(b"ok", "text/plain")
+        if ruta == "/api/cartera":  # la Mac pregunta qué versión tiene el servidor (clave propia)
+            return self.version_subida()
         if not self.autorizado():
             return
         if ruta in ("/cartera.xlsx", "/Cuentas_Postventa.xlsx"):
@@ -313,6 +407,9 @@ class Manejador(BaseHTTPRequestHandler):
     def servir_fuente(self, nombre):
         datos, fuente = obtener(nombre)
         extra = {"X-Fuente": fuente}
+        if fuente == "sincronizada":
+            m = meta_subida() or {}
+            extra["X-Fuente-Fecha"] = m.get("modificado_en_onedrive") or m.get("recibido", "")
         if ESTADO[nombre].get("error") and fuente == "respaldo":
             extra["X-Fuente-Error"] = urllib.parse.quote(ESTADO[nombre]["error"][:300])
         self.responder(datos, FUENTES[nombre]["tipo"], extra)
@@ -337,7 +434,7 @@ def main():
     e = estado()
     print(f"Monitor de Cartera MX en el puerto {puerto}", flush=True)
     print(f"  contraseña: {'sí' if e['clave'] else 'NO (tablero abierto)'} · "
-          f"OneDrive: {'configurado' if e['microsoft_configurado'] else 'sin credenciales → respaldo'} · "
+          f"OneDrive: {'directo' if e['microsoft_configurado'] else ('copia desde la Mac' if ENV('CARTERA_SUBIDA_CLAVE') else 'sin credenciales → respaldo')} · "
           f"Zoho: {'configurado' if e['zoho_configurado'] else 'sin credenciales → respaldo'}", flush=True)
     ThreadingHTTPServer(("0.0.0.0", puerto), Manejador).serve_forever()
 

@@ -2998,7 +2998,7 @@ async function loadURL(url,opts){
     if(msg){msg.style.color='';msg.textContent='Descargando…';}
     const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
     const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
-    FUENTE_VIVA.cartera=resp.headers.get('X-Fuente');
+    FUENTE_VIVA.cartera=resp.headers.get('X-Fuente');FUENTE_VIVA.carteraFecha=resp.headers.get('X-Fuente-Fecha');
     const wb=XLSX.read(new Uint8Array(await resp.arrayBuffer()),{type:'array'});
     const acc=parseMareWorkbook(wb);ACCOUNTS=acc.map((a,i)=>(a._uid='a'+i,a));SOURCE=url;LAST.portfolioUrl=url;persist('last_portfolio_url',url);markReload();
     const vf=refreshVentasYFuga(wb,url);
@@ -3117,8 +3117,9 @@ function applyGestionToAccounts(){
 }
 // En Replit (servidor.py) cartera.xlsx y deals-mx.json se arman en vivo desde OneDrive y Zoho;
 // el encabezado X-Fuente dice si llegaron 'en-vivo', de 'cache' (<1 min) o del 'respaldo' del repo.
+// 'sincronizada' = copia que subió la Mac con OneDrive (X-Fuente-Fecha = cuándo cambió el Excel).
 // En GitHub Pages no hay encabezado y queda null.
-var FUENTE_VIVA={cartera:null,deals:null};
+var FUENTE_VIVA={cartera:null,deals:null,carteraFecha:null};
 async function reloadData(){
   const btn=$('reloadBtn');const old=btn.textContent;btn.disabled=true;btn.textContent='Recargando…';
   let ok=false;const url=CONFIG.portfolioUrl||LAST.portfolioUrl;
@@ -3128,8 +3129,9 @@ async function reloadData(){
   if(durl){await loadDealsURL(durl,{silent:true,probe:true});}
   else{for(const u of (CONFIG.dealsAutoTry||['./deals-mx.json'])){if(await loadDealsURL(u,{silent:true,probe:true}))break;}}
   btn.disabled=false;btn.textContent=old;
-  const resp=Object.entries(FUENTE_VIVA).filter(([,f])=>f==='respaldo').map(([k])=>k==='cartera'?'Cuentas Postventa':'Zoho');
+  const resp=['cartera','deals'].filter(k=>FUENTE_VIVA[k]==='respaldo').map(k=>k==='cartera'?'Cuentas Postventa':'Zoho');
   if(ok&&resp.length){toast('Sin conexión con '+resp.join(' y ')+': se muestra la última copia guardada.',true);return;}
+  if(ok&&FUENTE_VIVA.cartera==='sincronizada'){const f=FUENTE_VIVA.carteraFecha?new Date(FUENTE_VIVA.carteraFecha):null;toast('Datos actualizados ✓ · Cuentas Postventa'+(f&&!isNaN(f)?' guardado en OneDrive el '+f.toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'')+' · deals de Zoho en vivo');return;}
   if(ok&&FUENTE_VIVA.cartera){toast('Datos actualizados desde OneDrive y Zoho ✓');return;}
   toast(ok?'Datos actualizados ✓':'La fuente actual es un archivo subido. Vuelve a subirlo en Datos o configura una URL/ruta para recargar.',!ok);
 }
