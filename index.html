@@ -2998,6 +2998,7 @@ async function loadURL(url,opts){
     if(msg){msg.style.color='';msg.textContent='Descargando…';}
     const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
     const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
+    FUENTE_VIVA.cartera=resp.headers.get('X-Fuente');
     const wb=XLSX.read(new Uint8Array(await resp.arrayBuffer()),{type:'array'});
     const acc=parseMareWorkbook(wb);ACCOUNTS=acc.map((a,i)=>(a._uid='a'+i,a));SOURCE=url;LAST.portfolioUrl=url;persist('last_portfolio_url',url);markReload();
     const vf=refreshVentasYFuga(wb,url);
@@ -3044,6 +3045,7 @@ async function loadDealsURL(url,opts){
   try{
     const bust=(url.includes('?')?'&':'?')+'t='+Date.now();
     const resp=await fetch(url+bust,{cache:'no-store'});if(!resp.ok)throw new Error('HTTP '+resp.status);
+    FUENTE_VIVA.deals=resp.headers.get('X-Fuente');
     const json=await resp.json();
     if(!json||!Array.isArray(json.deals))throw new Error('formato inesperado (falta el arreglo "deals")');
     DEALS_DATA=json.deals;
@@ -3113,6 +3115,10 @@ function applyGestionToAccounts(){
     if(hit&&(hit.estado||hit.nota||hit.autor)){a._anot={estado:hit.estado,nota:hit.nota,autor:hit.autor,actualizado:hit.fecha?(Date.parse(hit.fecha)||null):null};}
   });
 }
+// En Replit (servidor.py) cartera.xlsx y deals-mx.json se arman en vivo desde OneDrive y Zoho;
+// el encabezado X-Fuente dice si llegaron 'en-vivo', de 'cache' (<1 min) o del 'respaldo' del repo.
+// En GitHub Pages no hay encabezado y queda null.
+var FUENTE_VIVA={cartera:null,deals:null};
 async function reloadData(){
   const btn=$('reloadBtn');const old=btn.textContent;btn.disabled=true;btn.textContent='Recargando…';
   let ok=false;const url=CONFIG.portfolioUrl||LAST.portfolioUrl;
@@ -3122,6 +3128,9 @@ async function reloadData(){
   if(durl){await loadDealsURL(durl,{silent:true,probe:true});}
   else{for(const u of (CONFIG.dealsAutoTry||['./deals-mx.json'])){if(await loadDealsURL(u,{silent:true,probe:true}))break;}}
   btn.disabled=false;btn.textContent=old;
+  const resp=Object.entries(FUENTE_VIVA).filter(([,f])=>f==='respaldo').map(([k])=>k==='cartera'?'Cuentas Postventa':'Zoho');
+  if(ok&&resp.length){toast('Sin conexión con '+resp.join(' y ')+': se muestra la última copia guardada.',true);return;}
+  if(ok&&FUENTE_VIVA.cartera){toast('Datos actualizados desde OneDrive y Zoho ✓');return;}
   toast(ok?'Datos actualizados ✓':'La fuente actual es un archivo subido. Vuelve a subirlo en Datos o configura una URL/ruta para recargar.',!ok);
 }
 

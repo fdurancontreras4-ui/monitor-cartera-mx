@@ -1,0 +1,11 @@
+# Monitor de Cartera MX en Replit — ver README, sección "Despliegue en Replit"
+modules = ["python-3.12"]
+run = "python3 servidor.py"
+
+[deployment]
+run = ["python3", "servidor.py"]
+deploymentTarget = "autoscale"
+
+[[ports]]
+localPort = 8000
+externalPort = 80

@@ -9,6 +9,38 @@ Dashboard interactivo de un solo archivo para monitorear la cartera de postventa
 3. Activa Pages en **Settings → Pages → Branch: `main` / root**.
 4. Tu equipo entra en `https://<usuario>.github.io/<repo>/`.
 
+## Despliegue en Replit (datos en vivo)
+
+En Replit, `servidor.py` sirve este mismo `index.html`, pero arma dos archivos **en vivo** cada vez que alguien pulsa **↻ Recargar datos**:
+
+| Archivo que pide el tablero | De dónde sale en Replit |
+|---|---|
+| `cartera.xlsx` | «Cuentas Postventa.xlsx» real, bajado de OneDrive con Microsoft Graph (solo lectura, nunca lo modifica) |
+| `deals-mx.json` | Zoho CRM, mismo criterio y forma que `scripts/subir-deals-zoho.py` |
+
+Lo demás (salud semanal, implementaciones, consideraciones) sigue saliendo de los archivos del repo. Si una credencial falta o vence, ese archivo se sirve desde la copia del repo y el tablero avisa «Sin conexión con …: se muestra la última copia guardada». Para ver qué pasa, abre `/api/estado`. Hay una caché de 60 s para que dos clics seguidos no bajen todo dos veces.
+
+### Puesta en marcha (una vez)
+
+1. **Credenciales de Microsoft.** TI registra una app en Entra ID: *App registrations → New registration* (Single tenant, sin Redirect URI) → *Authentication → Allow public client flows = Yes* → *API permissions → Microsoft Graph → Delegated → `Files.Read`*. Solo lee los archivos a los que tú tienes acceso. Te pasan el **Application (client) ID** y el **Directory (tenant) ID**. Después corre en tu Mac:
+   ```bash
+   python3 scripts/obtener-tokens.py microsoft
+   ```
+2. **Credenciales de Zoho.** En [api-console.zoho.com](https://api-console.zoho.com): *Add Client → Self Client*, y en *Generate Code* el scope `ZohoCRM.modules.deals.READ` (10 minutos). Luego:
+   ```bash
+   python3 scripts/obtener-tokens.py zoho
+   ```
+   Los dos comandos prueban el token contra el archivo y contra Zoho antes de mostrarlo.
+3. **Replit.** *Create Repl → Import from GitHub* → este repo. En *Tools → Secrets* carga los valores que imprimieron los scripts (`MS_TENANT_ID`, `MS_CLIENT_ID`, `MS_REFRESH_TOKEN`, `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET`, `ZOHO_REFRESH_TOKEN`) y además **`TABLERO_CLAVE`**, la contraseña del tablero. El navegador la pide una vez; el usuario puede ser cualquiera.
+4. **Run** para probar y luego **Deploy → Autoscale**. Health check: `/salud-servidor`.
+
+### Mantenimiento
+
+- **El refresh token de Microsoft vence en ~90 días.** Cuando el tablero avise «Sin conexión con Cuentas Postventa», vuelve a correr `obtener-tokens.py microsoft` y reemplaza `MS_REFRESH_TOKEN` en Secrets. El de Zoho no vence mientras no se revoque.
+- Los cambios al repo (salud semanal, `/deals-postventa`, etc.) llegan a Replit con *Git → Pull* y un redeploy.
+- Si «Cuentas Postventa.xlsx» se mueve o se recrea, pon su nuevo itemId en el Secret `POSTVENTA_ITEM_ID`.
+- **Privacidad:** el repo es público, así que `cartera.xlsx` (MRR por cliente) también lo es, y GitHub Pages lo publica. Una vez que Replit funcione, conviene hacer el repo privado y apagar Pages.
+
 ## Actualización semanal (lunes o martes)
 
 ### Salud — con el script (recomendado)
