@@ -264,6 +264,37 @@ table.hm thead th.hm-emp.hm-corner{z-index:3;font-weight:600;}
 tr.hecha td{background:rgba(59,109,17,.10);}
 tr.hecha td:first-child{color:var(--tarea-ok);}
 .tarea-ok-lbl{color:var(--tarea-ok);font-weight:600;}
+/* Matriz módulos */
+.mx-kpis{grid-template-columns:repeat(5,1fr);}
+.mx-kpi{cursor:pointer;border:1.5px solid transparent;transition:border-color .12s;}
+.mx-kpi:hover{border-color:var(--color-border-secondary);}
+.mx-kpi.on{border-color:var(--accent);}
+@media (max-width:640px){.mx-kpis{grid-template-columns:repeat(2,1fr);}}
+table.mx .mx-h{vertical-align:bottom;padding:4px 0 6px;min-width:34px;max-width:34px;}
+table.mx .mx-h span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10.5px;font-weight:600;color:var(--color-text-secondary);white-space:nowrap;display:inline-block;max-height:120px;overflow:hidden;text-overflow:ellipsis;}
+table.mx .hm-emp{min-width:230px;max-width:260px;padding:6px 10px;font-size:12px;}
+table.mx .mx-name{cursor:pointer;}
+table.mx .mx-tog{display:inline-block;width:14px;color:var(--color-text-secondary);}
+table.mx tr.mx-sub .hm-emp{font-size:11px;padding-left:22px;background:var(--color-background-tertiary);}
+td.mx-c{width:34px;height:34px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;border:2px solid var(--color-background-primary);border-radius:7px;background:var(--color-background-secondary);color:#fff;position:relative;}
+td.mx-c sup{font-size:8.5px;margin-left:1px;opacity:.85;}
+td.mx-c:hover{outline:2px solid var(--accent);outline-offset:-2px;}
+.mx-zv{background:#3B6D11!important;}
+.mx-zy{background:#E0A100!important;color:#3a2a00!important;}
+.mx-zr{background:#C23B3B!important;}
+.mx-xv,.mx-xy,.mx-xr{background:var(--color-background-primary)!important;border:2px dashed!important;}
+.mx-xv{border-color:#3B6D11!important;color:#3B6D11!important;}
+.mx-xy{border-color:#E0A100!important;color:#9a6f00!important;font-size:9.5px!important;}
+.mx-xr{border-color:#C23B3B!important;color:#C23B3B!important;}
+.mx-stale{box-shadow:inset 0 0 0 3px #C23B3B;}
+.mx-leg{display:inline-block;width:22px;height:20px;line-height:16px;text-align:center;border-radius:5px;font-size:11px;font-weight:700;color:#fff;background:var(--color-background-primary);border:2px solid var(--color-background-primary);vertical-align:middle;}
+.mx-leg:empty{background:var(--color-background-primary);border-color:var(--color-border-secondary);}
+tr.mx-link{cursor:pointer;}
+tr.mx-link:hover td{background:var(--color-background-tertiary);}
+.mx-pop{position:fixed;z-index:50;width:300px;max-height:60vh;overflow:auto;background:var(--color-background-primary);border:1px solid var(--color-border-secondary);border-radius:var(--border-radius-md);box-shadow:var(--shadow-lg);padding:12px;font-size:12.5px;}
+.mx-pop-it{display:block;padding:7px 6px;border-radius:7px;color:var(--color-text-primary);text-decoration:none;border-bottom:.5px solid var(--color-border-tertiary);}
+.mx-pop-it:hover{background:var(--color-background-secondary);}
+@media (prefers-color-scheme:dark){.mx-zv{background:#4d8a1a!important;}.mx-xy{color:#FAC775!important;}}
 </style>
 </head>
 <body>
@@ -289,6 +320,7 @@ tr.hecha td:first-child{color:var(--tarea-ok);}
     <button data-sec="tareas">Tareas</button>
     <button data-sec="implementacion">Implementaciones</button>
     <button data-sec="pipeline">Pipeline</button>
+    <button data-sec="matriz">Matriz módulos</button>
     <button data-sec="datos">Datos</button>
   </div>
   <div class="subnav" id="subnav-salud">
@@ -340,6 +372,7 @@ tr.hecha td:first-child{color:var(--tarea-ok);}
   <div id="tiempoRegistrar" class="section"></div>
   <div id="tiempoRecuento" class="section"></div>
   <div id="pipeline" class="section"></div>
+  <div id="matriz" class="section"></div>
   <div id="datos" class="section"></div>
 </div>
 
@@ -759,6 +792,8 @@ function parseMareWorkbook(wb){
   // acentos, "Marca nómina", etc.)
   const sistemaNominaIdx=headers.findIndex(h=>/sistema.*n[oó]mina|n[oó]mina.*sistema|marca.*n[oó]mina/i.test(h));
   const modIdx={};Object.keys(MOD_COLS).forEach(k=>{const i=headers.indexOf(k);if(i>=0)modIdx[MOD_COLS[k]]=i;});
+  // para la pestaña Matriz módulos: id de la cuenta en Zoho (columna "Zoho") y el texto crudo de cada columna de módulo
+  const zohoIdx=headers.indexOf('Zoho');const matIdx={};MATRIZ_MODS.forEach(m=>{if(!m[0])return;const i=headers.indexOf(m[0]);if(i>=0){matIdx[m[0]]=i;MAT_COL_LETRA[m[0]]=XLSX.utils.encode_col(i);}});
   const get=(row,f)=>idx[f]==null?null:row[idx[f]];const out=[];
   for(let r=hdr+1;r<aoa.length;r++){
     const row=aoa[r]||[];const cli=txt(get(row,'cliente'));if(!cli)continue;
@@ -766,7 +801,7 @@ function parseMareWorkbook(wb){
     while(meses.length>4&&meses[meses.length-1]==null)meses.pop();
     let mrr=num(get(row,'mrr'));const pres=meses.filter(m=>m!=null);if(mrr==null&&pres.length)mrr=pres[pres.length-1];
     const mods={};Object.keys(modIdx).forEach(name=>{const raw=row[modIdx[name]];const s=modStatus(raw);if(s)mods[name]={s,raw:txt(raw)};});
-    out.push({id:txt(get(row,'id')),_idList:splitIds(get(row,'id')),cliente:cli,grupo:txt(get(row,'grupo')),cartera:txt(get(row,'cartera'))||'Sin segmento',kam:txt(get(row,'kam'))||'No Asignado',css:txt(get(row,'css')),mrr,meses,fuga:fugaFromMonths(meses),estadoSalud:txt(get(row,'estadoSalud')),cuadrante:txt(get(row,'cuadrante')),riesgo:txt(get(row,'riesgo')),estado:txt(get(row,'estado')),rubro:txt(get(row,'rubro')),desc:txt(get(row,'desc')),usuarios:num(get(row,'usuarios')),escala:txt(get(row,'escala')),nomina:txt(get(row,'nomina')),sistemaNomina:sistemaNominaIdx>=0?txt(row[sistemaNominaIdx]):null,arrienda:txt(get(row,'arrienda')),puntajeCross:num(get(row,'puntajeCross')),okCount:num(get(row,'okCount')),opCount:num(get(row,'opCount')),referido:txt(get(row,'referido')),comentario:txt(get(row,'comentario')),implementando:txt(get(row,'implementando')),mods});
+    out.push({id:txt(get(row,'id')),_idList:splitIds(get(row,'id')),cliente:cli,grupo:txt(get(row,'grupo')),cartera:txt(get(row,'cartera'))||'Sin segmento',kam:txt(get(row,'kam'))||'No Asignado',css:txt(get(row,'css')),mrr,meses,fuga:fugaFromMonths(meses),estadoSalud:txt(get(row,'estadoSalud')),cuadrante:txt(get(row,'cuadrante')),riesgo:txt(get(row,'riesgo')),estado:txt(get(row,'estado')),rubro:txt(get(row,'rubro')),desc:txt(get(row,'desc')),usuarios:num(get(row,'usuarios')),escala:txt(get(row,'escala')),nomina:txt(get(row,'nomina')),sistemaNomina:sistemaNominaIdx>=0?txt(row[sistemaNominaIdx]):null,arrienda:txt(get(row,'arrienda')),puntajeCross:num(get(row,'puntajeCross')),okCount:num(get(row,'okCount')),opCount:num(get(row,'opCount')),referido:txt(get(row,'referido')),comentario:txt(get(row,'comentario')),implementando:txt(get(row,'implementando')),mods,zohoId:zohoIdx>=0?((String(row[zohoIdx]||'').match(/Accounts\/(\d+)/)||[])[1]||null):null,mat:Object.fromEntries(Object.entries(matIdx).map(([k,i])=>[k,txt(row[i])])),_row:r+1});
   }
   if(!out.length)throw new Error('Encabezado encontrado pero sin filas de CLIENTE.');
   // leer hoja "detalle fuga" (si existe) → cuentas a excluir de la marca de fuga
@@ -2855,6 +2890,231 @@ function drawPlList(){
     </div>`).join('')}</div>`;
 }
 
+// ---------- Matriz módulos (cliente × módulo complementario) ----------
+// Manda Zoho: si hay un deal del módulo, su etapa define el color. El Excel (columnas AT–BH de MARE MX) solo
+// se usa cuando Zoho no tiene nada, y se pinta con borde punteado para que se note que es un dato "según Excel".
+// Los clientes se agrupan por la columna Grupo; si Grupo está vacío, la razón social es el cliente.
+const ZOHO_TAB='https://crm.zoho.com/crm/org685875245/tab/';
+// [encabezado en MARE MX, etiqueta, productos de Zoho (Producto_Soluci_n) que cuentan para ese módulo]
+const MATRIZ_MODS=[
+  ['Alertas','Alertas',['Alertas','Alertas Mail']],
+  ['Integración (VC)','Integración VC',['Integraciones Victoria Connect']],
+  ['Permisos y vacaciones','Permisos y vacaciones',['Módulo Vacaciones']],
+  ['Planif. Inteligente','Planif. Inteligente',['Planificador Inteligente']],
+  ['BI','BI',['Dashboard BI']],
+  ['RAM','RAM',['Reporte a Medida']],
+  ['Acceso','Acceso',['Control de Acceso','Control de Externos (Control de Visitas)']],
+  ['Comedor','Comedor',['Servicio de Comedor']],
+  ['VictorIA','VictorIA',['VictorIA']],
+  ['Optimizador Turnos','Optimizador Turnos',['Optimizador de Turnos']],
+  ['Marcaje WPP','Marcaje WPP',['Marcaje WhatsApp']],
+  ['WF Cambio de turno','WF Cambio de turno',[]],
+  ['Plan Pro','Plan Pro',[]],
+  ['Plan Enterprise','Plan Enterprise',[]],
+  ['Formularios','Formularios',['Formularios']],
+  [null,'Centro de Ops (solo Zoho)',['Centro de Operaciones']],
+];
+const MAT_COL_LETRA={}; // encabezado → letra de columna en MARE MX (la llena parseMareWorkbook)
+const MX_ESTANCADO_DIAS=30;
+// Zoho le gana siempre al Excel, también entre razones sociales de un mismo grupo
+const MX_RANK={zv:6,zy:5,zr:4,xv:3,xy:2,xr:1,'':0};
+let mxState={q:'',kam:'',cartera:'',vista:'',modulo:'',abiertos:{}};
+let MX={}; // lo que calcula mxBuild() en cada render
+
+function mxProdIdx(prod){for(let i=0;i<MATRIZ_MODS.length;i++){if(MATRIZ_MODS[i][2].includes(prod))return i;}return -1;}
+function mxLoose(s){return normName(s).replace(/\b(grupo|corporativo|mexico|de|del|la|el|los|las|y)\b/g,' ').replace(/\s+/g,' ').trim();}
+function mxDias(d){const t=Date.parse(d.modificado||d.creado||'');return isNaN(t)?null:Math.floor((Date.now()-t)/864e5);}
+function mxAbierto(d){return d.etapa!=='8. Facturando'&&!ETAPAS_CERRADAS.has(d.etapa);}
+function mxEtapaCorta(e){const m=/^(\d)\.\s*(.*)$/.exec(e||'');return m?m[1]+' · '+m[2]:(e||'');}
+function mxDealUrl(d){return ZOHO_TAB+'Potentials/'+d.id;}
+function mxSort(ds){return ds.slice().sort((a,b)=>{const ra=mxAbierto(a)?0:a.etapa==='8. Facturando'?1:2,rb=mxAbierto(b)?0:b.etapa==='8. Facturando'?1:2;if(ra!==rb)return ra-rb;return etapaRank(b.etapa)-etapaRank(a.etapa);});}
+
+// estado de un conjunto de deals + el texto del Excel → código de color
+function mxEstado(ds,raw){
+  if(ds.some(d=>d.etapa==='8. Facturando'))return'zv';
+  if(ds.some(mxAbierto))return'zy';
+  if(ds.length)return'zr';
+  const x=modStatus(raw);return x==='OK'?'xv':x==='OP'?'xy':x==='NO'?'xr':'';
+}
+
+function mxBuild(){
+  // 1) asignar cada deal a una razón social: por id de cuenta Zoho → por nombre → por nombre de grupo
+  const porId={},porNombre={},porLoose={},porGrupo={};
+  ACCOUNTS.forEach(a=>{a._mx=MATRIZ_MODS.map(()=>[]);
+    if(a.zohoId)(porId[a.zohoId]=porId[a.zohoId]||[]).push(a);
+    const n=normName(a.cliente);if(n)(porNombre[n]=porNombre[n]||[]).push(a);
+    const l=mxLoose(a.cliente);if(l)(porLoose[l]=porLoose[l]||[]).push(a);
+    if(a.grupo){const g=mxLoose(a.grupo);if(g)(porGrupo[g]=porGrupo[g]||[]).push(a);}
+  });
+  const top=arr=>arr.slice().sort((x,y)=>(y.mrr||0)-(x.mrr||0))[0];
+  const sinCuenta=[],otros=[];
+  DEALS_DATA.forEach(d=>{
+    const mi=mxProdIdx(d.producto);
+    if(mi<0){otros.push(d);return;}
+    let a=null,via='id';
+    if(d.cuenta_id&&porId[d.cuenta_id])a=top(porId[d.cuenta_id]);
+    else if(porNombre[normName(d.cuenta)]){a=top(porNombre[normName(d.cuenta)]);via='nombre';}
+    else if(porLoose[mxLoose(d.cuenta)]){a=top(porLoose[mxLoose(d.cuenta)]);via='nombre';}
+    else if(porGrupo[mxLoose(d.cuenta)]){a=top(porGrupo[mxLoose(d.cuenta)]);via='grupo';}
+    if(!a){sinCuenta.push(d);return;}
+    d._via=via;d._acc=a;a._mx[mi].push(d);
+  });
+  // 2) agrupar razones sociales en clientes
+  const gmap={};
+  ACCOUNTS.forEach(a=>{const k=a.grupo?'G:'+mxLoose(a.grupo):'R:'+a._uid;(gmap[k]=gmap[k]||{key:k,miembros:[]}).miembros.push(a);});
+  const clientes=Object.values(gmap).map(g=>{
+    g.miembros.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
+    const p=g.miembros[0];
+    g.nombre=p.grupo||p.cliente;g.kam=p.kam;g.cartera=(p.cartera||'').toUpperCase();
+    g.kams=[...new Set(g.miembros.map(m=>m.kam))];
+    g.mrr=g.miembros.reduce((s,m)=>s+(m.mrr||0),0);
+    g.celdas=MATRIZ_MODS.map((m,mi)=>{
+      const rs=g.miembros.map(a=>{const ds=a._mx[mi];const raw=m[0]&&a.mat?a.mat[m[0]]:null;return{a,ds,raw,s:mxEstado(ds,raw)};});
+      let best=rs[0];rs.forEach(r=>{if(MX_RANK[r.s]>MX_RANK[best.s])best=r;});
+      const ds=[].concat(...rs.map(r=>r.ds));
+      const ab=ds.filter(mxAbierto);
+      return{s:best.s,ds,rs,raws:rs.filter(r=>r.raw).map(r=>({a:r.a,raw:r.raw})),
+        estancado:ab.length>0&&ab.every(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS),
+        etapa:ab.length?ab.slice().sort((x,y)=>etapaRank(y.etapa)-etapaRank(x.etapa))[0].etapa:null};
+    });
+    const ss=g.celdas.map(c=>c.s);
+    g.sinIntento=!ss.some(s=>s==='zv'||s==='zy'||s==='zr'||s==='xv'||s==='xr');
+    g.abiertos=g.celdas.reduce((n,c)=>n+c.ds.filter(mxAbierto).length,0);
+    g.estancados=g.celdas.filter(c=>c.estancado).length;
+    g.opSinDeal=ss.filter(s=>s==='xy').length;
+    g.buscar=normName(g.nombre+' '+g.miembros.map(m=>m.cliente).join(' '));
+    return g;
+  });
+  // 3) diferencias Excel vs Zoho, por razón social (lo que hay que actualizar en el Excel)
+  const difs=[];
+  ACCOUNTS.forEach(a=>MATRIZ_MODS.forEach((m,mi)=>{
+    if(!m[0])return;const ds=a._mx[mi];if(!ds.length)return;
+    const raw=a.mat?a.mat[m[0]]:null;const x=modStatus(raw);const z=mxEstado(ds,null);
+    const d0=mxSort(ds)[0];let sug=null,tipo='actualizar';
+    if(z==='zv'&&x!=='OK')sug='OK';
+    else if(z==='zy'){if(!x||x==='NO')sug='OP ('+mxEtapaCorta(d0.etapa)+')';else if(x==='OK'){sug='revisar: OK en Excel, deal abierto en Zoho';tipo='revisar';}}
+    else if(z==='zr'){if(!x||x==='OP')sug='NO - perdido en Zoho';else if(x==='OK'){sug='revisar: OK en Excel, perdido en Zoho';tipo='revisar';}}
+    if(sug)difs.push({a,mod:m[0],col:MAT_COL_LETRA[m[0]]||'',celda:(MAT_COL_LETRA[m[0]]||'')+(a._row||''),raw:raw||'',sug,tipo,deal:d0});
+  }));
+  MX={clientes,sinCuenta,otros,difs};
+}
+
+function mxCeldaHTML(c,ref){
+  const t=c.s;if(!t)return`<td class="mx-c" data-r="${ref}" title="Sin deal en Zoho ni dato en el Excel"></td>`;
+  let txt='';
+  if(t==='zv'||t==='xv')txt='✓';else if(t==='zr'||t==='xr')txt='✕';else if(t==='zy')txt=(c.etapa||'').charAt(0);else if(t==='xy')txt='OP';
+  const n=c.ds.length>1?`<sup>${c.ds.length}</sup>`:'';
+  const tip=c.ds.length?mxSort(c.ds).map(d=>`${d.etapa} · ${d.trato}${mxAbierto(d)?' · '+mxDias(d)+' días sin mover':''}`).join('\n'):('Según Excel: '+c.raws.map(r=>r.raw).join(' | '));
+  return`<td class="mx-c mx-${t}${c.estancado?' mx-stale':''}" data-r="${ref}" title="${esc(tip)}">${txt}${n}</td>`;
+}
+
+function renderMatriz(){
+  mxBuild();
+  const C=MX.clientes;
+  const kamOpts=[...new Set(ACCOUNTS.map(a=>a.kam))].sort();
+  const abiertos=DEALS_DATA.filter(d=>mxProdIdx(d.producto)>=0&&mxAbierto(d));
+  const estanc=abiertos.filter(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS);
+  const stat=(v,l,vista)=>`<div class="stat3-it mx-kpi${mxState.vista===vista?' on':''}" data-vista="${vista}"><div class="stat3-v">${v}</div><div class="stat3-l">${l}</div></div>`;
+  $('matriz').innerHTML=`
+  <div class="note-box"><strong>Matriz de módulos complementarios.</strong> Una fila por cliente (las razones sociales se juntan por la columna <strong>Grupo</strong> de MARE MX; si no tiene grupo, la razón social es el cliente). <strong>Manda Zoho</strong>: si hay un deal del módulo, su etapa define el color. Si Zoho no tiene nada, se usa lo que dice el Excel (columnas AT–BH) y la celda va con <strong>borde punteado</strong>. Clic en una celda para ir al deal en Zoho. Clic en el nombre para ver sus razones sociales.<br>
+  <span class="mx-leg mx-zv">✓</span> facturando · <span class="mx-leg mx-zy">4</span> deal abierto (el número es la etapa) · <span class="mx-leg mx-zy mx-stale">4</span> abierto y sin movimiento hace más de ${MX_ESTANCADO_DIAS} días · <span class="mx-leg mx-zr">✕</span> perdido / congelado · <span class="mx-leg mx-xy">OP</span> oportunidad en el Excel sin deal · <span class="mx-leg mx-xr">✕</span> sin oportunidad según Excel · <span class="mx-leg mx-xv">✓</span> OK según Excel, sin deal en Zoho · <span class="mx-leg"></span> nada</div>
+  ${DEALS_DATA.length?`<p class="status-line" style="margin:-6px 0 12px">Deals de Zoho al ${esc((DEALS_META.generado||'').slice(0,10))} · ${DEALS_DATA.length} deals</p>`:'<p class="legend">Todavía no hay deals-mx.json cargado — la matriz solo muestra lo del Excel.</p>'}
+  <div class="stat3 mx-kpis">
+    ${stat(C.length,'clientes','')}
+    ${stat(C.filter(g=>g.sinIntento).length,'sin ningún intento','sin')}
+    ${stat(C.filter(g=>g.abiertos).length,'con deals abiertos ('+abiertos.length+' deals)','abiertos')}
+    ${stat(C.filter(g=>g.estancados).length,'con deals estancados +'+MX_ESTANCADO_DIAS+' días','estancados')}
+    ${stat(C.filter(g=>g.opSinDeal).length,'con OP en Excel sin deal','op')}
+  </div>
+  <div class="controls" style="margin-top:14px">
+    <input type="text" id="mxQ" placeholder="Buscar cliente o razón social…" value="${esc(mxState.q)}">
+    <select id="mxKam"><option value="">Todo KAM</option>${kamOpts.map(k=>`<option>${esc(k)}</option>`).join('')}</select>
+    <select id="mxCart"><option value="">Toda cartera</option><option value="ENTERPRISE">Enterprise</option><option value="SMB">SMB</option></select>
+    <select id="mxMod"><option value="">Hueco en módulo…</option>${MATRIZ_MODS.map((m,i)=>`<option value="${i}">${esc(m[1])}</option>`).join('')}</select>
+  </div>
+  <p class="status-line" id="mxTitle" style="margin:-6px 0 8px"></p>
+  <div class="card" style="padding:.5rem"><div class="hm-wrap" id="mxWrap"></div></div>
+  <div class="card"><h3>Deals abiertos para empujar <span class="legend" style="font-weight:400">· del más quieto al más reciente</span></h3><div class="table-wrap" id="mxAbiertos"></div></div>
+  <details class="card"><summary style="cursor:pointer;font-weight:600;font-size:14px">Qué actualizar en el Excel <span class="badge b-amber">${MX.difs.length}</span> <span class="legend" style="font-weight:400">— celdas de AT–BH que no coinciden con Zoho</span></summary>
+    <p class="legend" style="margin:8px 0">La celda es la de <code>cartera.xlsx</code> (MARE MX); si alguien insertó filas en el Excel después, búscala por el nombre. <button class="btn" id="mxDifXlsx" style="margin-left:6px">⬇ Descargar .xlsx</button></p>
+    <div class="table-wrap" id="mxDifs"></div></details>
+  ${MX.sinCuenta.length?`<details class="card"><summary style="cursor:pointer;font-weight:600;font-size:14px">Deals sin cuenta en la cartera <span class="badge b-gray">${MX.sinCuenta.length}</span></summary><p class="legend" style="margin:8px 0">Su cuenta de Zoho no coincide con ninguna razón social de MARE MX (ni por id en la columna Zoho, ni por nombre, ni por grupo). No entran en la matriz.</p><div class="table-wrap"><table><thead><tr><th class="nosort">Cuenta en Zoho</th><th class="nosort">Producto</th><th class="nosort">Etapa</th><th class="nosort">KAM</th></tr></thead><tbody>${mxSort(MX.sinCuenta).map(d=>`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td>${esc(d.cuenta)}</td><td>${esc(d.producto)}</td><td>${esc(d.etapa)}</td><td>${esc(kamShort(d.kam))}</td></tr>`).join('')}</tbody></table></div></details>`:''}
+  <div id="mxPop" class="mx-pop" hidden></div>`;
+  $('mxKam').value=mxState.kam;$('mxCart').value=mxState.cartera;$('mxMod').value=mxState.modulo;
+  $('mxQ').oninput=e=>{mxState.q=e.target.value;drawMatriz();};
+  $('mxKam').onchange=e=>{mxState.kam=e.target.value;drawMatriz();drawMxAbiertos();};
+  $('mxCart').onchange=e=>{mxState.cartera=e.target.value;drawMatriz();};
+  $('mxMod').onchange=e=>{mxState.modulo=e.target.value;drawMatriz();};
+  document.querySelectorAll('#matriz .mx-kpi').forEach(k=>k.onclick=()=>{mxState.vista=mxState.vista===k.dataset.vista?'':k.dataset.vista;renderMatriz();});
+  $('matriz').onclick=mxClick;
+  $('mxDifXlsx').onclick=mxDifsXlsx;
+  drawMatriz();drawMxAbiertos();drawMxDifs();
+}
+
+function drawMatriz(){
+  let rows=MX.clientes.slice();
+  const q=normName(mxState.q);if(q)rows=rows.filter(g=>g.buscar.includes(q));
+  if(mxState.kam)rows=rows.filter(g=>g.kams.includes(mxState.kam));
+  if(mxState.cartera)rows=rows.filter(g=>g.cartera===mxState.cartera);
+  if(mxState.modulo!==''){const mi=+mxState.modulo;rows=rows.filter(g=>{const s=g.celdas[mi].s;return s===''||s==='xy';});}
+  const v=mxState.vista;
+  if(v==='sin')rows=rows.filter(g=>g.sinIntento);else if(v==='abiertos')rows=rows.filter(g=>g.abiertos);else if(v==='estancados')rows=rows.filter(g=>g.estancados);else if(v==='op')rows=rows.filter(g=>g.opSinDeal);
+  rows.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
+  $('mxTitle').textContent=`${rows.length} clientes · ordenados por MRR${mxState.modulo!==''?' · sin nada (o solo OP) en '+MATRIZ_MODS[+mxState.modulo][1]:''}`;
+  MX.refs=[];
+  const ref=o=>{MX.refs.push(o);return MX.refs.length-1;};
+  const body=rows.map(g=>{
+    const multi=g.miembros.length>1,open=!!mxState.abiertos[g.key];
+    const head=`<tr class="mx-row"><td class="hm-emp mx-name" data-g="${esc(g.key)}">${multi?`<span class="mx-tog">${open?'▾':'▸'}</span>`:''}<b>${esc(g.nombre)}</b>${multi?` <span class="legend">${g.miembros.length} RS</span>`:''}<div class="legend">${esc(g.kams.map(kamShort).join(', '))} · ${fmtUSD(g.mrr)}</div></td>${g.celdas.map(c=>mxCeldaHTML(c,ref({ds:c.ds,raws:c.raws,accs:g.miembros,nombre:g.nombre}))).join('')}</tr>`;
+    const subs=multi&&open?g.miembros.map(a=>`<tr class="mx-sub"><td class="hm-emp" title="${esc(a.cliente)}">↳ ${esc(a.cliente)}<div class="legend">${esc(kamShort(a.kam))} · ${fmtUSD(a.mrr)}</div></td>${MATRIZ_MODS.map((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return mxCeldaHTML({s:r.s,ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],estancado:r.ds.some(mxAbierto)&&r.ds.filter(mxAbierto).every(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS),etapa:r.ds.filter(mxAbierto).sort((x,y)=>etapaRank(y.etapa)-etapaRank(x.etapa))[0]?.etapa||null},ref({ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],accs:[a],nombre:a.cliente}));}).join('')}</tr>`).join(''):'';
+    return head+subs;
+  }).join('');
+  $('mxWrap').innerHTML=rows.length?`<table class="hm mx"><thead><tr><th class="hm-emp hm-corner">Cliente</th>${MATRIZ_MODS.map(m=>`<th class="mx-h"><span>${esc(m[1])}</span></th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`:'<p class="legend" style="padding:10px">No hay clientes con estos filtros.</p>';
+}
+
+function drawMxAbiertos(){
+  let ds=DEALS_DATA.filter(d=>mxProdIdx(d.producto)>=0&&mxAbierto(d));
+  if(mxState.kam)ds=ds.filter(d=>d.kam===mxState.kam);
+  ds.sort((a,b)=>(mxDias(b)||0)-(mxDias(a)||0));
+  $('mxAbiertos').innerHTML=ds.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Módulo</th><th class="nosort">Etapa</th><th class="nosort">Sin mover</th><th class="nosort">Valor</th><th class="nosort">KAM</th></tr></thead><tbody>${ds.map(d=>{const dd=mxDias(d);const cli=d._acc?(d._acc.grupo||d._acc.cliente):d.cuenta;return`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td style="font-weight:500">${esc(cli)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(MATRIZ_MODS[mxProdIdx(d.producto)][1])}</td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td><span class="badge ${dd>MX_ESTANCADO_DIAS*2?'b-red':dd>MX_ESTANCADO_DIAS?'b-amber':'b-green'}">${dd==null?'—':dd+' días'}</span></td><td>${fmtMXN(d.valor)}</td><td>${esc(kamShort(d.kam))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">No hay deals abiertos de estos módulos.</p>';
+}
+
+function drawMxDifs(){
+  const D=MX.difs.slice().sort((x,y)=>(x.a.kam||'').localeCompare(y.a.kam||'')||x.a.cliente.localeCompare(y.a.cliente));
+  $('mxDifs').innerHTML=D.length?`<table><thead><tr><th class="nosort">Razón social</th><th class="nosort">KAM</th><th class="nosort">Módulo</th><th class="nosort">Celda</th><th class="nosort">Dice hoy</th><th class="nosort">Debería decir</th><th class="nosort">Deal</th></tr></thead><tbody>${D.map(r=>`<tr class="mx-link" data-url="${mxDealUrl(r.deal)}"><td style="font-weight:500">${esc(r.a.cliente)}${r.a.grupo?`<div class="legend">${esc(r.a.grupo)}</div>`:''}</td><td>${esc(kamShort(r.a.kam))}</td><td>${esc(r.mod)}</td><td><code>${esc(r.celda)}</code></td><td>${r.raw?esc(r.raw):'<span class="legend">vacío</span>'}</td><td><span class="badge ${r.tipo==='revisar'?'b-purple':'b-amber'}">${esc(r.sug)}</span></td><td>${esc(r.deal.etapa)}</td></tr>`).join('')}</tbody></table>`:'<p class="legend">El Excel coincide con Zoho en todos los módulos.</p>';
+}
+
+function mxDifsXlsx(ev){
+  ev.stopPropagation();
+  const rows=MX.difs.map(r=>({'Razón social':r.a.cliente,'Grupo':r.a.grupo||'','KAM':r.a.kam,'Módulo':r.mod,'Celda (MARE MX)':r.celda,'Dice hoy':r.raw,'Debería decir':r.sug,'Etapa en Zoho':r.deal.etapa,'Deal':r.deal.trato,'Link Zoho':mxDealUrl(r.deal)}));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Actualizar Excel');
+  XLSX.writeFile(wb,`matriz-modulos-actualizar-excel_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+function mxClick(ev){
+  const pop=$('mxPop');
+  const link=ev.target.closest('.mx-link');
+  if(link&&!ev.target.closest('a')){window.open(link.dataset.url,'_blank','noopener');return;}
+  const name=ev.target.closest('.mx-name');
+  if(name){const k=name.dataset.g;mxState.abiertos[k]=!mxState.abiertos[k];drawMatriz();return;}
+  const td=ev.target.closest('td.mx-c');
+  if(!td){if(!ev.target.closest('#mxPop'))pop.hidden=true;return;}
+  const o=MX.refs[+td.dataset.r];if(!o)return;
+  if(o.ds.length===1&&!o.raws.length){pop.hidden=true;window.open(mxDealUrl(o.ds[0]),'_blank','noopener');return;}
+  const dealsH=mxSort(o.ds).map(d=>`<a href="${mxDealUrl(d)}" target="_blank" rel="noopener" class="mx-pop-it"><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span> ${esc(d.trato)}<div class="legend">${esc(d.cuenta)} · ${fmtMXN(d.valor)}${mxAbierto(d)?' · '+mxDias(d)+' días sin mover':''}</div></a>`).join('');
+  const rawH=o.raws.length?`<div class="legend" style="margin-top:6px"><b>En el Excel:</b> ${o.raws.map(r=>`${esc(r.raw)}${o.accs.length>1?' ('+esc(r.a.cliente)+')':''}`).join(' · ')}${o.ds.length?' — manda Zoho':''}</div>`:'';
+  const accH=o.accs.filter(a=>a.zohoId).map(a=>`<a href="${ZOHO_TAB}Accounts/${a.zohoId}" target="_blank" rel="noopener">${esc(a.cliente)}</a>`).join(' · ');
+  pop.innerHTML=`<div style="font-weight:700;margin-bottom:6px">${esc(o.nombre)}</div>${dealsH||'<div class="legend">Sin deals de este módulo en Zoho.</div>'}${rawH}${accH?`<div class="legend" style="margin-top:8px">Cuenta en Zoho: ${accH}</div>`:''}`;
+  pop.hidden=false;
+  const r=td.getBoundingClientRect();const w=300;
+  pop.style.left=Math.max(8,Math.min(window.innerWidth-w-8,r.left+r.width/2-w/2))+'px';
+  pop.style.top=(r.bottom+6)+'px';
+  ev.stopPropagation();
+}
+document.addEventListener('click',e=>{const p=$('mxPop');if(p&&!p.hidden&&!e.target.closest('#mxPop')&&!e.target.closest('td.mx-c'))p.hidden=true;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('mxPop'))$('mxPop').hidden=true;});
+window.addEventListener('scroll',()=>{if($('mxPop'))$('mxPop').hidden=true;},{passive:true});
+
 // ---------- Datos ----------
 function renderDatos(){
   $('datos').innerHTML=`
@@ -3565,11 +3825,11 @@ function tareasDownloadExcel(rows){
   XLSX.writeFile(wb,`tareas_${tareasState.resp?normName(tareasState.resp):'todas'}_${hoy}.xlsx`);
   toast('Descargando '+rows.length+' tareas…');
 }
-const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,tiempoRegistrar:renderTiempoRegistrar,tiempoRecuento:renderTiempoRecuento,implementacion:renderImplementacion,tareas:renderTareas,sinuso:renderSinUso,pipeline:renderPipeline,datos:renderDatos};
+const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,tiempoRegistrar:renderTiempoRegistrar,tiempoRecuento:renderTiempoRecuento,implementacion:renderImplementacion,tareas:renderTareas,sinuso:renderSinUso,pipeline:renderPipeline,matriz:renderMatriz,datos:renderDatos};
 function renderAll(){applyAnnotationsToAccounts();applyApoyoToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11" title="${CURRENT_HEALTH_FILE?esc(CURRENT_HEALTH_FILE):''}">salud vigente: ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'activa'}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 // mapa: id de sección real -> id de grupo (pestaña principal) al que pertenece
-const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',tony:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',tiempoRegistrar:'tiempo',tiempoRecuento:'tiempo',implementacion:'implementacion',tareas:'tareas',pipeline:'pipeline',datos:'datos'};
+const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',tony:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',tiempoRegistrar:'tiempo',tiempoRecuento:'tiempo',implementacion:'implementacion',tareas:'tareas',pipeline:'pipeline',matriz:'matriz',datos:'datos'};
 let NAV_LAST_CHILD={}; // recuerda qué sub-pestaña se vio por última vez en cada grupo con hijos
 // clic en una pestaña principal con sub-pestañas: abre la última vista o, si es la primera vez, la primera opción
 function showGroup(gid){
