@@ -55,6 +55,23 @@ ORDEN_ETAPAS = [
 ]
 ETAPAS_CERRADAS = {"Cierre Perdido", "Facturación congelada"}
 
+# Módulos que vende COMERCIAL (no KAM) a clientes que hoy están en la cartera — p. ej. Ambiark compró
+# vacaciones con Alfredo Fuentes. Solo se traen los ya vendidos (7. Implementando / 8. Facturando): lo que
+# comercial perdió o tiene en proceso es venta nueva, no postventa. Van en la llave "comercial" de
+# deals-mx.json, aparte de "deals", para no mezclarlos en la pestaña Pipeline; los usa Matriz módulos.
+# El tope de searchRecords es 15 condiciones: por eso no entran Alertas Mail, Optimizador ni Formularios.
+PRODUCTOS_COMERCIAL = [
+    "Alertas", "Integraciones Victoria Connect", "Módulo Vacaciones", "Planificador Inteligente",
+    "Dashboard BI", "Reporte a Medida", "Control de Acceso", "Servicio de Comedor", "VictorIA",
+    "Marcaje WhatsApp", "Centro de Operaciones",
+]
+ETAPAS_VENDIDO = {"7. Implementando", "8. Facturando"}
+CRITERIO_COMERCIAL = (
+    "((Territorio:equals:México)and(Owner:not_equal:3525045000270215054)"
+    "and((Stage:equals:8. Facturando)or(Stage:equals:7. Implementando))and("
+    + "or".join(f"(Producto_Soluci_n:equals:{p})" for p in PRODUCTOS_COMERCIAL) + "))"
+)
+
 TOTAL_MIN, TOTAL_MAX = 150, 1200   # rango sano — hoy son ~429 deals
 DELTA_MAX = 0.25                   # 25% de variación de un corrida a otra
 SOLAPAMIENTO_MIN = 0.70            # 70% de los IDs deben repetirse
@@ -166,6 +183,25 @@ def validar(crudos):
     return ids
 
 
+def validar_comercial(crudos):
+    titulo("Validando deals vendidos por comercial")
+    malos = [r for r in crudos
+             if (r.get("Owner") or {}).get("id") == KAM_OWNER_ID
+             or (r.get("Territorio") or "") != TERRITORIO_ESPERADO
+             or (r.get("Stage") or "").strip() not in ETAPAS_VENDIDO]
+    if malos:
+        morir(f"{len(malos)} deals de --comercial no cumplen el criterio (dueño KAM México, otro territorio o etapa no vendida).",
+              "Revisa que se haya usado CRITERIO_COMERCIAL de este script.")
+    vistos, out = set(), []
+    for r in crudos:
+        d = dar_forma(r)
+        if d["id"] not in vistos:
+            vistos.add(d["id"]); out.append(d)
+    out.sort(key=lambda d: (d["cuenta"].lower(), d["producto"]))
+    ok(f"{len(out)} deals de módulos vendidos por comercial")
+    return out
+
+
 def comparar(deals, ids_nuevos, vigente_path):
     """Diff contra el pipeline publicado. Devuelve False si es idéntico."""
     if not vigente_path.exists():
@@ -274,6 +310,9 @@ def main():
     ap.add_argument("archivo", help="JSON con los deals crudos de Zoho (lista plana, todas las páginas combinadas)")
     ap.add_argument("--dry-run", action="store_true", help="valida y muestra el diff sin escribir ni commitear")
     ap.add_argument("--no-push", action="store_true", help="commitea pero no pushea")
+    ap.add_argument("--comercial", metavar="JSON",
+                    help="JSON con los deals crudos de CRITERIO_COMERCIAL (módulos vendidos por comercial). "
+                         "Si no se pasa, se conservan los que ya había en deals-mx.json")
     ap.add_argument("--forzar", action="store_true", help="publica aunque el solape/delta con lo previo sea sospechoso")
     args = ap.parse_args()
 
@@ -292,6 +331,19 @@ def main():
     deals.sort(key=lambda d: (d["kam"], orden_etapa(d["etapa"]), -(d["valor"] or 0)))
 
     distinto = comparar(deals, ids, DESTINO)
+    previo = {}
+    if DESTINO.exists():
+        try:
+            previo = json.loads(DESTINO.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            previo = {}
+    if args.comercial:
+        comercial = validar_comercial(leer_crudos(Path(args.comercial).expanduser()))
+        distinto = distinto or comercial != previo.get("comercial")
+    else:
+        comercial = previo.get("comercial") or []
+        if comercial:
+            aviso(f"Sin --comercial: se conservan los {len(comercial)} deals de comercial que ya estaban.")
     if not distinto and not args.forzar:
         morir("El pipeline no cambió desde la última publicación — no hay nada que subir.",
               "Si de verdad quieres forzar la publicación, corre de nuevo con --forzar.")
@@ -305,6 +357,7 @@ def main():
         "kams": KAMS_VALIDOS,
         "total": len(deals),
         "deals": deals,
+        "comercial": comercial,
     }
 
     publicar(payload, args.dry_run, push=not args.no_push, forzar_commit_vacio=args.forzar)

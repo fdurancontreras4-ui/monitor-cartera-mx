@@ -43,6 +43,25 @@ páginas), y va a seguir creciendo — repetir con `page` incremental hasta que
 `info.more_records` sea `false`, y juntar todas las páginas en **una sola
 lista plana** antes de pasársela al script (no una por archivo).
 
+## Módulos vendidos por comercial (segunda búsqueda)
+
+La pestaña **Matriz módulos** también marca los módulos que vendió **comercial**
+(dueño ≠ KAM México) a clientes de la cartera, p. ej. Ambiark compró
+vacaciones con Alfredo Fuentes. Se trae con una segunda `searchRecords` sobre
+Deals, usando el criterio `CRITERIO_COMERCIAL` de `scripts/subir-deals-zoho.py`
+(cópialo de ahí; ya está armado con las 15 condiciones que admite Zoho):
+Territorio México, Owner ≠ KAM México, etapa 7 u 8, y producto de módulo.
+Son ~90 deals, una sola página.
+
+Si la respuesta es chica, el conector la devuelve inline y no queda en un
+archivo. Para que se guarde, pide la búsqueda **sin `fields`** (todos los
+campos); así el resultado pesa lo suficiente para que el conector lo guarde en
+disco. Vuelca la lista `data` a `/tmp/deals-comercial-raw.json`.
+
+Además, la búsqueda con OR de los tres KAM pagina de forma inestable (una página
+repite deals de otra). Es más seguro hacer **una búsqueda por KAM**
+(`(Owner:equals:…)and(KAM:equals:<nombre>)`) y juntar.
+
 ## Publicar
 
 1. Volcar la lista combinada a un JSON temporal, por ejemplo
@@ -51,8 +70,9 @@ lista plana** antes de pasársela al script (no una por archivo).
    trabajo a medio hacer).
 2. Correr:
    ```bash
-   cd ~/Geo/monitor-cartera-mx && python3 scripts/subir-deals-zoho.py /tmp/deals-zoho-raw.json
+   cd ~/Geo/monitor-cartera-mx && python3 scripts/subir-deals-zoho.py /tmp/deals-zoho-raw.json --comercial /tmp/deals-comercial-raw.json
    ```
+   Sin `--comercial` se conservan los deals de comercial que ya estaban publicados.
    El script valida (Owner, Territorio, KAM, rango de totales, solape contra
    lo publicado), arma `deals-mx.json`, y si hay cambios hace commit + push a
    `main` solo. `--dry-run` para revisar sin escribir nada.

@@ -215,6 +215,23 @@ def leer_deals():
         vistos.add(d["id"])
         deals.append(d)
     deals.sort(key=lambda d: (d["kam"], SD.orden_etapa(d["etapa"]), -(d["valor"] or 0)))
+    # módulos vendidos por comercial a clientes de la cartera (ver CRITERIO_COMERCIAL en el script);
+    # si esta segunda búsqueda falla, el pipeline de KAM igual se sirve, sin la lista de comercial
+    comercial = []
+    try:
+        qs = urllib.parse.urlencode({"criteria": SD.CRITERIO_COMERCIAL, "fields": ZOHO_FIELDS, "per_page": 200})
+        status, cuerpo = pedir(f"{ZOHO_API}/crm/v8/Deals/search?{qs}",
+                               headers={"Authorization": f"Zoho-oauthtoken {token}"})
+        if status == 200:
+            vistos_c = set()
+            for r in json.loads(cuerpo).get("data") or []:
+                if (r.get("Owner") or {}).get("id") == SD.KAM_OWNER_ID or (r.get("Stage") or "").strip() not in SD.ETAPAS_VENDIDO:
+                    continue
+                d = SD.dar_forma(r)
+                if d["id"] not in vistos_c:
+                    vistos_c.add(d["id"]); comercial.append(d)
+    except Exception:
+        comercial = []
     payload = {
         "generado": ahora_iso(),
         "fuente": "Zoho CRM · Deals (en vivo)",
@@ -223,6 +240,7 @@ def leer_deals():
         "kams": SD.KAMS_VALIDOS,
         "total": len(deals),
         "deals": deals,
+        "comercial": comercial,
     }
     return json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
