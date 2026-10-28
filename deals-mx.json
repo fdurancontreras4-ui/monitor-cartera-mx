@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-28T02:06:12-06:00",
+  "generado": "2026-10-28T02:21:08-06:00",
   "fuente": "Zoho CRM · Deals",
   "propietario": "KAM México",
   "territorio": "México",
@@ -776,21 +776,6 @@
       "modificado": "2026-03-23T12:35:46-06:00"
     },
     {
-      "id": "3525045000583797058",
-      "trato": "Implementación de BI IDINSA",
-      "cuenta": "IDINSA",
-      "cuenta_id": "3525045000416193121",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "ddelarosa@geovictoria.com",
-      "etapa": "8. Facturando",
-      "cerrado": false,
-      "producto": "Dashboard BI",
-      "valor": 17600,
-      "owner": "KAM México",
-      "creado": "2026-02-16T15:22:42-06:00",
-      "modificado": "2026-08-27T11:21:26-06:00"
-    },
-    {
       "id": "3525045000576910225",
       "trato": "UP Selling Poza Rica",
       "cuenta": "IDINSA",
@@ -1449,6 +1434,21 @@
       "owner": "KAM México",
       "creado": "2025-07-30T12:13:51-06:00",
       "modificado": "2026-03-23T12:35:46-06:00"
+    },
+    {
+      "id": "3525045000583797058",
+      "trato": "Implementación de BI IDINSA",
+      "cuenta": "IDINSA",
+      "cuenta_id": "3525045000416193121",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "Facturación congelada",
+      "cerrado": true,
+      "producto": "Dashboard BI",
+      "valor": 17600,
+      "owner": "KAM México",
+      "creado": "2026-02-16T15:22:42-06:00",
+      "modificado": "2026-10-28T02:18:07-06:00"
     },
     {
       "id": "3525045000599800531",
