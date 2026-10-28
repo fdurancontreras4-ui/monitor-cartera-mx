@@ -265,7 +265,7 @@ tr.hecha td{background:rgba(59,109,17,.10);}
 tr.hecha td:first-child{color:var(--tarea-ok);}
 .tarea-ok-lbl{color:var(--tarea-ok);font-weight:600;}
 /* Matriz módulos */
-.mx-kpis{grid-template-columns:repeat(4,1fr);}
+.mx-kpis{grid-template-columns:repeat(5,1fr);}
 .mx-kpi{cursor:pointer;border:1.5px solid transparent;transition:border-color .12s;}
 .mx-kpi:hover{border-color:var(--color-border-secondary);}
 .mx-kpi.on{border-color:var(--accent);}
@@ -3048,6 +3048,7 @@ function mxBuild(){
     g.abiertos=g.celdas.reduce((n,c)=>n+c.ds.filter(d=>mxAbierto(d)&&!d._com).length,0);
     g.estancados=g.celdas.filter(c=>c.estancado).length;
     g.opSinDeal=ss.filter(s=>s==='xy').length;
+    g.okSinDeal=ss.filter(s=>s==='xv').length; // OK en el Excel y ningún deal del módulo en Zoho
     g.buscar=normName(g.nombre+' '+(g.miembros[0].grupo||'')+' '+g.miembros.map(m=>m.cliente).join(' '));
     return g;
   });
@@ -3106,6 +3107,7 @@ function renderMatriz(){
     ${stat(C.filter(g=>g.sinModulo).length,'<span class="mx-sinmod">⊘</span> sin ningún módulo contratado','sinmod')}
     ${stat(C.filter(g=>g.sinAbierto).length,'<span class="mx-warn">⚠</span> sin ningún deal abierto','sinabierto')}
     ${stat(C.filter(g=>g.sinModulo&&g.sinAbierto).length,'<span class="mx-sinmod">⊘</span><span class="mx-warn">⚠</span> ni módulo ni deal abierto','ambos')}
+    ${stat(C.filter(g=>g.okSinDeal).length,'con OK en Excel sin deal en Zoho','oksindeal')}
     ${stat(C.filter(g=>g.opSinDeal).length,'con OP en Excel sin deal','op')}
   </div>
   <div class="controls" style="margin-top:14px">
@@ -3140,7 +3142,7 @@ function drawMatriz(){
   if(mxState.cartera)rows=rows.filter(g=>g.cartera===mxState.cartera);
   if(mxState.modulo!==''){const mi=+mxState.modulo;rows=rows.filter(g=>{const s=g.celdas[mi].s;return s===''||s==='xy';});}
   const v=mxState.vista;
-  if(v==='sin')rows=rows.filter(g=>g.sinIntento);else if(v==='sinabierto')rows=rows.filter(g=>g.sinAbierto);else if(v==='sinmod')rows=rows.filter(g=>g.sinModulo);else if(v==='ambos')rows=rows.filter(g=>g.sinModulo&&g.sinAbierto);else if(v==='abiertos')rows=rows.filter(g=>g.abiertos);else if(v==='estancados')rows=rows.filter(g=>g.estancados);else if(v==='op')rows=rows.filter(g=>g.opSinDeal);
+  if(v==='sin')rows=rows.filter(g=>g.sinIntento);else if(v==='sinabierto')rows=rows.filter(g=>g.sinAbierto);else if(v==='oksindeal')rows=rows.filter(g=>g.okSinDeal);else if(v==='sinmod')rows=rows.filter(g=>g.sinModulo);else if(v==='ambos')rows=rows.filter(g=>g.sinModulo&&g.sinAbierto);else if(v==='abiertos')rows=rows.filter(g=>g.abiertos);else if(v==='estancados')rows=rows.filter(g=>g.estancados);else if(v==='op')rows=rows.filter(g=>g.opSinDeal);
   rows.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
   $('mxTitle').textContent=`${rows.length} clientes · ordenados por MRR${mxState.modulo!==''?' · sin nada (o solo OP) en '+MATRIZ_MODS[+mxState.modulo][1]:''}`;
   MX.refs=[];
