@@ -287,6 +287,7 @@ td.mx-c:hover{outline:2px solid var(--accent);outline-offset:-2px;}
 .mx-zv{background:#3B6D11!important;}
 .mx-zy{background:#E0A100!important;color:#3a2a00!important;}
 .mx-zr{background:#C23B3B!important;}
+.mx-zc{background:#1F3A68!important;color:#fff!important;}
 .mx-xv,.mx-xy,.mx-xr{background:var(--color-background-primary)!important;border:2px dashed!important;}
 .mx-xv{border-color:#3B6D11!important;color:#3B6D11!important;}
 .mx-xy{border-color:#E0A100!important;color:#9a6f00!important;font-size:9.5px!important;}
@@ -2811,7 +2812,7 @@ function renderSinUso(){
 let plState={kam:'',q:''};
 const ETAPA_ORDEN=['1. Trato Creado','2. Primera Reunion Realizada','3. En Levantamiento','4. Propuesta Enviada / En Negociación','5. Piloto','6. Listo para Cierre','7. Implementando','8. Facturando','Facturación congelada','Cierre Perdido'];
 const ETAPAS_CERRADAS=new Set(['Cierre Perdido','Facturación congelada']);
-const ETAPA_COLOR={'1. Trato Creado':'#67718c','2. Primera Reunion Realizada':'#185FA5','3. En Levantamiento':'#185FA5','4. Propuesta Enviada / En Negociación':'#854F0B','5. Piloto':'#854F0B','6. Listo para Cierre':'#0090cc','7. Implementando':'#036a92','8. Facturando':'#3B6D11','Cierre Perdido':'#A32D2D','Facturación congelada':'#67718c'};
+const ETAPA_COLOR={'1. Trato Creado':'#67718c','2. Primera Reunion Realizada':'#185FA5','3. En Levantamiento':'#185FA5','4. Propuesta Enviada / En Negociación':'#854F0B','5. Piloto':'#854F0B','6. Listo para Cierre':'#0090cc','7. Implementando':'#036a92','8. Facturando':'#3B6D11','Cierre Perdido':'#A32D2D','Facturación congelada':'#1F3A68'};
 // pipeline = etapas 4-5 (propuesta/negociación, piloto) · forecast = etapas 6-7 (listo para cierre, implementando)
 const ETAPAS_PIPELINE=new Set(['4. Propuesta Enviada / En Negociación','5. Piloto']);
 const ETAPAS_FORECAST=new Set(['6. Listo para Cierre','7. Implementando']);
@@ -2924,11 +2925,26 @@ const MATRIZ_MODS=[
 const MAT_COL_LETRA={}; // encabezado → letra de columna en MARE MX (la llena parseMareWorkbook)
 const MX_ESTANCADO_DIAS=30;
 // Zoho le gana siempre al Excel, también entre razones sociales de un mismo grupo
-const MX_RANK={zv:6,zy:5,zr:4,xv:3,xy:2,xr:1,'':0};
+const MX_RANK={zv:7,zy:6,zc:5,zr:4,xv:3,xy:2,xr:1,'':0};
 let mxState={q:'',kam:'',cartera:'',vista:'',modulo:'',abiertos:{}};
 let MX={}; // lo que calcula mxBuild() en cada render
 
 function mxProdIdx(prod){for(let i=0;i<MATRIZ_MODS.length;i++){if(MATRIZ_MODS[i][2].includes(prod))return i;}return -1;}
+// palabras del nombre del deal que identifican un módulo sin ambigüedad (VictorIA / Victoria Connect quedan fuera:
+// "VictorIA - Conect" puede ser cualquiera de los dos)
+const MX_NOMBRE_MOD=[[0,/alerta/],[2,/vacacion|permiso/],[3,/calendario|planificador|planif\b/],[4,/\bbi\b|dashboard/],[5,/\bram\b|\brams\b|reporte a medida/],[6,/acceso|visitas/],[7,/comedor/],[9,/optimizador/],[10,/whats|\bwpp\b/],[14,/formulario/],[15,/centro de op/]];
+// módulo del deal: manda el producto de Zoho, salvo que el producto sea de un módulo y el nombre del deal
+// nombre claramente otro (CALENDARIO IDINSA cargado como "Alertas") — ahí manda el nombre y se marca _prodMal
+function mxModIdx(d){
+  if(d._mi!==undefined)return d._mi;
+  let mi=mxProdIdx(d.producto);d._prodMal=null;
+  if(mi>=0){
+    const n=String(d.trato||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const hits=[...new Set(MX_NOMBRE_MOD.filter(([,re])=>re.test(n)).map(([i])=>i))];
+    if(hits.length===1&&hits[0]!==mi){d._prodMal=d.producto;mi=hits[0];}
+  }
+  return d._mi=mi;
+}
 // ¿el nombre de la cuenta en Zoho se parece al de la cartera? tokens en común, uno dentro del otro, o prefijos
 // (Pleniahc ~ PLENIA HOME CARE); el texto entre paréntesis cuenta (Altour, UBS, Idinsa)
 function mxTokens(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>1&&!/^(sa|cv|de|del|la|las|el|los|y|grupo|mexico|mx|corporativo|rl|sapi|sc|s|the|servicios|comercializadora|operadora|distribuidora)$/.test(w));}
@@ -2948,6 +2964,7 @@ function mxSort(ds){return ds.slice().sort((a,b)=>{const ra=mxAbierto(a)?0:a.eta
 function mxEstado(ds,raw){
   if(ds.some(d=>d.etapa==='8. Facturando'))return'zv';
   if(ds.some(mxAbierto))return'zy';
+  if(ds.some(d=>d.etapa==='Facturación congelada'))return'zc';
   if(ds.length)return'zr';
   const x=modStatus(raw);return x==='OK'?'xv':x==='OP'?'xy':x==='NO'?'xr':'';
 }
@@ -2964,7 +2981,7 @@ function mxBuild(){
   const top=arr=>arr.slice().sort((x,y)=>(y.mrr||0)-(x.mrr||0))[0];
   const sinCuenta=[],otros=[];
   DEALS_DATA.concat(DEALS_COMERCIAL).forEach(d=>{
-    const mi=mxProdIdx(d.producto);
+    const mi=mxModIdx(d);
     let a=null,via='id';
     // por id (columna L), pero solo si el nombre de la cuenta en Zoho se parece a la razón social o al grupo:
     // si no se parece, el link de la columna L probablemente está mal (p. ej. FIDEICOMISO F/1596 → HEINEKEN) y
@@ -3019,10 +3036,12 @@ function mxBuild(){
     const d0=mxSort(ds)[0];let sug=null,tipo='actualizar';
     if(z==='zv'&&x!=='OK')sug='OK';
     else if(z==='zy'){if(!x||x==='NO')sug='OP ('+mxEtapaCorta(d0.etapa)+')';else if(x==='OK'){sug='revisar: OK en Excel, deal abierto en Zoho';tipo='revisar';}}
+    else if(z==='zc'){if(!/congel/i.test(raw||''))sug='Congelado (facturó y se congeló)';}
     else if(z==='zr'){if(!x||x==='OP')sug='NO - perdido en Zoho';else if(x==='OK'){sug='revisar: OK en Excel, perdido en Zoho';tipo='revisar';}}
     if(sug&&d0._com)sug+=' (vendido por comercial)';
     if(sug)difs.push({a,mod:m[0],col:MAT_COL_LETRA[m[0]]||'',celda:(MAT_COL_LETRA[m[0]]||'')+(a._row||''),raw:raw||'',sug,tipo,deal:d0});
   }));
+  ACCOUNTS.forEach(a=>a._mx.forEach((ds,mi)=>ds.forEach(d=>{if(d._prodMal)difs.push({a,mod:'Producto en Zoho',col:'',celda:'(Zoho)',raw:d._prodMal,sug:'corregir en Zoho: '+MATRIZ_MODS[mi][1],tipo:'revisar',deal:d});})));
   ACCOUNTS.forEach(a=>{if(a._linkDudoso)difs.push({a,mod:'Link Zoho',col:'L',celda:'L'+(a._row||''),raw:'lleva a «'+a._linkDudoso.zoho+'»',sug:'revisar: el link no parece ser de esta razón social',tipo:'revisar',deal:a._linkDudoso.deal});});
   MX={clientes,sinCuenta,otros,difs};
 }
@@ -3030,12 +3049,12 @@ function mxBuild(){
 function mxCeldaHTML(c,ref){
   const t=c.s;if(!t)return`<td class="mx-c" data-r="${ref}" title="Sin deal en Zoho ni dato en el Excel"></td>`;
   let txt='';
-  if(t==='zv'||t==='xv')txt='✓';else if(t==='zr'||t==='xr')txt='✕';else if(t==='zy')txt=(c.etapa||'').charAt(0);else if(t==='xy')txt='OP';
+  if(t==='zv'||t==='xv')txt='✓';else if(t==='zr'||t==='xr')txt='✕';else if(t==='zc')txt='❄';else if(t==='zy')txt=(c.etapa||'').charAt(0);else if(t==='xy')txt='OP';
   const n=c.ds.length>1?`<sup>${c.ds.length}</sup>`:'';
   // si lo que pinta la celda lo vendió solo comercial (no KAM), se escribe C y va rayada
   const pinta=t==='zv'?c.ds.filter(d=>d.etapa==='8. Facturando'):t==='zy'?c.ds.filter(mxAbierto):[];
   const com=pinta.length&&pinta.every(d=>d._com);if(com)txt='C';
-  const tip=c.ds.length?mxSort(c.ds).map(d=>`${d.etapa} · ${d.trato}${d._com?' · comercial ('+d.owner+')':''}${mxAbierto(d)&&!d._com?' · '+mxDias(d)+' días sin mover':''}`).join('\n'):('Según Excel: '+c.raws.map(r=>r.raw).join(' | '));
+  const tip=c.ds.length?mxSort(c.ds).map(d=>`${d.etapa} · ${d.trato}${d._com?' · comercial ('+d.owner+')':''}${d._prodMal?' · en Zoho dice producto «'+d._prodMal+'»':''}${mxAbierto(d)&&!d._com?' · '+mxDias(d)+' días sin mover':''}`).join('\n'):('Según Excel: '+c.raws.map(r=>r.raw).join(' | '));
   return`<td class="mx-c mx-${t}${com?' mx-comc':''}${c.estancado?' mx-stale':''}" data-r="${ref}" title="${esc(tip)}">${txt}${n}</td>`;
 }
 
@@ -3048,12 +3067,12 @@ function renderMatriz(){
   mxBuild();
   const C=MX.clientes;
   const kamOpts=[...new Set(ACCOUNTS.map(a=>a.kam))].sort();
-  const abiertos=DEALS_DATA.filter(d=>mxProdIdx(d.producto)>=0&&mxAbierto(d));
+  const abiertos=DEALS_DATA.filter(d=>mxModIdx(d)>=0&&mxAbierto(d));
   const estanc=abiertos.filter(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS);
   const stat=(v,l,vista)=>`<div class="stat3-it mx-kpi${mxState.vista===vista?' on':''}" data-vista="${vista}"><div class="stat3-v">${v}</div><div class="stat3-l">${l}</div></div>`;
   $('matriz').innerHTML=`
   <div class="note-box"><strong>Matriz de módulos complementarios.</strong> Una fila por cliente (las razones sociales se juntan por la columna <strong>Grupo</strong> de MARE MX; si no tiene grupo, la razón social es el cliente). <strong>Manda Zoho</strong>: si hay un deal del módulo, su etapa define el color. Si Zoho no tiene nada, se usa lo que dice el Excel (columnas AT–BH) y la celda va con <strong>borde punteado</strong>. Clic en una celda para ir al deal en Zoho. Clic en el nombre para abrir la cuenta en Zoho; la flecha ▸ despliega sus razones sociales. <span class="mx-warn">⚠</span> = la cuenta no tiene ningún deal abierto en Zoho (de ningún producto).<br>
-  <span class="mx-leg mx-zv">✓</span> facturando · <span class="mx-leg mx-zv mx-comc">C</span> vendido por comercial (no KAM) · <span class="mx-leg mx-zy">4</span> deal abierto (el número es la etapa) · <span class="mx-leg mx-zy mx-stale">4</span> abierto y sin movimiento hace más de ${MX_ESTANCADO_DIAS} días · <span class="mx-leg mx-zr">✕</span> perdido / congelado · <span class="mx-leg mx-xy">OP</span> oportunidad en el Excel sin deal · <span class="mx-leg mx-xr">✕</span> sin oportunidad según Excel · <span class="mx-leg mx-xv">✓</span> OK según Excel, sin deal en Zoho · <span class="mx-leg"></span> nada</div>
+  <span class="mx-leg mx-zv">✓</span> facturando · <span class="mx-leg mx-zv mx-comc">C</span> vendido por comercial (no KAM) · <span class="mx-leg mx-zy">4</span> deal abierto (el número es la etapa) · <span class="mx-leg mx-zy mx-stale">4</span> abierto y sin movimiento hace más de ${MX_ESTANCADO_DIAS} días · <span class="mx-leg mx-zc">❄</span> facturación congelada · <span class="mx-leg mx-zr">✕</span> perdido · <span class="mx-leg mx-xy">OP</span> oportunidad en el Excel sin deal · <span class="mx-leg mx-xr">✕</span> sin oportunidad según Excel · <span class="mx-leg mx-xv">✓</span> OK según Excel, sin deal en Zoho · <span class="mx-leg"></span> nada</div>
   ${DEALS_DATA.length?`<p class="status-line" style="margin:-6px 0 12px">Deals de Zoho al ${esc((DEALS_META.generado||'').slice(0,10))} · ${DEALS_DATA.length} deals de KAM + ${DEALS_COMERCIAL.length} módulos vendidos por comercial</p>`:'<p class="legend">Todavía no hay deals-mx.json cargado — la matriz solo muestra lo del Excel.</p>'}
   <div class="stat3 mx-kpis">
     ${stat(C.length,'clientes','')}
@@ -3111,10 +3130,10 @@ function drawMatriz(){
 }
 
 function drawMxAbiertos(){
-  let ds=DEALS_DATA.filter(d=>mxProdIdx(d.producto)>=0&&mxAbierto(d));
+  let ds=DEALS_DATA.filter(d=>mxModIdx(d)>=0&&mxAbierto(d));
   if(mxState.kam)ds=ds.filter(d=>d.kam===mxState.kam);
   ds.sort((a,b)=>(mxDias(b)||0)-(mxDias(a)||0));
-  $('mxAbiertos').innerHTML=ds.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Módulo</th><th class="nosort">Etapa</th><th class="nosort">Sin mover</th><th class="nosort">Valor</th><th class="nosort">KAM</th></tr></thead><tbody>${ds.map(d=>{const dd=mxDias(d);const cli=d._acc?(d._acc.grupo||d._acc.cliente):d.cuenta;return`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td style="font-weight:500">${esc(cli)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(MATRIZ_MODS[mxProdIdx(d.producto)][1])}</td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td><span class="badge ${dd>MX_ESTANCADO_DIAS*2?'b-red':dd>MX_ESTANCADO_DIAS?'b-amber':'b-green'}">${dd==null?'—':dd+' días'}</span></td><td>${fmtMXN(d.valor)}</td><td>${esc(kamShort(d.kam))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">No hay deals abiertos de estos módulos.</p>';
+  $('mxAbiertos').innerHTML=ds.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Módulo</th><th class="nosort">Etapa</th><th class="nosort">Sin mover</th><th class="nosort">Valor</th><th class="nosort">KAM</th></tr></thead><tbody>${ds.map(d=>{const dd=mxDias(d);const cli=d._acc?(d._acc.grupo||d._acc.cliente):d.cuenta;return`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td style="font-weight:500">${esc(cli)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(MATRIZ_MODS[mxModIdx(d)][1])}</td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td><span class="badge ${dd>MX_ESTANCADO_DIAS*2?'b-red':dd>MX_ESTANCADO_DIAS?'b-amber':'b-green'}">${dd==null?'—':dd+' días'}</span></td><td>${fmtMXN(d.valor)}</td><td>${esc(kamShort(d.kam))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">No hay deals abiertos de estos módulos.</p>';
 }
 
 function drawMxDifs(){
@@ -3140,7 +3159,7 @@ function mxClick(ev){
   if(!td){if(!ev.target.closest('#mxPop'))pop.hidden=true;return;}
   const o=MX.refs[+td.dataset.r];if(!o)return;
   if(o.ds.length===1&&!o.raws.length){pop.hidden=true;window.open(mxDealUrl(o.ds[0]),'_blank','noopener');return;}
-  const dealsH=mxSort(o.ds).map(d=>`<a href="${mxDealUrl(d)}" target="_blank" rel="noopener" class="mx-pop-it"><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span> ${esc(d.trato)}<div class="legend">${d._com?'<b>Comercial · '+esc(d.owner)+'</b> · ':''}${esc(d.cuenta)} · ${fmtMXN(d.valor)}${mxAbierto(d)&&!d._com?' · '+mxDias(d)+' días sin mover':''}</div></a>`).join('');
+  const dealsH=mxSort(o.ds).map(d=>`<a href="${mxDealUrl(d)}" target="_blank" rel="noopener" class="mx-pop-it"><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span> ${esc(d.trato)}<div class="legend">${d._prodMal?'<b style="color:#A32D2D">Producto en Zoho: «'+esc(d._prodMal)+'» (el nombre dice otra cosa)</b><br>':''}${d._com?'<b>Comercial · '+esc(d.owner)+'</b> · ':''}${esc(d.cuenta)} · ${fmtMXN(d.valor)}${mxAbierto(d)&&!d._com?' · '+mxDias(d)+' días sin mover':''}</div></a>`).join('');
   const rawH=o.raws.length?`<div class="legend" style="margin-top:6px"><b>En el Excel:</b> ${o.raws.map(r=>`${esc(r.raw)}${o.accs.length>1?' ('+esc(r.a.cliente)+')':''}`).join(' · ')}${o.ds.length?' — manda Zoho':''}</div>`:'';
   const accH=o.accs.filter(a=>a.zohoId).map(a=>`<a href="${ZOHO_TAB}Accounts/${a.zohoId}" target="_blank" rel="noopener">${esc(a.cliente)}</a>`).join(' · ');
   pop.innerHTML=`<div style="font-weight:700;margin-bottom:6px">${esc(o.nombre)}</div>${dealsH||'<div class="legend">Sin deals de este módulo en Zoho.</div>'}${rawH}${accH?`<div class="legend" style="margin-top:8px">Cuenta en Zoho: ${accH}</div>`:''}`;
