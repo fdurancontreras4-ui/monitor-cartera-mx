@@ -277,6 +277,7 @@ table.mx .mx-tog{cursor:pointer;}table.mx .mx-tog:hover{color:var(--accent-text)
 table.mx .mx-acc{color:inherit;text-decoration:none;}
 table.mx .mx-acc:hover{color:var(--accent-text);text-decoration:underline;}
 .mx-comc{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.22) 0 4px,transparent 4px 8px)!important;}
+.mx-link-mal{font-size:10.5px;color:#A32D2D;font-weight:700;cursor:help;}
 .mx-warn{color:#C98A00;margin-right:4px;font-size:12px;}
 table.mx .mx-tog{display:inline-block;width:16px;font-size:13px;color:var(--color-text-secondary);}
 table.mx tr.mx-sub .hm-emp{font-size:11px;padding-left:22px;background:var(--color-background-tertiary);}
@@ -2928,6 +2929,14 @@ let mxState={q:'',kam:'',cartera:'',vista:'',modulo:'',abiertos:{}};
 let MX={}; // lo que calcula mxBuild() en cada render
 
 function mxProdIdx(prod){for(let i=0;i<MATRIZ_MODS.length;i++){if(MATRIZ_MODS[i][2].includes(prod))return i;}return -1;}
+// ¿el nombre de la cuenta en Zoho se parece al de la cartera? tokens en común, uno dentro del otro, o prefijos
+// (Pleniahc ~ PLENIA HOME CARE); el texto entre paréntesis cuenta (Altour, UBS, Idinsa)
+function mxTokens(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>1&&!/^(sa|cv|de|del|la|las|el|los|y|grupo|mexico|mx|corporativo|rl|sapi|sc|s|the|servicios|comercializadora|operadora|distribuidora)$/.test(w));}
+function mxParecido(a,b){
+  if(!a||!b)return false;const A=mxTokens(a),B=mxTokens(b);if(!A.length||!B.length)return false;
+  const ja=A.join(''),jb=B.join('');if(ja.includes(jb)||jb.includes(ja)||ja.slice(0,4)===jb.slice(0,4))return true;
+  return A.some(x=>B.some(y=>x===y||(x.length>=4&&y.length>=4&&(x.startsWith(y)||y.startsWith(x)))));
+}
 function mxLoose(s){return normName(s).replace(/\b(grupo|corporativo|mexico|de|del|la|el|los|las|y)\b/g,' ').replace(/\s+/g,' ').trim();}
 function mxDias(d){const t=Date.parse(d.modificado||d.creado||'');return isNaN(t)?null:Math.floor((Date.now()-t)/864e5);}
 function mxAbierto(d){return d.etapa!=='8. Facturando'&&!ETAPAS_CERRADAS.has(d.etapa);}
@@ -2946,7 +2955,7 @@ function mxEstado(ds,raw){
 function mxBuild(){
   // 1) asignar cada deal a una razón social: por id de cuenta Zoho → por nombre → por nombre de grupo
   const porId={},porNombre={},porLoose={},porGrupo={};
-  ACCOUNTS.forEach(a=>{a._mx=MATRIZ_MODS.map(()=>[]);a._deals=[];
+  ACCOUNTS.forEach(a=>{a._mx=MATRIZ_MODS.map(()=>[]);a._deals=[];a._linkDudoso=null;
     if(a.zohoId)(porId[a.zohoId]=porId[a.zohoId]||[]).push(a);
     const n=normName(a.cliente);if(n)(porNombre[n]=porNombre[n]||[]).push(a);
     const l=mxLoose(a.cliente);if(l)(porLoose[l]=porLoose[l]||[]).push(a);
@@ -2957,10 +2966,19 @@ function mxBuild(){
   DEALS_DATA.concat(DEALS_COMERCIAL).forEach(d=>{
     const mi=mxProdIdx(d.producto);
     let a=null,via='id';
-    if(d.cuenta_id&&porId[d.cuenta_id])a=top(porId[d.cuenta_id]);
+    // por id (columna L), pero solo si el nombre de la cuenta en Zoho se parece a la razón social o al grupo:
+    // si no se parece, el link de la columna L probablemente está mal (p. ej. FIDEICOMISO F/1596 → HEINEKEN) y
+    // se intenta por nombre; si por nombre no aparece nada, se queda con el id pero se marca como link dudoso
+    let porIdDudoso=null;
+    if(d.cuenta_id&&porId[d.cuenta_id]){const c=top(porId[d.cuenta_id]);if(porId[d.cuenta_id].some(x=>mxParecido(d.cuenta,x.cliente)||mxParecido(d.cuenta,x.grupo)))a=c;else porIdDudoso=c;}
+    if(a){}
     else if(porNombre[normName(d.cuenta)]){a=top(porNombre[normName(d.cuenta)]);via='nombre';}
     else if(porLoose[mxLoose(d.cuenta)]){a=top(porLoose[mxLoose(d.cuenta)]);via='nombre';}
     else if(porGrupo[mxLoose(d.cuenta)]){a=top(porGrupo[mxLoose(d.cuenta)]);via='grupo';}
+    if(porIdDudoso){
+      if(!a){a=porIdDudoso;via='id';}
+      porId[d.cuenta_id].forEach(x=>{x._linkDudoso=x._linkDudoso||{zoho:d.cuenta,movido:a!==porIdDudoso?a:null,deal:d};});
+    }
     if(!a){if(d._com)return;if(mi<0)otros.push(d);else sinCuenta.push(d);return;}
     d._via=via;d._acc=a;if(!d._com)a._deals.push(d);
     if(mi<0)otros.push(d);else a._mx[mi].push(d);
@@ -2971,7 +2989,7 @@ function mxBuild(){
   const clientes=Object.values(gmap).map(g=>{
     g.miembros.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
     const p=g.miembros[0];
-    g.nombre=p.grupo||p.cliente;g.kam=p.kam;g.cartera=(p.cartera||'').toUpperCase();
+    g.nombre=p.grupo&&g.miembros.length>1?p.grupo:p.cliente;g.sub=p.grupo&&g.miembros.length>1?p.cliente:'';g.kam=p.kam;g.cartera=(p.cartera||'').toUpperCase();
     g.kams=[...new Set(g.miembros.map(m=>m.kam))];
     g.mrr=g.miembros.reduce((s,m)=>s+(m.mrr||0),0);
     g.celdas=MATRIZ_MODS.map((m,mi)=>{
@@ -2990,7 +3008,7 @@ function mxBuild(){
     g.abiertos=g.celdas.reduce((n,c)=>n+c.ds.filter(d=>mxAbierto(d)&&!d._com).length,0);
     g.estancados=g.celdas.filter(c=>c.estancado).length;
     g.opSinDeal=ss.filter(s=>s==='xy').length;
-    g.buscar=normName(g.nombre+' '+g.miembros.map(m=>m.cliente).join(' '));
+    g.buscar=normName(g.nombre+' '+(g.miembros[0].grupo||'')+' '+g.miembros.map(m=>m.cliente).join(' '));
     return g;
   });
   // 3) diferencias Excel vs Zoho, por razón social (lo que hay que actualizar en el Excel)
@@ -3005,6 +3023,7 @@ function mxBuild(){
     if(sug&&d0._com)sug+=' (vendido por comercial)';
     if(sug)difs.push({a,mod:m[0],col:MAT_COL_LETRA[m[0]]||'',celda:(MAT_COL_LETRA[m[0]]||'')+(a._row||''),raw:raw||'',sug,tipo,deal:d0});
   }));
+  ACCOUNTS.forEach(a=>{if(a._linkDudoso)difs.push({a,mod:'Link Zoho',col:'L',celda:'L'+(a._row||''),raw:'lleva a «'+a._linkDudoso.zoho+'»',sug:'revisar: el link no parece ser de esta razón social',tipo:'revisar',deal:a._linkDudoso.deal});});
   MX={clientes,sinCuenta,otros,difs};
 }
 
@@ -3021,8 +3040,10 @@ function mxCeldaHTML(c,ref){
 }
 
 function mxCuentaLink(a,html){
+  if(a&&a._linkDudoso)return`<span title="No se enlaza: el link de la columna L lleva a «${esc(a._linkDudoso.zoho)}»">${html}</span>`;
   return a&&a.zohoId?`<a class="mx-acc" href="${ZOHO_TAB}Accounts/${a.zohoId}" target="_blank" rel="noopener" title="Abrir la cuenta en Zoho">${html}</a>`:`<span title="Sin link de Zoho en la columna L de la cartera">${html}</span>`;
 }
+function mxLinkIcono(a){const l=a._linkDudoso;return` <span class="mx-link-mal" title="El link de Zoho de «${esc(a.cliente)}» (columna L) lleva a la cuenta «${esc(l.zoho)}»${l.movido?'; sus deals se asignaron a «'+esc(l.movido.cliente)+'» por nombre':''}. Revisa la columna L en el Excel.">🔗?</span>`;}
 function renderMatriz(){
   mxBuild();
   const C=MX.clientes;
@@ -3081,9 +3102,9 @@ function drawMatriz(){
   const ref=o=>{MX.refs.push(o);return MX.refs.length-1;};
   const body=rows.map(g=>{
     const multi=g.miembros.length>1,open=!!mxState.abiertos[g.key];
-    const zp=g.miembros.find(m=>m.zohoId);
-    const head=`<tr class="mx-row"><td class="hm-emp mx-name">${multi?`<span class="mx-tog" data-g="${esc(g.key)}" title="Ver razones sociales">${open?'▾':'▸'}</span>`:''}${g.sinAbierto?'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>':''}${mxCuentaLink(zp,`<b>${esc(g.nombre)}</b>`)}${multi?` <span class="legend">${g.miembros.length} RS</span>`:''}<div class="legend">${esc(g.kams.map(kamShort).join(', '))} · ${fmtUSD(g.mrr)}</div></td>${g.celdas.map(c=>mxCeldaHTML(c,ref({ds:c.ds,raws:c.raws,accs:g.miembros,nombre:g.nombre}))).join('')}</tr>`;
-    const subs=multi&&open?g.miembros.map(a=>`<tr class="mx-sub"><td class="hm-emp" title="${esc(a.cliente)}">↳ ${a._deals.some(mxAbierto)?'':'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>'}${mxCuentaLink(a,esc(a.cliente))}<div class="legend">${esc(kamShort(a.kam))} · ${fmtUSD(a.mrr)}</div></td>${MATRIZ_MODS.map((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return mxCeldaHTML({s:r.s,ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],estancado:r.ds.some(d=>mxAbierto(d)&&!d._com)&&r.ds.filter(d=>mxAbierto(d)&&!d._com).every(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS),etapa:r.ds.filter(mxAbierto).sort((x,y)=>etapaRank(y.etapa)-etapaRank(x.etapa))[0]?.etapa||null},ref({ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],accs:[a],nombre:a.cliente}));}).join('')}</tr>`).join(''):'';
+    const zp=g.miembros.find(m=>m.zohoId&&!m._linkDudoso)||g.miembros.find(m=>m._linkDudoso);
+    const head=`<tr class="mx-row"><td class="hm-emp mx-name">${multi?`<span class="mx-tog" data-g="${esc(g.key)}" title="Ver razones sociales">${open?'▾':'▸'}</span>`:''}${g.sinAbierto?'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>':''}${mxCuentaLink(zp,`<b>${esc(g.nombre)}</b>`)}${g.miembros.some(m=>m._linkDudoso)?mxLinkIcono(g.miembros.find(m=>m._linkDudoso)):''}${g.sub?`<div class="legend" style="text-transform:none">${esc(g.sub)}${g.miembros.length>1?' y '+(g.miembros.length-1)+' más':''}</div>`:''}${multi?` <span class="legend">${g.miembros.length} RS</span>`:''}<div class="legend">${esc(g.kams.map(kamShort).join(', '))} · ${fmtUSD(g.mrr)}</div></td>${g.celdas.map(c=>mxCeldaHTML(c,ref({ds:c.ds,raws:c.raws,accs:g.miembros,nombre:g.nombre}))).join('')}</tr>`;
+    const subs=multi&&open?g.miembros.map(a=>`<tr class="mx-sub"><td class="hm-emp" title="${esc(a.cliente)}">↳ ${a._deals.some(mxAbierto)?'':'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>'}${mxCuentaLink(a,esc(a.cliente))}${a._linkDudoso?mxLinkIcono(a):''}<div class="legend">${esc(kamShort(a.kam))} · ${fmtUSD(a.mrr)}</div></td>${MATRIZ_MODS.map((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return mxCeldaHTML({s:r.s,ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],estancado:r.ds.some(d=>mxAbierto(d)&&!d._com)&&r.ds.filter(d=>mxAbierto(d)&&!d._com).every(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS),etapa:r.ds.filter(mxAbierto).sort((x,y)=>etapaRank(y.etapa)-etapaRank(x.etapa))[0]?.etapa||null},ref({ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],accs:[a],nombre:a.cliente}));}).join('')}</tr>`).join(''):'';
     return head+subs;
   }).join('');
   $('mxWrap').innerHTML=rows.length?`<table class="hm mx"><thead><tr><th class="hm-emp hm-corner">Cliente</th>${MATRIZ_MODS.map(m=>`<th class="mx-h"><span>${esc(m[1])}</span></th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`:'<p class="legend" style="padding:10px">No hay clientes con estos filtros.</p>';
