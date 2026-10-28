@@ -2498,6 +2498,15 @@ function renderKamTab(kam,sectionId){
       <p class="legend">Solo <strong>cross-selling</strong> marcado <strong>Facturado</strong> en Ventas 2026 con Q = ${KAM_META_Q}, en pesos: <strong>${fmtMXN(qMetaMXN)}</strong>. Metas del ${KAM_META_Q}: ${fmtMXN(meta.m1)} / ${fmtMXN(meta.m2)} / ${fmtMXN(meta.m3)}.
       ${nSim?` Simulación (parte rayada): <strong>+${fmtMXN(sim)}</strong> de ${nSim} deal${nSim===1?'':'s'} de cross seleccionado${nSim===1?'':'s'} abajo → <strong>${fmtMXN(qMetaMXN+sim)}</strong>.`:' Marca deals de cross en la tabla de abajo para simular cómo quedaría si se facturan.'}
       ${nFuera?` <span style="color:#854F0B">${nFuera} seleccionado${nFuera===1?'':'s'} de upsell/arriendo no suma${nFuera===1?'':'n'}: la meta es solo cross.</span>`:''}</p>
+      ${(function(){
+        // cuánto falta para la siguiente meta, con lo facturado + lo seleccionado
+        const tot=qMetaMXN+sim,metas=[['Meta 1',meta.m1],['Meta 2',meta.m2],['Meta 3',meta.m3]];
+        const sig=metas.find(([,v])=>tot<v),pasada=[...metas].reverse().find(([,v])=>tot>=v);
+        const base=nSim?'Con lo seleccionado':'Con lo facturado';
+        const txt=sig?`${base}${pasada?` ya pasa <strong>${pasada[0]}</strong> y`:''} faltan <strong>${fmtMXN(sig[1]-tot)}</strong> para <strong>${sig[0]}</strong> (${fmtMXN(sig[1])}).`
+          :`${base} supera <strong>Meta 3</strong> por <strong>${fmtMXN(tot-meta.m3)}</strong>. 🎉`;
+        return`<div class="note-box" style="margin:10px 0 0;font-size:13px;color:var(--color-text-primary);background:${sig?'var(--accent-soft)':'#EAF3DE'}">${txt}</div>`;
+      })()}
       ${metaTiersHTML(qMetaMXN,meta.m1,meta.m2,meta.m3,sim)}`;
   }
   function updateDealsSelectedSummary(){
