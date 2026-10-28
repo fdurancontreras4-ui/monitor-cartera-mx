@@ -265,11 +265,12 @@ tr.hecha td{background:rgba(59,109,17,.10);}
 tr.hecha td:first-child{color:var(--tarea-ok);}
 .tarea-ok-lbl{color:var(--tarea-ok);font-weight:600;}
 /* Matriz módulos */
-.mx-kpis{grid-template-columns:repeat(6,1fr);}
+.mx-kpis{grid-template-columns:repeat(4,1fr);}
 .mx-kpi{cursor:pointer;border:1.5px solid transparent;transition:border-color .12s;}
 .mx-kpi:hover{border-color:var(--color-border-secondary);}
 .mx-kpi.on{border-color:var(--accent);}
 @media (max-width:640px){.mx-kpis{grid-template-columns:repeat(2,1fr);}}
+.mx-sinmod{color:#A32D2D;margin-right:4px;font-size:12px;font-weight:700;}
 table.mx .mx-h{vertical-align:bottom;padding:4px 0 6px;min-width:34px;max-width:34px;}
 table.mx .mx-h span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10.5px;font-weight:600;color:var(--color-text-secondary);white-space:nowrap;display:inline-block;max-height:120px;overflow:hidden;text-overflow:ellipsis;}
 table.mx .hm-emp{min-width:230px;max-width:260px;padding:6px 10px;font-size:12px;}
@@ -3022,6 +3023,8 @@ function mxBuild(){
     g.sinIntento=!ss.some(s=>s==='zv'||s==='zy'||s==='zr'||s==='xv'||s==='xr');
     // ⚠ en el nombre: ningún deal abierto en Zoho, de ningún producto (incluye upsell, arriendo, etc.)
     g.sinAbierto=!g.miembros.some(m=>m._deals.some(mxAbierto));
+    // ⊘ sin ningún módulo contratado: ninguna celda verde (facturando en Zoho, o OK del Excel cuando Zoho no tiene deal)
+    g.sinModulo=!g.celdas.some(c=>c.s==='zv'||c.s==='xv');
     g.abiertos=g.celdas.reduce((n,c)=>n+c.ds.filter(d=>mxAbierto(d)&&!d._com).length,0);
     g.estancados=g.celdas.filter(c=>c.estancado).length;
     g.opSinDeal=ss.filter(s=>s==='xy').length;
@@ -3062,6 +3065,7 @@ function mxCuentaLink(a,html){
   if(a&&a._linkDudoso)return`<span title="No se enlaza: el link de la columna L lleva a «${esc(a._linkDudoso.zoho)}»">${html}</span>`;
   return a&&a.zohoId?`<a class="mx-acc" href="${ZOHO_TAB}Accounts/${a.zohoId}" target="_blank" rel="noopener" title="Abrir la cuenta en Zoho">${html}</a>`:`<span title="Sin link de Zoho en la columna L de la cartera">${html}</span>`;
 }
+const MX_ICON_SINMOD='<span class="mx-sinmod" title="Sin ningún módulo complementario contratado">⊘</span>';
 function mxLinkIcono(a){const l=a._linkDudoso;return` <span class="mx-link-mal" title="El link de Zoho de «${esc(a.cliente)}» (columna L) lleva a la cuenta «${esc(l.zoho)}»${l.movido?'; sus deals se asignaron a «'+esc(l.movido.cliente)+'» por nombre':''}. Revisa la columna L en el Excel.">🔗?</span>`;}
 function renderMatriz(){
   mxBuild();
@@ -3071,7 +3075,7 @@ function renderMatriz(){
   const estanc=abiertos.filter(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS);
   const stat=(v,l,vista)=>`<div class="stat3-it mx-kpi${mxState.vista===vista?' on':''}" data-vista="${vista}"><div class="stat3-v">${v}</div><div class="stat3-l">${l}</div></div>`;
   $('matriz').innerHTML=`
-  <div class="note-box"><strong>Matriz de módulos complementarios.</strong> Una fila por cliente (las razones sociales se juntan por la columna <strong>Grupo</strong> de MARE MX; si no tiene grupo, la razón social es el cliente). <strong>Manda Zoho</strong>: si hay un deal del módulo, su etapa define el color. Si Zoho no tiene nada, se usa lo que dice el Excel (columnas AT–BH) y la celda va con <strong>borde punteado</strong>. Clic en una celda para ir al deal en Zoho. Clic en el nombre para abrir la cuenta en Zoho; la flecha ▸ despliega sus razones sociales. <span class="mx-warn">⚠</span> = la cuenta no tiene ningún deal abierto en Zoho (de ningún producto).<br>
+  <div class="note-box"><strong>Matriz de módulos complementarios.</strong> Una fila por cliente (las razones sociales se juntan por la columna <strong>Grupo</strong> de MARE MX; si no tiene grupo, la razón social es el cliente). <strong>Manda Zoho</strong>: si hay un deal del módulo, su etapa define el color. Si Zoho no tiene nada, se usa lo que dice el Excel (columnas AT–BH) y la celda va con <strong>borde punteado</strong>. Clic en una celda para ir al deal en Zoho. Clic en el nombre para abrir la cuenta en Zoho; la flecha ▸ despliega sus razones sociales. <span class="mx-sinmod">⊘</span> = no tiene ningún módulo complementario contratado (ninguna celda verde). <span class="mx-warn">⚠</span> = no tiene ningún deal abierto en Zoho (de ningún producto).<br>
   <span class="mx-leg mx-zv">✓</span> facturando · <span class="mx-leg mx-zv mx-comc">C</span> vendido por comercial (no KAM) · <span class="mx-leg mx-zy">4</span> deal abierto (el número es la etapa) · <span class="mx-leg mx-zy mx-stale">4</span> abierto y sin movimiento hace más de ${MX_ESTANCADO_DIAS} días · <span class="mx-leg mx-zc">❄</span> facturación congelada · <span class="mx-leg mx-zr">✕</span> perdido · <span class="mx-leg mx-xy">OP</span> oportunidad en el Excel sin deal · <span class="mx-leg mx-xr">✕</span> sin oportunidad según Excel · <span class="mx-leg mx-xv">✓</span> OK según Excel, sin deal en Zoho · <span class="mx-leg"></span> nada</div>
   ${DEALS_DATA.length?`<p class="status-line" style="margin:-6px 0 12px">Deals de Zoho al ${esc((DEALS_META.generado||'').slice(0,10))} · ${DEALS_DATA.length} deals de KAM + ${DEALS_COMERCIAL.length} módulos vendidos por comercial</p>`:'<p class="legend">Todavía no hay deals-mx.json cargado — la matriz solo muestra lo del Excel.</p>'}
   <div class="stat3 mx-kpis">
@@ -3079,7 +3083,9 @@ function renderMatriz(){
     ${stat(C.filter(g=>g.sinIntento).length,'sin ningún intento','sin')}
     ${stat(C.filter(g=>g.abiertos).length,'con deals abiertos ('+abiertos.length+' deals)','abiertos')}
     ${stat(C.filter(g=>g.estancados).length,'con deals estancados +'+MX_ESTANCADO_DIAS+' días','estancados')}
-    ${stat(C.filter(g=>g.sinAbierto).length,'⚠ sin ningún deal abierto','sinabierto')}
+    ${stat(C.filter(g=>g.sinModulo).length,'<span class="mx-sinmod">⊘</span> sin ningún módulo contratado','sinmod')}
+    ${stat(C.filter(g=>g.sinAbierto).length,'<span class="mx-warn">⚠</span> sin ningún deal abierto','sinabierto')}
+    ${stat(C.filter(g=>g.sinModulo&&g.sinAbierto).length,'<span class="mx-sinmod">⊘</span><span class="mx-warn">⚠</span> ni módulo ni deal abierto','ambos')}
     ${stat(C.filter(g=>g.opSinDeal).length,'con OP en Excel sin deal','op')}
   </div>
   <div class="controls" style="margin-top:14px">
@@ -3114,7 +3120,7 @@ function drawMatriz(){
   if(mxState.cartera)rows=rows.filter(g=>g.cartera===mxState.cartera);
   if(mxState.modulo!==''){const mi=+mxState.modulo;rows=rows.filter(g=>{const s=g.celdas[mi].s;return s===''||s==='xy';});}
   const v=mxState.vista;
-  if(v==='sin')rows=rows.filter(g=>g.sinIntento);else if(v==='sinabierto')rows=rows.filter(g=>g.sinAbierto);else if(v==='abiertos')rows=rows.filter(g=>g.abiertos);else if(v==='estancados')rows=rows.filter(g=>g.estancados);else if(v==='op')rows=rows.filter(g=>g.opSinDeal);
+  if(v==='sin')rows=rows.filter(g=>g.sinIntento);else if(v==='sinabierto')rows=rows.filter(g=>g.sinAbierto);else if(v==='sinmod')rows=rows.filter(g=>g.sinModulo);else if(v==='ambos')rows=rows.filter(g=>g.sinModulo&&g.sinAbierto);else if(v==='abiertos')rows=rows.filter(g=>g.abiertos);else if(v==='estancados')rows=rows.filter(g=>g.estancados);else if(v==='op')rows=rows.filter(g=>g.opSinDeal);
   rows.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
   $('mxTitle').textContent=`${rows.length} clientes · ordenados por MRR${mxState.modulo!==''?' · sin nada (o solo OP) en '+MATRIZ_MODS[+mxState.modulo][1]:''}`;
   MX.refs=[];
@@ -3122,8 +3128,8 @@ function drawMatriz(){
   const body=rows.map(g=>{
     const multi=g.miembros.length>1,open=!!mxState.abiertos[g.key];
     const zp=g.miembros.find(m=>m.zohoId&&!m._linkDudoso)||g.miembros.find(m=>m._linkDudoso);
-    const head=`<tr class="mx-row"><td class="hm-emp mx-name">${multi?`<span class="mx-tog" data-g="${esc(g.key)}" title="Ver razones sociales">${open?'▾':'▸'}</span>`:''}${g.sinAbierto?'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>':''}${mxCuentaLink(zp,`<b>${esc(g.nombre)}</b>`)}${g.miembros.some(m=>m._linkDudoso)?mxLinkIcono(g.miembros.find(m=>m._linkDudoso)):''}${g.sub?`<div class="legend" style="text-transform:none">${esc(g.sub)}${g.miembros.length>1?' y '+(g.miembros.length-1)+' más':''}</div>`:''}${multi?` <span class="legend">${g.miembros.length} RS</span>`:''}<div class="legend">${esc(g.kams.map(kamShort).join(', '))} · ${fmtUSD(g.mrr)}</div></td>${g.celdas.map(c=>mxCeldaHTML(c,ref({ds:c.ds,raws:c.raws,accs:g.miembros,nombre:g.nombre}))).join('')}</tr>`;
-    const subs=multi&&open?g.miembros.map(a=>`<tr class="mx-sub"><td class="hm-emp" title="${esc(a.cliente)}">↳ ${a._deals.some(mxAbierto)?'':'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>'}${mxCuentaLink(a,esc(a.cliente))}${a._linkDudoso?mxLinkIcono(a):''}<div class="legend">${esc(kamShort(a.kam))} · ${fmtUSD(a.mrr)}</div></td>${MATRIZ_MODS.map((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return mxCeldaHTML({s:r.s,ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],estancado:r.ds.some(d=>mxAbierto(d)&&!d._com)&&r.ds.filter(d=>mxAbierto(d)&&!d._com).every(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS),etapa:r.ds.filter(mxAbierto).sort((x,y)=>etapaRank(y.etapa)-etapaRank(x.etapa))[0]?.etapa||null},ref({ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],accs:[a],nombre:a.cliente}));}).join('')}</tr>`).join(''):'';
+    const head=`<tr class="mx-row"><td class="hm-emp mx-name">${multi?`<span class="mx-tog" data-g="${esc(g.key)}" title="Ver razones sociales">${open?'▾':'▸'}</span>`:''}${g.sinModulo?MX_ICON_SINMOD:''}${g.sinAbierto?'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>':''}${mxCuentaLink(zp,`<b>${esc(g.nombre)}</b>`)}${g.miembros.some(m=>m._linkDudoso)?mxLinkIcono(g.miembros.find(m=>m._linkDudoso)):''}${g.sub?`<div class="legend" style="text-transform:none">${esc(g.sub)}${g.miembros.length>1?' y '+(g.miembros.length-1)+' más':''}</div>`:''}${multi?` <span class="legend">${g.miembros.length} RS</span>`:''}<div class="legend">${esc(g.kams.map(kamShort).join(', '))} · ${fmtUSD(g.mrr)}</div></td>${g.celdas.map(c=>mxCeldaHTML(c,ref({ds:c.ds,raws:c.raws,accs:g.miembros,nombre:g.nombre}))).join('')}</tr>`;
+    const subs=multi&&open?g.miembros.map(a=>`<tr class="mx-sub"><td class="hm-emp" title="${esc(a.cliente)}">↳ ${MATRIZ_MODS.some((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return r&&(r.s==='zv'||r.s==='xv');})?'':MX_ICON_SINMOD}${a._deals.some(mxAbierto)?'':'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>'}${mxCuentaLink(a,esc(a.cliente))}${a._linkDudoso?mxLinkIcono(a):''}<div class="legend">${esc(kamShort(a.kam))} · ${fmtUSD(a.mrr)}</div></td>${MATRIZ_MODS.map((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return mxCeldaHTML({s:r.s,ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],estancado:r.ds.some(d=>mxAbierto(d)&&!d._com)&&r.ds.filter(d=>mxAbierto(d)&&!d._com).every(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS),etapa:r.ds.filter(mxAbierto).sort((x,y)=>etapaRank(y.etapa)-etapaRank(x.etapa))[0]?.etapa||null},ref({ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],accs:[a],nombre:a.cliente}));}).join('')}</tr>`).join(''):'';
     return head+subs;
   }).join('');
   $('mxWrap').innerHTML=rows.length?`<table class="hm mx"><thead><tr><th class="hm-emp hm-corner">Cliente</th>${MATRIZ_MODS.map(m=>`<th class="mx-h"><span>${esc(m[1])}</span></th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`:'<p class="legend" style="padding:10px">No hay clientes con estos filtros.</p>';
