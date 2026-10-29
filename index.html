@@ -2951,7 +2951,7 @@ const MAT_COL_LETRA={}; // encabezado → letra de columna en MARE MX (la llena 
 const MX_ESTANCADO_DIAS=30;
 // Zoho le gana siempre al Excel, también entre razones sociales de un mismo grupo
 const MX_RANK={zv:7,zy:6,zc:5,zr:4,xv:3,xy:2,xr:1,'':0};
-let mxState={q:'',kam:'',cartera:'',vista:'',modulo:'',abiertos:{}};
+let mxState={q:'',kam:'',cartera:'',vista:'',modulo:'',abiertos:{},tipoDeals:'todo'};
 let MX={}; // lo que calcula mxBuild() en cada render
 
 function mxProdIdx(prod){for(let i=0;i<MATRIZ_MODS.length;i++){if(MATRIZ_MODS[i][2].includes(prod))return i;}return -1;}
@@ -3125,7 +3125,7 @@ function renderMatriz(){
   </div>
   <p class="status-line" id="mxTitle" style="margin:-6px 0 8px"></p>
   <div class="card" style="padding:.5rem"><div class="hm-wrap" id="mxWrap"></div></div>
-  <div class="card"><h3>Deals abiertos para empujar <span class="legend" style="font-weight:400">· del más quieto al más reciente</span></h3><div class="table-wrap" id="mxAbiertos"></div></div>
+  <div class="card"><h3>Deals abiertos para empujar <span class="legend" style="font-weight:400">· del más quieto al más reciente</span></h3><div id="mxTipoDeals" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"></div><div class="table-wrap" id="mxAbiertos"></div></div>
   <details class="card"><summary style="cursor:pointer;font-weight:600;font-size:14px">Qué actualizar en el Excel <span class="badge b-amber">${MX.difs.length}</span> <span class="legend" style="font-weight:400">— celdas de AT–BH que no coinciden con Zoho</span></summary>
     <p class="legend" style="margin:8px 0">La celda es la de <code>cartera.xlsx</code> (MARE MX); si alguien insertó filas en el Excel después, búscala por el nombre. <button class="btn" id="mxDifXlsx" style="margin-left:6px">⬇ Descargar .xlsx</button></p>
     <div class="table-wrap" id="mxDifs"></div></details>
@@ -3167,6 +3167,11 @@ function drawMatriz(){
 function drawMxAbiertos(){
   let ds=DEALS_DATA.filter(d=>mxModIdx(d)>=0&&mxAbierto(d));
   if(mxState.kam)ds=ds.filter(d=>d.kam===mxState.kam);
+  // filtro Todo / Cross / Up / Arriendo (misma clasificación que la pestaña KAMs: tipo de trato de Zoho)
+  const cuenta={todo:ds.length};ds.forEach(d=>{const k=kzCategoria(d);cuenta[k]=(cuenta[k]||0)+1;});
+  $('mxTipoDeals').innerHTML=[['todo','Todo'],['cross','Cross'],['upsell','Up'],['arriendo','Arriendo']].map(([k,l])=>{const on=mxState.tipoDeals===k;return`<button class="toggle-chip" data-tipo="${k}" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#185FA5':'var(--color-text-secondary)'};border-color:${on?'#185FA5':'var(--color-border-secondary)'}">${l} <span style="opacity:.7">${cuenta[k]||0}</span></button>`;}).join('');
+  $('mxTipoDeals').querySelectorAll('.toggle-chip').forEach(b=>b.onclick=e=>{e.stopPropagation();mxState.tipoDeals=b.dataset.tipo;drawMxAbiertos();});
+  if(mxState.tipoDeals!=='todo')ds=ds.filter(d=>kzCategoria(d)===mxState.tipoDeals);
   ds.sort((a,b)=>(mxDias(b)||0)-(mxDias(a)||0));
   $('mxAbiertos').innerHTML=ds.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Módulo</th><th class="nosort">Etapa</th><th class="nosort">Sin mover</th><th class="nosort">Usuarios</th><th class="nosort">Precio/usuario</th><th class="nosort">Valor</th><th class="nosort">USD (TC 18)</th><th class="nosort">KAM</th></tr></thead><tbody>${ds.map(d=>{const dd=mxDias(d);const cli=d._acc?(d._acc.grupo||d._acc.cliente):d.cuenta;return`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td style="font-weight:500">${esc(cli)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(MATRIZ_MODS[mxModIdx(d)][1])}</td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td><span class="badge ${dd>MX_ESTANCADO_DIAS*2?'b-red':dd>MX_ESTANCADO_DIAS?'b-amber':'b-green'}">${dd==null?'—':dd+' días'}</span></td>${mxUsuariosPrecioTD(d)}<td>${mxValorTxt(d)}</td><td>${fmtUSD(kzUSD(d))}</td><td>${esc(kamShort(d.kam))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">No hay deals abiertos de estos módulos.</p>';
 }
