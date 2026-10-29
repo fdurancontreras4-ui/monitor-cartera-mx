@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-29T00:32:20-06:00",
+  "generado": "2026-10-29T00:42:57-06:00",
   "fuente": "Zoho CRM · Deals",
   "propietario": "KAM México",
   "territorio": "México",
@@ -23,7 +23,12 @@
       "valor": 42000,
       "owner": "KAM México",
       "creado": "2026-09-29T10:28:42-06:00",
-      "modificado": "2026-09-29T10:30:32-06:00"
+      "modificado": "2026-09-29T10:30:32-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1200,
+      "precio_usuario": 35
     },
     {
       "id": "3525045000656377147",
@@ -38,7 +43,12 @@
       "valor": 9000,
       "owner": "KAM México",
       "creado": "2026-08-27T12:37:39-06:00",
-      "modificado": "2026-08-27T12:39:05-06:00"
+      "modificado": "2026-08-27T12:39:05-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656377136",
@@ -53,7 +63,12 @@
       "valor": 7200,
       "owner": "KAM México",
       "creado": "2026-08-27T12:34:41-06:00",
-      "modificado": "2026-09-08T10:02:21-06:00"
+      "modificado": "2026-09-08T10:02:21-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000656377129",
@@ -68,7 +83,12 @@
       "valor": 7200,
       "owner": "KAM México",
       "creado": "2026-08-27T12:33:36-06:00",
-      "modificado": "2026-09-07T16:34:03-06:00"
+      "modificado": "2026-09-07T16:34:03-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000656377028",
@@ -83,7 +103,12 @@
       "valor": 7200,
       "owner": "KAM México",
       "creado": "2026-08-27T11:37:03-06:00",
-      "modificado": "2026-08-27T11:40:01-06:00"
+      "modificado": "2026-08-27T11:40:01-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000657385818",
@@ -98,7 +123,12 @@
       "valor": 2770,
       "owner": "KAM México",
       "creado": "2026-09-01T09:54:41-06:00",
-      "modificado": "2026-09-03T13:25:33-06:00"
+      "modificado": "2026-09-03T13:25:33-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 277,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656377042",
@@ -113,7 +143,12 @@
       "valor": 2770,
       "owner": "KAM México",
       "creado": "2026-08-27T11:57:11-06:00",
-      "modificado": "2026-09-03T13:21:42-06:00"
+      "modificado": "2026-09-03T13:21:42-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 277,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656377053",
@@ -128,7 +163,12 @@
       "valor": 2770,
       "owner": "KAM México",
       "creado": "2026-08-27T11:59:52-06:00",
-      "modificado": "2026-08-27T12:01:38-06:00"
+      "modificado": "2026-08-27T12:01:38-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 277,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000657385847",
@@ -143,7 +183,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2026-09-01T10:25:31-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656377075",
@@ -158,7 +203,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2026-08-27T12:09:23-06:00",
-      "modificado": "2026-09-09T12:13:13-06:00"
+      "modificado": "2026-09-09T12:13:13-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656787019",
@@ -173,7 +223,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2026-08-28T09:38:35-06:00",
-      "modificado": "2026-09-09T12:12:51-06:00"
+      "modificado": "2026-09-09T12:12:51-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000657385950",
@@ -188,7 +243,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2026-09-01T17:05:52-06:00",
-      "modificado": "2026-09-09T12:12:50-06:00"
+      "modificado": "2026-09-09T12:12:50-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656377086",
@@ -203,7 +263,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2026-08-27T12:15:52-06:00",
-      "modificado": "2026-08-31T23:07:00-06:00"
+      "modificado": "2026-08-31T23:07:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656377158",
@@ -218,7 +283,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2026-08-27T12:42:40-06:00",
-      "modificado": "2026-08-27T12:44:10-06:00"
+      "modificado": "2026-08-27T12:44:10-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656377064",
@@ -233,7 +303,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2026-08-27T12:05:01-06:00",
-      "modificado": "2026-08-27T12:07:28-06:00"
+      "modificado": "2026-08-27T12:07:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656377097",
@@ -248,7 +323,12 @@
       "valor": 1200,
       "owner": "KAM México",
       "creado": "2026-08-27T12:17:49-06:00",
-      "modificado": "2026-08-31T23:07:57-06:00"
+      "modificado": "2026-08-31T23:07:57-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000656377107",
@@ -263,7 +343,12 @@
       "valor": 1000,
       "owner": "KAM México",
       "creado": "2026-08-27T12:21:55-06:00",
-      "modificado": "2026-08-31T23:08:18-06:00"
+      "modificado": "2026-08-31T23:08:18-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656787029",
@@ -278,7 +363,12 @@
       "valor": 750,
       "owner": "KAM México",
       "creado": "2026-08-28T09:45:56-06:00",
-      "modificado": "2026-08-31T23:10:21-06:00"
+      "modificado": "2026-08-31T23:10:21-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 75,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656787036",
@@ -293,7 +383,12 @@
       "valor": 750,
       "owner": "KAM México",
       "creado": "2026-08-28T09:47:27-06:00",
-      "modificado": "2026-08-31T23:10:03-06:00"
+      "modificado": "2026-08-31T23:10:03-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 75,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000657777283",
@@ -308,7 +403,12 @@
       "valor": 200,
       "owner": "KAM México",
       "creado": "2026-09-02T13:46:19-06:00",
-      "modificado": "2026-09-09T12:12:51-06:00"
+      "modificado": "2026-09-09T12:12:51-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 1
     },
     {
       "id": "3525045000675413388",
@@ -323,7 +423,12 @@
       "valor": 12560,
       "owner": "KAM México",
       "creado": "2026-10-23T17:54:20-06:00",
-      "modificado": "2026-10-23T17:56:20-06:00"
+      "modificado": "2026-10-23T17:56:20-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1570,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000656377118",
@@ -338,7 +443,12 @@
       "valor": 6800,
       "owner": "KAM México",
       "creado": "2026-08-27T12:28:07-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1700,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000669682095",
@@ -353,7 +463,12 @@
       "valor": 5040,
       "owner": "KAM México",
       "creado": "2026-10-07T12:15:12-06:00",
-      "modificado": "2026-10-07T12:18:00-06:00"
+      "modificado": "2026-10-07T12:18:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 504,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000669682284",
@@ -368,7 +483,12 @@
       "valor": 4056,
       "owner": "KAM México",
       "creado": "2026-10-07T16:43:43-06:00",
-      "modificado": "2026-10-15T15:02:06-06:00"
+      "modificado": "2026-10-15T15:02:06-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 507,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000669682228",
@@ -383,7 +503,12 @@
       "valor": 2535,
       "owner": "KAM México",
       "creado": "2026-10-07T13:44:41-06:00",
-      "modificado": "2026-10-14T11:23:31-06:00"
+      "modificado": "2026-10-14T11:23:31-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 507,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000654550038",
@@ -398,7 +523,12 @@
       "valor": 750,
       "owner": "KAM México",
       "creado": "2026-08-19T17:59:20-06:00",
-      "modificado": "2026-08-19T18:01:36-06:00"
+      "modificado": "2026-08-19T18:01:36-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000669682249",
@@ -413,7 +543,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-10-07T16:40:55-06:00",
-      "modificado": "2026-10-07T16:41:44-06:00"
+      "modificado": "2026-10-07T16:41:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 507,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000572032091",
@@ -428,7 +563,12 @@
       "valor": 9648,
       "owner": "KAM México",
       "creado": "2026-01-22T11:54:09-06:00",
-      "modificado": "2026-10-05T12:29:59-06:00"
+      "modificado": "2026-10-05T12:29:59-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 804,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000627459302",
@@ -443,7 +583,12 @@
       "valor": 4500,
       "owner": "KAM México",
       "creado": "2026-05-18T11:52:47-06:00",
-      "modificado": "2026-09-11T12:08:04-06:00"
+      "modificado": "2026-09-11T12:08:04-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 9
     },
     {
       "id": "3525045000654550010",
@@ -458,7 +603,12 @@
       "valor": 4000,
       "owner": "KAM México",
       "creado": "2026-08-19T17:28:46-06:00",
-      "modificado": "2026-09-22T18:29:53-06:00"
+      "modificado": "2026-09-22T18:29:53-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 400,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000621513434",
@@ -473,7 +623,12 @@
       "valor": 4000,
       "owner": "KAM México",
       "creado": "2026-04-27T13:33:13-06:00",
-      "modificado": "2026-09-11T12:07:03-06:00"
+      "modificado": "2026-09-11T12:07:03-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 400,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000652108042",
@@ -488,7 +643,12 @@
       "valor": 3646.35,
       "owner": "KAM México",
       "creado": "2026-08-12T17:12:07-06:00",
-      "modificado": "2026-08-12T17:15:01-06:00"
+      "modificado": "2026-08-12T17:15:01-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 135,
+      "precio_usuario": 27.01
     },
     {
       "id": "3525045000654389374",
@@ -503,7 +663,12 @@
       "valor": 2520,
       "owner": "KAM México",
       "creado": "2026-08-19T16:52:42-06:00",
-      "modificado": "2026-08-19T16:54:27-06:00"
+      "modificado": "2026-08-19T16:54:27-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 210,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000446188001",
@@ -518,7 +683,12 @@
       "valor": 1875,
       "owner": "KAM México",
       "creado": "2025-03-27T11:58:50-06:00",
-      "modificado": "2026-09-11T12:07:03-06:00"
+      "modificado": "2026-09-11T12:07:03-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 125,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000654550024",
@@ -533,7 +703,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-08-19T17:41:23-06:00",
-      "modificado": "2026-08-19T17:43:18-06:00"
+      "modificado": "2026-08-19T17:43:18-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 440,
+      "precio_usuario": null
     },
     {
       "id": "3525045000654550003",
@@ -548,7 +723,12 @@
       "valor": 1400,
       "owner": "KAM México",
       "creado": "2026-08-19T17:21:53-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 175,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000669682291",
@@ -563,7 +743,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-10-07T16:49:04-06:00",
-      "modificado": "2026-10-22T08:02:06-06:00"
+      "modificado": "2026-10-22T08:02:06-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 804,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000656787008",
@@ -578,7 +763,12 @@
       "valor": 6000,
       "owner": "KAM México",
       "creado": "2026-08-28T09:28:49-06:00",
-      "modificado": "2026-10-01T11:32:15-06:00"
+      "modificado": "2026-10-01T11:32:15-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 30
     },
     {
       "id": "3525045000654561001",
@@ -593,7 +783,12 @@
       "valor": 2520,
       "owner": "KAM México",
       "creado": "2026-08-19T16:37:55-06:00",
-      "modificado": "2026-08-28T11:37:44-06:00"
+      "modificado": "2026-08-28T11:37:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 210,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000600738055",
@@ -608,7 +803,12 @@
       "valor": 22400,
       "owner": "KAM México",
       "creado": "2026-03-18T17:57:03-06:00",
-      "modificado": "2026-09-22T17:17:20-06:00"
+      "modificado": "2026-09-22T17:17:20-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 800,
+      "precio_usuario": 28
     },
     {
       "id": "3525045000625765118",
@@ -623,7 +823,12 @@
       "valor": 14237,
       "owner": "KAM México",
       "creado": "2026-05-11T12:32:14-06:00",
-      "modificado": "2026-08-05T13:23:57-06:00"
+      "modificado": "2026-08-05T13:23:57-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 619,
+      "precio_usuario": 23
     },
     {
       "id": "3525045000631323439",
@@ -638,7 +843,12 @@
       "valor": 8772.08,
       "owner": "KAM México",
       "creado": "2026-06-02T13:42:21-06:00",
-      "modificado": "2026-10-07T16:08:03-06:00"
+      "modificado": "2026-10-07T16:08:03-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 188,
+      "precio_usuario": 46.66
     },
     {
       "id": "3525045000543112206",
@@ -653,7 +863,12 @@
       "valor": 7705,
       "owner": "KAM México",
       "creado": "2025-11-24T13:49:38-06:00",
-      "modificado": "2026-07-07T14:12:27-06:00"
+      "modificado": "2026-07-07T14:12:27-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 335,
+      "precio_usuario": 23
     },
     {
       "id": "3525045000660670635",
@@ -668,7 +883,12 @@
       "valor": 5040,
       "owner": "KAM México",
       "creado": "2026-09-10T12:53:52-06:00",
-      "modificado": "2026-10-23T13:04:19-06:00"
+      "modificado": "2026-10-23T13:04:19-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 630,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000627075125",
@@ -683,7 +903,12 @@
       "valor": 4600,
       "owner": "KAM México",
       "creado": "2026-05-14T12:00:36-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 575,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000629256121",
@@ -698,7 +923,12 @@
       "valor": 4600,
       "owner": "KAM México",
       "creado": "2026-05-22T13:28:34-06:00",
-      "modificado": "2026-07-07T13:42:06-06:00"
+      "modificado": "2026-07-07T13:42:06-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 575,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000631323444",
@@ -713,7 +943,12 @@
       "valor": 1504,
       "owner": "KAM México",
       "creado": "2026-06-02T13:44:19-06:00",
-      "modificado": "2026-10-07T16:08:05-06:00"
+      "modificado": "2026-10-07T16:08:05-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 188,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000654550045",
@@ -728,7 +963,12 @@
       "valor": 80,
       "owner": "KAM México",
       "creado": "2026-08-19T18:03:31-06:00",
-      "modificado": "2026-08-19T18:05:41-06:00"
+      "modificado": "2026-08-19T18:05:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 7,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000644478092",
@@ -743,7 +983,12 @@
       "valor": 70,
       "owner": "KAM México",
       "creado": "2026-07-17T15:06:10-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 7,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000490626699",
@@ -758,7 +1003,12 @@
       "valor": 23520,
       "owner": "KAM México",
       "creado": "2025-07-23T12:51:52-06:00",
-      "modificado": "2026-03-23T12:35:46-06:00"
+      "modificado": "2026-03-23T12:35:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 735,
+      "precio_usuario": 32
     },
     {
       "id": "3525045000576910225",
@@ -773,7 +1023,12 @@
       "valor": 12276,
       "owner": "KAM México",
       "creado": "2026-02-03T15:49:13-06:00",
-      "modificado": "2026-03-23T12:25:04-06:00"
+      "modificado": "2026-03-23T12:25:04-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 558,
+      "precio_usuario": 22
     },
     {
       "id": "3525045000506921137",
@@ -788,7 +1043,12 @@
       "valor": 12000,
       "owner": "KAM México",
       "creado": "2025-09-03T12:31:27-06:00",
-      "modificado": "2026-03-23T12:54:33-06:00"
+      "modificado": "2026-03-23T12:54:33-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 800,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000460152001",
@@ -803,7 +1063,12 @@
       "valor": 11700,
       "owner": "KAM México",
       "creado": "2025-04-30T10:33:14-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 390,
+      "precio_usuario": 30
     },
     {
       "id": "3525045000397148415",
@@ -818,7 +1083,12 @@
       "valor": 9100,
       "owner": "KAM México",
       "creado": "2024-11-11T12:18:58-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 280,
+      "precio_usuario": null
     },
     {
       "id": "3525045000611440001",
@@ -833,7 +1103,12 @@
       "valor": 8470,
       "owner": "KAM México",
       "creado": "2026-03-31T12:36:15-06:00",
-      "modificado": "2026-05-03T22:34:55-06:00"
+      "modificado": "2026-05-03T22:34:55-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 385,
+      "precio_usuario": 22
     },
     {
       "id": "3525045000397148587",
@@ -848,7 +1123,12 @@
       "valor": 7915,
       "owner": "KAM México",
       "creado": "2024-11-11T15:27:47-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 250,
+      "precio_usuario": 31.66
     },
     {
       "id": "3525045000567406553",
@@ -863,7 +1143,12 @@
       "valor": 7820,
       "owner": "KAM México",
       "creado": "2026-01-14T14:32:10-06:00",
-      "modificado": "2026-07-07T14:20:51-06:00"
+      "modificado": "2026-07-07T14:20:51-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 340,
+      "precio_usuario": 23
     },
     {
       "id": "3525045000582688062",
@@ -878,7 +1163,12 @@
       "valor": 5385,
       "owner": "KAM México",
       "creado": "2026-02-12T12:27:23-06:00",
-      "modificado": "2026-03-23T12:25:44-06:00"
+      "modificado": "2026-03-23T12:25:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 606,
+      "precio_usuario": null
     },
     {
       "id": "3525045000437120042",
@@ -893,7 +1183,12 @@
       "valor": 5363.8,
       "owner": "KAM México",
       "creado": "2025-03-04T16:02:39-06:00",
-      "modificado": "2026-03-23T13:01:53-06:00"
+      "modificado": "2026-03-23T13:01:53-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 130,
+      "precio_usuario": 41.26
     },
     {
       "id": "3525045000625765113",
@@ -908,7 +1203,12 @@
       "valor": 4945,
       "owner": "KAM México",
       "creado": "2026-05-11T12:30:36-06:00",
-      "modificado": "2026-09-22T17:19:14-06:00"
+      "modificado": "2026-09-22T17:19:14-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 215,
+      "precio_usuario": 23
     },
     {
       "id": "3525045000470995593",
@@ -923,7 +1223,12 @@
       "valor": 4800,
       "owner": "KAM México",
       "creado": "2025-05-29T16:34:04-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-03-23T12:36:19-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 240,
+      "precio_usuario": 20
     },
     {
       "id": "3525045000422723823",
@@ -938,7 +1243,12 @@
       "valor": 4793.6,
       "owner": "KAM México",
       "creado": "2025-01-27T15:31:38-06:00",
-      "modificado": "2026-03-23T12:57:02-06:00"
+      "modificado": "2026-03-23T12:57:02-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 70,
+      "precio_usuario": 68.48
     },
     {
       "id": "3525045000431647349",
@@ -953,7 +1263,12 @@
       "valor": 4791.6,
       "owner": "KAM México",
       "creado": "2025-02-18T17:00:55-06:00",
-      "modificado": "2026-03-23T12:57:02-06:00"
+      "modificado": "2026-03-23T12:57:02-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 121,
+      "precio_usuario": 39.6
     },
     {
       "id": "3525045000654550031",
@@ -968,7 +1283,12 @@
       "valor": 4488.75,
       "owner": "KAM México",
       "creado": "2026-08-19T17:48:17-06:00",
-      "modificado": "2026-08-19T17:50:25-06:00"
+      "modificado": "2026-08-19T17:50:25-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 315,
+      "precio_usuario": 14.25
     },
     {
       "id": "3525045000453762972",
@@ -983,7 +1303,12 @@
       "valor": 4488.75,
       "owner": "KAM México",
       "creado": "2025-04-11T15:52:47-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 315,
+      "precio_usuario": 14.25
     },
     {
       "id": "3525045000438854001",
@@ -998,7 +1323,12 @@
       "valor": 4011.7,
       "owner": "KAM México",
       "creado": "2025-03-06T12:51:02-06:00",
-      "modificado": "2026-03-23T13:01:53-06:00"
+      "modificado": "2026-03-23T13:01:53-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 110,
+      "precio_usuario": 36.47
     },
     {
       "id": "3525045000457894808",
@@ -1013,7 +1343,12 @@
       "valor": 3960,
       "owner": "KAM México",
       "creado": "2025-04-24T16:14:11-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 396,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000422723791",
@@ -1028,7 +1363,12 @@
       "valor": 3485.3,
       "owner": "KAM México",
       "creado": "2025-01-27T15:19:03-06:00",
-      "modificado": "2026-03-23T12:57:02-06:00"
+      "modificado": "2026-03-23T12:57:02-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 91,
+      "precio_usuario": 38.3
     },
     {
       "id": "3525045000502806074",
@@ -1043,7 +1383,12 @@
       "valor": 3432,
       "owner": "KAM México",
       "creado": "2025-08-21T17:02:10-06:00",
-      "modificado": "2026-03-23T12:54:33-06:00"
+      "modificado": "2026-03-23T12:54:33-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 104,
+      "precio_usuario": 33
     },
     {
       "id": "3525045000422723839",
@@ -1058,7 +1403,12 @@
       "valor": 2880,
       "owner": "KAM México",
       "creado": "2025-01-27T15:37:55-06:00",
-      "modificado": "2026-03-23T12:57:02-06:00"
+      "modificado": "2026-03-23T12:57:02-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 192,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000621433070",
@@ -1073,7 +1423,12 @@
       "valor": 2875,
       "owner": "KAM México",
       "creado": "2026-04-23T22:35:24-06:00",
-      "modificado": "2026-08-28T11:13:56-06:00"
+      "modificado": "2026-08-28T11:13:56-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 125,
+      "precio_usuario": 23
     },
     {
       "id": "3525045000515831644",
@@ -1088,7 +1443,12 @@
       "valor": 2720,
       "owner": "KAM México",
       "creado": "2025-10-02T12:25:00-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 85,
+      "precio_usuario": 32
     },
     {
       "id": "3525045000457894864",
@@ -1103,7 +1463,12 @@
       "valor": 2078.98,
       "owner": "KAM México",
       "creado": "2025-04-24T16:29:39-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 38,
+      "precio_usuario": 54.71
     },
     {
       "id": "3525045000490270051",
@@ -1118,7 +1483,12 @@
       "valor": 2000.64,
       "owner": "KAM México",
       "creado": "2025-07-21T15:31:51-06:00",
-      "modificado": "2026-03-23T12:35:46-06:00"
+      "modificado": "2026-03-23T12:35:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 48,
+      "precio_usuario": 41.68
     },
     {
       "id": "3525045000586255297",
@@ -1133,7 +1503,12 @@
       "valor": 1970,
       "owner": "KAM México",
       "creado": "2026-02-20T14:21:00-06:00",
-      "modificado": "2026-03-23T12:26:14-06:00"
+      "modificado": "2026-03-23T12:26:14-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 197,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000514597103",
@@ -1148,7 +1523,12 @@
       "valor": 1815.7,
       "owner": "KAM México",
       "creado": "2025-09-26T14:41:40-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 134,
+      "precio_usuario": 13.55
     },
     {
       "id": "3525045000586255272",
@@ -1163,7 +1543,12 @@
       "valor": 1810,
       "owner": "KAM México",
       "creado": "2026-02-20T13:49:29-06:00",
-      "modificado": "2026-06-19T15:53:00-06:00"
+      "modificado": "2026-06-19T15:53:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 181,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000422723855",
@@ -1178,7 +1563,12 @@
       "valor": 1725,
       "owner": "KAM México",
       "creado": "2025-01-27T15:46:57-06:00",
-      "modificado": "2026-03-23T12:57:02-06:00"
+      "modificado": "2026-03-23T12:57:02-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 115,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000633548490",
@@ -1193,7 +1583,12 @@
       "valor": 1500,
       "owner": "KAM México",
       "creado": "2026-06-08T16:29:03-06:00",
-      "modificado": "2026-06-08T16:30:02-06:00"
+      "modificado": "2026-06-08T16:30:02-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 60,
+      "precio_usuario": 25
     },
     {
       "id": "3525045000446188017",
@@ -1208,7 +1603,12 @@
       "valor": 1500,
       "owner": "KAM México",
       "creado": "2025-03-27T12:19:12-06:00",
-      "modificado": "2026-03-23T13:01:53-06:00"
+      "modificado": "2026-03-23T13:01:53-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000438475059",
@@ -1223,7 +1623,12 @@
       "valor": 1053.8,
       "owner": "KAM México",
       "creado": "2025-03-05T16:50:22-06:00",
-      "modificado": "2026-03-23T13:01:53-06:00"
+      "modificado": "2026-03-23T13:01:53-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 20,
+      "precio_usuario": 52.69
     },
     {
       "id": "3525045000626778007",
@@ -1238,7 +1643,12 @@
       "valor": 1000,
       "owner": "KAM México",
       "creado": "2026-05-13T17:35:07-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 125,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000431647333",
@@ -1253,7 +1663,12 @@
       "valor": 905.38,
       "owner": "KAM México",
       "creado": "2025-02-18T16:54:02-06:00",
-      "modificado": "2026-03-23T12:57:02-06:00"
+      "modificado": "2026-03-23T12:57:02-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 14,
+      "precio_usuario": 64.67
     },
     {
       "id": "3525045000593463284",
@@ -1268,7 +1683,12 @@
       "valor": 900,
       "owner": "KAM México",
       "creado": "2026-03-05T10:42:53-06:00",
-      "modificado": "2026-08-28T11:12:26-06:00"
+      "modificado": "2026-08-28T11:12:26-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000577386027",
@@ -1283,7 +1703,12 @@
       "valor": 750,
       "owner": "KAM México",
       "creado": "2026-02-04T12:18:16-06:00",
-      "modificado": "2026-08-28T11:10:28-06:00"
+      "modificado": "2026-08-28T11:10:28-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000460171276",
@@ -1298,7 +1723,12 @@
       "valor": 687.9,
       "owner": "KAM México",
       "creado": "2025-05-02T15:27:21-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 30,
+      "precio_usuario": 22.93
     },
     {
       "id": "3525045000493788066",
@@ -1313,7 +1743,12 @@
       "valor": 536.2,
       "owner": "KAM México",
       "creado": "2025-07-30T12:10:49-06:00",
-      "modificado": "2026-03-23T12:35:46-06:00"
+      "modificado": "2026-03-23T12:35:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 14,
+      "precio_usuario": 38.3
     },
     {
       "id": "3525045000583797033",
@@ -1328,7 +1763,12 @@
       "valor": 500,
       "owner": "KAM México",
       "creado": "2026-02-16T15:20:08-06:00",
-      "modificado": "2026-05-12T11:00:48-06:00"
+      "modificado": "2026-05-12T11:00:48-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000478416605",
@@ -1343,7 +1783,12 @@
       "valor": 477.75,
       "owner": "KAM México",
       "creado": "2025-06-19T13:39:42-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-03-23T12:36:19-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 91,
+      "precio_usuario": 5.25
     },
     {
       "id": "3525045000478416463",
@@ -1358,7 +1803,12 @@
       "valor": 477.75,
       "owner": "KAM México",
       "creado": "2025-06-19T13:28:28-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-03-23T12:36:19-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 91,
+      "precio_usuario": 5.25
     },
     {
       "id": "3525045000523031296",
@@ -1373,7 +1823,12 @@
       "valor": 440,
       "owner": "KAM México",
       "creado": "2025-10-21T16:59:15-06:00",
-      "modificado": "2026-03-23T12:55:08-06:00"
+      "modificado": "2026-03-23T12:55:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 46,
+      "precio_usuario": null
     },
     {
       "id": "3525045000397148621",
@@ -1388,7 +1843,12 @@
       "valor": 225,
       "owner": "KAM México",
       "creado": "2024-11-11T16:55:35-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 25,
+      "precio_usuario": 9
     },
     {
       "id": "3525045000493788108",
@@ -1403,7 +1863,12 @@
       "valor": 73.5,
       "owner": "KAM México",
       "creado": "2025-07-30T12:17:36-06:00",
-      "modificado": "2026-03-23T12:35:46-06:00"
+      "modificado": "2026-03-23T12:35:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 14,
+      "precio_usuario": 5.25
     },
     {
       "id": "3525045000493788087",
@@ -1418,7 +1883,12 @@
       "valor": 73.5,
       "owner": "KAM México",
       "creado": "2025-07-30T12:13:51-06:00",
-      "modificado": "2026-03-23T12:35:46-06:00"
+      "modificado": "2026-03-23T12:35:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 14,
+      "precio_usuario": 5.25
     },
     {
       "id": "3525045000583797058",
@@ -1433,7 +1903,12 @@
       "valor": 17600,
       "owner": "KAM México",
       "creado": "2026-02-16T15:22:42-06:00",
-      "modificado": "2026-10-28T02:18:07-06:00"
+      "modificado": "2026-10-28T02:18:07-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2200,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000599800531",
@@ -1448,7 +1923,12 @@
       "valor": 900,
       "owner": "KAM México",
       "creado": "2026-03-17T11:18:28-06:00",
-      "modificado": "2026-08-28T11:13:17-06:00"
+      "modificado": "2026-08-28T11:13:17-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000470995572",
@@ -1463,7 +1943,12 @@
       "valor": 51686,
       "owner": "KAM México",
       "creado": "2025-05-29T15:54:15-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1202,
+      "precio_usuario": 43
     },
     {
       "id": "3525045000656787073",
@@ -1478,7 +1963,12 @@
       "valor": 35000,
       "owner": "KAM México",
       "creado": "2026-08-28T11:00:05-06:00",
-      "modificado": "2026-09-27T06:02:08-06:00"
+      "modificado": "2026-09-27T06:02:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3500,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656787063",
@@ -1493,7 +1983,12 @@
       "valor": 28000,
       "owner": "KAM México",
       "creado": "2026-08-28T10:58:59-06:00",
-      "modificado": "2026-09-27T06:02:09-06:00"
+      "modificado": "2026-09-27T06:02:09-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3500,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000656787052",
@@ -1508,7 +2003,12 @@
       "valor": 28000,
       "owner": "KAM México",
       "creado": "2026-08-28T09:58:37-06:00",
-      "modificado": "2026-09-27T06:02:08-06:00"
+      "modificado": "2026-09-27T06:02:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3500,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000572032066",
@@ -1523,7 +2023,12 @@
       "valor": 20730,
       "owner": "KAM México",
       "creado": "2026-01-22T11:51:53-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1382,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000572032041",
@@ -1538,7 +2043,12 @@
       "valor": 20730,
       "owner": "KAM México",
       "creado": "2026-01-22T11:49:48-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1382,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000422723807",
@@ -1553,7 +2063,12 @@
       "valor": 17325,
       "owner": "KAM México",
       "creado": "2025-01-27T15:28:38-06:00",
-      "modificado": "2026-03-23T13:32:25-06:00"
+      "modificado": "2026-03-23T13:32:25-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 57.75
     },
     {
       "id": "3525045000626482031",
@@ -1568,7 +2083,12 @@
       "valor": 15400,
       "owner": "KAM México",
       "creado": "2026-05-12T11:28:41-06:00",
-      "modificado": "2026-06-11T07:01:24-06:00"
+      "modificado": "2026-06-11T07:01:24-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 700,
+      "precio_usuario": 22
     },
     {
       "id": "3525045000572032116",
@@ -1583,7 +2103,12 @@
       "valor": 12060,
       "owner": "KAM México",
       "creado": "2026-01-22T11:55:30-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 804,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000572032203",
@@ -1598,7 +2123,12 @@
       "valor": 9450,
       "owner": "KAM México",
       "creado": "2026-01-22T12:04:09-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 630,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000572032253",
@@ -1613,7 +2143,12 @@
       "valor": 9210,
       "owner": "KAM México",
       "creado": "2026-01-22T12:14:40-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 614,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000572032228",
@@ -1628,7 +2163,12 @@
       "valor": 9210,
       "owner": "KAM México",
       "creado": "2026-01-22T12:13:36-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 614,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000572032278",
@@ -1643,7 +2183,12 @@
       "valor": 8205,
       "owner": "KAM México",
       "creado": "2026-01-22T12:26:08-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 547,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000397148453",
@@ -1658,7 +2203,12 @@
       "valor": 7620,
       "owner": "KAM México",
       "creado": "2024-11-11T12:30:10-06:00",
-      "modificado": "2026-03-23T13:40:46-06:00"
+      "modificado": "2026-03-23T13:40:46-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 508,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000561054126",
@@ -1673,7 +2223,12 @@
       "valor": 6460,
       "owner": "KAM México",
       "creado": "2025-12-29T15:56:50-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 646,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000559543001",
@@ -1688,7 +2243,12 @@
       "valor": 5000,
       "owner": "KAM México",
       "creado": "2025-12-23T15:12:37-06:00",
-      "modificado": "2026-03-23T12:28:29-06:00"
+      "modificado": "2026-03-23T12:28:29-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000520892317",
@@ -1703,7 +2263,12 @@
       "valor": 4500,
       "owner": "KAM México",
       "creado": "2025-10-15T12:32:13-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000532175470",
@@ -1718,7 +2283,12 @@
       "valor": 4395,
       "owner": "KAM México",
       "creado": "2025-11-04T14:12:30-06:00",
-      "modificado": "2026-03-23T13:25:41-06:00"
+      "modificado": "2026-03-23T13:25:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 879,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000572032346",
@@ -1733,7 +2303,12 @@
       "valor": 4065,
       "owner": "KAM México",
       "creado": "2026-01-22T12:32:09-06:00",
-      "modificado": "2026-06-01T08:56:19-06:00"
+      "modificado": "2026-06-01T08:56:19-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 271,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000572139579",
@@ -1748,7 +2323,12 @@
       "valor": 4020,
       "owner": "KAM México",
       "creado": "2026-01-22T14:19:43-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 335,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000570490001",
@@ -1763,7 +2343,12 @@
       "valor": 3600,
       "owner": "KAM México",
       "creado": "2026-01-20T10:36:49-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000593463334",
@@ -1778,7 +2363,12 @@
       "valor": 2820,
       "owner": "KAM México",
       "creado": "2026-03-05T11:24:24-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 282,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000470995609",
@@ -1793,7 +2383,12 @@
       "valor": 2300,
       "owner": "KAM México",
       "creado": "2025-05-29T16:35:49-06:00",
-      "modificado": "2026-03-23T13:25:41-06:00"
+      "modificado": "2026-03-23T13:25:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 230,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000397148649",
@@ -1808,7 +2403,12 @@
       "valor": 2288,
       "owner": "KAM México",
       "creado": "2024-11-11T17:20:40-06:00",
-      "modificado": "2026-03-24T09:20:46-06:00"
+      "modificado": "2026-03-24T09:20:46-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 176,
+      "precio_usuario": 13
     },
     {
       "id": "3525045000397148605",
@@ -1823,7 +2423,12 @@
       "valor": 2288,
       "owner": "KAM México",
       "creado": "2024-11-11T16:50:44-06:00",
-      "modificado": "2026-03-24T09:20:46-06:00"
+      "modificado": "2026-03-24T09:20:46-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 176,
+      "precio_usuario": 13
     },
     {
       "id": "3525045000570490063",
@@ -1838,7 +2443,12 @@
       "valor": 2250,
       "owner": "KAM México",
       "creado": "2026-01-20T10:47:42-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 150,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000523031225",
@@ -1853,7 +2463,12 @@
       "valor": 2250,
       "owner": "KAM México",
       "creado": "2025-10-21T16:19:40-06:00",
-      "modificado": "2026-03-23T13:25:41-06:00"
+      "modificado": "2026-03-23T13:25:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 150,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000626778002",
@@ -1868,7 +2483,12 @@
       "valor": 2160,
       "owner": "KAM México",
       "creado": "2026-05-13T17:27:47-06:00",
-      "modificado": "2026-08-11T07:01:26-06:00"
+      "modificado": "2026-08-11T07:01:26-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 270,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000397148437",
@@ -1883,7 +2503,12 @@
       "valor": 2008,
       "owner": "KAM México",
       "creado": "2024-11-11T12:25:42-06:00",
-      "modificado": "2026-03-23T13:40:46-06:00"
+      "modificado": "2026-03-23T13:40:46-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 251,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000502806053",
@@ -1898,7 +2523,12 @@
       "valor": 1680,
       "owner": "KAM México",
       "creado": "2025-08-21T16:28:21-06:00",
-      "modificado": "2026-03-23T13:17:38-06:00"
+      "modificado": "2026-03-23T13:17:38-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 30,
+      "precio_usuario": 56
     },
     {
       "id": "3525045000643770002",
@@ -1913,7 +2543,12 @@
       "valor": 1530,
       "owner": "KAM México",
       "creado": "2026-07-15T13:18:54-06:00",
-      "modificado": "2026-10-13T06:02:08-06:00"
+      "modificado": "2026-10-13T06:02:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 102,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000397148399",
@@ -1928,7 +2563,12 @@
       "valor": 1050,
       "owner": "KAM México",
       "creado": "2024-11-11T12:13:44-06:00",
-      "modificado": "2026-03-23T13:40:46-06:00"
+      "modificado": "2026-03-23T13:40:46-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 105,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000593463309",
@@ -1943,7 +2583,12 @@
       "valor": 900,
       "owner": "KAM México",
       "creado": "2026-03-05T11:18:00-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000490626720",
@@ -1958,7 +2603,12 @@
       "valor": 500,
       "owner": "KAM México",
       "creado": "2025-07-23T12:55:23-06:00",
-      "modificado": "2026-09-22T19:28:28-06:00"
+      "modificado": "2026-09-22T19:28:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000397148675",
@@ -1973,7 +2623,12 @@
       "valor": 450,
       "owner": "KAM México",
       "creado": "2024-11-11T17:24:12-06:00",
-      "modificado": "2026-03-23T13:40:46-06:00"
+      "modificado": "2026-03-23T13:40:46-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 30,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000523346001",
@@ -1988,7 +2643,12 @@
       "valor": 440,
       "owner": "KAM México",
       "creado": "2025-10-21T22:19:29-06:00",
-      "modificado": "2026-03-23T13:25:41-06:00"
+      "modificado": "2026-03-23T13:25:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 15,
+      "precio_usuario": null
     },
     {
       "id": "3525045000520892291",
@@ -2003,7 +2663,12 @@
       "valor": 435,
       "owner": "KAM México",
       "creado": "2025-10-15T12:07:06-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 29,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000520892265",
@@ -2018,7 +2683,12 @@
       "valor": 360,
       "owner": "KAM México",
       "creado": "2025-10-15T11:52:48-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 24,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000666639046",
@@ -2033,7 +2703,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-09-28T13:44:04-06:00",
-      "modificado": "2026-10-28T06:01:48-06:00"
+      "modificado": "2026-10-28T06:01:48-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 600,
+      "precio_usuario": null
     },
     {
       "id": "3525045000656377035",
@@ -2048,7 +2723,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-08-27T11:48:56-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 269,
+      "precio_usuario": null
     },
     {
       "id": "3525045000626778012",
@@ -2063,7 +2743,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-05-13T17:54:22-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": null
     },
     {
       "id": "3525045000654550017",
@@ -2078,7 +2763,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-08-19T17:30:04-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 135,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000629365190",
@@ -2093,7 +2783,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-05-25T16:55:23-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 333,
+      "precio_usuario": null
     },
     {
       "id": "3525045000520689905",
@@ -2108,7 +2803,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2025-10-14T12:40:17-06:00",
-      "modificado": "2026-09-22T19:25:12-06:00"
+      "modificado": "2026-09-22T19:25:12-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": null
     },
     {
       "id": "3525045000632551189",
@@ -2123,7 +2823,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-06-04T15:27:04-06:00",
-      "modificado": "2026-09-02T07:03:21-06:00"
+      "modificado": "2026-09-02T07:03:21-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1500,
+      "precio_usuario": null
     },
     {
       "id": "3525045000647942371",
@@ -2138,7 +2843,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-07-31T16:06:02-06:00",
-      "modificado": "2026-08-30T07:00:52-06:00"
+      "modificado": "2026-08-30T07:00:52-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 480,
+      "precio_usuario": null
     },
     {
       "id": "3525045000635497385",
@@ -2153,7 +2863,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-06-14T18:49:49-06:00",
-      "modificado": "2026-07-14T07:02:35-06:00"
+      "modificado": "2026-07-14T07:02:35-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 150,
+      "precio_usuario": null
     },
     {
       "id": "3525045000632476087",
@@ -2168,7 +2883,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-06-04T12:37:12-06:00",
-      "modificado": "2026-07-04T07:00:41-06:00"
+      "modificado": "2026-07-04T07:00:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": null
     },
     {
       "id": "3525045000574279391",
@@ -2183,7 +2903,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-01-28T13:43:58-06:00",
-      "modificado": "2026-03-23T12:23:20-06:00"
+      "modificado": "2026-03-23T12:23:20-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5,
+      "precio_usuario": null
     },
     {
       "id": "3525045000675155008",
@@ -2198,7 +2923,12 @@
       "valor": 7550,
       "owner": "KAM México",
       "creado": "2026-10-22T17:51:14-06:00",
-      "modificado": "2026-10-22T17:53:44-06:00"
+      "modificado": "2026-10-22T17:53:44-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 151,
+      "precio_usuario": 50
     },
     {
       "id": "3525045000669291058",
@@ -2213,7 +2943,12 @@
       "valor": 200,
       "owner": "KAM México",
       "creado": "2026-10-06T16:17:37-06:00",
-      "modificado": "2026-10-06T16:19:00-06:00"
+      "modificado": "2026-10-06T16:19:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 8,
+      "precio_usuario": null
     },
     {
       "id": "3525045000654478083",
@@ -2228,7 +2963,12 @@
       "valor": 450,
       "owner": "KAM México",
       "creado": "2026-08-19T15:05:58-06:00",
-      "modificado": "2026-08-19T15:07:23-06:00"
+      "modificado": "2026-08-19T15:07:23-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 46,
+      "precio_usuario": null
     },
     {
       "id": "3525045000654478109",
@@ -2243,7 +2983,12 @@
       "valor": 7,
       "owner": "KAM México",
       "creado": "2026-08-19T15:42:42-06:00",
-      "modificado": "2026-08-19T15:44:57-06:00"
+      "modificado": "2026-08-19T15:44:57-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 185,
+      "precio_usuario": null
     },
     {
       "id": "3525045000654478097",
@@ -2258,7 +3003,12 @@
       "valor": 512,
       "owner": "KAM México",
       "creado": "2026-08-19T15:26:40-06:00",
-      "modificado": "2026-09-15T08:02:56-06:00"
+      "modificado": "2026-09-15T08:02:56-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 64,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000628571148",
@@ -2273,7 +3023,12 @@
       "valor": 225,
       "owner": "KAM México",
       "creado": "2026-05-21T15:50:41-06:00",
-      "modificado": "2026-09-29T17:25:41-06:00"
+      "modificado": "2026-09-29T17:25:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 15,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000650438136",
@@ -2288,7 +3043,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-08-06T13:56:16-06:00",
-      "modificado": "2026-08-06T13:58:32-06:00"
+      "modificado": "2026-08-06T13:58:32-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 74,
+      "precio_usuario": null
     },
     {
       "id": "3525045000572000372",
@@ -2303,7 +3063,12 @@
       "valor": 6000,
       "owner": "KAM México",
       "creado": "2026-01-22T12:15:20-06:00",
-      "modificado": "2026-04-28T13:13:07-06:00"
+      "modificado": "2026-04-28T13:13:07-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 30
     },
     {
       "id": "3525045000587062977",
@@ -2318,7 +3083,12 @@
       "valor": 2310,
       "owner": "KAM México",
       "creado": "2026-02-23T16:12:21-06:00",
-      "modificado": "2026-07-06T18:13:05-06:00"
+      "modificado": "2026-07-06T18:13:05-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 330,
+      "precio_usuario": 7
     },
     {
       "id": "3525045000644518184",
@@ -2333,7 +3103,12 @@
       "valor": 1560,
       "owner": "KAM México",
       "creado": "2026-07-17T11:48:26-06:00",
-      "modificado": "2026-07-17T11:50:26-06:00"
+      "modificado": "2026-07-17T11:50:26-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 26,
+      "precio_usuario": 60
     },
     {
       "id": "3525045000600292184",
@@ -2348,7 +3123,12 @@
       "valor": 1552,
       "owner": "KAM México",
       "creado": "2026-03-17T16:35:38-06:00",
-      "modificado": "2026-04-13T21:22:48-06:00"
+      "modificado": "2026-04-13T21:22:48-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 194,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000671918035",
@@ -2363,7 +3143,12 @@
       "valor": 675,
       "owner": "KAM México",
       "creado": "2026-10-14T13:40:55-06:00",
-      "modificado": "2026-10-14T13:42:07-06:00"
+      "modificado": "2026-10-14T13:42:07-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 45,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000666649318",
@@ -2378,7 +3163,12 @@
       "valor": 200,
       "owner": "KAM México",
       "creado": "2026-09-28T10:07:55-06:00",
-      "modificado": "2026-09-28T10:09:43-06:00"
+      "modificado": "2026-09-28T10:09:43-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 20,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000649954898",
@@ -2393,7 +3183,12 @@
       "valor": 14000,
       "owner": "KAM México",
       "creado": "2026-08-05T15:46:25-06:00",
-      "modificado": "2026-08-05T15:48:19-06:00"
+      "modificado": "2026-08-05T15:48:19-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 400,
+      "precio_usuario": 35
     },
     {
       "id": "3525045000503954567",
@@ -2408,7 +3203,12 @@
       "valor": 1767,
       "owner": "KAM México",
       "creado": "2025-08-27T11:15:56-06:00",
-      "modificado": "2026-03-23T12:33:04-06:00"
+      "modificado": "2026-03-23T12:33:04-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 31,
+      "precio_usuario": 57
     },
     {
       "id": "3525045000629854045",
@@ -2423,7 +3223,12 @@
       "valor": 1625,
       "owner": "KAM México",
       "creado": "2026-05-26T14:35:01-06:00",
-      "modificado": "2026-07-17T11:42:38-06:00"
+      "modificado": "2026-07-17T11:42:38-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 25,
+      "precio_usuario": 65
     },
     {
       "id": "3525045000671918022",
@@ -2438,7 +3243,12 @@
       "valor": 517.5,
       "owner": "KAM México",
       "creado": "2026-10-14T13:14:56-06:00",
-      "modificado": "2026-10-14T13:16:41-06:00"
+      "modificado": "2026-10-14T13:16:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 46,
+      "precio_usuario": 11.25
     },
     {
       "id": "3525045000642992567",
@@ -2453,7 +3263,12 @@
       "valor": 477,
       "owner": "KAM México",
       "creado": "2026-07-14T15:48:29-06:00",
-      "modificado": "2026-08-28T11:54:17-06:00"
+      "modificado": "2026-08-28T11:54:17-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 53,
+      "precio_usuario": 9
     },
     {
       "id": "3525045000515727259",
@@ -2468,7 +3283,12 @@
       "valor": 406.35,
       "owner": "KAM México",
       "creado": "2025-10-01T12:35:33-06:00",
-      "modificado": "2026-03-23T12:33:04-06:00"
+      "modificado": "2026-03-23T12:33:04-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 15,
+      "precio_usuario": 27.09
     },
     {
       "id": "3525045000629854040",
@@ -2483,7 +3303,12 @@
       "valor": 300,
       "owner": "KAM México",
       "creado": "2026-05-26T14:17:04-06:00",
-      "modificado": "2026-05-26T14:19:00-06:00"
+      "modificado": "2026-05-26T14:19:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 15,
+      "precio_usuario": null
     },
     {
       "id": "3525045000616092666",
@@ -2498,7 +3323,12 @@
       "valor": 12318.48,
       "owner": "KAM México",
       "creado": "2026-04-10T16:04:31-06:00",
-      "modificado": "2026-04-10T16:06:47-06:00"
+      "modificado": "2026-04-10T16:06:47-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 216,
+      "precio_usuario": 57.03
     },
     {
       "id": "3525045000621513309",
@@ -2513,7 +3343,12 @@
       "valor": 6820,
       "owner": "KAM México",
       "creado": "2026-04-24T12:09:05-06:00",
-      "modificado": "2026-09-28T10:06:20-06:00"
+      "modificado": "2026-09-28T10:06:20-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 220,
+      "precio_usuario": 31
     },
     {
       "id": "3525045000621513261",
@@ -2528,7 +3363,12 @@
       "valor": 5690.1,
       "owner": "KAM México",
       "creado": "2026-04-24T11:57:44-06:00",
-      "modificado": "2026-10-28T13:20:37-06:00"
+      "modificado": "2026-10-28T13:20:37-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 130,
+      "precio_usuario": 43.77
     },
     {
       "id": "3525045000544844629",
@@ -2543,7 +3383,12 @@
       "valor": 5520,
       "owner": "KAM México",
       "creado": "2025-11-26T09:54:29-06:00",
-      "modificado": "2026-03-23T12:34:40-06:00"
+      "modificado": "2026-03-23T12:34:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 120,
+      "precio_usuario": 46
     },
     {
       "id": "3525045000558763013",
@@ -2558,7 +3403,12 @@
       "valor": 5510,
       "owner": "KAM México",
       "creado": "2025-12-22T11:09:51-06:00",
-      "modificado": "2026-03-23T12:28:29-06:00"
+      "modificado": "2026-03-23T12:28:29-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 190,
+      "precio_usuario": 29
     },
     {
       "id": "3525045000602073003",
@@ -2573,7 +3423,12 @@
       "valor": 4800,
       "owner": "KAM México",
       "creado": "2026-03-20T15:59:52-06:00",
-      "modificado": "2026-03-23T12:10:18-06:00"
+      "modificado": "2026-03-23T12:10:18-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 40,
+      "precio_usuario": 120
     },
     {
       "id": "3525045000495429307",
@@ -2588,7 +3443,12 @@
       "valor": 2907.18,
       "owner": "KAM México",
       "creado": "2025-08-06T10:04:42-06:00",
-      "modificado": "2026-03-23T12:35:46-06:00"
+      "modificado": "2026-03-23T12:35:46-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 62,
+      "precio_usuario": 46.89
     },
     {
       "id": "3525045000621513285",
@@ -2603,7 +3463,12 @@
       "valor": 2844,
       "owner": "KAM México",
       "creado": "2026-04-24T12:06:34-06:00",
-      "modificado": "2026-09-28T10:05:43-06:00"
+      "modificado": "2026-09-28T10:05:43-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 237,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000519950424",
@@ -2618,7 +3483,12 @@
       "valor": 2700,
       "owner": "KAM México",
       "creado": "2025-10-13T17:28:50-06:00",
-      "modificado": "2026-03-23T12:55:08-06:00"
+      "modificado": "2026-03-23T12:55:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 30,
+      "precio_usuario": null
     },
     {
       "id": "3525045000578052113",
@@ -2633,7 +3503,12 @@
       "valor": 2659.62,
       "owner": "KAM México",
       "creado": "2026-02-05T16:23:06-06:00",
-      "modificado": "2026-04-13T21:24:33-06:00"
+      "modificado": "2026-04-13T21:24:33-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 57,
+      "precio_usuario": 46.66
     },
     {
       "id": "3525045000522756637",
@@ -2648,7 +3523,12 @@
       "valor": 2501,
       "owner": "KAM México",
       "creado": "2025-10-21T17:12:38-06:00",
-      "modificado": "2026-03-23T12:55:08-06:00"
+      "modificado": "2026-03-23T12:55:08-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 61,
+      "precio_usuario": 41
     },
     {
       "id": "3525045000515727308",
@@ -2663,7 +3543,12 @@
       "valor": 2420,
       "owner": "KAM México",
       "creado": "2025-10-02T11:32:07-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 44,
+      "precio_usuario": 55
     },
     {
       "id": "3525045000531173001",
@@ -2678,7 +3563,12 @@
       "valor": 2133,
       "owner": "KAM México",
       "creado": "2025-11-03T16:01:51-06:00",
-      "modificado": "2026-09-28T10:05:04-06:00"
+      "modificado": "2026-09-28T10:05:04-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 237,
+      "precio_usuario": 9
     },
     {
       "id": "3525045000551049269",
@@ -2693,7 +3583,12 @@
       "valor": 2100,
       "owner": "KAM México",
       "creado": "2025-12-09T10:39:56-06:00",
-      "modificado": "2026-03-23T12:30:08-06:00"
+      "modificado": "2026-03-23T12:30:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 45,
+      "precio_usuario": null
     },
     {
       "id": "3525045000621513237",
@@ -2708,7 +3603,12 @@
       "valor": 1925,
       "owner": "KAM México",
       "creado": "2026-04-24T11:53:50-06:00",
-      "modificado": "2026-10-28T13:21:19-06:00"
+      "modificado": "2026-10-28T13:21:19-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 160,
+      "precio_usuario": null
     },
     {
       "id": "3525045000604694631",
@@ -2723,7 +3623,12 @@
       "valor": 1660,
       "owner": "KAM México",
       "creado": "2026-03-24T18:12:04-06:00",
-      "modificado": "2026-10-28T13:20:17-06:00"
+      "modificado": "2026-10-28T13:20:17-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 166,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000604694655",
@@ -2738,7 +3643,12 @@
       "valor": 1660,
       "owner": "KAM México",
       "creado": "2026-03-24T18:17:12-06:00",
-      "modificado": "2026-10-28T13:18:58-06:00"
+      "modificado": "2026-10-28T13:18:58-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 166,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000544844872",
@@ -2753,7 +3663,12 @@
       "valor": 1440,
       "owner": "KAM México",
       "creado": "2025-11-26T10:27:21-06:00",
-      "modificado": "2026-03-23T12:34:40-06:00"
+      "modificado": "2026-03-23T12:34:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 32,
+      "precio_usuario": 45
     },
     {
       "id": "3525045000640693036",
@@ -2768,7 +3683,12 @@
       "valor": 1200,
       "owner": "KAM México",
       "creado": "2026-07-06T10:42:22-06:00",
-      "modificado": "2026-10-28T13:22:28-06:00"
+      "modificado": "2026-10-28T13:22:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 150,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000541323183",
@@ -2783,7 +3703,12 @@
       "valor": 875,
       "owner": "KAM México",
       "creado": "2025-11-20T17:39:45-06:00",
-      "modificado": "2026-03-23T12:34:40-06:00"
+      "modificado": "2026-03-23T12:34:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 25,
+      "precio_usuario": 35
     },
     {
       "id": "3525045000587156042",
@@ -2798,7 +3723,12 @@
       "valor": 444,
       "owner": "KAM México",
       "creado": "2026-02-23T16:45:59-06:00",
-      "modificado": "2026-03-23T12:26:14-06:00"
+      "modificado": "2026-03-23T12:26:14-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 74,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000572000304",
@@ -2813,7 +3743,12 @@
       "valor": 390,
       "owner": "KAM México",
       "creado": "2026-01-22T12:04:27-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 26,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000636381028",
@@ -2828,7 +3763,12 @@
       "valor": 300,
       "owner": "KAM México",
       "creado": "2026-06-16T18:21:07-06:00",
-      "modificado": "2026-06-16T18:23:07-06:00"
+      "modificado": "2026-06-16T18:23:07-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 75,
+      "precio_usuario": null
     },
     {
       "id": "3525045000522015449",
@@ -2843,7 +3783,12 @@
       "valor": 300,
       "owner": "KAM México",
       "creado": "2025-10-17T15:55:09-06:00",
-      "modificado": "2026-03-23T12:55:08-06:00"
+      "modificado": "2026-03-23T12:55:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": null
     },
     {
       "id": "3525045000535199432",
@@ -2858,7 +3803,12 @@
       "valor": 300,
       "owner": "KAM México",
       "creado": "2025-11-11T11:57:32-06:00",
-      "modificado": "2026-03-23T12:34:40-06:00"
+      "modificado": "2026-03-23T12:34:40-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 75,
+      "precio_usuario": null
     },
     {
       "id": "3525045000529301024",
@@ -2873,7 +3823,12 @@
       "valor": 300,
       "owner": "KAM México",
       "creado": "2025-11-03T07:13:02-06:00",
-      "modificado": "2026-03-23T12:34:40-06:00"
+      "modificado": "2026-03-23T12:34:40-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 12,
+      "precio_usuario": 25
     },
     {
       "id": "3525045000511542001",
@@ -2888,7 +3843,12 @@
       "valor": 133.4,
       "owner": "KAM México",
       "creado": "2025-09-18T14:06:45-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 4,
+      "precio_usuario": 33.35
     },
     {
       "id": "3525045000502797052",
@@ -2903,7 +3863,12 @@
       "valor": 105,
       "owner": "KAM México",
       "creado": "2025-08-21T16:57:59-06:00",
-      "modificado": "2026-03-23T12:54:33-06:00"
+      "modificado": "2026-03-23T12:54:33-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 35,
+      "precio_usuario": 3
     },
     {
       "id": "3525045000502037940",
@@ -2918,7 +3883,12 @@
       "valor": 34100,
       "owner": "KAM México",
       "creado": "2025-08-21T11:14:49-06:00",
-      "modificado": "2026-03-23T13:22:06-06:00"
+      "modificado": "2026-03-23T13:22:06-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1100,
+      "precio_usuario": 31
     },
     {
       "id": "3525045000643568045",
@@ -2933,7 +3903,12 @@
       "valor": 7000,
       "owner": "KAM México",
       "creado": "2026-07-15T18:15:58-06:00",
-      "modificado": "2026-10-13T06:02:07-06:00"
+      "modificado": "2026-10-13T06:02:07-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 35
     },
     {
       "id": "3525045000572032753",
@@ -2948,7 +3923,12 @@
       "valor": 6120,
       "owner": "KAM México",
       "creado": "2026-01-22T13:10:16-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 408,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000630721337",
@@ -2963,7 +3943,12 @@
       "valor": 4908,
       "owner": "KAM México",
       "creado": "2026-06-01T12:56:54-06:00",
-      "modificado": "2026-10-11T06:01:28-06:00"
+      "modificado": "2026-10-11T06:01:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 409,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000572032716",
@@ -2978,7 +3963,12 @@
       "valor": 3915,
       "owner": "KAM México",
       "creado": "2026-01-22T13:08:34-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 261,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000632324107",
@@ -2993,7 +3983,12 @@
       "valor": 3510,
       "owner": "KAM México",
       "creado": "2026-06-04T17:36:56-06:00",
-      "modificado": "2026-07-04T07:00:42-06:00"
+      "modificado": "2026-07-04T07:00:42-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 270,
+      "precio_usuario": 13
     },
     {
       "id": "3525045000572032679",
@@ -3008,7 +4003,12 @@
       "valor": 3105,
       "owner": "KAM México",
       "creado": "2026-01-22T13:06:48-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 207,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000572032654",
@@ -3023,7 +4023,12 @@
       "valor": 3105,
       "owner": "KAM México",
       "creado": "2026-01-22T13:05:26-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 207,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000656803042",
@@ -3038,7 +4043,12 @@
       "valor": 2700,
       "owner": "KAM México",
       "creado": "2026-08-28T11:37:09-06:00",
-      "modificado": "2026-09-27T06:01:59-06:00"
+      "modificado": "2026-09-27T06:01:59-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 270,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803197",
@@ -3053,7 +4063,12 @@
       "valor": 2700,
       "owner": "KAM México",
       "creado": "2026-08-28T12:46:12-06:00",
-      "modificado": "2026-09-27T06:01:58-06:00"
+      "modificado": "2026-09-27T06:01:58-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 270,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803187",
@@ -3068,7 +4083,12 @@
       "valor": 2700,
       "owner": "KAM México",
       "creado": "2026-08-28T12:43:56-06:00",
-      "modificado": "2026-09-27T06:01:58-06:00"
+      "modificado": "2026-09-27T06:01:58-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 270,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803009",
@@ -3083,7 +4103,12 @@
       "valor": 2600,
       "owner": "KAM México",
       "creado": "2026-08-28T11:28:58-06:00",
-      "modificado": "2026-09-27T06:02:08-06:00"
+      "modificado": "2026-09-27T06:02:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 260,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803032",
@@ -3098,7 +4123,12 @@
       "valor": 2600,
       "owner": "KAM México",
       "creado": "2026-08-28T11:33:25-06:00",
-      "modificado": "2026-09-27T06:01:58-06:00"
+      "modificado": "2026-09-27T06:01:58-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 260,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803021",
@@ -3113,7 +4143,12 @@
       "valor": 2600,
       "owner": "KAM México",
       "creado": "2026-08-28T11:31:17-06:00",
-      "modificado": "2026-09-27T06:01:58-06:00"
+      "modificado": "2026-09-27T06:01:58-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 260,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803177",
@@ -3128,7 +4163,12 @@
       "valor": 2500,
       "owner": "KAM México",
       "creado": "2026-08-28T12:34:21-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 250,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803062",
@@ -3143,7 +4183,12 @@
       "valor": 2370,
       "owner": "KAM México",
       "creado": "2026-08-28T11:47:38-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 237,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803052",
@@ -3158,7 +4203,12 @@
       "valor": 2370,
       "owner": "KAM México",
       "creado": "2026-08-28T11:45:38-06:00",
-      "modificado": "2026-09-27T06:02:01-06:00"
+      "modificado": "2026-09-27T06:02:01-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 237,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000572032619",
@@ -3173,7 +4223,12 @@
       "valor": 2355,
       "owner": "KAM México",
       "creado": "2026-01-22T13:03:27-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 157,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000600292215",
@@ -3188,7 +4243,12 @@
       "valor": 2310,
       "owner": "KAM México",
       "creado": "2026-03-17T17:47:05-06:00",
-      "modificado": "2026-07-06T18:13:04-06:00"
+      "modificado": "2026-07-06T18:13:04-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 330,
+      "precio_usuario": 7
     },
     {
       "id": "3525045000502797073",
@@ -3203,7 +4263,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2025-08-21T17:09:39-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 74,
+      "precio_usuario": null
     },
     {
       "id": "3525045000572032594",
@@ -3218,7 +4283,12 @@
       "valor": 1920,
       "owner": "KAM México",
       "creado": "2026-01-22T13:02:05-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 128,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000656803217",
@@ -3233,7 +4303,12 @@
       "valor": 1625,
       "owner": "KAM México",
       "creado": "2026-08-31T03:39:48-06:00",
-      "modificado": "2026-09-30T06:03:34-06:00"
+      "modificado": "2026-09-30T06:03:34-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 65,
+      "precio_usuario": 25
     },
     {
       "id": "3525045000654478133",
@@ -3248,7 +4323,12 @@
       "valor": 1600,
       "owner": "KAM México",
       "creado": "2026-08-19T16:26:59-06:00",
-      "modificado": "2026-09-18T06:00:43-06:00"
+      "modificado": "2026-09-18T06:00:43-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000654478119",
@@ -3263,7 +4343,12 @@
       "valor": 1600,
       "owner": "KAM México",
       "creado": "2026-08-19T15:51:51-06:00",
-      "modificado": "2026-09-18T06:00:27-06:00"
+      "modificado": "2026-09-18T06:00:27-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000493537627",
@@ -3278,7 +4363,12 @@
       "valor": 1552,
       "owner": "KAM México",
       "creado": "2025-07-31T16:52:11-06:00",
-      "modificado": "2026-09-22T19:25:12-06:00"
+      "modificado": "2026-09-22T19:25:12-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 194,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000518199034",
@@ -3293,7 +4383,12 @@
       "valor": 1400,
       "owner": "KAM México",
       "creado": "2025-10-07T18:56:47-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 140,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000592368068",
@@ -3308,7 +4403,12 @@
       "valor": 1251,
       "owner": "KAM México",
       "creado": "2026-03-03T16:59:49-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 139,
+      "precio_usuario": 9
     },
     {
       "id": "3525045000631317127",
@@ -3323,7 +4423,12 @@
       "valor": 1125,
       "owner": "KAM México",
       "creado": "2026-06-02T12:37:10-06:00",
-      "modificado": "2026-08-31T07:01:46-06:00"
+      "modificado": "2026-08-31T07:01:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 15,
+      "precio_usuario": 75
     },
     {
       "id": "3525045000490627865",
@@ -3338,7 +4443,12 @@
       "valor": 1050,
       "owner": "KAM México",
       "creado": "2025-07-23T13:00:05-06:00",
-      "modificado": "2026-09-22T19:25:12-06:00"
+      "modificado": "2026-09-22T19:25:12-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 21
     },
     {
       "id": "3525045000621513339",
@@ -3353,7 +4463,12 @@
       "valor": 1000,
       "owner": "KAM México",
       "creado": "2026-04-24T12:16:33-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803167",
@@ -3368,7 +4483,12 @@
       "valor": 1000,
       "owner": "KAM México",
       "creado": "2026-08-28T12:18:24-06:00",
-      "modificado": "2026-09-27T06:02:09-06:00"
+      "modificado": "2026-09-27T06:02:09-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803157",
@@ -3383,7 +4503,12 @@
       "valor": 1000,
       "owner": "KAM México",
       "creado": "2026-08-28T12:06:53-06:00",
-      "modificado": "2026-09-27T06:02:08-06:00"
+      "modificado": "2026-09-27T06:02:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000621513363",
@@ -3398,7 +4523,12 @@
       "valor": 1000,
       "owner": "KAM México",
       "creado": "2026-04-24T12:19:43-06:00",
-      "modificado": "2026-07-23T07:04:15-06:00"
+      "modificado": "2026-07-23T07:04:15-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000518199055",
@@ -3413,7 +4543,12 @@
       "valor": 1000,
       "owner": "KAM México",
       "creado": "2025-10-07T19:07:55-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803072",
@@ -3428,7 +4563,12 @@
       "valor": 900,
       "owner": "KAM México",
       "creado": "2026-08-28T11:51:08-06:00",
-      "modificado": "2026-09-27T06:02:08-06:00"
+      "modificado": "2026-09-27T06:02:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803082",
@@ -3443,7 +4583,12 @@
       "valor": 900,
       "owner": "KAM México",
       "creado": "2026-08-28T11:52:25-06:00",
-      "modificado": "2026-09-27T06:02:07-06:00"
+      "modificado": "2026-09-27T06:02:07-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000583832679",
@@ -3458,7 +4603,12 @@
       "valor": 800,
       "owner": "KAM México",
       "creado": "2026-02-16T15:47:16-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 80,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000559247003",
@@ -3473,7 +4623,12 @@
       "valor": 776,
       "owner": "KAM México",
       "creado": "2025-12-23T11:12:53-06:00",
-      "modificado": "2026-03-23T12:28:29-06:00"
+      "modificado": "2026-03-23T12:28:29-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 97,
+      "precio_usuario": null
     },
     {
       "id": "3525045000559302005",
@@ -3488,7 +4643,12 @@
       "valor": 760,
       "owner": "KAM México",
       "creado": "2025-12-23T13:02:18-06:00",
-      "modificado": "2026-03-23T12:28:29-06:00"
+      "modificado": "2026-03-23T12:28:29-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 76,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000515727334",
@@ -3503,7 +4663,12 @@
       "valor": 700,
       "owner": "KAM México",
       "creado": "2025-10-02T12:25:16-06:00",
-      "modificado": "2026-09-22T19:25:12-06:00"
+      "modificado": "2026-09-22T19:25:12-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 70,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000628571138",
@@ -3518,7 +4683,12 @@
       "valor": 700,
       "owner": "KAM México",
       "creado": "2026-05-21T15:26:08-06:00",
-      "modificado": "2026-06-20T07:01:57-06:00"
+      "modificado": "2026-06-20T07:01:57-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 70,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000583832704",
@@ -3533,7 +4703,12 @@
       "valor": 650,
       "owner": "KAM México",
       "creado": "2026-02-16T15:50:16-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 65,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000519950382",
@@ -3548,7 +4723,12 @@
       "valor": 620,
       "owner": "KAM México",
       "creado": "2025-10-13T16:53:08-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 62,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000534472880",
@@ -3563,7 +4743,12 @@
       "valor": 600,
       "owner": "KAM México",
       "creado": "2025-11-10T16:28:21-06:00",
-      "modificado": "2026-06-01T08:56:19-06:00"
+      "modificado": "2026-06-01T08:56:19-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000583832735",
@@ -3578,7 +4763,12 @@
       "valor": 600,
       "owner": "KAM México",
       "creado": "2026-02-16T15:55:01-06:00",
-      "modificado": "2026-03-25T13:33:01-06:00"
+      "modificado": "2026-03-25T13:33:01-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 60,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000636661622",
@@ -3593,7 +4783,12 @@
       "valor": 585,
       "owner": "KAM México",
       "creado": "2026-06-18T13:19:56-06:00",
-      "modificado": "2026-07-18T07:00:26-06:00"
+      "modificado": "2026-07-18T07:00:26-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 45,
+      "precio_usuario": 13
     },
     {
       "id": "3525045000630427535",
@@ -3608,7 +4803,12 @@
       "valor": 560,
       "owner": "KAM México",
       "creado": "2026-05-28T17:45:05-06:00",
-      "modificado": "2026-06-27T07:01:01-06:00"
+      "modificado": "2026-06-27T07:01:01-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 65,
+      "precio_usuario": null
     },
     {
       "id": "3525045000656803147",
@@ -3623,7 +4823,12 @@
       "valor": 530,
       "owner": "KAM México",
       "creado": "2026-08-28T11:56:53-06:00",
-      "modificado": "2026-09-27T06:02:08-06:00"
+      "modificado": "2026-09-27T06:02:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 53,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000636381034",
@@ -3638,7 +4843,12 @@
       "valor": 470,
       "owner": "KAM México",
       "creado": "2026-06-16T18:27:30-06:00",
-      "modificado": "2026-07-16T07:02:51-06:00"
+      "modificado": "2026-07-16T07:02:51-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 10,
+      "precio_usuario": 47
     },
     {
       "id": "3525045000654478126",
@@ -3653,7 +4863,12 @@
       "valor": 400,
       "owner": "KAM México",
       "creado": "2026-08-19T16:12:32-06:00",
-      "modificado": "2026-09-18T06:00:42-06:00"
+      "modificado": "2026-09-18T06:00:42-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5,
+      "precio_usuario": null
     },
     {
       "id": "3525045000519950403",
@@ -3668,7 +4883,12 @@
       "valor": 350,
       "owner": "KAM México",
       "creado": "2025-10-13T17:18:26-06:00",
-      "modificado": "2026-09-22T19:25:12-06:00"
+      "modificado": "2026-09-22T19:25:12-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 57,
+      "precio_usuario": null
     },
     {
       "id": "3525045000654478090",
@@ -3683,7 +4903,12 @@
       "valor": 350,
       "owner": "KAM México",
       "creado": "2026-08-19T15:09:09-06:00",
-      "modificado": "2026-09-18T06:00:43-06:00"
+      "modificado": "2026-09-18T06:00:43-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 46,
+      "precio_usuario": null
     },
     {
       "id": "3525045000522015428",
@@ -3698,7 +4923,12 @@
       "valor": 350,
       "owner": "KAM México",
       "creado": "2025-10-17T15:45:11-06:00",
-      "modificado": "2026-03-23T13:25:41-06:00"
+      "modificado": "2026-03-23T13:25:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 35,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000572000407",
@@ -3713,7 +4943,12 @@
       "valor": 350,
       "owner": "KAM México",
       "creado": "2026-01-22T13:12:51-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 70,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000628571143",
@@ -3728,7 +4963,12 @@
       "valor": 210,
       "owner": "KAM México",
       "creado": "2026-05-21T15:36:04-06:00",
-      "modificado": "2026-06-20T07:01:56-06:00"
+      "modificado": "2026-06-20T07:01:56-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 21,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656803207",
@@ -3743,7 +4983,12 @@
       "valor": 200,
       "owner": "KAM México",
       "creado": "2026-08-28T12:55:45-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 25,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000490627839",
@@ -3758,7 +5003,12 @@
       "valor": 200,
       "owner": "KAM México",
       "creado": "2025-07-23T12:50:12-06:00",
-      "modificado": "2026-03-23T13:18:49-06:00"
+      "modificado": "2026-03-23T13:18:49-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 15,
+      "precio_usuario": null
     },
     {
       "id": "3525045000491267028",
@@ -3773,7 +5023,12 @@
       "valor": 160,
       "owner": "KAM México",
       "creado": "2025-07-23T17:45:43-06:00",
-      "modificado": "2026-03-23T13:20:45-06:00"
+      "modificado": "2026-03-23T13:20:45-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 10,
+      "precio_usuario": 16
     },
     {
       "id": "3525045000559247053",
@@ -3788,7 +5043,12 @@
       "valor": 110,
       "owner": "KAM México",
       "creado": "2025-12-23T11:22:55-06:00",
-      "modificado": "2026-09-22T19:25:12-06:00"
+      "modificado": "2026-09-22T19:25:12-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 11,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000625113080",
@@ -3803,7 +5063,12 @@
       "valor": 100,
       "owner": "KAM México",
       "creado": "2026-05-06T16:23:11-06:00",
-      "modificado": "2026-06-05T07:03:14-06:00"
+      "modificado": "2026-06-05T07:03:14-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 10,
+      "precio_usuario": null
     },
     {
       "id": "3525045000648952322",
@@ -3818,7 +5083,12 @@
       "valor": 93,
       "owner": "KAM México",
       "creado": "2026-08-03T17:29:36-06:00",
-      "modificado": "2026-09-22T19:28:28-06:00"
+      "modificado": "2026-09-22T19:28:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 155,
+      "precio_usuario": 0.6
     },
     {
       "id": "3525045000559247028",
@@ -3833,7 +5103,12 @@
       "valor": 50,
       "owner": "KAM México",
       "creado": "2025-12-23T11:19:09-06:00",
-      "modificado": "2026-03-23T12:28:29-06:00"
+      "modificado": "2026-03-23T12:28:29-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000515727207",
@@ -3848,7 +5123,12 @@
       "valor": 48,
       "owner": "KAM México",
       "creado": "2025-10-01T12:10:57-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 160,
+      "precio_usuario": 0.3
     },
     {
       "id": "3525045000515727233",
@@ -3863,7 +5143,12 @@
       "valor": 40,
       "owner": "KAM México",
       "creado": "2025-10-01T12:21:46-06:00",
-      "modificado": "2026-09-22T19:25:12-06:00"
+      "modificado": "2026-09-22T19:25:12-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 100,
+      "precio_usuario": 0.4
     },
     {
       "id": "3525045000519950357",
@@ -3878,7 +5163,12 @@
       "valor": 40,
       "owner": "KAM México",
       "creado": "2025-10-13T16:16:43-06:00",
-      "modificado": "2026-03-25T13:33:01-06:00"
+      "modificado": "2026-03-25T13:33:01-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 100,
+      "precio_usuario": 0.4
     },
     {
       "id": "3525045000515727360",
@@ -3893,7 +5183,12 @@
       "valor": 32,
       "owner": "KAM México",
       "creado": "2025-10-02T13:00:14-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 80,
+      "precio_usuario": 0.4
     },
     {
       "id": "3525045000515433143",
@@ -3908,7 +5203,12 @@
       "valor": 5.5,
       "owner": "KAM México",
       "creado": "2025-09-29T16:48:38-06:00",
-      "modificado": "2026-09-22T19:28:28-06:00"
+      "modificado": "2026-09-22T19:28:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 142,
+      "precio_usuario": null
     },
     {
       "id": "3525045000648952329",
@@ -3923,7 +5223,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-08-03T17:36:42-06:00",
-      "modificado": "2026-09-02T07:03:19-06:00"
+      "modificado": "2026-09-02T07:03:19-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": null
     },
     {
       "id": "3525045000630207042",
@@ -3938,7 +5243,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-05-27T11:19:38-06:00",
-      "modificado": "2026-08-25T07:03:53-06:00"
+      "modificado": "2026-08-25T07:03:53-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": null
     },
     {
       "id": "3525045000669696050",
@@ -3953,7 +5263,12 @@
       "valor": 16000,
       "owner": "KAM México",
       "creado": "2026-10-08T11:11:32-06:00",
-      "modificado": "2026-10-28T10:12:26-06:00"
+      "modificado": "2026-10-28T10:12:26-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2000,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000668027226",
@@ -3968,7 +5283,12 @@
       "valor": 74800,
       "owner": "KAM México",
       "creado": "2026-10-05T12:51:41-06:00",
-      "modificado": "2026-10-05T12:53:11-06:00"
+      "modificado": "2026-10-05T12:53:11-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2200,
+      "precio_usuario": 34
     },
     {
       "id": "3525045000649952832",
@@ -3983,7 +5303,12 @@
       "valor": 10300,
       "owner": "KAM México",
       "creado": "2026-08-05T16:44:40-06:00",
-      "modificado": "2026-08-05T16:46:21-06:00"
+      "modificado": "2026-08-05T16:46:21-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1030,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000627572001",
@@ -3998,7 +5323,12 @@
       "valor": 6000,
       "owner": "KAM México",
       "creado": "2026-05-15T09:19:20-06:00",
-      "modificado": "2026-10-22T16:22:34-06:00"
+      "modificado": "2026-10-22T16:22:34-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3000,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000503968044",
@@ -4013,7 +5343,12 @@
       "valor": 4000,
       "owner": "KAM México",
       "creado": "2025-08-26T12:00:38-06:00",
-      "modificado": "2026-09-25T14:05:28-06:00"
+      "modificado": "2026-09-25T14:05:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000675479140",
@@ -4028,7 +5363,12 @@
       "valor": 17668,
       "owner": "KAM México",
       "creado": "2026-10-23T14:55:32-06:00",
-      "modificado": "2026-10-23T14:57:19-06:00"
+      "modificado": "2026-10-23T14:57:19-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 631,
+      "precio_usuario": 28
     },
     {
       "id": "3525045000644512040",
@@ -4043,7 +5383,12 @@
       "valor": 11360,
       "owner": "KAM México",
       "creado": "2026-07-17T15:43:05-06:00",
-      "modificado": "2026-09-22T18:41:51-06:00"
+      "modificado": "2026-09-22T18:41:51-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1420,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000630888026",
@@ -4058,7 +5403,12 @@
       "valor": 10000,
       "owner": "KAM México",
       "creado": "2026-05-29T11:19:02-06:00",
-      "modificado": "2026-09-11T12:08:04-06:00"
+      "modificado": "2026-09-11T12:08:04-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5000,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000654308099",
@@ -4073,7 +5423,12 @@
       "valor": 9528,
       "owner": "KAM México",
       "creado": "2026-08-19T11:09:28-06:00",
-      "modificado": "2026-08-19T11:11:52-06:00"
+      "modificado": "2026-08-19T11:11:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1191,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000654308113",
@@ -4088,7 +5443,12 @@
       "valor": 9120,
       "owner": "KAM México",
       "creado": "2026-08-19T11:14:18-06:00",
-      "modificado": "2026-10-23T16:02:42-06:00"
+      "modificado": "2026-10-23T16:02:42-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 912,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000627572048",
@@ -4103,7 +5463,12 @@
       "valor": 9120,
       "owner": "KAM México",
       "creado": "2026-05-15T16:39:16-06:00",
-      "modificado": "2026-09-11T12:08:04-06:00"
+      "modificado": "2026-09-11T12:08:04-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 912,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000650412062",
@@ -4118,7 +5483,12 @@
       "valor": 6321,
       "owner": "KAM México",
       "creado": "2026-08-06T10:59:49-06:00",
-      "modificado": "2026-10-26T13:43:02-06:00"
+      "modificado": "2026-10-26T13:43:02-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 150,
+      "precio_usuario": 42.14
     },
     {
       "id": "3525045000627572053",
@@ -4133,7 +5503,12 @@
       "valor": 5472,
       "owner": "KAM México",
       "creado": "2026-05-15T16:44:39-06:00",
-      "modificado": "2026-09-11T12:08:04-06:00"
+      "modificado": "2026-09-11T12:08:04-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 912,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000623197167",
@@ -4148,7 +5523,12 @@
       "valor": 5150,
       "owner": "KAM México",
       "creado": "2026-04-28T16:02:57-06:00",
-      "modificado": "2026-09-11T12:08:04-06:00"
+      "modificado": "2026-09-11T12:08:04-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1030,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000676385166",
@@ -4163,7 +5543,12 @@
       "valor": 2250,
       "owner": "KAM México",
       "creado": "2026-10-26T14:07:12-06:00",
-      "modificado": "2026-10-26T14:09:58-06:00"
+      "modificado": "2026-10-26T14:09:58-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 150,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000653616122",
@@ -4178,7 +5563,12 @@
       "valor": 1042,
       "owner": "KAM México",
       "creado": "2026-08-17T11:43:32-06:00",
-      "modificado": "2026-08-17T11:45:09-06:00"
+      "modificado": "2026-08-17T11:45:09-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 20.84
     },
     {
       "id": "3525045000659235035",
@@ -4193,7 +5583,12 @@
       "valor": 18000,
       "owner": "KAM México",
       "creado": "2026-09-07T09:32:41-06:00",
-      "modificado": "2026-10-22T16:23:53-06:00"
+      "modificado": "2026-10-22T16:23:53-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3000,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000648042053",
@@ -4208,7 +5603,12 @@
       "valor": 7240,
       "owner": "KAM México",
       "creado": "2026-07-30T12:41:51-06:00",
-      "modificado": "2026-10-28T12:02:16-06:00"
+      "modificado": "2026-10-28T12:02:16-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 724,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656705953",
@@ -4223,7 +5623,12 @@
       "valor": 7000,
       "owner": "KAM México",
       "creado": "2026-08-28T16:23:05-06:00",
-      "modificado": "2026-10-22T16:25:27-06:00"
+      "modificado": "2026-10-22T16:25:27-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 700,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656705963",
@@ -4238,7 +5643,12 @@
       "valor": 7000,
       "owner": "KAM México",
       "creado": "2026-08-28T16:23:42-06:00",
-      "modificado": "2026-10-22T16:25:04-06:00"
+      "modificado": "2026-10-22T16:25:04-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 700,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000675070154",
@@ -4253,7 +5663,12 @@
       "valor": 5600,
       "owner": "KAM México",
       "creado": "2026-10-22T16:47:55-06:00",
-      "modificado": "2026-10-22T16:49:36-06:00"
+      "modificado": "2026-10-22T16:49:36-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 700,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000490984216",
@@ -4268,7 +5683,12 @@
       "valor": 10800,
       "owner": "KAM México",
       "creado": "2025-07-23T10:19:22-06:00",
-      "modificado": "2026-03-23T12:32:14-06:00"
+      "modificado": "2026-03-23T12:32:14-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000666594310",
@@ -4283,7 +5703,12 @@
       "valor": 57437,
       "owner": "KAM México",
       "creado": "2026-09-28T16:50:46-06:00",
-      "modificado": "2026-10-05T10:40:57-06:00"
+      "modificado": "2026-10-05T10:40:57-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3023,
+      "precio_usuario": 19
     },
     {
       "id": "3525045000573675667",
@@ -4298,7 +5723,12 @@
       "valor": 2410,
       "owner": "KAM México",
       "creado": "2026-01-26T15:20:43-06:00",
-      "modificado": "2026-09-11T12:07:03-06:00"
+      "modificado": "2026-09-11T12:07:03-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 241,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000573675642",
@@ -4313,7 +5743,12 @@
       "valor": 1800,
       "owner": "KAM México",
       "creado": "2026-01-26T15:18:45-06:00",
-      "modificado": "2026-09-11T12:07:03-06:00"
+      "modificado": "2026-09-11T12:07:03-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 150,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000654308106",
@@ -4328,7 +5763,12 @@
       "valor": 512,
       "owner": "KAM México",
       "creado": "2026-08-19T11:12:19-06:00",
-      "modificado": "2026-10-27T10:32:08-06:00"
+      "modificado": "2026-10-27T10:32:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 800,
+      "precio_usuario": 0.64
     },
     {
       "id": "3525045000639910076",
@@ -4343,7 +5783,12 @@
       "valor": 419.43,
       "owner": "KAM México",
       "creado": "2026-07-02T11:25:43-06:00",
-      "modificado": "2026-10-07T13:44:41-06:00"
+      "modificado": "2026-10-07T13:44:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1271,
+      "precio_usuario": 0.33
     },
     {
       "id": "3525045000399258001",
@@ -4358,7 +5803,12 @@
       "valor": 30816,
       "owner": "KAM México",
       "creado": "2024-11-15T14:16:41-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 450,
+      "precio_usuario": 68.48
     },
     {
       "id": "3525045000474380119",
@@ -4373,7 +5823,12 @@
       "valor": 18712.55,
       "owner": "KAM México",
       "creado": "2025-06-06T10:53:44-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-03-23T12:36:19-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1381,
+      "precio_usuario": 13.55
     },
     {
       "id": "3525045000470722424",
@@ -4388,7 +5843,12 @@
       "valor": 11382,
       "owner": "KAM México",
       "creado": "2025-05-28T16:40:11-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-03-23T12:36:19-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 840,
+      "precio_usuario": 13.55
     },
     {
       "id": "3525045000640263241",
@@ -4403,7 +5863,12 @@
       "valor": 11360,
       "owner": "KAM México",
       "creado": "2026-07-03T14:57:07-06:00",
-      "modificado": "2026-10-23T12:43:21-06:00"
+      "modificado": "2026-10-23T12:43:21-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1420,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000512915113",
@@ -4418,7 +5883,12 @@
       "valor": 11040.73,
       "owner": "KAM México",
       "creado": "2025-09-23T18:57:17-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 4951,
+      "precio_usuario": 2.23
     },
     {
       "id": "3525045000512915134",
@@ -4433,7 +5903,12 @@
       "valor": 10991.22,
       "owner": "KAM México",
       "creado": "2025-09-23T18:58:32-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 4951,
+      "precio_usuario": 2.22
     },
     {
       "id": "3525045000463833946",
@@ -4448,7 +5923,12 @@
       "valor": 10799.35,
       "owner": "KAM México",
       "creado": "2025-05-12T09:26:11-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 797,
+      "precio_usuario": 13.55
     },
     {
       "id": "3525045000406853184",
@@ -4463,7 +5943,12 @@
       "valor": 10400,
       "owner": "KAM México",
       "creado": "2024-12-05T13:57:36-06:00",
-      "modificado": "2026-03-23T13:00:02-06:00"
+      "modificado": "2026-03-23T13:00:02-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 800,
+      "precio_usuario": 13
     },
     {
       "id": "3525045000550655091",
@@ -4478,7 +5963,12 @@
       "valor": 10142,
       "owner": "KAM México",
       "creado": "2025-12-08T15:09:32-06:00",
-      "modificado": "2026-05-06T14:06:20-06:00"
+      "modificado": "2026-05-06T14:06:20-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5071,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000398341647",
@@ -4493,7 +5983,12 @@
       "valor": 8500,
       "owner": "KAM México",
       "creado": "2024-11-13T13:07:35-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 17
     },
     {
       "id": "3525045000424672167",
@@ -4508,7 +6003,12 @@
       "valor": 7332,
       "owner": "KAM México",
       "creado": "2025-01-29T11:16:46-06:00",
-      "modificado": "2026-03-23T12:57:02-06:00"
+      "modificado": "2026-03-23T12:57:02-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 611,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000626786017",
@@ -4523,7 +6023,12 @@
       "valor": 6954,
       "owner": "KAM México",
       "creado": "2026-05-13T10:11:15-06:00",
-      "modificado": "2026-09-14T10:38:08-06:00"
+      "modificado": "2026-09-14T10:38:08-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 366,
+      "precio_usuario": 19
     },
     {
       "id": "3525045000397822128",
@@ -4538,7 +6043,12 @@
       "valor": 6820,
       "owner": "KAM México",
       "creado": "2024-11-12T15:09:28-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 220,
+      "precio_usuario": 31
     },
     {
       "id": "3525045000397345003",
@@ -4553,7 +6063,12 @@
       "valor": 6405,
       "owner": "KAM México",
       "creado": "2024-11-11T12:41:50-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 427,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000600118001",
@@ -4568,7 +6083,12 @@
       "valor": 5795.5,
       "owner": "KAM México",
       "creado": "2026-03-17T11:50:01-06:00",
-      "modificado": "2026-09-14T10:05:09-06:00"
+      "modificado": "2026-09-14T10:05:09-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 173,
+      "precio_usuario": 33.5
     },
     {
       "id": "3525045000439394246",
@@ -4583,7 +6103,12 @@
       "valor": 5758.75,
       "owner": "KAM México",
       "creado": "2025-03-07T13:02:38-06:00",
-      "modificado": "2026-03-23T13:01:53-06:00"
+      "modificado": "2026-03-23T13:01:53-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 425,
+      "precio_usuario": 13.55
     },
     {
       "id": "3525045000493691236",
@@ -4598,7 +6123,12 @@
       "valor": 5527.04,
       "owner": "KAM México",
       "creado": "2025-07-30T12:50:02-06:00",
-      "modificado": "2026-03-23T12:35:46-06:00"
+      "modificado": "2026-03-23T12:35:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 136,
+      "precio_usuario": 40.64
     },
     {
       "id": "3525045000457891165",
@@ -4613,7 +6143,12 @@
       "valor": 5370.75,
       "owner": "KAM México",
       "creado": "2025-04-24T10:12:26-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 155,
+      "precio_usuario": 34.65
     },
     {
       "id": "3525045000515598148",
@@ -4628,7 +6163,12 @@
       "valor": 4864.45,
       "owner": "KAM México",
       "creado": "2025-10-01T10:13:56-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 359,
+      "precio_usuario": 13.55
     },
     {
       "id": "3525045000658487842",
@@ -4643,7 +6183,12 @@
       "valor": 4260,
       "owner": "KAM México",
       "creado": "2026-09-04T15:02:53-06:00",
-      "modificado": "2026-10-23T12:44:20-06:00"
+      "modificado": "2026-10-23T12:44:20-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1420,
+      "precio_usuario": 3
     },
     {
       "id": "3525045000640263246",
@@ -4658,7 +6203,12 @@
       "valor": 4260,
       "owner": "KAM México",
       "creado": "2026-07-03T15:04:05-06:00",
-      "modificado": "2026-10-23T12:43:51-06:00"
+      "modificado": "2026-10-23T12:43:51-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1420,
+      "precio_usuario": 3
     },
     {
       "id": "3525045000396434020",
@@ -4673,7 +6223,12 @@
       "valor": 4020,
       "owner": "KAM México",
       "creado": "2024-11-08T09:38:53-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 402,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000399891468",
@@ -4688,7 +6243,12 @@
       "valor": 3920,
       "owner": "KAM México",
       "creado": "2024-11-19T16:40:27-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 112,
+      "precio_usuario": 35
     },
     {
       "id": "3525045000505089047",
@@ -4703,7 +6263,12 @@
       "valor": 3861.75,
       "owner": "KAM México",
       "creado": "2025-09-01T14:00:56-06:00",
-      "modificado": "2026-03-23T12:54:33-06:00"
+      "modificado": "2026-03-23T12:54:33-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 285,
+      "precio_usuario": 13.55
     },
     {
       "id": "3525045000592931637",
@@ -4718,7 +6283,12 @@
       "valor": 3552,
       "owner": "KAM México",
       "creado": "2026-03-04T16:21:00-06:00",
-      "modificado": "2026-04-28T16:01:18-06:00"
+      "modificado": "2026-04-28T16:01:18-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 444,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000397345045",
@@ -4733,7 +6303,12 @@
       "valor": 3450,
       "owner": "KAM México",
       "creado": "2024-11-11T19:33:36-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 150,
+      "precio_usuario": 23
     },
     {
       "id": "3525045000519607110",
@@ -4748,7 +6323,12 @@
       "valor": 3430,
       "owner": "KAM México",
       "creado": "2025-10-10T12:52:43-06:00",
-      "modificado": "2026-03-23T12:55:08-06:00"
+      "modificado": "2026-03-23T12:55:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 343,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000497825397",
@@ -4763,7 +6343,12 @@
       "valor": 3400,
       "owner": "KAM México",
       "creado": "2025-08-08T16:26:36-06:00",
-      "modificado": "2026-03-23T12:35:46-06:00"
+      "modificado": "2026-03-23T12:35:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 17
     },
     {
       "id": "3525045000550655116",
@@ -4778,7 +6363,12 @@
       "valor": 3384,
       "owner": "KAM México",
       "creado": "2025-12-08T15:10:56-06:00",
-      "modificado": "2026-05-06T14:08:53-06:00"
+      "modificado": "2026-05-06T14:08:53-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 72,
+      "precio_usuario": 47
     },
     {
       "id": "3525045000572032178",
@@ -4793,7 +6383,12 @@
       "valor": 3213,
       "owner": "KAM México",
       "creado": "2026-01-22T12:01:32-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 714,
+      "precio_usuario": 4.5
     },
     {
       "id": "3525045000396434003",
@@ -4808,7 +6403,12 @@
       "valor": 3145.8,
       "owner": "KAM México",
       "creado": "2024-11-08T09:28:14-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 49,
+      "precio_usuario": 64.2
     },
     {
       "id": "3525045000456191206",
@@ -4823,7 +6423,12 @@
       "valor": 2850,
       "owner": "KAM México",
       "creado": "2025-04-21T09:47:36-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 285,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000629837148",
@@ -4838,7 +6443,12 @@
       "valor": 2510,
       "owner": "KAM México",
       "creado": "2026-05-26T16:48:14-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1255,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000630888005",
@@ -4853,7 +6463,12 @@
       "valor": 2510,
       "owner": "KAM México",
       "creado": "2026-05-29T10:03:49-06:00",
-      "modificado": "2026-07-06T09:20:39-06:00"
+      "modificado": "2026-07-06T09:20:39-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1255,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000397822160",
@@ -4868,7 +6483,12 @@
       "valor": 2200,
       "owner": "KAM México",
       "creado": "2024-11-12T15:12:10-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 220,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000483515479",
@@ -4883,7 +6503,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2025-07-02T13:12:32-06:00",
-      "modificado": "2026-03-23T12:35:46-06:00"
+      "modificado": "2026-03-23T12:35:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 20
     },
     {
       "id": "3525045000632446183",
@@ -4898,7 +6523,12 @@
       "valor": 1888,
       "owner": "KAM México",
       "creado": "2026-06-04T16:13:17-06:00",
-      "modificado": "2026-09-25T10:51:52-06:00"
+      "modificado": "2026-09-25T10:51:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 236,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000443169843",
@@ -4913,7 +6543,12 @@
       "valor": 1643.38,
       "owner": "KAM México",
       "creado": "2025-03-19T13:16:36-06:00",
-      "modificado": "2026-03-23T13:01:53-06:00"
+      "modificado": "2026-03-23T13:01:53-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1407,
+      "precio_usuario": 1.168
     },
     {
       "id": "3525045000424333405",
@@ -4928,7 +6563,12 @@
       "valor": 1470,
       "owner": "KAM México",
       "creado": "2025-01-29T11:06:58-06:00",
-      "modificado": "2026-03-23T12:57:02-06:00"
+      "modificado": "2026-03-23T12:57:02-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 147,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000600118201",
@@ -4943,7 +6583,12 @@
       "valor": 1452,
       "owner": "KAM México",
       "creado": "2026-03-17T11:56:50-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 363,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000457891181",
@@ -4958,7 +6603,12 @@
       "valor": 1382.16,
       "owner": "KAM México",
       "creado": "2025-04-24T10:13:43-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 78,
+      "precio_usuario": 17.72
     },
     {
       "id": "3525045000443105023",
@@ -4973,7 +6623,12 @@
       "valor": 1328,
       "owner": "KAM México",
       "creado": "2025-03-19T10:29:31-06:00",
-      "modificado": "2026-03-23T13:01:53-06:00"
+      "modificado": "2026-03-23T13:01:53-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 332,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000397822144",
@@ -4988,7 +6643,12 @@
       "valor": 1320,
       "owner": "KAM México",
       "creado": "2024-11-12T15:11:04-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 220,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000471958295",
@@ -5003,7 +6663,12 @@
       "valor": 1008,
       "owner": "KAM México",
       "creado": "2025-06-02T12:55:55-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-03-23T12:36:19-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1200,
+      "precio_usuario": 0.84
     },
     {
       "id": "3525045000398362369",
@@ -5018,7 +6683,12 @@
       "valor": 900,
       "owner": "KAM México",
       "creado": "2024-11-13T16:42:41-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000451447209",
@@ -5033,7 +6703,12 @@
       "valor": 703.5,
       "owner": "KAM México",
       "creado": "2025-04-08T17:26:36-06:00",
-      "modificado": "2026-03-23T12:55:42-06:00"
+      "modificado": "2026-03-23T12:55:42-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1407,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000600118157",
@@ -5048,7 +6723,12 @@
       "valor": 644.82,
       "owner": "KAM México",
       "creado": "2026-03-17T11:54:54-06:00",
-      "modificado": "2026-06-30T18:57:20-06:00"
+      "modificado": "2026-06-30T18:57:20-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1954,
+      "precio_usuario": 0.33
     },
     {
       "id": "3525045000398362730",
@@ -5063,7 +6743,12 @@
       "valor": 500,
       "owner": "KAM México",
       "creado": "2024-11-14T09:56:56-06:00",
-      "modificado": "2026-03-23T12:57:40-06:00"
+      "modificado": "2026-03-23T12:57:40-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000649952823",
@@ -5078,7 +6763,12 @@
       "valor": 472,
       "owner": "KAM México",
       "creado": "2026-08-05T16:37:26-06:00",
-      "modificado": "2026-09-25T10:51:27-06:00"
+      "modificado": "2026-09-25T10:51:27-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 236,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000565252283",
@@ -5093,7 +6783,12 @@
       "valor": 225,
       "owner": "KAM México",
       "creado": "2026-01-09T11:36:45-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 900,
+      "precio_usuario": 0.25
     },
     {
       "id": "3525045000626305452",
@@ -5108,7 +6803,12 @@
       "valor": 200,
       "owner": "KAM México",
       "creado": "2026-05-12T16:05:29-06:00",
-      "modificado": "2026-07-02T11:20:58-06:00"
+      "modificado": "2026-07-02T11:20:58-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 700,
+      "precio_usuario": null
     },
     {
       "id": "3525045000471958330",
@@ -5123,7 +6823,12 @@
       "valor": 50,
       "owner": "KAM México",
       "creado": "2025-06-02T13:39:50-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-03-23T12:36:19-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 50,
+      "precio_usuario": 1
     },
     {
       "id": "3525045000593453013",
@@ -5138,7 +6843,12 @@
       "valor": 30,
       "owner": "KAM México",
       "creado": "2026-03-05T14:49:34-06:00",
-      "modificado": "2026-05-06T14:07:34-06:00"
+      "modificado": "2026-05-06T14:07:34-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 300,
+      "precio_usuario": null
     },
     {
       "id": "3525045000620695800",
@@ -5153,7 +6863,12 @@
       "valor": 190000,
       "owner": "KAM México",
       "creado": "2026-04-22T11:22:13-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 10000,
+      "precio_usuario": 19
     },
     {
       "id": "3525045000630888016",
@@ -5168,7 +6883,12 @@
       "valor": 135000,
       "owner": "KAM México",
       "creado": "2026-05-29T10:24:26-06:00",
-      "modificado": "2026-08-27T07:02:53-06:00"
+      "modificado": "2026-08-27T07:02:53-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5000,
+      "precio_usuario": 27
     },
     {
       "id": "3525045000427344158",
@@ -5183,7 +6903,12 @@
       "valor": 102400,
       "owner": "KAM México",
       "creado": "2025-02-04T12:54:40-06:00",
-      "modificado": "2026-03-23T13:32:25-06:00"
+      "modificado": "2026-03-23T13:32:25-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3200,
+      "precio_usuario": 32
     },
     {
       "id": "3525045000630888010",
@@ -5198,7 +6923,12 @@
       "valor": 70000,
       "owner": "KAM México",
       "creado": "2026-05-29T10:11:03-06:00",
-      "modificado": "2026-08-27T07:02:50-06:00"
+      "modificado": "2026-08-27T07:02:50-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5000,
+      "precio_usuario": 14
     },
     {
       "id": "3525045000630888058",
@@ -5213,7 +6943,12 @@
       "valor": 57000,
       "owner": "KAM México",
       "creado": "2026-05-29T11:47:50-06:00",
-      "modificado": "2026-10-02T19:36:06-06:00"
+      "modificado": "2026-10-02T19:36:06-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3000,
+      "precio_usuario": 19
     },
     {
       "id": "3525045000483515500",
@@ -5228,7 +6963,12 @@
       "valor": 50025,
       "owner": "KAM México",
       "creado": "2025-07-02T13:14:46-06:00",
-      "modificado": "2026-03-23T13:19:21-06:00"
+      "modificado": "2026-03-23T13:19:21-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1500,
+      "precio_usuario": 33.35
     },
     {
       "id": "3525045000630888036",
@@ -5243,7 +6983,12 @@
       "valor": 47500,
       "owner": "KAM México",
       "creado": "2026-05-29T11:42:26-06:00",
-      "modificado": "2026-08-27T07:02:50-06:00"
+      "modificado": "2026-08-27T07:02:50-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2500,
+      "precio_usuario": 19
     },
     {
       "id": "3525045000630888031",
@@ -5258,7 +7003,12 @@
       "valor": 47500,
       "owner": "KAM México",
       "creado": "2026-05-29T11:41:12-06:00",
-      "modificado": "2026-08-27T07:02:50-06:00"
+      "modificado": "2026-08-27T07:02:50-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2500,
+      "precio_usuario": 19
     },
     {
       "id": "3525045000515598102",
@@ -5273,7 +7023,12 @@
       "valor": 42000,
       "owner": "KAM México",
       "creado": "2025-09-30T11:36:48-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1200,
+      "precio_usuario": 35
     },
     {
       "id": "3525045000477143182",
@@ -5288,7 +7043,12 @@
       "valor": 36000,
       "owner": "KAM México",
       "creado": "2025-06-17T09:57:16-06:00",
-      "modificado": "2026-03-23T13:20:00-06:00"
+      "modificado": "2026-03-23T13:20:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3600,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000479456622",
@@ -5303,7 +7063,12 @@
       "valor": 35150,
       "owner": "KAM México",
       "creado": "2025-06-23T14:47:54-06:00",
-      "modificado": "2026-03-23T13:19:21-06:00"
+      "modificado": "2026-03-23T13:19:21-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 950,
+      "precio_usuario": 37
     },
     {
       "id": "3525045000586308120",
@@ -5318,7 +7083,12 @@
       "valor": 31000,
       "owner": "KAM México",
       "creado": "2026-02-23T10:49:14-06:00",
-      "modificado": "2026-07-27T07:00:27-06:00"
+      "modificado": "2026-07-27T07:00:27-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3100,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000572032141",
@@ -5333,7 +7103,12 @@
       "valor": 20800,
       "owner": "KAM México",
       "creado": "2026-01-22T11:57:53-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2080,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656215036",
@@ -5348,7 +7123,12 @@
       "valor": 20000,
       "owner": "KAM México",
       "creado": "2026-08-26T16:35:41-06:00",
-      "modificado": "2026-09-25T06:02:21-06:00"
+      "modificado": "2026-09-25T06:02:21-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5000,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000659812026",
@@ -5363,7 +7143,12 @@
       "valor": 19200,
       "owner": "KAM México",
       "creado": "2026-09-08T10:06:08-06:00",
-      "modificado": "2026-10-08T06:02:03-06:00"
+      "modificado": "2026-10-08T06:02:03-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1600,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000600118133",
@@ -5378,7 +7163,12 @@
       "valor": 18600,
       "owner": "KAM México",
       "creado": "2026-03-17T11:52:16-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3100,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000502319065",
@@ -5393,7 +7183,12 @@
       "valor": 18000,
       "owner": "KAM México",
       "creado": "2025-08-21T10:33:59-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1200,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000486607054",
@@ -5408,7 +7203,12 @@
       "valor": 16800,
       "owner": "KAM México",
       "creado": "2025-07-10T10:36:17-06:00",
-      "modificado": "2026-09-22T19:27:29-06:00"
+      "modificado": "2026-09-22T19:27:29-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1400,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000559507101",
@@ -5423,7 +7223,12 @@
       "valor": 15000,
       "owner": "KAM México",
       "creado": "2025-12-23T14:18:27-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3000,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000396926078",
@@ -5438,7 +7243,12 @@
       "valor": 12255,
       "owner": "KAM México",
       "creado": "2024-11-11T10:11:58-06:00",
-      "modificado": "2026-03-23T13:40:46-06:00"
+      "modificado": "2026-03-23T13:40:46-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 817,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000481184022",
@@ -5453,7 +7263,12 @@
       "valor": 12240,
       "owner": "KAM México",
       "creado": "2025-06-26T14:58:51-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1224,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000439394230",
@@ -5468,7 +7283,12 @@
       "valor": 12000,
       "owner": "KAM México",
       "creado": "2025-03-07T12:59:35-06:00",
-      "modificado": "2026-03-23T13:43:29-06:00"
+      "modificado": "2026-03-23T13:43:29-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1500,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000659812019",
@@ -5483,7 +7303,12 @@
       "valor": 11200,
       "owner": "KAM México",
       "creado": "2026-09-08T10:03:49-06:00",
-      "modificado": "2026-10-08T06:02:02-06:00"
+      "modificado": "2026-10-08T06:02:02-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1600,
+      "precio_usuario": 7
     },
     {
       "id": "3525045000419259092",
@@ -5498,7 +7323,12 @@
       "valor": 10800,
       "owner": "KAM México",
       "creado": "2025-01-16T13:31:53-06:00",
-      "modificado": "2026-03-23T13:42:08-06:00"
+      "modificado": "2026-03-23T13:42:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000656215026",
@@ -5513,7 +7343,12 @@
       "valor": 10000,
       "owner": "KAM México",
       "creado": "2026-08-26T16:33:32-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5000,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000630888021",
@@ -5528,7 +7363,12 @@
       "valor": 10000,
       "owner": "KAM México",
       "creado": "2026-05-29T11:15:50-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5000,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000623197367",
@@ -5543,7 +7383,12 @@
       "valor": 10000,
       "owner": "KAM México",
       "creado": "2026-04-28T16:25:32-06:00",
-      "modificado": "2026-08-24T09:23:43-06:00"
+      "modificado": "2026-08-24T09:23:43-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1600,
+      "precio_usuario": null
     },
     {
       "id": "3525045000493691323",
@@ -5558,7 +7403,12 @@
       "valor": 9630,
       "owner": "KAM México",
       "creado": "2025-07-31T09:49:16-06:00",
-      "modificado": "2026-03-23T13:21:28-06:00"
+      "modificado": "2026-03-23T13:21:28-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 48.15
     },
     {
       "id": "3525045000659235049",
@@ -5573,7 +7423,12 @@
       "valor": 9480,
       "owner": "KAM México",
       "creado": "2026-09-07T09:42:50-06:00",
-      "modificado": "2026-10-07T06:00:28-06:00"
+      "modificado": "2026-10-07T06:00:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1580,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000481184001",
@@ -5588,7 +7443,12 @@
       "valor": 9000,
       "owner": "KAM México",
       "creado": "2025-06-26T14:55:21-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000515598197",
@@ -5603,7 +7463,12 @@
       "valor": 9000,
       "owner": "KAM México",
       "creado": "2025-10-01T10:18:29-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 18
     },
     {
       "id": "3525045000659235042",
@@ -5618,7 +7483,12 @@
       "valor": 8860,
       "owner": "KAM México",
       "creado": "2026-09-07T09:37:10-06:00",
-      "modificado": "2026-10-07T06:00:27-06:00"
+      "modificado": "2026-10-07T06:00:27-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1772,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000397345019",
@@ -5633,7 +7503,12 @@
       "valor": 8448.25,
       "owner": "KAM México",
       "creado": "2024-11-11T12:46:42-06:00",
-      "modificado": "2026-03-23T13:40:46-06:00"
+      "modificado": "2026-03-23T13:40:46-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 235,
+      "precio_usuario": 35.95
     },
     {
       "id": "3525045000659235021",
@@ -5648,7 +7523,12 @@
       "valor": 8400,
       "owner": "KAM México",
       "creado": "2026-09-07T09:28:54-06:00",
-      "modificado": "2026-10-07T06:00:12-06:00"
+      "modificado": "2026-10-07T06:00:12-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1400,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000617230553",
@@ -5663,7 +7543,12 @@
       "valor": 8000,
       "owner": "KAM México",
       "creado": "2026-04-14T09:38:18-06:00",
-      "modificado": "2026-07-13T07:02:17-06:00"
+      "modificado": "2026-07-13T07:02:17-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 800,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000630888068",
@@ -5678,7 +7563,12 @@
       "valor": 7712,
       "owner": "KAM México",
       "creado": "2026-05-29T12:10:03-06:00",
-      "modificado": "2026-08-27T07:02:52-06:00"
+      "modificado": "2026-08-27T07:02:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 8,
+      "precio_usuario": 964
     },
     {
       "id": "3525045000519232141",
@@ -5693,7 +7583,12 @@
       "valor": 7500,
       "owner": "KAM México",
       "creado": "2025-10-09T16:45:50-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000657353131",
@@ -5708,7 +7603,12 @@
       "valor": 7000,
       "owner": "KAM México",
       "creado": "2026-08-31T23:18:02-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 700,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000656705943",
@@ -5723,7 +7623,12 @@
       "valor": 7000,
       "owner": "KAM México",
       "creado": "2026-08-28T16:22:10-06:00",
-      "modificado": "2026-09-27T06:01:58-06:00"
+      "modificado": "2026-09-27T06:01:58-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 700,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000474973227",
@@ -5738,7 +7643,12 @@
       "valor": 7000,
       "owner": "KAM México",
       "creado": "2025-06-09T15:40:22-06:00",
-      "modificado": "2026-03-23T13:21:28-06:00"
+      "modificado": "2026-03-23T13:21:28-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 35
     },
     {
       "id": "3525045000519607367",
@@ -5753,7 +7663,12 @@
       "valor": 7000,
       "owner": "KAM México",
       "creado": "2025-10-10T17:51:12-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 700,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000519607346",
@@ -5768,7 +7683,12 @@
       "valor": 7000,
       "owner": "KAM México",
       "creado": "2025-10-10T17:50:07-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 700,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000640711143",
@@ -5783,7 +7703,12 @@
       "valor": 6984,
       "owner": "KAM México",
       "creado": "2026-07-06T11:38:05-06:00",
-      "modificado": "2026-10-04T06:00:52-06:00"
+      "modificado": "2026-10-04T06:00:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1164,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000419259108",
@@ -5798,7 +7723,12 @@
       "valor": 6800,
       "owner": "KAM México",
       "creado": "2025-01-16T14:05:57-06:00",
-      "modificado": "2026-03-23T13:42:08-06:00"
+      "modificado": "2026-03-23T13:42:08-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 400,
+      "precio_usuario": 17
     },
     {
       "id": "3525045000483515349",
@@ -5813,7 +7743,12 @@
       "valor": 6775,
       "owner": "KAM México",
       "creado": "2025-07-02T11:51:25-06:00",
-      "modificado": "2026-03-23T13:19:21-06:00"
+      "modificado": "2026-03-23T13:19:21-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 13.55
     },
     {
       "id": "3525045000490984301",
@@ -5828,7 +7763,12 @@
       "valor": 6600,
       "owner": "KAM México",
       "creado": "2025-07-23T15:36:07-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 22
     },
     {
       "id": "3525045000583773080",
@@ -5843,7 +7783,12 @@
       "valor": 6276,
       "owner": "KAM México",
       "creado": "2026-02-16T11:35:13-06:00",
-      "modificado": "2026-10-08T06:01:59-06:00"
+      "modificado": "2026-10-08T06:01:59-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1569,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000600073103",
@@ -5858,7 +7803,12 @@
       "valor": 6276,
       "owner": "KAM México",
       "creado": "2026-03-17T11:46:58-06:00",
-      "modificado": "2026-10-08T06:01:52-06:00"
+      "modificado": "2026-10-08T06:01:52-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1569,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000627572015",
@@ -5873,7 +7823,12 @@
       "valor": 6162,
       "owner": "KAM México",
       "creado": "2026-05-15T12:48:16-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1027,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000656705923",
@@ -5888,7 +7843,12 @@
       "valor": 6000,
       "owner": "KAM México",
       "creado": "2026-08-28T16:17:12-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3000,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000656705933",
@@ -5903,7 +7863,12 @@
       "valor": 6000,
       "owner": "KAM México",
       "creado": "2026-08-28T16:18:32-06:00",
-      "modificado": "2026-09-27T06:02:08-06:00"
+      "modificado": "2026-09-27T06:02:08-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3000,
+      "precio_usuario": 2
     },
     {
       "id": "3525045000595320112",
@@ -5918,7 +7883,12 @@
       "valor": 6000,
       "owner": "KAM México",
       "creado": "2026-03-10T13:00:36-06:00",
-      "modificado": "2026-04-13T21:20:25-06:00"
+      "modificado": "2026-04-13T21:20:25-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 20
     },
     {
       "id": "3525045000519607503",
@@ -5933,7 +7903,12 @@
       "valor": 6000,
       "owner": "KAM México",
       "creado": "2025-10-10T18:10:48-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000630888063",
@@ -5948,7 +7923,12 @@
       "valor": 5784,
       "owner": "KAM México",
       "creado": "2026-05-29T11:53:13-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 964,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000519607131",
@@ -5963,7 +7943,12 @@
       "valor": 5550,
       "owner": "KAM México",
       "creado": "2025-10-10T17:05:37-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3000,
+      "precio_usuario": 1.85
     },
     {
       "id": "3525045000472527001",
@@ -5978,7 +7963,12 @@
       "valor": 5400,
       "owner": "KAM México",
       "creado": "2025-06-03T09:21:59-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 18
     },
     {
       "id": "3525045000657353141",
@@ -5993,7 +7983,12 @@
       "valor": 5000,
       "owner": "KAM México",
       "creado": "2026-08-31T23:18:46-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000640711138",
@@ -6008,7 +8003,12 @@
       "valor": 4656,
       "owner": "KAM México",
       "creado": "2026-07-06T11:35:47-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1164,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000519607022",
@@ -6023,7 +8023,12 @@
       "valor": 4500,
       "owner": "KAM México",
       "creado": "2025-10-10T11:25:38-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000506191990",
@@ -6038,7 +8043,12 @@
       "valor": 4064,
       "owner": "KAM México",
       "creado": "2025-09-02T14:55:01-06:00",
-      "modificado": "2026-03-23T13:22:06-06:00"
+      "modificado": "2026-03-23T13:22:06-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": 40.64
     },
     {
       "id": "3525045000657353151",
@@ -6053,7 +8063,12 @@
       "valor": 4000,
       "owner": "KAM México",
       "creado": "2026-08-31T23:19:21-06:00",
-      "modificado": "2026-10-01T06:03:18-06:00"
+      "modificado": "2026-10-01T06:03:18-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000517338524",
@@ -6068,7 +8083,12 @@
       "valor": 4000,
       "owner": "KAM México",
       "creado": "2025-10-06T16:50:21-06:00",
-      "modificado": "2026-03-25T13:33:01-06:00"
+      "modificado": "2026-03-25T13:33:01-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1000,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000572032309",
@@ -6083,7 +8103,12 @@
       "valor": 3620,
       "owner": "KAM México",
       "creado": "2026-01-22T12:28:35-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 362,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000490984280",
@@ -6098,7 +8123,12 @@
       "valor": 3600,
       "owner": "KAM México",
       "creado": "2025-07-23T15:33:42-06:00",
-      "modificado": "2026-03-23T13:18:49-06:00"
+      "modificado": "2026-03-23T13:18:49-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000522922648",
@@ -6113,7 +8143,12 @@
       "valor": 3575,
       "owner": "KAM México",
       "creado": "2025-10-21T14:22:38-06:00",
-      "modificado": "2026-03-23T13:25:41-06:00"
+      "modificado": "2026-03-23T13:25:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1300,
+      "precio_usuario": 2.75
     },
     {
       "id": "3525045000657884499",
@@ -6128,7 +8163,12 @@
       "valor": 3500,
       "owner": "KAM México",
       "creado": "2026-09-03T16:33:52-06:00",
-      "modificado": "2026-10-03T06:00:11-06:00"
+      "modificado": "2026-10-03T06:00:11-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 700,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000443076898",
@@ -6143,7 +8183,12 @@
       "valor": 3320,
       "owner": "KAM México",
       "creado": "2025-03-19T10:26:21-06:00",
-      "modificado": "2026-09-22T19:28:28-06:00"
+      "modificado": "2026-09-22T19:28:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 332,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000515598827",
@@ -6158,7 +8203,12 @@
       "valor": 3303,
       "owner": "KAM México",
       "creado": "2025-10-03T10:29:44-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 3.67
     },
     {
       "id": "3525045000461802358",
@@ -6173,7 +8223,12 @@
       "valor": 3140,
       "owner": "KAM México",
       "creado": "2025-05-06T16:14:34-06:00",
-      "modificado": "2026-03-23T13:28:50-06:00"
+      "modificado": "2026-03-23T13:28:50-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 314,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000515598787",
@@ -6188,7 +8243,12 @@
       "valor": 3025,
       "owner": "KAM México",
       "creado": "2025-10-03T10:26:50-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1100,
+      "precio_usuario": 2.75
     },
     {
       "id": "3525045000659235028",
@@ -6203,7 +8263,12 @@
       "valor": 3000,
       "owner": "KAM México",
       "creado": "2026-09-07T09:30:57-06:00",
-      "modificado": "2026-10-07T06:00:14-06:00"
+      "modificado": "2026-10-07T06:00:14-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000471958359",
@@ -6218,7 +8283,12 @@
       "valor": 3000,
       "owner": "KAM México",
       "creado": "2025-06-02T17:19:07-06:00",
-      "modificado": "2026-09-22T19:28:28-06:00"
+      "modificado": "2026-09-22T19:28:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000551034121",
@@ -6233,7 +8303,12 @@
       "valor": 3000,
       "owner": "KAM México",
       "creado": "2025-12-09T13:13:26-06:00",
-      "modificado": "2026-03-25T13:33:37-06:00"
+      "modificado": "2026-03-25T13:33:37-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 3000,
+      "precio_usuario": 1
     },
     {
       "id": "3525045000519607482",
@@ -6248,7 +8323,12 @@
       "valor": 3000,
       "owner": "KAM México",
       "creado": "2025-10-10T18:01:01-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000519607545",
@@ -6263,7 +8343,12 @@
       "valor": 2960,
       "owner": "KAM México",
       "creado": "2025-10-10T18:15:49-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 800,
+      "precio_usuario": 3.7
     },
     {
       "id": "3525045000656705625",
@@ -6278,7 +8363,12 @@
       "valor": 2812.5,
       "owner": "KAM México",
       "creado": "2026-08-28T13:45:47-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 750,
+      "precio_usuario": 3.75
     },
     {
       "id": "3525045000656705615",
@@ -6293,7 +8383,12 @@
       "valor": 2812.5,
       "owner": "KAM México",
       "creado": "2026-08-28T13:43:32-06:00",
-      "modificado": "2026-09-27T06:01:59-06:00"
+      "modificado": "2026-09-27T06:01:59-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 750,
+      "precio_usuario": 3.75
     },
     {
       "id": "3525045000515598218",
@@ -6308,7 +8403,12 @@
       "valor": 2812.5,
       "owner": "KAM México",
       "creado": "2025-10-01T10:58:00-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 750,
+      "precio_usuario": 3.75
     },
     {
       "id": "3525045000515598970",
@@ -6323,7 +8423,12 @@
       "valor": 2763.75,
       "owner": "KAM México",
       "creado": "2025-10-03T10:33:58-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1005,
+      "precio_usuario": 2.75
     },
     {
       "id": "3525045000427344093",
@@ -6338,7 +8443,12 @@
       "valor": 2560,
       "owner": "KAM México",
       "creado": "2025-02-04T12:50:54-06:00",
-      "modificado": "2026-03-23T13:32:25-06:00"
+      "modificado": "2026-03-23T13:32:25-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 80,
+      "precio_usuario": 32
     },
     {
       "id": "3525045000519607587",
@@ -6353,7 +8463,12 @@
       "valor": 2400,
       "owner": "KAM México",
       "creado": "2025-10-10T18:19:41-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000519607566",
@@ -6368,7 +8483,12 @@
       "valor": 2400,
       "owner": "KAM México",
       "creado": "2025-10-10T18:17:57-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000628639012",
@@ -6383,7 +8503,12 @@
       "valor": 2328,
       "owner": "KAM México",
       "creado": "2026-05-21T13:42:36-06:00",
-      "modificado": "2026-08-19T07:02:06-06:00"
+      "modificado": "2026-08-19T07:02:06-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 291,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000519607524",
@@ -6398,7 +8523,12 @@
       "valor": 2205,
       "owner": "KAM México",
       "creado": "2025-10-10T18:13:08-06:00",
-      "modificado": "2026-09-22T19:25:12-06:00"
+      "modificado": "2026-09-22T19:25:12-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 490,
+      "precio_usuario": 4.5
     },
     {
       "id": "3525045000515598761",
@@ -6413,7 +8543,12 @@
       "valor": 2202,
       "owner": "KAM México",
       "creado": "2025-10-03T10:23:09-06:00",
-      "modificado": "2026-03-23T13:24:44-06:00"
+      "modificado": "2026-03-23T13:24:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 600,
+      "precio_usuario": 3.67
     },
     {
       "id": "3525045000584501001",
@@ -6428,7 +8563,12 @@
       "valor": 2100,
       "owner": "KAM México",
       "creado": "2026-02-17T12:00:09-06:00",
-      "modificado": "2026-06-01T08:56:19-06:00"
+      "modificado": "2026-06-01T08:56:19-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 150,
+      "precio_usuario": 14
     },
     {
       "id": "3525045000572032371",
@@ -6443,7 +8583,12 @@
       "valor": 2010,
       "owner": "KAM México",
       "creado": "2026-01-22T12:37:57-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 201,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000461802308",
@@ -6458,7 +8603,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2025-05-06T16:11:42-06:00",
-      "modificado": "2026-03-23T13:28:50-06:00"
+      "modificado": "2026-03-23T13:28:50-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000522146272",
@@ -6473,7 +8623,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2025-10-20T14:56:58-06:00",
-      "modificado": "2026-03-23T13:25:41-06:00"
+      "modificado": "2026-03-23T13:25:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000519607461",
@@ -6488,7 +8643,12 @@
       "valor": 2000,
       "owner": "KAM México",
       "creado": "2025-10-10T17:58:18-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000519607001",
@@ -6503,7 +8663,12 @@
       "valor": 1850,
       "owner": "KAM México",
       "creado": "2025-10-10T11:22:56-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 3.7
     },
     {
       "id": "3525045000628197173",
@@ -6518,7 +8683,12 @@
       "valor": 1500,
       "owner": "KAM México",
       "creado": "2026-05-19T15:08:27-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000656883017",
@@ -6533,7 +8703,12 @@
       "valor": 1500,
       "owner": "KAM México",
       "creado": "2026-08-28T16:27:49-06:00",
-      "modificado": "2026-09-27T06:01:58-06:00"
+      "modificado": "2026-09-27T06:01:58-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000572032402",
@@ -6548,7 +8723,12 @@
       "valor": 1410,
       "owner": "KAM México",
       "creado": "2026-01-22T12:40:20-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 94,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000572032427",
@@ -6563,7 +8743,12 @@
       "valor": 1410,
       "owner": "KAM México",
       "creado": "2026-01-22T12:41:27-06:00",
-      "modificado": "2026-03-23T12:24:28-06:00"
+      "modificado": "2026-03-23T12:24:28-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 94,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000555907027",
@@ -6578,7 +8763,12 @@
       "valor": 1404,
       "owner": "KAM México",
       "creado": "2025-12-16T16:35:12-06:00",
-      "modificado": "2026-03-30T18:25:23-06:00"
+      "modificado": "2026-03-30T18:25:23-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1200,
+      "precio_usuario": 1.17
     },
     {
       "id": "3525045000656883065",
@@ -6593,7 +8783,12 @@
       "valor": 1360,
       "owner": "KAM México",
       "creado": "2026-08-28T17:24:25-06:00",
-      "modificado": "2026-09-27T06:01:59-06:00"
+      "modificado": "2026-09-27T06:01:59-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 170,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000656883055",
@@ -6608,7 +8803,12 @@
       "valor": 1360,
       "owner": "KAM México",
       "creado": "2026-08-28T17:23:38-06:00",
-      "modificado": "2026-09-27T06:01:59-06:00"
+      "modificado": "2026-09-27T06:01:59-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 170,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000656705661",
@@ -6623,7 +8823,12 @@
       "valor": 1042,
       "owner": "KAM México",
       "creado": "2026-08-28T13:48:41-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 20.84
     },
     {
       "id": "3525045000656705635",
@@ -6638,7 +8843,12 @@
       "valor": 1042,
       "owner": "KAM México",
       "creado": "2026-08-28T13:47:34-06:00",
-      "modificado": "2026-09-27T06:02:08-06:00"
+      "modificado": "2026-09-27T06:02:08-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 20.84
     },
     {
       "id": "3525045000519607043",
@@ -6653,7 +8863,12 @@
       "valor": 1000,
       "owner": "KAM México",
       "creado": "2025-10-10T11:28:57-06:00",
-      "modificado": "2026-03-23T13:16:00-06:00"
+      "modificado": "2026-03-23T13:16:00-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": null
     },
     {
       "id": "3525045000578004199",
@@ -6668,7 +8883,12 @@
       "valor": 952.5,
       "owner": "KAM México",
       "creado": "2026-02-05T15:11:28-06:00",
-      "modificado": "2026-03-25T13:33:37-06:00"
+      "modificado": "2026-03-25T13:33:37-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1905,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000578004163",
@@ -6683,7 +8903,12 @@
       "valor": 952.5,
       "owner": "KAM México",
       "creado": "2026-02-05T15:09:59-06:00",
-      "modificado": "2026-03-25T13:33:01-06:00"
+      "modificado": "2026-03-25T13:33:01-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1905,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000654308091",
@@ -6698,7 +8923,12 @@
       "valor": 900,
       "owner": "KAM México",
       "creado": "2026-08-19T11:03:57-06:00",
-      "modificado": "2026-09-18T06:00:37-06:00"
+      "modificado": "2026-09-18T06:00:37-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 1
     },
     {
       "id": "3525045000648042030",
@@ -6713,7 +8943,12 @@
       "valor": 750,
       "owner": "KAM México",
       "creado": "2026-07-30T09:56:21-06:00",
-      "modificado": "2026-10-28T06:01:43-06:00"
+      "modificado": "2026-10-28T06:01:43-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 75,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000578004090",
@@ -6728,7 +8963,12 @@
       "valor": 697.5,
       "owner": "KAM México",
       "creado": "2026-02-05T15:02:03-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1395,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000578004127",
@@ -6743,7 +8983,12 @@
       "valor": 697.5,
       "owner": "KAM México",
       "creado": "2026-02-05T15:07:12-06:00",
-      "modificado": "2026-03-25T13:33:37-06:00"
+      "modificado": "2026-03-25T13:33:37-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1395,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000656883075",
@@ -6758,7 +9003,12 @@
       "valor": 680,
       "owner": "KAM México",
       "creado": "2026-08-28T17:25:09-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 170,
+      "precio_usuario": 4
     },
     {
       "id": "3525045000578004235",
@@ -6773,7 +9023,12 @@
       "valor": 614.5,
       "owner": "KAM México",
       "creado": "2026-02-05T15:14:32-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1229,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000578004271",
@@ -6788,7 +9043,12 @@
       "valor": 614.5,
       "owner": "KAM México",
       "creado": "2026-02-05T15:17:18-06:00",
-      "modificado": "2026-03-25T13:33:37-06:00"
+      "modificado": "2026-03-25T13:33:37-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1229,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000548620571",
@@ -6803,7 +9063,12 @@
       "valor": 550,
       "owner": "KAM México",
       "creado": "2025-12-03T14:12:32-06:00",
-      "modificado": "2026-09-22T19:27:52-06:00"
+      "modificado": "2026-09-22T19:27:52-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 550,
+      "precio_usuario": 1
     },
     {
       "id": "3525045000578004332",
@@ -6818,7 +9083,12 @@
       "valor": 505,
       "owner": "KAM México",
       "creado": "2026-02-05T15:22:24-06:00",
-      "modificado": "2026-03-25T13:33:01-06:00"
+      "modificado": "2026-03-25T13:33:01-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1010,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000522146092",
@@ -6833,7 +9103,12 @@
       "valor": 500,
       "owner": "KAM México",
       "creado": "2025-10-20T11:07:04-06:00",
-      "modificado": "2026-03-23T13:25:41-06:00"
+      "modificado": "2026-03-23T13:25:41-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000575616119",
@@ -6848,7 +9123,12 @@
       "valor": 450,
       "owner": "KAM México",
       "creado": "2026-01-30T14:40:21-06:00",
-      "modificado": "2026-06-01T08:56:19-06:00"
+      "modificado": "2026-06-01T08:56:19-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 900,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000627572267",
@@ -6863,7 +9143,12 @@
       "valor": 404.6,
       "owner": "KAM México",
       "creado": "2026-05-18T11:26:29-06:00",
-      "modificado": "2026-08-16T07:00:53-06:00"
+      "modificado": "2026-08-16T07:00:53-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1156,
+      "precio_usuario": 0.35
     },
     {
       "id": "3525045000648042037",
@@ -6878,7 +9163,12 @@
       "valor": 375,
       "owner": "KAM México",
       "creado": "2026-07-30T09:58:12-06:00",
-      "modificado": "2026-10-28T06:01:44-06:00"
+      "modificado": "2026-10-28T06:01:44-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 75,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000627572262",
@@ -6893,7 +9183,12 @@
       "valor": 289,
       "owner": "KAM México",
       "creado": "2026-05-18T11:23:54-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 1156,
+      "precio_usuario": 0.25
     },
     {
       "id": "3525045000395834362",
@@ -6908,7 +9203,12 @@
       "valor": 220,
       "owner": "KAM México",
       "creado": "2024-11-07T16:18:36-06:00",
-      "modificado": "2026-03-23T13:40:46-06:00"
+      "modificado": "2026-03-23T13:40:46-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 20,
+      "precio_usuario": 11
     },
     {
       "id": "3525045000578004307",
@@ -6923,7 +9223,12 @@
       "valor": 34.5,
       "owner": "KAM México",
       "creado": "2026-02-05T15:20:23-06:00",
-      "modificado": "2026-03-25T13:33:37-06:00"
+      "modificado": "2026-03-25T13:33:37-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "USD",
+      "usuarios": 69,
+      "precio_usuario": 0.5
     },
     {
       "id": "3525045000623197343",
@@ -6938,7 +9243,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-04-28T16:14:08-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000623947088",
@@ -6953,7 +9263,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-04-30T10:05:42-06:00",
-      "modificado": "2026-07-29T07:02:24-06:00"
+      "modificado": "2026-07-29T07:02:24-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 190,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000634463014",
@@ -6968,7 +9283,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-06-10T12:17:42-06:00",
-      "modificado": "2026-07-10T07:02:31-06:00"
+      "modificado": "2026-07-10T07:02:31-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1000,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000630888299",
@@ -6983,7 +9303,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-06-01T13:08:19-06:00",
-      "modificado": "2026-07-01T07:00:27-06:00"
+      "modificado": "2026-07-01T07:00:27-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2000,
+      "precio_usuario": null
     },
     {
       "id": "3525045000626305529",
@@ -6998,7 +9323,12 @@
       "valor": 0,
       "owner": "KAM México",
       "creado": "2026-05-12T16:33:53-06:00",
-      "modificado": "2026-06-11T07:01:20-06:00"
+      "modificado": "2026-06-11T07:01:20-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 100,
+      "precio_usuario": null
     }
   ],
   "comercial": [
