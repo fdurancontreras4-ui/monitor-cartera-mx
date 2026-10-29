@@ -64,6 +64,13 @@ Además, la búsqueda con OR de los tres KAM pagina de forma inestable (una pág
 repite deals de otra). Es más seguro hacer **una búsqueda por KAM**
 (`(Owner:equals:…)and(KAM:equals:<nombre>)`) y juntar.
 
+## Implementaciones abiertas (tercera búsqueda)
+
+La Matriz módulos marca con 🔧 las cuentas con una implementación abierta. Se traen con `searchRecords`
+sobre el módulo **Implementaciones** con `CRITERIO_IMPLEMENTACIONES` del script. Pídelas **sin `fields`**
+para que la respuesta se guarde en archivo, y vuelca la lista `data` a `/tmp/implementaciones-raw.json`.
+Ojo: los paréntesis dentro de un valor rompen el criterio; por eso la etapa 4 se pide con `starts_with:4.`.
+
 ## Publicar
 
 1. Volcar la lista combinada a un JSON temporal, por ejemplo
@@ -72,7 +79,7 @@ repite deals de otra). Es más seguro hacer **una búsqueda por KAM**
    trabajo a medio hacer).
 2. Correr:
    ```bash
-   cd ~/Geo/monitor-cartera-mx && python3 scripts/subir-deals-zoho.py /tmp/deals-zoho-raw.json --comercial /tmp/deals-comercial-raw.json
+   cd ~/Geo/monitor-cartera-mx && python3 scripts/subir-deals-zoho.py /tmp/deals-zoho-raw.json --comercial /tmp/deals-comercial-raw.json --implementaciones /tmp/implementaciones-raw.json
    ```
    Sin `--comercial` se conservan los deals de comercial que ya estaban publicados.
    El script valida (Owner, Territorio, KAM, rango de totales, solape contra

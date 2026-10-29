@@ -73,6 +73,35 @@ CRITERIO_COMERCIAL = (
     + "or".join(f"(Producto_Soluci_n:equals:{p})" for p in PRODUCTOS_COMERCIAL) + "))"
 )
 
+# Implementaciones abiertas en México (módulo «Implementaciones» de Zoho, CustomModule17): la Matriz módulos
+# marca con 🔧 las cuentas que tienen una. Abiertas = etapas 0 a 4 y «Detenida». Van en la llave
+# "implementaciones" de deals-mx.json.
+ETAPAS_IMPL_ABIERTAS = ("0.", "1.", "2.", "3.", "4.", "Detenida")
+CRITERIO_IMPLEMENTACIONES = (
+    "((Pa_s:equals:México)and((Etapa_Implementaci_n:equals:0. Sin Asignar)"
+    "or(Etapa_Implementaci_n:equals:1. En Traspaso)or(Etapa_Implementaci_n:equals:2. En Planificación)"
+    "or(Etapa_Implementaci_n:equals:3. En Ejecución)or(Etapa_Implementaci_n:starts_with:4.)"
+    "or(Etapa_Implementaci_n:equals:Detenida)))"
+)
+CAMPOS_IMPLEMENTACIONES = ("id,Name,Cliente,Pa_s,Etapa_Implementaci_n,Jefe_de_Proyectos,Fecha_Fin_Implementaci_n,"
+                           "Sem_foro_Implementaci_n,Modified_Time")
+
+
+def forma_implementacion(r):
+    cli = r.get("Cliente") or {}
+    return {
+        "id": str(r.get("id", "")),
+        "nombre": (r.get("Name") or "").strip(),
+        "cuenta": (cli.get("name") or "").strip(),
+        "cuenta_id": str(cli.get("id", "")),
+        "etapa": (r.get("Etapa_Implementaci_n") or "").strip(),
+        "jp": r.get("Jefe_de_Proyectos") or "",
+        "fecha_fin": r.get("Fecha_Fin_Implementaci_n"),
+        "semaforo": r.get("Sem_foro_Implementaci_n") or "",
+        "modificado": r.get("Modified_Time"),
+    }
+
+
 TOTAL_MIN, TOTAL_MAX = 150, 1200   # rango sano — hoy son ~429 deals
 DELTA_MAX = 0.25                   # 25% de variación de un corrida a otra
 SOLAPAMIENTO_MIN = 0.70            # 70% de los IDs deben repetirse
@@ -321,6 +350,9 @@ def main():
     ap.add_argument("--comercial", metavar="JSON",
                     help="JSON con los deals crudos de CRITERIO_COMERCIAL (módulos vendidos por comercial). "
                          "Si no se pasa, se conservan los que ya había en deals-mx.json")
+    ap.add_argument("--implementaciones", metavar="JSON",
+                    help="JSON con las implementaciones crudas de CRITERIO_IMPLEMENTACIONES (Zoho, módulo Implementaciones). "
+                         "Si no se pasa, se conservan las que ya había")
     ap.add_argument("--forzar", action="store_true", help="publica aunque el solape/delta con lo previo sea sospechoso")
     args = ap.parse_args()
 
@@ -352,6 +384,15 @@ def main():
         comercial = previo.get("comercial") or []
         if comercial:
             aviso(f"Sin --comercial: se conservan los {len(comercial)} deals de comercial que ya estaban.")
+    if args.implementaciones:
+        crudas = leer_crudos(Path(args.implementaciones).expanduser())
+        impl = [forma_implementacion(r) for r in crudas
+                if (r.get("Pa_s") in (None, TERRITORIO_ESPERADO))
+                and (r.get("Etapa_Implementaci_n") or "").startswith(ETAPAS_IMPL_ABIERTAS)]
+        ok(f"{len(impl)} implementaciones abiertas en México")
+        distinto = distinto or impl != previo.get("implementaciones")
+    else:
+        impl = previo.get("implementaciones") or []
     if not distinto and not args.forzar:
         morir("El pipeline no cambió desde la última publicación — no hay nada que subir.",
               "Si de verdad quieres forzar la publicación, corre de nuevo con --forzar.")
@@ -366,6 +407,7 @@ def main():
         "total": len(deals),
         "deals": deals,
         "comercial": comercial,
+        "implementaciones": impl,
     }
 
     publicar(payload, args.dry_run, push=not args.no_push, forzar_commit_vacio=args.forzar)

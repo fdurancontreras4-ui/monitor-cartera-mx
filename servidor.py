@@ -233,6 +233,17 @@ def leer_deals():
                     vistos_c.add(d["id"]); comercial.append(d)
     except Exception:
         comercial = []
+    # implementaciones abiertas en México (módulo Implementaciones); si falla, se sirve sin ellas
+    implementaciones = []
+    try:
+        qs = urllib.parse.urlencode({"criteria": SD.CRITERIO_IMPLEMENTACIONES,
+                                     "fields": SD.CAMPOS_IMPLEMENTACIONES, "per_page": 200})
+        status, cuerpo = pedir(f"{ZOHO_API}/crm/v8/Implementaciones/search?{qs}",
+                               headers={"Authorization": f"Zoho-oauthtoken {token}"})
+        if status == 200:
+            implementaciones = [SD.forma_implementacion(r) for r in json.loads(cuerpo).get("data") or []]
+    except Exception:
+        implementaciones = []
     payload = {
         "generado": ahora_iso(),
         "fuente": "Zoho CRM · Deals (en vivo)",
@@ -242,6 +253,7 @@ def leer_deals():
         "total": len(deals),
         "deals": deals,
         "comercial": comercial,
+        "implementaciones": implementaciones,
     }
     return json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
