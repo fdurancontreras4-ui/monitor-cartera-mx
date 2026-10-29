@@ -353,6 +353,9 @@ def main():
     ap.add_argument("--implementaciones", metavar="JSON",
                     help="JSON con las implementaciones crudas de CRITERIO_IMPLEMENTACIONES (Zoho, módulo Implementaciones). "
                          "Si no se pasa, se conservan las que ya había")
+    ap.add_argument("--implementaciones-todas", metavar="JSON",
+                    help="JSON con TODAS las implementaciones de México (cualquier etapa), para contar cuántas tiene "
+                         "cada cuenta: con 1 sola (la abierta) es cliente nuevo. Si no se pasa, se conserva el conteo previo")
     ap.add_argument("--forzar", action="store_true", help="publica aunque el solape/delta con lo previo sea sospechoso")
     args = ap.parse_args()
 
@@ -393,6 +396,17 @@ def main():
         distinto = distinto or impl != previo.get("implementaciones")
     else:
         impl = previo.get("implementaciones") or []
+    if args.implementaciones_todas:
+        todas = json.loads(Path(args.implementaciones_todas).expanduser().read_text(encoding="utf-8"))
+        conteo = {}
+        for r in {str(r.get("id")): r for r in todas}.values():
+            cid = str(r.get("cuenta_id") or ((r.get("Cliente") or {}).get("id")) or "")
+            if cid:
+                conteo[cid] = conteo.get(cid, 0) + 1
+        ok(f"{sum(conteo.values())} implementaciones históricas en {len(conteo)} cuentas")
+        distinto = distinto or conteo != previo.get("implementaciones_por_cuenta")
+    else:
+        conteo = previo.get("implementaciones_por_cuenta") or {}
     if not distinto and not args.forzar:
         morir("El pipeline no cambió desde la última publicación — no hay nada que subir.",
               "Si de verdad quieres forzar la publicación, corre de nuevo con --forzar.")
@@ -408,6 +422,8 @@ def main():
         "deals": deals,
         "comercial": comercial,
         "implementaciones": impl,
+        # {id de cuenta Zoho: n.º de implementaciones en toda su historia} — 1 = cliente nuevo
+        "implementaciones_por_cuenta": conteo,
     }
 
     publicar(payload, args.dry_run, push=not args.no_push, forzar_commit_vacio=args.forzar)

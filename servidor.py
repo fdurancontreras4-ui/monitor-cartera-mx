@@ -244,6 +244,27 @@ def leer_deals():
             implementaciones = [SD.forma_implementacion(r) for r in json.loads(cuerpo).get("data") or []]
     except Exception:
         implementaciones = []
+    # conteo histórico por cuenta (todas las etapas) para saber si es cliente nuevo
+    impl_conteo = {}
+    try:
+        vistos_i = set()
+        for pagina in range(1, 11):
+            qs = urllib.parse.urlencode({"criteria": "(Pa_s:equals:México)", "fields": "id,Cliente",
+                                         "per_page": 200, "page": pagina})
+            status, cuerpo = pedir(f"{ZOHO_API}/crm/v8/Implementaciones/search?{qs}",
+                                   headers={"Authorization": f"Zoho-oauthtoken {token}"})
+            if status != 200:
+                break
+            j = json.loads(cuerpo)
+            for r in j.get("data") or []:
+                cid = str((r.get("Cliente") or {}).get("id") or "")
+                if cid and r.get("id") not in vistos_i:
+                    vistos_i.add(r.get("id"))
+                    impl_conteo[cid] = impl_conteo.get(cid, 0) + 1
+            if not (j.get("info") or {}).get("more_records"):
+                break
+    except Exception:
+        impl_conteo = {}
     payload = {
         "generado": ahora_iso(),
         "fuente": "Zoho CRM · Deals (en vivo)",
@@ -254,6 +275,7 @@ def leer_deals():
         "deals": deals,
         "comercial": comercial,
         "implementaciones": implementaciones,
+        "implementaciones_por_cuenta": impl_conteo,
     }
     return json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
