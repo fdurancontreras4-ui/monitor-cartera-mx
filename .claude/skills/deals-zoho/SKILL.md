@@ -31,7 +31,9 @@ Módulo **Deals** de Zoho CRM, con `searchRecords` y este criterio exacto:
   KAM ya da México (pero el script igual lo valida por si acaso).
 
 Campos a pedir (`fields` de `searchRecords`):
-`id,Deal_Name,Account_Name,KAM,Owner,Territorio,Stage,Producto_Soluci_n,Valor_del_trato_Global,Correo_KAM,Created_Time,Modified_Time`
+`id,Deal_Name,Account_Name,KAM,Owner,Territorio,Stage,Producto_Soluci_n,Valor_del_trato_Global,Correo_KAM,Created_Time,Modified_Time,Mes_cierre_Cross_UP,Tipo_Trato,Monda_del_trato,N_Empleados_que_marcan,Valor_por_usuario_Global`
+
+(Los últimos cinco alimentan la pestaña KAMs: mes de cierre, cross/up, moneda, usuarios y precio por usuario.)
 
 `Amount` y `Closing_Date` (los campos estándar de Zoho) están vacíos en este
 pipeline — el monto real vive en el campo custom **Valor_del_trato_Global**.

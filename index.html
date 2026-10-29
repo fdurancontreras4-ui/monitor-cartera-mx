@@ -2398,7 +2398,8 @@ const TC_Q4=18; // MXN por USD de la hoja Ventas 2026, solo si un deal proyectad
 // mantenga si vas de uno a otro (ej. dejar "Cross" activo y comparar el pipeline de cross entre KAMs).
 let dealsProyFilter='todo'; // 'todo' | 'cross' | 'upsell' | 'arriendo'
 let dealsSelected={}; // {[kam]: Set(índices en VENTAS_DATA)} — selección de deals para sumar USD, por KAM
-let dealsProySort={campo:'usd',dir:-1}; // orden compartido entre los grupos de mes de la tabla de deals proyectados
+let dealsProySort={campo:'mxn',dir:-1};
+let dealsSelectedZ={}; // {[kam]: Set(id de deal de Zoho)} — deals abiertos marcados para simular la meta // orden compartido entre los grupos de mes de la tabla de deals proyectados
 const fmtMXN=n=>(n==null||isNaN(n))?'—':'$'+Math.round(n).toLocaleString('en-US')+' MXN';
 function metaTiersHTML(achieved,m1,m2,m3,sim){
   sim=sim||0;const real=achieved;achieved=real+sim;
@@ -2418,6 +2419,14 @@ function metaTiersHTML(achieved,m1,m2,m3,sim){
   </div>`;
 }
 function gaugeHTML(pct,sub,color){const p=Math.max(0,Math.min(100,pct));const real=Math.max(0,Math.round(pct));const c=p>=100?'#639922':p>=70?(color||'#00AFF2'):p>=40?'#EF9F27':'#E24B4A';return `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap"><div style="width:120px;height:120px;border-radius:50%;background:conic-gradient(${c} ${p*3.6}deg, var(--color-background-secondary) 0deg);display:flex;align-items:center;justify-content:center;flex:none"><div style="width:88px;height:88px;border-radius:50%;background:var(--color-background-primary);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:${c}">${real}%</div></div><div style="flex:1;min-width:200px;font-size:12px;color:var(--color-text-secondary);line-height:1.6">${sub}</div></div>`;}
+// ---------- KAMs: deals de Zoho ----------
+// cross / up según «Tipo de trato» de Zoho; arriendo por producto. Sin tipo: módulo complementario = cross
+function kzCategoria(d){if(/arriendo/i.test(d.producto||''))return'arriendo';if(/cross/i.test(d.tipo||''))return'cross';if(/up\s*sell/i.test(d.tipo||''))return'upsell';const i=mxProdIdx(d.producto);return i>=0&&!MATRIZ_MODS[i][3]?'cross':'upsell';}
+function kzMXN(d){const v=+d.valor||0;return String(d.moneda||'MXN').toUpperCase()==='USD'?v*TC_Q4:v;}
+function kzUSD(d){const v=+d.valor||0;return String(d.moneda||'MXN').toUpperCase()==='USD'?v:v/TC_Q4;}
+function kzMesKey(d){return d.mes_cierre?String(d.mes_cierre).slice(0,7):null;} // "YYYY-MM" de Mes cierre Cross/UP
+const KZ_Q_MESES={Q1:['01','02','03'],Q2:['04','05','06'],Q3:['07','08','09'],Q4:['10','11','12']};
+function kzEnQ(d,q){const k=kzMesKey(d);return!!k&&k.startsWith('2026-')&&KZ_Q_MESES[q].includes(k.slice(5,7));}
 function renderKamTab(kam,sectionId){
   // las 3 pestañas de KAM repiten los mismos ids: buscar siempre dentro de la sección de este KAM
   const $q=sel=>document.querySelector('#'+sectionId+' '+sel);
@@ -2431,25 +2440,27 @@ function renderKamTab(kam,sectionId){
   const mesesCM=monthSums(cross,'mes',r=>r.usd||0),mesesUM=monthSums(upsell,'mes',r=>r.usd||0),mesesAM=monthSums(arriendo,'mes',r=>r.usd||0),mesesBM=monthSums(bajas,'mesBaja',r=>r.facturacionUSD||0);
   const qC=qSum(cross,r=>r.usd||0),qU=qSum(upsell,r=>r.usd||0),qA=qSum(arriendo,r=>r.usd||0),qB=qSum(bajas,r=>r.facturacionUSD||0);
   const meta=KAM_META[kam]||{m1:0,m2:0,m3:0};
-  const qMetaMXN=sumMXN(cross.filter(r=>r.q===KAM_META_Q)); // solo cross facturado del Q de la meta
-  // deals PROYECTADOS (pipeline, todavía no facturados) de este KAM — agrupados por el mes marcado como
-  // proyección; dentro de cada grupo se ordena según la columna que se haya elegido (por defecto, USD
-  // descendente); los que no traen mes van aparte en "Sin mes".
-  const proyectadosSinFiltro=VENTAS_DATA.filter(r=>r.estado==='Proyectado'&&r.kam===kam);
-  const proyectados=dealsProyFilter==='todo'?proyectadosSinFiltro:proyectadosSinFiltro.filter(r=>r.categoria===dealsProyFilter);
-  const proyectadosPorMes={};
-  proyectados.forEach(r=>{const m=r.mes||'Sin mes';(proyectadosPorMes[m]=proyectadosPorMes[m]||[]).push(r);});
-  const dealSortFns={mxn:r=>r.mxn!=null?r.mxn:(r.usd||0)*TC_Q4,cliente:r=>(r.cliente||'').toLowerCase(),producto:r=>(r.producto||'').toLowerCase(),categoria:r=>r.categoria||'',segmento:r=>(r.segmento||'').toLowerCase(),usd:r=>r.usd||0};
-  const dealSF=dealSortFns[dealsProySort.campo]||dealSortFns.usd;
-  Object.values(proyectadosPorMes).forEach(arr=>arr.sort((a,b)=>{const A=dealSF(a),B=dealSF(b);return A<B?-1*dealsProySort.dir:A>B?dealsProySort.dir:0;}));
-  const gruposProyectados=[...MONTHS_FULL.filter(m=>proyectadosPorMes[m]),...(proyectadosPorMes['Sin mes']?['Sin mes']:[])];
-  const totalProyectado=proyectados.reduce((s,r)=>s+(r.usd||0),0);
+  // ---- meta y deals: desde Zoho (deals-mx.json) ----
+  // facturado para la meta = deal de CROSS de este KAM en «8. Facturando» con «Mes cierre Cross/UP» dentro del Q
+  const zDeals=DEALS_DATA.filter(d=>d.kam===kam);
+  const zFact=zDeals.filter(d=>kzCategoria(d)==='cross'&&d.etapa==='8. Facturando'&&kzEnQ(d,KAM_META_Q));
+  const zFactSinMes=zDeals.filter(d=>kzCategoria(d)==='cross'&&d.etapa==='8. Facturando'&&!d.mes_cierre).length;
+  const qMetaMXN=zFact.reduce((s,d)=>s+kzMXN(d),0);
+  const abiertosTodos=zDeals.filter(mxAbierto);
+  const abiertos=dealsProyFilter==='todo'?abiertosTodos:abiertosTodos.filter(d=>kzCategoria(d)===dealsProyFilter);
+  const porMes={};abiertos.forEach(d=>{const k=kzMesKey(d)||'sin';(porMes[k]=porMes[k]||[]).push(d);});
+  const dealSortFns={cliente:d=>(d.cuenta||'').toLowerCase(),producto:d=>(d.producto||'').toLowerCase(),categoria:d=>kzCategoria(d),etapa:d=>etapaRank(d.etapa),usuarios:d=>+d.usuarios||0,precio:d=>+d.precio_usuario||0,mxn:kzMXN,usd:kzUSD};
+  const dealSF=dealSortFns[dealsProySort.campo]||dealSortFns.mxn;
+  Object.values(porMes).forEach(arr=>arr.sort((x,y)=>{const A=dealSF(x),B=dealSF(y);return A<B?-1*dealsProySort.dir:A>B?dealsProySort.dir:0;}));
+  const grupos=[...Object.keys(porMes).filter(k=>k!=='sin').sort(),...(porMes.sin?['sin']:[])];
+  const totalAbiertoMXN=abiertos.reduce((s,d)=>s+kzMXN(d),0);
+  const sel=dealsSelectedZ[kam]=dealsSelectedZ[kam]||new Set();
   const thMonths=MONTHS_SHORT.map(m=>`<th class="nosort">${m}</th>`).join('');
   const thDeal=(k,l)=>`<th data-sort-deal="${k}">${l}${dealsProySort.campo===k?(dealsProySort.dir>0?' \u25b2':' \u25bc'):''}</th>`;
   const rowHTML=(label,vals)=>{const total=vals.reduce((a,b)=>a+b,0);return `<tr style="cursor:default"><td style="font-weight:500">`+label+`</td>`+vals.map(c=>`<td>`+fmtUSDz(c)+`</td>`).join('')+`<td style="font-weight:600">`+fmtUSDz(total)+`</td></tr>`;};
   const rowQHTML=(label,q)=>`<tr style="cursor:default"><td style="font-weight:500">`+label+`</td><td>`+fmtUSDz(q.Q1)+`</td><td>`+fmtUSDz(q.Q2)+`</td><td>`+fmtUSDz(q.Q3)+`</td><td>`+fmtUSDz(q.Q4)+`</td></tr>`;
   $(sectionId).innerHTML=`
-  <div class="note-box">Cross-selling, upselling y arriendo vienen de la hoja <strong>Ventas 2026</strong> (solo Estado = Facturado; se excluyen Proyectados); fuga (solo Baja) de <strong>Detalle Fuga 2026</strong>; referidos, de la columna "Referido/Referencia" de la cartera MARE MX (dato disponible en pocas cuentas). Las tablas de mes/Q van en USD; la meta Q3 va en MXN (moneda en la que se definió). Fuente de Ventas/Fuga: ${esc(VENTAS_SOURCE)}.</div>
+  <div class="note-box"><strong>La meta y los deals abiertos (abajo) vienen de Zoho.</strong> Los totales YTD y las tablas por mes y Q siguen siendo el histórico de la hoja Ventas 2026. Cross-selling, upselling y arriendo de esas tablas vienen de la hoja <strong>Ventas 2026</strong> (solo Estado = Facturado; se excluyen Proyectados); fuga (solo Baja) de <strong>Detalle Fuga 2026</strong>; referidos, de la columna "Referido/Referencia" de la cartera MARE MX (dato disponible en pocas cuentas). Las tablas de mes/Q van en USD; la meta Q3 va en MXN (moneda en la que se definió). Fuente de Ventas/Fuga: ${esc(VENTAS_SOURCE)}.</div>
   <div class="metrics">
     <div class="metric"><div class="label">Cross-selling YTD</div><div class="value">${fmtUSD(sumUSD(cross))}</div><div class="sub">${cross.length} deals</div></div>
     <div class="metric"><div class="label">Upselling YTD</div><div class="value">${fmtUSD(sumUSD(upsell))}</div><div class="sub">${upsell.length} deals</div></div>
@@ -2464,75 +2475,58 @@ function renderKamTab(kam,sectionId){
   ${rowQHTML('Cross-selling',qC)}${rowQHTML('Upselling',qU)}${rowQHTML('Arriendo',qA)}${rowQHTML('Bajas',qB)}
   </tbody></table></div></div>
   <div class="card" id="${sectionId}-meta"></div>
-  <div class="card"><h3>Deals proyectados (pipeline, aún sin facturar)</h3>
-  <p class="legend">Todo lo marcado Estado = Proyectado en Ventas 2026 para ${esc(kamShort(kam))}, agrupado por el mes de proyección y ordenado de mayor a menor facturación dentro de cada mes. Los deals sin mes asignado quedan en "Sin mes", al final. Los de <strong>cross</strong> que marques se suman como simulación (parte rayada) en "Avance a la meta de cross" de arriba; lo sólido sigue siendo solo lo ya facturado. Marca las casillas para sumar el USD de los deals que elijas.</p>
-  <div id="dealsProyFiltroRow" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+  <div class="card"><h3>Deals abiertos en Zoho</h3>
+  <p class="legend">Deals de ${esc(kamShort(kam))} en Zoho en etapas 1 a 7, agrupados por <strong>Mes cierre Cross/UP</strong> (el mes en que se debería cerrar). Los que no tienen ese campo van al final, en «Sin mes de cierre». Marca los de <strong>cross</strong> para simularlos en la meta de arriba (parte rayada). Clic en la fila para abrir el deal en Zoho.</p>
+  <div class="kz-filtros" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
     ${[['todo','Todo'],['cross','Cross'],['upsell','Up'],['arriendo','Arriendo']].map(([k,l])=>{const on=dealsProyFilter===k;return`<button class="toggle-chip" data-filtro="${k}" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#185FA5':'var(--color-text-secondary)'};border-color:${on?'#185FA5':'var(--color-border-secondary)'}">${l}</button>`;}).join('')}
   </div>
-  <p class="status-line" style="margin:8px 0"><strong>${proyectados.length}</strong> deals proyectados · <strong>${fmtUSD(totalProyectado)}</strong> en total</p>
-  <div class="callout" id="dealsSelectedBar" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-    <span id="dealsSelectedSummary"></span>
-    <button class="btn" style="font-size:11px;padding:4px 10px" id="dealsClearSel">Limpiar selección</button>
+  <p class="status-line" style="margin:8px 0"><strong>${abiertos.length}</strong> deals abiertos · <strong>${fmtMXN(totalAbiertoMXN)}</strong></p>
+  <div class="callout" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+    <span class="kz-sel-resumen"></span>
+    <button class="btn kz-limpiar" style="font-size:11px;padding:4px 10px">Limpiar selección</button>
   </div>
-  ${gruposProyectados.length?gruposProyectados.map(mes=>{
-    const arr=proyectadosPorMes[mes];
-    const totalMes=arr.reduce((s,r)=>s+(r.usd||0),0);
+  ${grupos.length?grupos.map(k=>{
+    const arr=porMes[k];const tot=arr.reduce((s,d)=>s+kzMXN(d),0);
     return `<div style="margin-top:14px">
-      <p style="font-weight:600;font-size:13px;margin-bottom:6px">${esc(mes)} <span class="legend" style="font-weight:400">· ${arr.length} deal${arr.length===1?'':'s'} · ${fmtUSD(totalMes)}</span></p>
-      <div class="table-wrap"><table><thead><tr><th class="nosort" style="width:28px"></th>${thDeal('cliente','Cliente')}${thDeal('producto','Producto')}${thDeal('categoria','Categoría')}${thDeal('segmento','Segmento')}${thDeal('mxn','MXN')}${thDeal('usd','USD')}</tr></thead><tbody>
-        ${arr.map(r=>{const idx=VENTAS_DATA.indexOf(r);const sel=dealsSelected[kam]&&dealsSelected[kam].has(idx);return`<tr style="cursor:default"><td><input type="checkbox" class="deal-chk" data-idx="${idx}"${sel?' checked':''} style="width:15px;height:15px;cursor:pointer"></td><td style="max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.cliente||'—')}</td><td style="font-size:12px;color:var(--color-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.producto||'—')}</td><td><span class="badge b-gray">${esc(r.categoria==='cross'?'Cross':r.categoria==='upsell'?'Upsell':r.categoria==='arriendo'?'Arriendo':r.categoria)}</span></td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.segmento||'—')}</td><td style="font-weight:500">${r.mxn!=null?fmtUSD(r.mxn):'—'}</td><td style="font-weight:500">${fmtUSD(r.usd||0)}</td></tr>`;}).join('')}
+      <p style="font-weight:600;font-size:13px;margin-bottom:6px">${k==='sin'?'Sin mes de cierre':esc(pfMesLabel(k))} <span class="legend" style="font-weight:400">· ${arr.length} deal${arr.length===1?'':'s'} · ${fmtMXN(tot)}</span></p>
+      <div class="table-wrap"><table><thead><tr><th class="nosort" style="width:28px"></th>${thDeal('cliente','Cliente')}${thDeal('producto','Producto')}${thDeal('categoria','Tipo')}${thDeal('etapa','Etapa')}${thDeal('usuarios','Usuarios')}${thDeal('precio','Precio/usuario')}${thDeal('mxn','MXN')}${thDeal('usd','USD')}</tr></thead><tbody>
+        ${arr.map(d=>{const c=kzCategoria(d);const usd=(d.moneda||'').toUpperCase()==='USD';return`<tr class="kz-row" data-url="${mxDealUrl(d)}" style="cursor:pointer"><td><input type="checkbox" class="kz-chk" data-id="${esc(d.id)}"${sel.has(d.id)?' checked':''} style="width:15px;height:15px;cursor:pointer"></td><td style="max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(d.trato)}">${esc(d.cuenta||'—')}<div class="legend">${esc(d.trato)}</div></td><td style="font-size:12px">${esc(d.producto||'—')}</td><td><span class="badge ${c==='cross'?'b-blue':'b-gray'}">${c==='cross'?'Cross':c==='upsell'?'Up':'Arriendo'}</span></td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td>${d.usuarios!=null?Math.round(d.usuarios).toLocaleString('en-US'):'—'}</td><td>${d.precio_usuario!=null?'$'+(+d.precio_usuario).toLocaleString('en-US',{maximumFractionDigits:2})+(usd?' USD':''):'—'}</td><td style="font-weight:500">${fmtUSD(kzMXN(d))}</td><td style="font-weight:500">${fmtUSD(kzUSD(d))}</td></tr>`;}).join('')}
       </tbody></table></div>
     </div>`;
-  }).join(''):`<p class="legend" style="margin-top:8px">${dealsProyFilter==='todo'?'Sin deals proyectados registrados para este KAM en este momento.':'Sin deals proyectados de esta categoría para este KAM en este momento.'}</p>`}
+  }).join(''):`<p class="legend" style="margin-top:8px">Sin deals abiertos ${dealsProyFilter==='todo'?'':'de esta categoría '}para este KAM.</p>`}
   </div>`;
-  $q('#dealsProyFiltroRow').querySelectorAll('.toggle-chip').forEach(btn=>{
-    btn.onclick=()=>{dealsProyFilter=btn.dataset.filtro;renderKamTab(kam,sectionId);};
-  });
-  // meta del Q: barra sólida = cross marcado Facturado en Ventas 2026; parte rayada = deals proyectados de
-  // cross que se marquen abajo (simulación). Upsell y arriendo seleccionados no suman: la meta es solo cross
+  $q('.kz-filtros').querySelectorAll('.toggle-chip').forEach(btn=>{btn.onclick=()=>{dealsProyFilter=btn.dataset.filtro;renderKamTab(kam,sectionId);};});
+  // meta del Q: barra sólida = cross facturado en Zoho con mes de cierre en el Q; rayada = cross seleccionado abajo
   function drawMeta(){
-    const set=dealsSelected[kam]||new Set();
     let sim=0,nSim=0,nFuera=0;
-    set.forEach(idx=>{const r=VENTAS_DATA[idx];if(!r)return;if(r.categoria!=='cross'){nFuera++;return;}nSim++;sim+=(r.mxn!=null?r.mxn:(r.usd||0)*TC_Q4);});
+    sel.forEach(id=>{const d=zDeals.find(x=>x.id===id);if(!d)return;if(kzCategoria(d)!=='cross'){nFuera++;return;}nSim++;sim+=kzMXN(d);});
+    const tot=qMetaMXN+sim,metas=[['Meta 1',meta.m1],['Meta 2',meta.m2],['Meta 3',meta.m3]];
+    const sig=metas.find(([,v])=>tot<v),pasada=[...metas].reverse().find(([,v])=>tot>=v);
+    const base=nSim?'Con lo seleccionado':'Con lo facturado';
+    const falta=sig?`${base}${pasada?` ya pasa <strong>${pasada[0]}</strong> y`:''} faltan <strong>${fmtMXN(sig[1]-tot)}</strong> para <strong>${sig[0]}</strong> (${fmtMXN(sig[1])}).`:`${base} supera <strong>Meta 3</strong> por <strong>${fmtMXN(tot-meta.m3)}</strong>. 🎉`;
     $(sectionId+'-meta').innerHTML=`<h3>Avance a la meta de cross · ${KAM_META_Q} 2026 (MXN)</h3>
-      <p class="legend">Solo <strong>cross-selling</strong> marcado <strong>Facturado</strong> en Ventas 2026 con Q = ${KAM_META_Q}, en pesos: <strong>${fmtMXN(qMetaMXN)}</strong>. Metas del ${KAM_META_Q}: ${fmtMXN(meta.m1)} / ${fmtMXN(meta.m2)} / ${fmtMXN(meta.m3)}.
-      ${nSim?` Simulación (parte rayada): <strong>+${fmtMXN(sim)}</strong> de ${nSim} deal${nSim===1?'':'s'} de cross seleccionado${nSim===1?'':'s'} abajo → <strong>${fmtMXN(qMetaMXN+sim)}</strong>.`:' Marca deals de cross en la tabla de abajo para simular cómo quedaría si se facturan.'}
-      ${nFuera?` <span style="color:#854F0B">${nFuera} seleccionado${nFuera===1?'':'s'} de upsell/arriendo no suma${nFuera===1?'':'n'}: la meta es solo cross.</span>`:''}</p>
-      ${(function(){
-        // cuánto falta para la siguiente meta, con lo facturado + lo seleccionado
-        const tot=qMetaMXN+sim,metas=[['Meta 1',meta.m1],['Meta 2',meta.m2],['Meta 3',meta.m3]];
-        const sig=metas.find(([,v])=>tot<v),pasada=[...metas].reverse().find(([,v])=>tot>=v);
-        const base=nSim?'Con lo seleccionado':'Con lo facturado';
-        const txt=sig?`${base}${pasada?` ya pasa <strong>${pasada[0]}</strong> y`:''} faltan <strong>${fmtMXN(sig[1]-tot)}</strong> para <strong>${sig[0]}</strong> (${fmtMXN(sig[1])}).`
-          :`${base} supera <strong>Meta 3</strong> por <strong>${fmtMXN(tot-meta.m3)}</strong>. 🎉`;
-        return`<div class="note-box" style="margin:10px 0 0;font-size:13px;color:var(--color-text-primary);background:${sig?'var(--accent-soft)':'#EAF3DE'}">${txt}</div>`;
-      })()}
-      ${metaTiersHTML(qMetaMXN,meta.m1,meta.m2,meta.m3,sim)}`;
+      <p class="legend">Cuenta como facturado el deal de <strong>cross</strong> en Zoho que está en <strong>8. Facturando</strong> y tiene <strong>Mes cierre Cross/UP</strong> dentro del ${KAM_META_Q}: <strong>${fmtMXN(qMetaMXN)}</strong> (${zFact.length} deal${zFact.length===1?'':'s'}). Metas: ${fmtMXN(meta.m1)} / ${fmtMXN(meta.m2)} / ${fmtMXN(meta.m3)}.
+      ${zFactSinMes?` <span style="color:#854F0B">${zFactSinMes} deal${zFactSinMes===1?'':'s'} de cross en 8. Facturando no tiene${zFactSinMes===1?'':'n'} Mes cierre Cross/UP y no cuenta${zFactSinMes===1?'':'n'} hasta llenarlo.</span>`:''}
+      ${nSim?` Simulación: <strong>+${fmtMXN(sim)}</strong> de ${nSim} deal${nSim===1?'':'s'} seleccionado${nSim===1?'':'s'}.`:''}
+      ${nFuera?` <span style="color:#854F0B">${nFuera} seleccionado${nFuera===1?'':'s'} de up/arriendo no suma${nFuera===1?'':'n'}: la meta es solo cross.</span>`:''}</p>
+      <div class="note-box" style="margin:10px 0 0;font-size:13px;color:var(--color-text-primary);background:${sig?'var(--accent-soft)':'#EAF3DE'}">${falta}</div>
+      ${metaTiersHTML(qMetaMXN,meta.m1,meta.m2,meta.m3,sim)}
+      ${zFact.length?`<details style="margin-top:10px"><summary class="legend" style="cursor:pointer">Ver los ${zFact.length} deals que cuentan</summary><div class="table-wrap"><table><tbody>${zFact.map(d=>`<tr class="kz-row" data-url="${mxDealUrl(d)}" style="cursor:pointer"><td>${esc(d.cuenta)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(pfMesLabel(kzMesKey(d)))}</td><td>${fmtMXN(kzMXN(d))}</td></tr>`).join('')}</tbody></table></div></details>`:''}`;
   }
   function updateDealsSelectedSummary(){
     drawMeta();
-    const set=dealsSelected[kam]||new Set();
-    let n=0,sum=0,sumMx=0;
-    set.forEach(idx=>{const r=VENTAS_DATA[idx];if(r){n++;sum+=(r.usd||0);sumMx+=(r.mxn!=null?r.mxn:(r.usd||0)*TC_Q4);}});
-    $q('#dealsSelectedSummary').innerHTML=n?`<strong>${n}</strong> deal${n===1?'':'s'} seleccionado${n===1?'':'s'} · <strong>${fmtUSD(sum)}</strong> USD · ${fmtMXN(sumMx)}`:'Ningún deal seleccionado — marca las casillas de la tabla para sumar.';
+    let n=0,mx=0;sel.forEach(id=>{const d=zDeals.find(x=>x.id===id);if(d){n++;mx+=kzMXN(d);}});
+    $q('.kz-sel-resumen').innerHTML=n?`<strong>${n}</strong> deal${n===1?'':'s'} seleccionado${n===1?'':'s'} · <strong>${fmtMXN(mx)}</strong>`:'Ningún deal seleccionado — marca las casillas para simular.';
   }
-  document.querySelectorAll('#'+sectionId+' .deal-chk').forEach(chk=>{
-    chk.onchange=()=>{
-      const idx=parseInt(chk.dataset.idx,10);
-      if(!dealsSelected[kam])dealsSelected[kam]=new Set();
-      if(chk.checked)dealsSelected[kam].add(idx);else dealsSelected[kam].delete(idx);
-      updateDealsSelectedSummary();
-    };
+  document.querySelectorAll('#'+sectionId+' .kz-chk').forEach(chk=>{
+    chk.onclick=e=>e.stopPropagation();
+    chk.onchange=()=>{if(chk.checked)sel.add(chk.dataset.id);else sel.delete(chk.dataset.id);updateDealsSelectedSummary();};
   });
-  $q('#dealsClearSel').onclick=()=>{dealsSelected[kam]=new Set();document.querySelectorAll('#'+sectionId+' .deal-chk').forEach(chk=>{chk.checked=false;});updateDealsSelectedSummary();};
+  $(sectionId).onclick=e=>{const r=e.target.closest('.kz-row');if(r&&!e.target.closest('input'))window.open(r.dataset.url,'_blank','noopener');};
+  $q('.kz-limpiar').onclick=()=>{sel.clear();document.querySelectorAll('#'+sectionId+' .kz-chk').forEach(c=>{c.checked=false;});updateDealsSelectedSummary();};
   document.querySelectorAll('#'+sectionId+' th[data-sort-deal]').forEach(th=>{
     th.style.cursor='pointer';
-    th.onclick=()=>{
-      const k=th.dataset.sortDeal;
-      if(dealsProySort.campo===k)dealsProySort.dir*=-1;
-      else{dealsProySort.campo=k;dealsProySort.dir=(k==='usd'||k==='mxn')?-1:1;}
-      renderKamTab(kam,sectionId);
-    };
+    th.onclick=()=>{const k=th.dataset.sortDeal;if(dealsProySort.campo===k)dealsProySort.dir*=-1;else{dealsProySort.campo=k;dealsProySort.dir=['cliente','producto','categoria'].includes(k)?1:-1;}renderKamTab(kam,sectionId);};
   });
   updateDealsSelectedSummary();
 }
@@ -2950,6 +2944,8 @@ const MATRIZ_MODS=[
   ['Plan Enterprise','Plan Enterprise',[]],
   ['Formularios','Formularios',['Formularios']],
   [null,'Centro de Ops (solo Zoho)',['Centro de Operaciones']],
+  [null,'Upselling',['Control de Asistencia','Control de Asistencia (Anualidad)','Control de Asistencia (GV Lite)'],true],
+  [null,'Arriendo',['Arriendo de equipos'],true],
 ];
 const MAT_COL_LETRA={}; // encabezado → letra de columna en MARE MX (la llena parseMareWorkbook)
 const MX_ESTANCADO_DIAS=30;
@@ -2967,7 +2963,7 @@ const MX_NOMBRE_MOD=[[0,/alerta/],[2,/vacacion|permiso/],[3,/calendario|planific
 function mxModIdx(d){
   if(d._mi!==undefined)return d._mi;
   let mi=mxProdIdx(d.producto);d._prodMal=null;
-  if(mi>=0){
+  if(mi>=0&&!MATRIZ_MODS[mi][3]){
     const n=String(d.trato||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     const hits=[...new Set(MX_NOMBRE_MOD.filter(([,re])=>re.test(n)).map(([i])=>i))];
     if(hits.length===1&&hits[0]!==mi){d._prodMal=d.producto;mi=hits[0];}
@@ -2986,6 +2982,8 @@ function mxLoose(s){return normName(s).replace(/\b(grupo|corporativo|mexico|de|d
 function mxDias(d){const t=Date.parse(d.modificado||d.creado||'');return isNaN(t)?null:Math.floor((Date.now()-t)/864e5);}
 function mxAbierto(d){return d.etapa!=='8. Facturando'&&!ETAPAS_CERRADAS.has(d.etapa);}
 function mxEtapaCorta(e){const m=/^(\d)\.\s*(.*)$/.exec(e||'');return m?m[1]+' · '+m[2]:(e||'');}
+function mxValorTxt(d){const v=+d.valor||0;return String(d.moneda||'MXN').toUpperCase()==='USD'?fmtUSD(v)+' USD':fmtMXN(v);}
+function mxUsuariosPrecioTD(d){const usd=String(d.moneda||'').toUpperCase()==='USD';return`<td>${d.usuarios!=null?Math.round(d.usuarios).toLocaleString('en-US'):'—'}</td><td>${d.precio_usuario!=null?'$'+(+d.precio_usuario).toLocaleString('en-US',{maximumFractionDigits:2})+(usd?' USD':''):'—'}</td>`;}
 function mxDealUrl(d){return ZOHO_TAB+'Potentials/'+d.id;}
 function mxSort(ds){return ds.slice().sort((a,b)=>{const ra=mxAbierto(a)?0:a.etapa==='8. Facturando'?1:2,rb=mxAbierto(b)?0:b.etapa==='8. Facturando'?1:2;if(ra!==rb)return ra-rb;return etapaRank(b.etapa)-etapaRank(a.etapa);});}
 
@@ -3047,12 +3045,12 @@ function mxBuild(){
         estancado:ab.length>0&&ab.every(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS),
         etapa:(ds.filter(mxAbierto).sort((x,y)=>etapaRank(y.etapa)-etapaRank(x.etapa))[0]||{}).etapa||null};
     });
-    const ss=g.celdas.map(c=>c.s);
+    const ss=g.celdas.filter((c,i)=>!MATRIZ_MODS[i][3]).map(c=>c.s); // solo módulos complementarios
     g.sinIntento=!ss.some(s=>s==='zv'||s==='zy'||s==='zr'||s==='xv'||s==='xr');
     // ⚠ en el nombre: ningún deal abierto en Zoho, de ningún producto (incluye upsell, arriendo, etc.)
     g.sinAbierto=!g.miembros.some(m=>m._deals.some(mxAbierto));
     // ⊘ sin ningún módulo contratado: ninguna celda verde (facturando en Zoho, o OK del Excel cuando Zoho no tiene deal)
-    g.nMods=g.celdas.filter(c=>c.s==='zv'||c.s==='xv').length;
+    g.nMods=ss.filter(s=>s==='zv'||s==='xv').length;
     g.sinModulo=!g.nMods;
     g.abiertos=g.celdas.reduce((n,c)=>n+c.ds.filter(d=>mxAbierto(d)&&!d._com).length,0);
     g.estancados=g.celdas.filter(c=>c.estancado).length;
@@ -3064,7 +3062,7 @@ function mxBuild(){
   // 3) diferencias Excel vs Zoho, por razón social (lo que hay que actualizar en el Excel)
   const difs=[];
   ACCOUNTS.forEach(a=>MATRIZ_MODS.forEach((m,mi)=>{
-    if(!m[0])return;const ds=a._mx[mi];if(!ds.length)return;
+    if(!m[0]||m[3])return;const ds=a._mx[mi];if(!ds.length)return;
     const raw=a.mat?a.mat[m[0]]:null;const x=modStatus(raw);const z=mxEstado(ds,null);
     const d0=mxSort(ds)[0];let sug=null,tipo='actualizar';
     if(z==='zv'&&x!=='OK')sug='OK';
@@ -3170,7 +3168,7 @@ function drawMxAbiertos(){
   let ds=DEALS_DATA.filter(d=>mxModIdx(d)>=0&&mxAbierto(d));
   if(mxState.kam)ds=ds.filter(d=>d.kam===mxState.kam);
   ds.sort((a,b)=>(mxDias(b)||0)-(mxDias(a)||0));
-  $('mxAbiertos').innerHTML=ds.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Módulo</th><th class="nosort">Etapa</th><th class="nosort">Sin mover</th><th class="nosort">Valor</th><th class="nosort">KAM</th></tr></thead><tbody>${ds.map(d=>{const dd=mxDias(d);const cli=d._acc?(d._acc.grupo||d._acc.cliente):d.cuenta;return`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td style="font-weight:500">${esc(cli)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(MATRIZ_MODS[mxModIdx(d)][1])}</td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td><span class="badge ${dd>MX_ESTANCADO_DIAS*2?'b-red':dd>MX_ESTANCADO_DIAS?'b-amber':'b-green'}">${dd==null?'—':dd+' días'}</span></td><td>${fmtMXN(d.valor)}</td><td>${esc(kamShort(d.kam))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">No hay deals abiertos de estos módulos.</p>';
+  $('mxAbiertos').innerHTML=ds.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Módulo</th><th class="nosort">Etapa</th><th class="nosort">Sin mover</th><th class="nosort">Usuarios</th><th class="nosort">Precio/usuario</th><th class="nosort">Valor</th><th class="nosort">USD (TC 18)</th><th class="nosort">KAM</th></tr></thead><tbody>${ds.map(d=>{const dd=mxDias(d);const cli=d._acc?(d._acc.grupo||d._acc.cliente):d.cuenta;return`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td style="font-weight:500">${esc(cli)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(MATRIZ_MODS[mxModIdx(d)][1])}</td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td><span class="badge ${dd>MX_ESTANCADO_DIAS*2?'b-red':dd>MX_ESTANCADO_DIAS?'b-amber':'b-green'}">${dd==null?'—':dd+' días'}</span></td>${mxUsuariosPrecioTD(d)}<td>${mxValorTxt(d)}</td><td>${fmtUSD(kzUSD(d))}</td><td>${esc(kamShort(d.kam))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">No hay deals abiertos de estos módulos.</p>';
 }
 
 function drawMxDifs(){
@@ -3196,7 +3194,7 @@ function mxClick(ev){
   if(!td){if(!ev.target.closest('#mxPop'))pop.hidden=true;return;}
   const o=MX.refs[+td.dataset.r];if(!o)return;
   if(o.ds.length===1&&!o.raws.length){pop.hidden=true;window.open(mxDealUrl(o.ds[0]),'_blank','noopener');return;}
-  const dealsH=mxSort(o.ds).map(d=>`<a href="${mxDealUrl(d)}" target="_blank" rel="noopener" class="mx-pop-it"><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span> ${esc(d.trato)}<div class="legend">${d._prodMal?'<b style="color:#A32D2D">Producto en Zoho: «'+esc(d._prodMal)+'» (el nombre dice otra cosa)</b><br>':''}${d._com?'<b>Comercial · '+esc(d.owner)+'</b> · ':''}${esc(d.cuenta)} · ${fmtMXN(d.valor)}${mxAbierto(d)&&!d._com?' · '+mxDias(d)+' días sin mover':''}</div></a>`).join('');
+  const dealsH=mxSort(o.ds).map(d=>`<a href="${mxDealUrl(d)}" target="_blank" rel="noopener" class="mx-pop-it"><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span> ${esc(d.trato)}<div class="legend">${d._prodMal?'<b style="color:#A32D2D">Producto en Zoho: «'+esc(d._prodMal)+'» (el nombre dice otra cosa)</b><br>':''}${d._com?'<b>Comercial · '+esc(d.owner)+'</b> · ':''}${esc(d.cuenta)} · ${mxValorTxt(d)} · ${fmtUSD(kzUSD(d))} USD${d.usuarios!=null?' · '+Math.round(d.usuarios).toLocaleString('en-US')+' usuarios':''}${d.precio_usuario!=null?' × $'+(+d.precio_usuario).toLocaleString('en-US',{maximumFractionDigits:2}):''}${mxAbierto(d)&&!d._com?' · '+mxDias(d)+' días sin mover':''}</div></a>`).join('');
   const rawH=o.raws.length?`<div class="legend" style="margin-top:6px"><b>En el Excel:</b> ${o.raws.map(r=>`${esc(r.raw)}${o.accs.length>1?' ('+esc(r.a.cliente)+')':''}`).join(' · ')}${o.ds.length?' — manda Zoho':''}</div>`:'';
   const accH=o.accs.filter(a=>a.zohoId).map(a=>`<a href="${ZOHO_TAB}Accounts/${a.zohoId}" target="_blank" rel="noopener">${esc(a.cliente)}</a>`).join(' · ');
   pop.innerHTML=`<div style="font-weight:700;margin-bottom:6px">${esc(o.nombre)}</div>${dealsH||'<div class="legend">Sin deals de este módulo en Zoho.</div>'}${rawH}${accH?`<div class="legend" style="margin-top:8px">Cuenta en Zoho: ${accH}</div>`:''}`;

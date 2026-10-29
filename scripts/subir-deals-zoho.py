@@ -27,7 +27,8 @@ Formato esperado del JSON de entrada: una lista plana de registros crudos de
 Zoho (uno por deal, todas las páginas ya combinadas), cada uno con al menos
 los campos: id, Deal_Name, Account_Name{name,id}, KAM, Owner{name,id},
 Territorio, Stage, Producto_Soluci_n, Valor_del_trato_Global, Correo_KAM,
-Created_Time, Modified_Time.
+Created_Time, Modified_Time, Mes_cierre_Cross_UP, Tipo_Trato, Monda_del_trato,
+N_Empleados_que_marcan, Valor_por_usuario_Global.
 
 Solo usa la librería estándar de Python 3 — no hay que instalar nada.
 """
@@ -126,6 +127,13 @@ def dar_forma(r):
         "owner": (owner.get("name") or "").strip(),
         "creado": r.get("Created_Time"),
         "modificado": r.get("Modified_Time"),
+        # para la pestaña KAMs: tipo de trato (cross / up), mes en que se debería cerrar, moneda,
+        # usuarios y precio por usuario
+        "tipo": (r.get("Tipo_Trato") or "").strip(),
+        "mes_cierre": r.get("Mes_cierre_Cross_UP"),
+        "moneda": r.get("Monda_del_trato") or "",
+        "usuarios": r.get("N_Empleados_que_marcan"),
+        "precio_usuario": r.get("Valor_por_usuario_Global"),
     }
 
 

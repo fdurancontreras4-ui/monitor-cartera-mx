@@ -67,7 +67,8 @@ ITEM_ID = ENV("POSTVENTA_ITEM_ID", "01FBJR3VU6WJGDP3GGFZHL6WFG5C5WDSPN")
 ZOHO_ACCOUNTS = ENV("ZOHO_ACCOUNTS_URL", "https://accounts.zoho.com").rstrip("/")
 ZOHO_API = ENV("ZOHO_API_URL", "https://www.zohoapis.com").rstrip("/")
 ZOHO_FIELDS = ("id,Deal_Name,Account_Name,KAM,Owner,Territorio,Stage,Producto_Soluci_n,"
-               "Valor_del_trato_Global,Correo_KAM,Created_Time,Modified_Time")
+               "Valor_del_trato_Global,Correo_KAM,Created_Time,Modified_Time,"
+               "Mes_cierre_Cross_UP,Tipo_Trato,Monda_del_trato,N_Empleados_que_marcan,Valor_por_usuario_Global")
 
 CACHE_SEGUNDOS = int(ENV("CACHE_SEGUNDOS", "60"))
 TIMEOUT = 60
