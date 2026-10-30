@@ -3003,6 +3003,7 @@ function mxEstado(ds,raw){
   const x=modStatus(raw);return x==='OK'?'xv':x==='OP'?'xy':x==='NO'?'xr':'';
 }
 
+const mxRecuperar=a=>/^recuperar$/i.test((a.cuadrante||'').trim());
 function mxBuild(){
   // 1) asignar cada deal a una razón social: por id de cuenta Zoho → por nombre → por nombre de grupo
   const porId={},porNombre={},porLoose={},porGrupo={};
@@ -3045,7 +3046,8 @@ function mxBuild(){
   });
   // 2) agrupar razones sociales en clientes
   const gmap={};
-  ACCOUNTS.forEach(a=>{const k=a.grupo?'G:'+mxLoose(a.grupo):'R:'+a._uid;(gmap[k]=gmap[k]||{key:k,miembros:[]}).miembros.push(a);});
+  // las razones sociales con cuadrante MARE «Recuperar» no se muestran en la matriz (pedido 30-oct)
+  ACCOUNTS.filter(a=>!mxRecuperar(a)).forEach(a=>{const k=a.grupo?'G:'+mxLoose(a.grupo):'R:'+a._uid;(gmap[k]=gmap[k]||{key:k,miembros:[]}).miembros.push(a);});
   const clientes=Object.values(gmap).map(g=>{
     g.miembros.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
     const p=g.miembros[0];
@@ -3131,7 +3133,7 @@ function renderMatriz(){
   const estanc=abiertos.filter(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS);
   const stat=(v,l,vista)=>`<div class="stat3-it mx-kpi${mxState.vista===vista?' on':''}" data-vista="${vista}"><div class="stat3-v">${v}</div><div class="stat3-l">${l}</div></div>`;
   $('matriz').innerHTML=`
-  <div class="note-box"><strong>Matriz de módulos complementarios.</strong> Una fila por cliente (las razones sociales se juntan por la columna <strong>Grupo</strong> de MARE MX; si no tiene grupo, la razón social es el cliente). <strong>Manda Zoho</strong>: si hay un deal del módulo, su etapa define el color. Si Zoho no tiene nada, se usa lo que dice el Excel (columnas AT–BH) y la celda va con <strong>borde punteado</strong>. Clic en una celda para ir al deal en Zoho. Clic en el nombre para abrir la cuenta en Zoho; la flecha ▸ despliega sus razones sociales. 🔧 = la cuenta tiene una implementación abierta en Zoho (etapas 0 a 4 o Detenida); clic en 🔧 la abre. Fila <strong>morada</strong> = además es <strong>cliente nuevo</strong>: es su primera y única implementación. Si ya tuvo otras, va solo la 🔧, sin color. El número verde junto al nombre = cuántos módulos complementarios tiene contratados (celdas verdes). <span class="mx-sinmod">⊘</span> = no tiene ningún módulo complementario contratado (ninguna celda verde). <span class="mx-warn">⚠</span> = no tiene ningún deal abierto en Zoho (de ningún producto).<br>
+  <div class="note-box"><strong>Matriz de módulos complementarios.</strong> Una fila por cliente (las razones sociales se juntan por la columna <strong>Grupo</strong> de MARE MX; si no tiene grupo, la razón social es el cliente). <strong>Manda Zoho</strong>: si hay un deal del módulo, su etapa define el color. Si Zoho no tiene nada, se usa lo que dice el Excel (columnas AT–BH) y la celda va con <strong>borde punteado</strong>. Clic en una celda para ir al deal en Zoho. Clic en el nombre para abrir la cuenta en Zoho; la flecha ▸ despliega sus razones sociales. 🔧 = la cuenta tiene una implementación abierta en Zoho (etapas 0 a 4 o Detenida); clic en 🔧 la abre. Fila <strong>morada</strong> = además es <strong>cliente nuevo</strong>: es su primera y única implementación. Si ya tuvo otras, va solo la 🔧, sin color. El número verde junto al nombre = cuántos módulos complementarios tiene contratados (celdas verdes). <span class="mx-sinmod">⊘</span> = no tiene ningún módulo complementario contratado (ninguna celda verde). <span class="mx-warn">⚠</span> = no tiene ningún deal abierto en Zoho (de ningún producto). No se muestran las razones sociales con cuadrante MARE <strong>Recuperar</strong>.<br>
   <span class="mx-leg mx-zv">✓</span> facturando · <span class="mx-leg mx-zv mx-comc">C</span> vendido por comercial (no KAM) · <span class="mx-leg mx-zy">4</span> deal abierto (el número es la etapa) · <span class="mx-leg mx-zy mx-stale">4</span> abierto y sin movimiento hace más de ${MX_ESTANCADO_DIAS} días · <span class="mx-leg mx-zc">❄</span> facturación congelada · <span class="mx-leg mx-zr">✕</span> perdido · <span class="mx-leg mx-xy">OP</span> oportunidad en el Excel sin deal · <span class="mx-leg mx-xr">✕</span> sin oportunidad según Excel · <span class="mx-leg mx-xv">✓</span> OK según Excel, sin deal en Zoho · <span class="mx-leg"></span> nada</div>
   ${DEALS_DATA.length?`<p class="status-line" style="margin:-6px 0 12px">Deals de Zoho al ${esc((DEALS_META.generado||'').slice(0,10))} · ${DEALS_DATA.length} deals de KAM + ${DEALS_COMERCIAL.length} módulos vendidos por comercial</p>`:'<p class="legend">Todavía no hay deals-mx.json cargado — la matriz solo muestra lo del Excel.</p>'}
   <div class="stat3 mx-kpis">
