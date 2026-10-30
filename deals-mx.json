@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-29T00:58:05-06:00",
+  "generado": "2026-10-29T20:49:28-06:00",
   "fuente": "Zoho CRM · Deals",
   "propietario": "KAM México",
   "territorio": "México",
@@ -10,26 +10,6 @@
   ],
   "total": 466,
   "deals": [
-    {
-      "id": "3525045000667067082",
-      "trato": "UP Selling ECOM",
-      "cuenta": "CAFESCA",
-      "cuenta_id": "3525045000223883010",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "ddelarosa@geovictoria.com",
-      "etapa": "1. Trato Creado",
-      "cerrado": false,
-      "producto": "Control de Asistencia",
-      "valor": 42000,
-      "owner": "KAM México",
-      "creado": "2026-09-29T10:28:42-06:00",
-      "modificado": "2026-09-29T10:30:32-06:00",
-      "tipo": "Crecimiento (Up Selling)",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 1200,
-      "precio_usuario": 35
-    },
     {
       "id": "3525045000656377147",
       "trato": "VictorIA - Conect",
@@ -709,6 +689,26 @@
       "moneda": "MXN",
       "usuarios": 440,
       "precio_usuario": null
+    },
+    {
+      "id": "3525045000656787052",
+      "trato": "Cross - ALERTASJYT",
+      "cuenta": "J&T EXPRESS",
+      "cuenta_id": "3525045000260992026",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "",
+      "etapa": "5. Piloto",
+      "cerrado": false,
+      "producto": "Control de Acceso",
+      "valor": 16000,
+      "owner": "KAM México",
+      "creado": "2026-08-28T09:58:37-06:00",
+      "modificado": "2026-10-29T12:38:48-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2000,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000654550003",
@@ -1951,6 +1951,26 @@
       "precio_usuario": 43
     },
     {
+      "id": "3525045000667067082",
+      "trato": "UP Selling ECOM",
+      "cuenta": "CAFESCA",
+      "cuenta_id": "3525045000223883010",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Control de Asistencia",
+      "valor": 42000,
+      "owner": "KAM México",
+      "creado": "2026-09-29T10:28:42-06:00",
+      "modificado": "2026-10-29T06:03:04-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1200,
+      "precio_usuario": 35
+    },
+    {
       "id": "3525045000656787073",
       "trato": "OPTIMIZADOR",
       "cuenta": "J&T EXPRESS",
@@ -1984,26 +2004,6 @@
       "owner": "KAM México",
       "creado": "2026-08-28T10:58:59-06:00",
       "modificado": "2026-09-27T06:02:09-06:00",
-      "tipo": "Producto/Solución Nuevo (Cross Selling)",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 3500,
-      "precio_usuario": 8
-    },
-    {
-      "id": "3525045000656787052",
-      "trato": "Cross - ALERTASJYT",
-      "cuenta": "J&T EXPRESS",
-      "cuenta_id": "3525045000260992026",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "",
-      "etapa": "Cierre Perdido",
-      "cerrado": true,
-      "producto": "Control de Acceso",
-      "valor": 28000,
-      "owner": "KAM México",
-      "creado": "2026-08-28T09:58:37-06:00",
-      "modificado": "2026-09-27T06:02:08-06:00",
       "tipo": "Producto/Solución Nuevo (Cross Selling)",
       "mes_cierre": null,
       "moneda": "MXN",
@@ -5700,14 +5700,14 @@
       "etapa": "7. Implementando",
       "cerrado": false,
       "producto": "Control de Asistencia",
-      "valor": 57437,
+      "valor": 71345,
       "owner": "KAM México",
       "creado": "2026-09-28T16:50:46-06:00",
-      "modificado": "2026-10-05T10:40:57-06:00",
+      "modificado": "2026-10-29T14:18:32-06:00",
       "tipo": "Crecimiento (Up Selling)",
       "mes_cierre": null,
       "moneda": "MXN",
-      "usuarios": 3023,
+      "usuarios": 3755,
       "precio_usuario": 19
     },
     {
@@ -5763,7 +5763,7 @@
       "valor": 512,
       "owner": "KAM México",
       "creado": "2026-08-19T11:12:19-06:00",
-      "modificado": "2026-10-27T10:32:08-06:00",
+      "modificado": "2026-10-29T12:45:37-06:00",
       "tipo": "Producto/Solución Nuevo (Cross Selling)",
       "mes_cierre": null,
       "moneda": "USD",
@@ -9345,7 +9345,12 @@
       "valor": 1530,
       "owner": "Andrés Kalifa",
       "creado": "2026-03-18T12:30:13-06:00",
-      "modificado": "2026-03-30T10:40:42-06:00"
+      "modificado": "2026-03-30T10:40:42-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 85,
+      "precio_usuario": 18
     },
     {
       "id": "3525045000480042023",
@@ -9360,7 +9365,12 @@
       "valor": 198,
       "owner": "Leandra Montes",
       "creado": "2025-06-24T11:22:15-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-10-29T10:35:35-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 9,
+      "precio_usuario": 22
     },
     {
       "id": "3525045000482143027",
@@ -9375,7 +9385,12 @@
       "valor": 3000,
       "owner": "Jimena Rodríguez",
       "creado": "2025-06-27T13:07:12-06:00",
-      "modificado": "2026-06-23T17:27:24-06:00"
+      "modificado": "2026-06-23T17:27:24-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000482143001",
@@ -9390,7 +9405,12 @@
       "valor": 1500,
       "owner": "Jimena Rodríguez",
       "creado": "2025-06-27T13:06:35-06:00",
-      "modificado": "2026-06-23T17:27:25-06:00"
+      "modificado": "2026-06-23T17:27:25-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000633736011",
@@ -9405,7 +9425,12 @@
       "valor": 0,
       "owner": "Yahel Segura",
       "creado": "2026-06-08T12:44:43-06:00",
-      "modificado": "2026-08-06T12:49:10-06:00"
+      "modificado": "2026-08-06T12:49:10-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 30,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000468247431",
@@ -9420,7 +9445,12 @@
       "valor": 4200,
       "owner": "Karla Guerrero",
       "creado": "2025-05-22T14:20:15-06:00",
-      "modificado": "2026-10-26T13:52:14-06:00"
+      "modificado": "2026-10-26T13:52:14-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 350,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000469885259",
@@ -9435,7 +9465,12 @@
       "valor": 4200,
       "owner": "Karla Guerrero",
       "creado": "2025-05-27T12:49:56-06:00",
-      "modificado": "2026-10-26T13:52:14-06:00"
+      "modificado": "2026-10-26T13:52:14-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 350,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000468247400",
@@ -9450,7 +9485,12 @@
       "valor": 5950,
       "owner": "Karla Guerrero",
       "creado": "2025-05-22T14:17:27-06:00",
-      "modificado": "2026-10-26T13:52:14-06:00"
+      "modificado": "2026-10-26T13:52:14-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 350,
+      "precio_usuario": 17
     },
     {
       "id": "3525045000587091827",
@@ -9465,7 +9505,12 @@
       "valor": 4200,
       "owner": "Jimena Rodríguez",
       "creado": "2026-02-23T14:59:36-06:00",
-      "modificado": "2026-10-26T13:52:14-06:00"
+      "modificado": "2026-10-26T13:52:14-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 14
     },
     {
       "id": "3525045000353238249",
@@ -9480,7 +9525,12 @@
       "valor": 10548,
       "owner": "Roberto Sanchez",
       "creado": "2024-07-16T18:16:34-06:00",
-      "modificado": "2026-03-23T12:58:14-06:00"
+      "modificado": "2026-03-23T12:58:14-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 586,
+      "precio_usuario": 18
     },
     {
       "id": "3525045000677310407",
@@ -9495,7 +9545,12 @@
       "valor": 3348,
       "owner": "Alejandra Anzaldo",
       "creado": "2026-10-28T16:50:38-06:00",
-      "modificado": "2026-10-29T00:00:29-06:00"
+      "modificado": "2026-10-29T00:00:29-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 54,
+      "precio_usuario": 62
     },
     {
       "id": "3525045000476275722",
@@ -9510,7 +9565,12 @@
       "valor": 0.9,
       "owner": "KAMS GeoVictoria",
       "creado": "2025-06-16T13:52:06-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-03-23T12:36:19-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "UF",
+      "usuarios": 100,
+      "precio_usuario": 0.009
     },
     {
       "id": "3525045000505654156",
@@ -9525,7 +9585,12 @@
       "valor": 0,
       "owner": "Yahel Segura",
       "creado": "2025-09-01T13:02:00-06:00",
-      "modificado": "2026-03-23T12:54:33-06:00"
+      "modificado": "2026-03-23T12:54:33-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 17,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000473758069",
@@ -9540,7 +9605,12 @@
       "valor": 8700,
       "owner": "Alejandra Anzaldo",
       "creado": "2025-06-05T09:44:25-06:00",
-      "modificado": "2026-03-23T12:36:19-06:00"
+      "modificado": "2026-03-23T12:36:19-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 580,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000664323108",
@@ -9555,7 +9625,12 @@
       "valor": 10,
       "owner": "Adriana Delgado",
       "creado": "2026-09-21T18:04:58-06:00",
-      "modificado": "2026-10-12T18:04:55-06:00"
+      "modificado": "2026-10-12T18:04:55-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 20,
+      "precio_usuario": null
     },
     {
       "id": "3525045000664323115",
@@ -9570,7 +9645,12 @@
       "valor": 10,
       "owner": "Adriana Delgado",
       "creado": "2026-09-21T18:05:48-06:00",
-      "modificado": "2026-10-12T18:04:56-06:00"
+      "modificado": "2026-10-12T18:04:56-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 20,
+      "precio_usuario": null
     },
     {
       "id": "3525045000282644066",
@@ -9585,7 +9665,12 @@
       "valor": 20000,
       "owner": "Alejandra Anzaldo",
       "creado": "2023-11-08T12:41:49-06:00",
-      "modificado": "2026-03-23T13:08:50-06:00"
+      "modificado": "2026-03-23T13:08:50-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MNX",
+      "usuarios": 500,
+      "precio_usuario": 40
     },
     {
       "id": "3525045000643914083",
@@ -9600,7 +9685,12 @@
       "valor": 2500,
       "owner": "Karla Guerrero",
       "creado": "2026-07-16T16:46:16-06:00",
-      "modificado": "2026-10-27T11:31:36-06:00"
+      "modificado": "2026-10-27T11:31:36-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 550,
+      "precio_usuario": 2500
     },
     {
       "id": "3525045000569606655",
@@ -9615,7 +9705,12 @@
       "valor": 15330,
       "owner": "Karla Guerrero",
       "creado": "2026-01-19T13:27:24-06:00",
-      "modificado": "2026-10-26T13:52:14-06:00"
+      "modificado": "2026-10-26T13:52:14-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 511,
+      "precio_usuario": 30
     },
     {
       "id": "3525045000636647093",
@@ -9630,7 +9725,12 @@
       "valor": 160,
       "owner": "Claudia Valdez",
       "creado": "2026-06-18T15:28:29-06:00",
-      "modificado": "2026-07-03T13:10:41-06:00"
+      "modificado": "2026-10-29T10:31:24-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 4,
+      "precio_usuario": 40
     },
     {
       "id": "3525045000574275229",
@@ -9645,7 +9745,12 @@
       "valor": 12649,
       "owner": "Andrés Kalifa",
       "creado": "2026-01-27T15:16:59-06:00",
-      "modificado": "2026-07-29T10:08:21-06:00"
+      "modificado": "2026-10-29T10:33:32-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1406,
+      "precio_usuario": null
     },
     {
       "id": "3525045000635391262",
@@ -9660,7 +9765,12 @@
       "valor": 4900,
       "owner": "Andrés Kalifa",
       "creado": "2026-06-12T13:23:30-06:00",
-      "modificado": "2026-07-29T10:08:56-06:00"
+      "modificado": "2026-10-29T10:33:04-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1406,
+      "precio_usuario": null
     },
     {
       "id": "3525045000338559535",
@@ -9675,7 +9785,12 @@
       "valor": 8100,
       "owner": "Laura Medina",
       "creado": "2024-05-28T10:53:50-06:00",
-      "modificado": "2026-10-27T11:37:21-06:00"
+      "modificado": "2026-10-27T11:37:21-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 270,
+      "precio_usuario": 30
     },
     {
       "id": "3525045000641049110",
@@ -9690,7 +9805,12 @@
       "valor": 3600,
       "owner": "Alfredo Fuentes",
       "creado": "2026-07-09T08:36:57-06:00",
-      "modificado": "2026-10-13T12:24:24-06:00"
+      "modificado": "2026-10-13T12:24:24-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 400,
+      "precio_usuario": 9
     },
     {
       "id": "3525045000643356090",
@@ -9705,7 +9825,12 @@
       "valor": 400,
       "owner": "Alfredo Fuentes",
       "creado": "2026-07-15T10:16:44-06:00",
-      "modificado": "2026-10-13T12:23:53-06:00"
+      "modificado": "2026-10-13T12:23:53-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 400,
+      "precio_usuario": 1
     },
     {
       "id": "3525045000630185092",
@@ -9720,7 +9845,12 @@
       "valor": 650,
       "owner": "Alfredo Fuentes",
       "creado": "2026-05-27T11:31:22-06:00",
-      "modificado": "2026-07-06T16:44:02-06:00"
+      "modificado": "2026-10-29T10:33:09-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 130,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000592716431",
@@ -9735,7 +9865,12 @@
       "valor": 817,
       "owner": "Alfredo Fuentes",
       "creado": "2026-03-04T08:57:40-06:00",
-      "modificado": "2026-05-06T10:49:01-06:00"
+      "modificado": "2026-10-29T10:33:28-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 43,
+      "precio_usuario": 19
     },
     {
       "id": "3525045000592716346",
@@ -9750,7 +9885,12 @@
       "valor": 645,
       "owner": "Alfredo Fuentes",
       "creado": "2026-03-04T08:47:25-06:00",
-      "modificado": "2026-06-22T15:15:21-06:00"
+      "modificado": "2026-10-29T10:33:28-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 43,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000638877530",
@@ -9765,7 +9905,12 @@
       "valor": 0,
       "owner": "Karla Guerrero",
       "creado": "2026-06-29T15:04:21-06:00",
-      "modificado": "2026-09-29T12:44:23-06:00"
+      "modificado": "2026-09-29T12:44:23-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 370,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000643598165",
@@ -9780,7 +9925,12 @@
       "valor": 3718,
       "owner": "Karla Guerrero",
       "creado": "2026-07-16T12:40:32-06:00",
-      "modificado": "2026-10-06T12:24:11-06:00"
+      "modificado": "2026-10-06T12:24:11-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 338,
+      "precio_usuario": 11
     },
     {
       "id": "3525045000638877521",
@@ -9795,7 +9945,12 @@
       "valor": 3718,
       "owner": "Karla Guerrero",
       "creado": "2026-06-29T15:03:13-06:00",
-      "modificado": "2026-10-19T10:40:38-06:00"
+      "modificado": "2026-10-19T10:40:38-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 338,
+      "precio_usuario": 11
     },
     {
       "id": "3525045000657890216",
@@ -9810,7 +9965,12 @@
       "valor": 2000,
       "owner": "Karla Guerrero",
       "creado": "2026-09-03T12:38:15-06:00",
-      "modificado": "2026-10-07T09:40:19-06:00"
+      "modificado": "2026-10-07T09:40:19-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 339,
+      "precio_usuario": 2500
     },
     {
       "id": "3525045000533661033",
@@ -9825,7 +9985,12 @@
       "valor": 663,
       "owner": "David Ballesteros",
       "creado": "2025-11-06T10:02:42-06:00",
-      "modificado": "2026-03-23T12:34:40-06:00"
+      "modificado": "2026-10-29T10:35:19-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 221,
+      "precio_usuario": 3
     },
     {
       "id": "3525045000511193444",
@@ -9840,7 +10005,12 @@
       "valor": 4200,
       "owner": "Karla Guerrero",
       "creado": "2025-09-17T13:50:55-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 120,
+      "precio_usuario": 35
     },
     {
       "id": "3525045000511193470",
@@ -9855,7 +10025,12 @@
       "valor": 1200,
       "owner": "Karla Guerrero",
       "creado": "2025-09-17T13:51:28-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 60,
+      "precio_usuario": 20
     },
     {
       "id": "3525045000636008099",
@@ -9870,7 +10045,12 @@
       "valor": 700,
       "owner": "Alejandra Anzaldo",
       "creado": "2026-06-15T16:58:21-06:00",
-      "modificado": "2026-10-27T11:31:42-06:00"
+      "modificado": "2026-10-27T11:31:42-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 20,
+      "precio_usuario": 35
     },
     {
       "id": "3525045000584897733",
@@ -9885,7 +10065,12 @@
       "valor": 300,
       "owner": "Laura Medina",
       "creado": "2026-02-18T14:20:13-06:00",
-      "modificado": "2026-03-23T12:18:00-06:00"
+      "modificado": "2026-10-29T10:33:29-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5,
+      "precio_usuario": null
     },
     {
       "id": "3525045000661527344",
@@ -9900,7 +10085,12 @@
       "valor": 900,
       "owner": "Adriana Delgado",
       "creado": "2026-09-14T16:03:24-06:00",
-      "modificado": "2026-09-30T09:57:06-06:00"
+      "modificado": "2026-09-30T09:57:06-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 30,
+      "precio_usuario": 30
     },
     {
       "id": "3525045000661527355",
@@ -9915,7 +10105,12 @@
       "valor": 300,
       "owner": "Adriana Delgado",
       "creado": "2026-09-14T16:20:11-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 30,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000636814001",
@@ -9930,7 +10125,12 @@
       "valor": 1050,
       "owner": "Laura Medina",
       "creado": "2026-06-18T13:08:36-06:00",
-      "modificado": "2026-07-03T11:45:45-06:00"
+      "modificado": "2026-07-03T11:45:45-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 70,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000586271397",
@@ -9945,7 +10145,12 @@
       "valor": 3000,
       "owner": "Alfredo Fuentes",
       "creado": "2026-02-23T09:19:27-06:00",
-      "modificado": "2026-10-27T11:31:51-06:00"
+      "modificado": "2026-10-27T11:31:51-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000500944007",
@@ -9960,7 +10165,12 @@
       "valor": 300,
       "owner": "Laura Medina",
       "creado": "2025-08-15T11:43:16-06:00",
-      "modificado": "2026-03-23T12:54:33-06:00"
+      "modificado": "2026-03-23T12:54:33-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 20,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000534957003",
@@ -9975,7 +10185,12 @@
       "valor": 420,
       "owner": "Laura Medina",
       "creado": "2025-11-10T13:21:14-06:00",
-      "modificado": "2026-03-24T09:20:46-06:00"
+      "modificado": "2026-03-24T09:20:46-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 21,
+      "precio_usuario": 20
     },
     {
       "id": "3525045000515984789",
@@ -9990,7 +10205,12 @@
       "valor": 0,
       "owner": "David Ballesteros",
       "creado": "2025-10-01T12:38:42-06:00",
-      "modificado": "2026-04-09T08:15:58-06:00"
+      "modificado": "2026-04-09T08:15:58-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": null
     },
     {
       "id": "3525045000298783031",
@@ -10005,7 +10225,12 @@
       "valor": 16208,
       "owner": "Carolina Galindo",
       "creado": "2024-01-04T12:24:11-06:00",
-      "modificado": "2026-03-23T13:08:50-06:00"
+      "modificado": "2026-03-23T13:08:50-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MNX",
+      "usuarios": 2026,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000515364035",
@@ -10020,7 +10245,12 @@
       "valor": 4600,
       "owner": "Leandra Montes",
       "creado": "2025-09-29T11:23:45-06:00",
-      "modificado": "2026-10-26T13:52:14-06:00"
+      "modificado": "2026-10-26T13:52:14-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": null
     },
     {
       "id": "3525045000582917533",
@@ -10035,7 +10265,12 @@
       "valor": 10000,
       "owner": "Alfredo Fuentes",
       "creado": "2026-02-13T09:54:31-06:00",
-      "modificado": "2026-06-22T15:14:30-06:00"
+      "modificado": "2026-06-22T15:14:30-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 250,
+      "precio_usuario": 40
     },
     {
       "id": "3525045000586271643",
@@ -10050,7 +10285,12 @@
       "valor": 3750,
       "owner": "Alfredo Fuentes",
       "creado": "2026-02-23T10:21:54-06:00",
-      "modificado": "2026-06-22T15:15:03-06:00"
+      "modificado": "2026-06-22T15:15:03-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 250,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000651752137",
@@ -10065,7 +10305,12 @@
       "valor": 13725.67,
       "owner": "David Ballesteros",
       "creado": "2026-08-11T20:11:49-06:00",
-      "modificado": "2026-10-14T12:39:24-06:00"
+      "modificado": "2026-10-14T12:39:24-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2815,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000651752123",
@@ -10080,7 +10325,12 @@
       "valor": 10250,
       "owner": "David Ballesteros",
       "creado": "2026-08-11T20:04:12-06:00",
-      "modificado": "2026-10-14T12:37:54-06:00"
+      "modificado": "2026-10-14T12:37:54-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2050,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000651752130",
@@ -10095,7 +10345,12 @@
       "valor": 6150,
       "owner": "David Ballesteros",
       "creado": "2026-08-11T20:08:23-06:00",
-      "modificado": "2026-10-14T12:38:35-06:00"
+      "modificado": "2026-10-14T12:38:35-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2050,
+      "precio_usuario": 3
     },
     {
       "id": "3525045000651752112",
@@ -10110,7 +10365,12 @@
       "valor": 6150,
       "owner": "David Ballesteros",
       "creado": "2026-08-11T19:54:42-06:00",
-      "modificado": "2026-10-14T12:36:42-06:00"
+      "modificado": "2026-10-14T12:36:42-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 2050,
+      "precio_usuario": 3
     },
     {
       "id": "3525045000631324048",
@@ -10125,7 +10385,12 @@
       "valor": 6000,
       "owner": "Leandra Montes",
       "creado": "2026-06-02T18:08:52-06:00",
-      "modificado": "2026-06-30T13:38:12-06:00"
+      "modificado": "2026-10-29T10:33:06-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 400,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000631712973",
@@ -10140,7 +10405,12 @@
       "valor": 3000,
       "owner": "Alfredo Fuentes",
       "creado": "2026-06-03T15:43:25-06:00",
-      "modificado": "2026-10-27T11:31:44-06:00"
+      "modificado": "2026-10-27T11:31:44-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000473278075",
@@ -10155,7 +10425,12 @@
       "valor": 2800,
       "owner": "Laura Medina",
       "creado": "2025-06-04T16:01:15-06:00",
-      "modificado": "2026-10-26T13:52:14-06:00"
+      "modificado": "2026-10-26T13:52:14-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 140,
+      "precio_usuario": 20
     },
     {
       "id": "3525045000144842322",
@@ -10170,7 +10445,12 @@
       "valor": 0,
       "owner": "Carolina Galindo",
       "creado": "2022-01-14T13:42:39-06:00",
-      "modificado": "2026-03-23T13:05:23-06:00"
+      "modificado": "2026-03-23T13:05:23-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000508844047",
@@ -10185,7 +10465,12 @@
       "valor": 0,
       "owner": "Yahel Segura",
       "creado": "2025-09-09T12:21:10-06:00",
-      "modificado": "2026-03-23T12:35:13-06:00"
+      "modificado": "2026-03-23T12:35:13-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 25,
+      "precio_usuario": null
     },
     {
       "id": "3525045000668035825",
@@ -10200,7 +10485,12 @@
       "valor": 1164,
       "owner": "Alejandra Anzaldo",
       "creado": "2026-10-05T22:17:43-06:00",
-      "modificado": "2026-10-20T07:39:42-06:00"
+      "modificado": "2026-10-20T07:39:42-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 97,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000668035957",
@@ -10215,7 +10505,12 @@
       "valor": 970,
       "owner": "Alejandra Anzaldo",
       "creado": "2026-10-05T22:19:47-06:00",
-      "modificado": "2026-10-20T07:39:29-06:00"
+      "modificado": "2026-10-20T07:39:29-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 97,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000625800002",
@@ -10230,7 +10525,12 @@
       "valor": 0,
       "owner": "David Ballesteros",
       "creado": "2026-05-08T16:19:03-06:00",
-      "modificado": "2026-05-25T15:01:51-06:00"
+      "modificado": "2026-10-29T10:33:13-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 3000,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000669701412",
@@ -10245,7 +10545,12 @@
       "valor": 900,
       "owner": "Alfredo Fuentes",
       "creado": "2026-10-08T12:06:05-06:00",
-      "modificado": "2026-10-08T12:34:52-06:00"
+      "modificado": "2026-10-08T12:34:52-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000651671108",
@@ -10260,7 +10565,12 @@
       "valor": 780,
       "owner": "Alfredo Fuentes",
       "creado": "2026-08-12T10:30:47-06:00",
-      "modificado": "2026-10-07T08:31:39-06:00"
+      "modificado": "2026-10-07T08:31:39-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 78,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000519554316",
@@ -10275,7 +10585,12 @@
       "valor": 27000,
       "owner": "David Ballesteros",
       "creado": "2025-10-10T10:32:21-06:00",
-      "modificado": "2026-10-26T13:52:14-06:00"
+      "modificado": "2026-10-26T13:52:14-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1000,
+      "precio_usuario": 27
     },
     {
       "id": "3525045000631713144",
@@ -10290,7 +10605,12 @@
       "valor": 0,
       "owner": "Adriana Delgado",
       "creado": "2026-06-03T17:53:36-06:00",
-      "modificado": "2026-08-11T18:16:07-06:00"
+      "modificado": "2026-10-29T10:33:06-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000631713109",
@@ -10305,7 +10625,12 @@
       "valor": 0,
       "owner": "Adriana Delgado",
       "creado": "2026-06-03T17:51:12-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-29T10:33:06-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 50,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000568662001",
@@ -10320,7 +10645,12 @@
       "valor": 760,
       "owner": "David Ballesteros",
       "creado": "2026-01-16T09:40:50-06:00",
-      "modificado": "2026-03-23T12:27:21-06:00"
+      "modificado": "2026-03-23T12:27:21-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 19,
+      "precio_usuario": 40
     },
     {
       "id": "3525045000117526011",
@@ -10335,7 +10665,12 @@
       "valor": 0,
       "owner": "GeoVictoria Admin",
       "creado": "2021-08-09T09:25:13-05:00",
-      "modificado": "2026-10-26T13:52:14-06:00"
+      "modificado": "2026-10-26T13:52:14-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": 0
     },
     {
       "id": "3525045000660995049",
@@ -10350,7 +10685,12 @@
       "valor": 450,
       "owner": "Karla Guerrero",
       "creado": "2026-09-11T14:25:02-06:00",
-      "modificado": "2026-10-06T11:56:36-06:00"
+      "modificado": "2026-10-29T10:31:01-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 30,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000665863174",
@@ -10365,7 +10705,12 @@
       "valor": 2576,
       "owner": "Alejandra Anzaldo",
       "creado": "2026-09-25T10:23:51-06:00",
-      "modificado": "2026-10-20T07:41:19-06:00"
+      "modificado": "2026-10-20T07:41:19-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 112,
+      "precio_usuario": 23
     },
     {
       "id": "3525045000665863036",
@@ -10380,7 +10725,12 @@
       "valor": 560,
       "owner": "Alejandra Anzaldo",
       "creado": "2026-09-25T10:21:35-06:00",
-      "modificado": "2026-10-20T07:41:33-06:00"
+      "modificado": "2026-10-20T07:41:33-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 112,
+      "precio_usuario": 5
     },
     {
       "id": "3525045000665863306",
@@ -10395,7 +10745,12 @@
       "valor": 2688,
       "owner": "Alejandra Anzaldo",
       "creado": "2026-09-25T10:28:20-06:00",
-      "modificado": "2026-10-20T07:41:06-06:00"
+      "modificado": "2026-10-20T07:41:06-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 112,
+      "precio_usuario": 24
     },
     {
       "id": "3525045000521952787",
@@ -10410,7 +10765,12 @@
       "valor": 9287,
       "owner": "Jimena Rodríguez",
       "creado": "2025-10-17T13:52:09-06:00",
-      "modificado": "2026-03-24T09:20:46-06:00"
+      "modificado": "2026-03-24T09:20:46-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 251,
+      "precio_usuario": 37
     },
     {
       "id": "3525045000647395345",
@@ -10425,7 +10785,12 @@
       "valor": 3372,
       "owner": "Alfredo Fuentes",
       "creado": "2026-07-29T13:43:31-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 562,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000551202087",
@@ -10440,7 +10805,12 @@
       "valor": 168,
       "owner": "David Ballesteros",
       "creado": "2025-12-09T17:26:10-06:00",
-      "modificado": "2026-03-23T12:30:53-06:00"
+      "modificado": "2026-03-23T12:30:53-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 21,
+      "precio_usuario": 8
     },
     {
       "id": "3525045000612029075",
@@ -10455,7 +10825,12 @@
       "valor": 540,
       "owner": "Lucía Morales",
       "creado": "2026-04-01T10:56:47-06:00",
-      "modificado": "2026-07-23T16:36:17-06:00"
+      "modificado": "2026-07-23T16:36:17-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 27,
+      "precio_usuario": 20
     },
     {
       "id": "3525045000549715041",
@@ -10470,7 +10845,12 @@
       "valor": 1303.8,
       "owner": "Claudia Valdez",
       "creado": "2025-12-05T11:24:54-06:00",
-      "modificado": "2026-09-11T12:07:03-06:00"
+      "modificado": "2026-10-29T10:33:43-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 60,
+      "precio_usuario": 21.73
     },
     {
       "id": "3525045000647360741",
@@ -10485,7 +10865,12 @@
       "valor": 3528,
       "owner": "Alejandra Anzaldo",
       "creado": "2026-07-28T18:50:33-06:00",
-      "modificado": "2026-10-07T09:49:35-06:00"
+      "modificado": "2026-10-07T09:49:35-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 588,
+      "precio_usuario": 6
     },
     {
       "id": "3525045000672907251",
@@ -10500,7 +10885,12 @@
       "valor": 390,
       "owner": "Laura Medina",
       "creado": "2026-10-16T16:05:51-06:00",
-      "modificado": "2026-10-23T17:22:31-06:00"
+      "modificado": "2026-10-29T10:30:49-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 39,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000641063336",
@@ -10515,7 +10905,12 @@
       "valor": 150,
       "owner": "Karla Guerrero",
       "creado": "2026-07-08T11:16:09-06:00",
-      "modificado": "2026-10-21T14:26:30-06:00"
+      "modificado": "2026-10-21T14:26:30-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5,
+      "precio_usuario": 30
     },
     {
       "id": "3525045000655503749",
@@ -10530,7 +10925,12 @@
       "valor": 10000,
       "owner": "Karla Guerrero",
       "creado": "2026-08-24T12:28:30-06:00",
-      "modificado": "2026-10-14T11:23:21-06:00"
+      "modificado": "2026-10-14T11:23:21-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 250,
+      "precio_usuario": 40
     },
     {
       "id": "3525045000567531628",
@@ -10545,7 +10945,12 @@
       "valor": 1250,
       "owner": "Alfredo Fuentes",
       "creado": "2026-01-14T16:58:24-06:00",
-      "modificado": "2026-10-27T11:31:54-06:00"
+      "modificado": "2026-10-27T11:31:54-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 280,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000567531063",
@@ -10560,7 +10965,12 @@
       "valor": 3360,
       "owner": "Alfredo Fuentes",
       "creado": "2026-01-14T11:49:49-06:00",
-      "modificado": "2026-10-27T11:31:54-06:00"
+      "modificado": "2026-10-27T11:31:54-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 280,
+      "precio_usuario": 12
     },
     {
       "id": "3525045000582795248",
@@ -10575,7 +10985,12 @@
       "valor": 9750,
       "owner": "Alejandra Anzaldo",
       "creado": "2026-02-12T12:03:49-06:00",
-      "modificado": "2026-04-23T09:43:44-06:00"
+      "modificado": "2026-04-23T09:43:44-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 650,
+      "precio_usuario": 15
     },
     {
       "id": "3525045000672907156",
@@ -10590,7 +11005,12 @@
       "valor": 1020,
       "owner": "Laura Medina",
       "creado": "2026-10-16T13:57:50-06:00",
-      "modificado": "2026-10-28T13:43:57-06:00"
+      "modificado": "2026-10-28T13:43:57-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 102,
+      "precio_usuario": 10
     },
     {
       "id": "3525045000628611168",
@@ -10605,7 +11025,12 @@
       "valor": 1170,
       "owner": "David Ballesteros",
       "creado": "2026-05-21T14:10:27-06:00",
-      "modificado": "2026-06-23T12:03:21-06:00"
+      "modificado": "2026-10-29T10:33:11-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 90,
+      "precio_usuario": 13
     },
     {
       "id": "3525045000628611141",
@@ -10620,7 +11045,12 @@
       "valor": 3510,
       "owner": "David Ballesteros",
       "creado": "2026-05-21T12:45:08-06:00",
-      "modificado": "2026-06-23T12:02:47-06:00"
+      "modificado": "2026-10-29T10:33:11-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 270,
+      "precio_usuario": 13
     },
     {
       "id": "3525045000638908045",
@@ -10635,7 +11065,12 @@
       "valor": 480,
       "owner": "Claudia Valdez",
       "creado": "2026-06-30T11:52:36-06:00",
-      "modificado": "2026-07-07T10:19:56-06:00"
+      "modificado": "2026-10-29T10:31:21-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 12,
+      "precio_usuario": 40
     },
     {
       "id": "3525045000636391044",
@@ -10650,10 +11085,752 @@
       "valor": 0,
       "owner": "Yahel Segura",
       "creado": "2026-06-16T16:45:54-06:00",
-      "modificado": "2026-08-26T17:17:59-06:00"
+      "modificado": "2026-08-26T17:17:59-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 24,
+      "precio_usuario": 0
     }
   ],
   "implementaciones": [
+    {
+      "id": "3525045000677446821",
+      "nombre": "LearningLab",
+      "cuenta": "LEARNING LAB",
+      "cuenta_id": "3525045000661710158",
+      "etapa": "0. Sin Asignar",
+      "jp": "",
+      "fecha_fin": null,
+      "semaforo": "",
+      "modificado": "2026-10-29T18:27:27-06:00"
+    },
+    {
+      "id": "3525045000669321152",
+      "nombre": "Implementación | TEQUECHONGOS | Asistencia+ WF Vacaciones + WF Permisos",
+      "cuenta": "TEQUECHONGOS MÉXICO",
+      "cuenta_id": "3525045000629886007",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-01-22",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T16:52:17-06:00"
+    },
+    {
+      "id": "3525045000670429098",
+      "nombre": "Implementación | MAGER ALIMENTOS| Asistencia",
+      "cuenta": "ALIMENTOS MAGER MX",
+      "cuenta_id": "3525045000335205136",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-01-22",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T13:51:06-06:00"
+    },
+    {
+      "id": "3525045000677133862",
+      "nombre": "Implementación Lineshop- Sicoss",
+      "cuenta": "Lineshop",
+      "cuenta_id": "3525045000628609615",
+      "etapa": "1. En Traspaso",
+      "jp": "Rocío Suárez",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T13:48:40-06:00"
+    },
+    {
+      "id": "3525045000674491385",
+      "nombre": "Merici - Asistencia",
+      "cuenta": "MERICI",
+      "cuenta_id": "3525045000674491198",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T10:39:52-06:00"
+    },
+    {
+      "id": "3525045000669463068",
+      "nombre": "Asistencia - app - biométricos",
+      "cuenta": "Distribuidora Mariscos Bahía Kino, S.A. de C.V.",
+      "cuenta_id": "3525045000664574094",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-04",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:34:30-06:00"
+    },
+    {
+      "id": "3525045000671912155",
+      "nombre": "Implementación | VINDE DINAMICA EMPRESARIAL | Asistencia + WF Vacaciones + WF Permisos",
+      "cuenta": "VINDE DINAMICA EMPRESARIAL S DE RL",
+      "cuenta_id": "3525045000659754080",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-02-26",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:34:28-06:00"
+    },
+    {
+      "id": "3525045000631926028",
+      "nombre": "Accesos,asistencia, permisos y vacaciones Netafim",
+      "cuenta": "NETAFIM",
+      "cuenta_id": "3525045000010332421",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-12-02",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:34:17-06:00"
+    },
+    {
+      "id": "3525045000673916311",
+      "nombre": "PACKMASTER SYSTEMS",
+      "cuenta": "Packmaster Systems",
+      "cuenta_id": "3525045000660101549",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:34:14-06:00"
+    },
+    {
+      "id": "3525045000669295198",
+      "nombre": "Bukal",
+      "cuenta": "BUKAL",
+      "cuenta_id": "3525045000667573186",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:34:09-06:00"
+    },
+    {
+      "id": "3525045000667485658",
+      "nombre": "Implementación | CORROCON GDL| Asistencia+ WF Vacaciones + WF Permisos + Planificador Inteligente",
+      "cuenta": "Corrocon",
+      "cuenta_id": "3525045000659202629",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-12-09",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:34:08-06:00"
+    },
+    {
+      "id": "3525045000670462522",
+      "nombre": "Liliana Mendoza Angeles",
+      "cuenta": "Liliana Mendoza Angeles",
+      "cuenta_id": "3525045000668929159",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:34:01-06:00"
+    },
+    {
+      "id": "3525045000668218263",
+      "nombre": "Implementación Maomi Desarrollos",
+      "cuenta": "Maomi Desarrollos",
+      "cuenta_id": "3525045000666619636",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-18",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:59-06:00"
+    },
+    {
+      "id": "3525045000668008906",
+      "nombre": "Terminal Logistics implementacion",
+      "cuenta": "Términal Logistics",
+      "cuenta_id": "3525045000297122001",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-22",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:59-06:00"
+    },
+    {
+      "id": "3525045000669502504",
+      "nombre": "Sucarheza - Asistencia, vacaciones, biometricos, app",
+      "cuenta": "DISTRIBUIDORA SUCAHERZA SA DE CV",
+      "cuenta_id": "3525045000627573323",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-28",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:56-06:00"
+    },
+    {
+      "id": "3525045000670572009",
+      "nombre": "Implementación | PIGSA | Asistencia",
+      "cuenta": "PIGSA",
+      "cuenta_id": "3525045000653101267",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-01-12",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:51-06:00"
+    },
+    {
+      "id": "3525045000668601356",
+      "nombre": "CENTRO DE RECICLAJE BAJA TEC",
+      "cuenta": "CENTRO DE RECICLAJE BAJA TEC MEXICO",
+      "cuenta_id": "3525045000629903007",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:50-06:00"
+    },
+    {
+      "id": "3525045000670516043",
+      "nombre": "PQ SIDESA - ASISTENCIA/PERMISOS Y VACACIONES/PLANIFICADOR/COMEDOR/ APP SUP",
+      "cuenta": "PQ CORPORATION",
+      "cuenta_id": "3525045000629322699",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-18",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:49-06:00"
+    },
+    {
+      "id": "3525045000670429093",
+      "nombre": "EDIFICA ARLE",
+      "cuenta": "EDIFICA ARLE",
+      "cuenta_id": "3525045000666610145",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:49-06:00"
+    },
+    {
+      "id": "3525045000666144001",
+      "nombre": "Implementación | GRUPO DALSI | Asistencia",
+      "cuenta": "Grupo Dalsi",
+      "cuenta_id": "3525045000661691058",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-12-29",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:44-06:00"
+    },
+    {
+      "id": "3525045000660516308",
+      "nombre": "Industrias DCBS",
+      "cuenta": "Industrias DCBS",
+      "cuenta_id": "3525045000644858138",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-09",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:43-06:00"
+    },
+    {
+      "id": "3525045000666616572",
+      "nombre": "Implementación | TEVA MÉXICO | Asistencia+ WF Vacaciones + Permisos + Accesos + SSO",
+      "cuenta": "Teva Mexico",
+      "cuenta_id": "3525045000634119041",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-02-04",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:38-06:00"
+    },
+    {
+      "id": "3525045000647956586",
+      "nombre": "TOTTO MÉXICO",
+      "cuenta": "TOTTO MÉXICO",
+      "cuenta_id": "3525045000647681177",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-10-02",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:25-06:00"
+    },
+    {
+      "id": "3525045000667080125",
+      "nombre": "Implementación | AGAVE DESARROLLOS | Asistencia+ WF Vacaciones + BI",
+      "cuenta": "Agave Desarrollos",
+      "cuenta_id": "3525045000589982025",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-12-17",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:23-06:00"
+    },
+    {
+      "id": "3525045000666594086",
+      "nombre": "APP y WA Kosmos",
+      "cuenta": "Corporativo Kosmos",
+      "cuenta_id": "3525045000094546230",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-02",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:22-06:00"
+    },
+    {
+      "id": "3525045000667974109",
+      "nombre": "VENTAS ACUARIO",
+      "cuenta": "Ventas Acuario",
+      "cuenta_id": "3525045000659788861",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:21-06:00"
+    },
+    {
+      "id": "3525045000664574072",
+      "nombre": "Pet clinik",
+      "cuenta": "PET CLINIQUE",
+      "cuenta_id": "3525045000657233438",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-19",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:33:00-06:00"
+    },
+    {
+      "id": "3525045000667086288",
+      "nombre": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
+      "cuenta": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
+      "cuenta_id": "3525045000649620311",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:32:51-06:00"
+    },
+    {
+      "id": "3525045000653121190",
+      "nombre": "Implementación | SERVISEG | Asistencia+ Planificador Inteligente",
+      "cuenta": "SERVISEG (Seguridad)",
+      "cuenta_id": "3525045000642410276",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-11-27",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:32:42-06:00"
+    },
+    {
+      "id": "3525045000662947048",
+      "nombre": "Asistencia - comedor y falso acceso",
+      "cuenta": "Nominativa (Asistencia)",
+      "cuenta_id": "3525045000650473001",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-24",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:32:40-06:00"
+    },
+    {
+      "id": "3525045000656011433",
+      "nombre": "Cazcon farmacias similares",
+      "cuenta": "CAZCON S.A. DE C.V.",
+      "cuenta_id": "3525045000647219305",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-03",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:32:34-06:00"
+    },
+    {
+      "id": "3525045000659248227",
+      "nombre": "Multimédica Metepec",
+      "cuenta": "Multimédica Metepec",
+      "cuenta_id": "3525045000651533322",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:32:29-06:00"
+    },
+    {
+      "id": "3525045000660541105",
+      "nombre": "Sicop Asistencia Equipo",
+      "cuenta": "SICOP",
+      "cuenta_id": "3525045000647219629",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-05",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:32:24-06:00"
+    },
+    {
+      "id": "3525045000651752612",
+      "nombre": "Asistencia, Integración, vacaciones y permisos - IAMSA",
+      "cuenta": "IAMSA",
+      "cuenta_id": "3525045000602058423",
+      "etapa": "3. En Ejecución",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2027-01-08",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:32:15-06:00"
+    },
+    {
+      "id": "3525045000649031511",
+      "nombre": "Trafalgar sicoss",
+      "cuenta": "TRAFALGAR",
+      "cuenta_id": "3525045000634837015",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-10-02",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:31:26-06:00"
+    },
+    {
+      "id": "3525045000649526066",
+      "nombre": "Implementación Profina (Sicoss)",
+      "cuenta": "Profina",
+      "cuenta_id": "3525045000641620017",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-10-20",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:31:15-06:00"
+    },
+    {
+      "id": "3525045000664531005",
+      "nombre": "Geckologistics Pto Vallarta",
+      "cuenta": "GECKOLOGISTICS",
+      "cuenta_id": "3525045000657179255",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-27",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:31:14-06:00"
+    },
+    {
+      "id": "3525045000666655574",
+      "nombre": "PROSEDETEC",
+      "cuenta": "Prosedetec",
+      "cuenta_id": "3525045000635505348",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:31:11-06:00"
+    },
+    {
+      "id": "3525045000630185119",
+      "nombre": "Implementación | DIVYA | Asistencia+ WF Vacaciones",
+      "cuenta": "DIVYA",
+      "cuenta_id": "3525045000625764077",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-10-19",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:31:07-06:00"
+    },
+    {
+      "id": "3525045000641282258",
+      "nombre": "CONSTRUCTORADEBASCULAS",
+      "cuenta": "CONSTRUCTORA DE BASCULAS",
+      "cuenta_id": "3525045000618029667",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:30:59-06:00"
+    },
+    {
+      "id": "3525045000648621238",
+      "nombre": "CT AMÉRICA LATINA",
+      "cuenta": "CT AMERICA LATINA",
+      "cuenta_id": "3525045000641985007",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:30:56-06:00"
+    },
+    {
+      "id": "3525045000639367007",
+      "nombre": "Xander Asistencia y Vacaciones",
+      "cuenta": "XANDER",
+      "cuenta_id": "3525045000636647300",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:30:55-06:00"
+    },
+    {
+      "id": "3525045000640254064",
+      "nombre": "ARBOS",
+      "cuenta": "Arbos",
+      "cuenta_id": "3525045000636267094",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:30:45-06:00"
+    },
+    {
+      "id": "3525045000630525175",
+      "nombre": "Schätz & Catanni",
+      "cuenta": "Schätz & Cattani Spa México",
+      "cuenta_id": "3525045000536386049",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": "2026-08-19",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:30:22-06:00"
+    },
+    {
+      "id": "3525045000624117266",
+      "nombre": "ROKKINA",
+      "cuenta": "ROKKINA",
+      "cuenta_id": "3525045000612121530",
+      "etapa": "Detenida",
+      "jp": "Rocío Suárez",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:30:10-06:00"
+    },
+    {
+      "id": "3525045000631887143",
+      "nombre": "Pastos y Jardines Landscape",
+      "cuenta": "Pastos y Jardines Landscape",
+      "cuenta_id": "3525045000627032188",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:29:54-06:00"
+    },
+    {
+      "id": "3525045000634002110",
+      "nombre": "Implementación J&T EXPRESS METROPOLITANA",
+      "cuenta": "J&T EXPRESS",
+      "cuenta_id": "3525045000260992026",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-09-18",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:29:48-06:00"
+    },
+    {
+      "id": "3525045000637552242",
+      "nombre": "GROSS ARQUITECTURA",
+      "cuenta": "Gross arquitectura",
+      "cuenta_id": "3525045000633910128",
+      "etapa": "Detenida",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-10-09",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:29:41-06:00"
+    },
+    {
+      "id": "3525045000673909041",
+      "nombre": "vacaciones Entia",
+      "cuenta": "ENTIA DE MEXICO SA DE CV",
+      "cuenta_id": "3525045000630418441",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2027-01-12",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:29:37-06:00"
+    },
+    {
+      "id": "3525045000629762182",
+      "nombre": "Implementación | PENHEALTH | Asistencia",
+      "cuenta": "PENHEALTH",
+      "cuenta_id": "3525045000526296256",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-09-24",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:29:13-06:00"
+    },
+    {
+      "id": "3525045000647586571",
+      "nombre": "Implementación Asistencia SEICSA - GRUPO MO",
+      "cuenta": "SEICSA",
+      "cuenta_id": "3525045000053667600",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2027-01-05",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:29:12-06:00"
+    },
+    {
+      "id": "3525045000617371111",
+      "nombre": "TRANSPORTES RUGA - ASISTENCIA + VACACIONES",
+      "cuenta": "Transportes Ruga",
+      "cuenta_id": "3525045000578056486",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-07-29",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:29:09-06:00"
+    },
+    {
+      "id": "3525045000639450538",
+      "nombre": "Implementación | FORMEL D | Asistencia+ WF Vacaciones + Permisos",
+      "cuenta": "Formel D",
+      "cuenta_id": "3525045000511880161",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-10-16",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:28:50-06:00"
+    },
+    {
+      "id": "3525045000623054652",
+      "nombre": "WALLGROW - ASISTENCIA",
+      "cuenta": "WALLGROW",
+      "cuenta_id": "3525045000614159505",
+      "etapa": "Detenida",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:28:47-06:00"
+    },
+    {
+      "id": "3525045000639003260",
+      "nombre": "Implementación | PIVACSA | Asistencia+ WF Vacaciones",
+      "cuenta": "PIVACSA",
+      "cuenta_id": "3525045000551532404",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-10-02",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:28:12-06:00"
+    },
+    {
+      "id": "3525045000641549109",
+      "nombre": "Soluciones en Mantenimiento Industrial MAQUI",
+      "cuenta": "Soluciones en Mantenimiento Industrial MAQUI",
+      "cuenta_id": "3525045000631372239",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:27:38-06:00"
+    },
+    {
+      "id": "3525045000636114035",
+      "nombre": "Implementacion Dicka",
+      "cuenta": "DICKA LOGISTICS",
+      "cuenta_id": "3525045000545668197",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-10-27",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:27:37-06:00"
+    },
+    {
+      "id": "3525045000616755250",
+      "nombre": "DRILLMEC",
+      "cuenta": "DRILLMEC",
+      "cuenta_id": "3525045000606936298",
+      "etapa": "Detenida",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:24:41-06:00"
+    },
+    {
+      "id": "3525045000616728342",
+      "nombre": "Almacenadora AlSur",
+      "cuenta": "Almacenadora Sur SA de CV",
+      "cuenta_id": "3525045000417780328",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-07-08",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:24:08-06:00"
+    },
+    {
+      "id": "3525045000616665532",
+      "nombre": "Implementación J&T EXPRESS JALISCO",
+      "cuenta": "J&T EXPRESS",
+      "cuenta_id": "3525045000260992026",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-07-01",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:23:47-06:00"
+    },
+    {
+      "id": "3525045000569488082",
+      "nombre": "VI Group - asistencia",
+      "cuenta": "VI GROUP MX",
+      "cuenta_id": "3525045000502956105",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-07-31",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:23:26-06:00"
+    },
+    {
+      "id": "3525045000612066080",
+      "nombre": "Implementación | NORVER | Asistencia+ WF Vacaciones",
+      "cuenta": "Empacadora NOR-VER",
+      "cuenta_id": "3525045000555178278",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-10-01",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:23:04-06:00"
+    },
+    {
+      "id": "3525045000547256867",
+      "nombre": "CTS - ALTUR - ASISTENCIA - APP",
+      "cuenta": "CTS /Altour",
+      "cuenta_id": "3525045000375387064",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-09-23",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:22:34-06:00"
+    },
+    {
+      "id": "3525045000515309492",
+      "nombre": "Newrest - Asistencia",
+      "cuenta": "Newrest - México",
+      "cuenta_id": "3525045000459175562",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Daniel Peña",
+      "fecha_fin": "2026-06-12",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:19:09-06:00"
+    },
+    {
+      "id": "3525045000625765128",
+      "nombre": "Implementación J&T EXPRESS CEDIS TLANEPANTLA",
+      "cuenta": "J&T EXPRESS",
+      "cuenta_id": "3525045000260992026",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-07-10",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:08:41-06:00"
+    },
+    {
+      "id": "3525045000609743775",
+      "nombre": "Accesos internos Softys",
+      "cuenta": "Softys México",
+      "cuenta_id": "3525045000244055039",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Daniel Peña",
+      "fecha_fin": "2026-07-03",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:04:52-06:00"
+    },
+    {
+      "id": "3525045000648874281",
+      "nombre": "Migración Modulo de Vacaciones COMEX",
+      "cuenta": "COMEX MEXICALI",
+      "cuenta_id": "3525045000235830314",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-09-30",
+      "semaforo": "Verde",
+      "modificado": "2026-10-29T04:02:43-06:00"
+    },
     {
       "id": "3525045000676988026",
       "nombre": "EIA CONSTRUCCIONES",
@@ -10664,17 +11841,6 @@
       "fecha_fin": "2026-12-28",
       "semaforo": "Verde",
       "modificado": "2026-10-28T18:43:46-06:00"
-    },
-    {
-      "id": "3525045000677133862",
-      "nombre": "Implementación Lineshop- Sicoss",
-      "cuenta": "Lineshop",
-      "cuenta_id": "3525045000628609615",
-      "etapa": "0. Sin Asignar",
-      "jp": "",
-      "fecha_fin": null,
-      "semaforo": "",
-      "modificado": "2026-10-28T17:50:38-06:00"
     },
     {
       "id": "3525045000676899766",
@@ -10721,17 +11887,6 @@
       "modificado": "2026-10-28T14:16:07-06:00"
     },
     {
-      "id": "3525045000666616572",
-      "nombre": "Implementación | TEVA MÉXICO | Asistencia+ WF Vacaciones + Permisos + Accesos + SSO",
-      "cuenta": "Teva Mexico",
-      "cuenta_id": "3525045000634119041",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-02-04",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T13:49:30-06:00"
-    },
-    {
       "id": "3525045000670589099",
       "nombre": "Implementación | MINERALS MEXICO| Asistencia+ WF Vacaciones + WF Permisos + Planificador Inteligente",
       "cuenta": "Minerals Mexico",
@@ -10741,699 +11896,6 @@
       "fecha_fin": "2027-02-12",
       "semaforo": "Verde",
       "modificado": "2026-10-28T13:46:33-06:00"
-    },
-    {
-      "id": "3525045000671912155",
-      "nombre": "Implementación | VINDE DINAMICA EMPRESARIAL | Asistencia + WF Vacaciones + WF Permisos",
-      "cuenta": "VINDE DINAMICA EMPRESARIAL S DE RL",
-      "cuenta_id": "3525045000659754080",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-02-26",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T13:42:17-06:00"
-    },
-    {
-      "id": "3525045000669502504",
-      "nombre": "Sucarheza - Asistencia, vacaciones, biometricos, app",
-      "cuenta": "DISTRIBUIDORA SUCAHERZA SA DE CV",
-      "cuenta_id": "3525045000627573323",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-28",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T11:28:27-06:00"
-    },
-    {
-      "id": "3525045000669463068",
-      "nombre": "Asistencia - app - biométricos",
-      "cuenta": "Distribuidora Mariscos Bahía Kino, S.A. de C.V.",
-      "cuenta_id": "3525045000664574094",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-04",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:45-06:00"
-    },
-    {
-      "id": "3525045000674491385",
-      "nombre": "Merici - Asistencia",
-      "cuenta": "MERICI",
-      "cuenta_id": "3525045000674491198",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:32-06:00"
-    },
-    {
-      "id": "3525045000673916311",
-      "nombre": "PACKMASTER SYSTEMS",
-      "cuenta": "Packmaster Systems",
-      "cuenta_id": "3525045000660101549",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:32-06:00"
-    },
-    {
-      "id": "3525045000669295198",
-      "nombre": "Bukal",
-      "cuenta": "BUKAL",
-      "cuenta_id": "3525045000667573186",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:31-06:00"
-    },
-    {
-      "id": "3525045000667485658",
-      "nombre": "Implementación | CORROCON GDL| Asistencia+ WF Vacaciones + WF Permisos + Planificador Inteligente",
-      "cuenta": "Corrocon",
-      "cuenta_id": "3525045000659202629",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-12-09",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:31-06:00"
-    },
-    {
-      "id": "3525045000631926028",
-      "nombre": "Accesos,asistencia, permisos y vacaciones Netafim",
-      "cuenta": "NETAFIM",
-      "cuenta_id": "3525045000010332421",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-12-02",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:25-06:00"
-    },
-    {
-      "id": "3525045000668218263",
-      "nombre": "Implementación Maomi Desarrollos",
-      "cuenta": "Maomi Desarrollos",
-      "cuenta_id": "3525045000666619636",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-18",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:21-06:00"
-    },
-    {
-      "id": "3525045000670462522",
-      "nombre": "Liliana Mendoza Angeles",
-      "cuenta": "Liliana Mendoza Angeles",
-      "cuenta_id": "3525045000668929159",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:18-06:00"
-    },
-    {
-      "id": "3525045000668008906",
-      "nombre": "Terminal Logistics implementacion",
-      "cuenta": "Términal Logistics",
-      "cuenta_id": "3525045000297122001",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-22",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:16-06:00"
-    },
-    {
-      "id": "3525045000668601356",
-      "nombre": "CENTRO DE RECICLAJE BAJA TEC",
-      "cuenta": "CENTRO DE RECICLAJE BAJA TEC MEXICO",
-      "cuenta_id": "3525045000629903007",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:13-06:00"
-    },
-    {
-      "id": "3525045000670572009",
-      "nombre": "Implementación | PIGSA | Asistencia",
-      "cuenta": "PIGSA",
-      "cuenta_id": "3525045000653101267",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-01-12",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:11-06:00"
-    },
-    {
-      "id": "3525045000670516043",
-      "nombre": "PQ SIDESA - ASISTENCIA/PERMISOS Y VACACIONES/PLANIFICADOR/COMEDOR/ APP SUP",
-      "cuenta": "PQ CORPORATION",
-      "cuenta_id": "3525045000629322699",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-18",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:09-06:00"
-    },
-    {
-      "id": "3525045000670429093",
-      "nombre": "EDIFICA ARLE",
-      "cuenta": "EDIFICA ARLE",
-      "cuenta_id": "3525045000666610145",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:09-06:00"
-    },
-    {
-      "id": "3525045000660516308",
-      "nombre": "Industrias DCBS",
-      "cuenta": "Industrias DCBS",
-      "cuenta_id": "3525045000644858138",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-09",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:32:06-06:00"
-    },
-    {
-      "id": "3525045000666144001",
-      "nombre": "Implementación | GRUPO DALSI | Asistencia",
-      "cuenta": "Grupo Dalsi",
-      "cuenta_id": "3525045000661691058",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-12-29",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:31:59-06:00"
-    },
-    {
-      "id": "3525045000647956586",
-      "nombre": "TOTTO MÉXICO",
-      "cuenta": "TOTTO MÉXICO",
-      "cuenta_id": "3525045000647681177",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-10-02",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:31:52-06:00"
-    },
-    {
-      "id": "3525045000667080125",
-      "nombre": "Implementación | AGAVE DESARROLLOS | Asistencia+ WF Vacaciones + BI",
-      "cuenta": "Agave Desarrollos",
-      "cuenta_id": "3525045000589982025",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-12-17",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:31:47-06:00"
-    },
-    {
-      "id": "3525045000667974109",
-      "nombre": "VENTAS ACUARIO",
-      "cuenta": "Ventas Acuario",
-      "cuenta_id": "3525045000659788861",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:31:42-06:00"
-    },
-    {
-      "id": "3525045000666594086",
-      "nombre": "APP y WA Kosmos",
-      "cuenta": "Corporativo Kosmos",
-      "cuenta_id": "3525045000094546230",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-02",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:31:39-06:00"
-    },
-    {
-      "id": "3525045000664574072",
-      "nombre": "Pet clinik",
-      "cuenta": "PET CLINIQUE",
-      "cuenta_id": "3525045000657233438",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-19",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:31:17-06:00"
-    },
-    {
-      "id": "3525045000667086288",
-      "nombre": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
-      "cuenta": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
-      "cuenta_id": "3525045000649620311",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:31:10-06:00"
-    },
-    {
-      "id": "3525045000670612629",
-      "nombre": "HOTELES MODERNOS",
-      "cuenta": "Hoteles Modernos",
-      "cuenta_id": "3525045000641973236",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-22",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:31:01-06:00"
-    },
-    {
-      "id": "3525045000662947048",
-      "nombre": "Asistencia - comedor y falso acceso",
-      "cuenta": "Nominativa (Asistencia)",
-      "cuenta_id": "3525045000650473001",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-24",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:30:58-06:00"
-    },
-    {
-      "id": "3525045000653121190",
-      "nombre": "Implementación | SERVISEG | Asistencia+ Planificador Inteligente",
-      "cuenta": "SERVISEG (Seguridad)",
-      "cuenta_id": "3525045000642410276",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-11-27",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:30:58-06:00"
-    },
-    {
-      "id": "3525045000656011433",
-      "nombre": "Cazcon farmacias similares",
-      "cuenta": "CAZCON S.A. DE C.V.",
-      "cuenta_id": "3525045000647219305",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-03",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:30:52-06:00"
-    },
-    {
-      "id": "3525045000659248227",
-      "nombre": "Multimédica Metepec",
-      "cuenta": "Multimédica Metepec",
-      "cuenta_id": "3525045000651533322",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:30:49-06:00"
-    },
-    {
-      "id": "3525045000660541105",
-      "nombre": "Sicop Asistencia Equipo",
-      "cuenta": "SICOP",
-      "cuenta_id": "3525045000647219629",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-05",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:30:43-06:00"
-    },
-    {
-      "id": "3525045000651752612",
-      "nombre": "Asistencia, Integración, vacaciones y permisos - IAMSA",
-      "cuenta": "IAMSA",
-      "cuenta_id": "3525045000602058423",
-      "etapa": "3. En Ejecución",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2027-01-08",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:30:36-06:00"
-    },
-    {
-      "id": "3525045000649031511",
-      "nombre": "Trafalgar sicoss",
-      "cuenta": "TRAFALGAR",
-      "cuenta_id": "3525045000634837015",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-10-02",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:30:12-06:00"
-    },
-    {
-      "id": "3525045000664531005",
-      "nombre": "Geckologistics Pto Vallarta",
-      "cuenta": "GECKOLOGISTICS",
-      "cuenta_id": "3525045000657179255",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-27",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:30:02-06:00"
-    },
-    {
-      "id": "3525045000649526066",
-      "nombre": "Implementación Profina (Sicoss)",
-      "cuenta": "Profina",
-      "cuenta_id": "3525045000641620017",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-10-20",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:30:00-06:00"
-    },
-    {
-      "id": "3525045000666655574",
-      "nombre": "PROSEDETEC",
-      "cuenta": "Prosedetec",
-      "cuenta_id": "3525045000635505348",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:29:59-06:00"
-    },
-    {
-      "id": "3525045000630185119",
-      "nombre": "Implementación | DIVYA | Asistencia+ WF Vacaciones",
-      "cuenta": "DIVYA",
-      "cuenta_id": "3525045000625764077",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-10-19",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:29:55-06:00"
-    },
-    {
-      "id": "3525045000648621238",
-      "nombre": "CT AMÉRICA LATINA",
-      "cuenta": "CT AMERICA LATINA",
-      "cuenta_id": "3525045000641985007",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:29:51-06:00"
-    },
-    {
-      "id": "3525045000641282258",
-      "nombre": "CONSTRUCTORADEBASCULAS",
-      "cuenta": "CONSTRUCTORA DE BASCULAS",
-      "cuenta_id": "3525045000618029667",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:29:45-06:00"
-    },
-    {
-      "id": "3525045000639367007",
-      "nombre": "Xander Asistencia y Vacaciones",
-      "cuenta": "XANDER",
-      "cuenta_id": "3525045000636647300",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:29:44-06:00"
-    },
-    {
-      "id": "3525045000640254064",
-      "nombre": "ARBOS",
-      "cuenta": "Arbos",
-      "cuenta_id": "3525045000636267094",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:29:35-06:00"
-    },
-    {
-      "id": "3525045000630525175",
-      "nombre": "Schätz & Catanni",
-      "cuenta": "Schätz & Cattani Spa México",
-      "cuenta_id": "3525045000536386049",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": "2026-08-19",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:29:18-06:00"
-    },
-    {
-      "id": "3525045000624117266",
-      "nombre": "ROKKINA",
-      "cuenta": "ROKKINA",
-      "cuenta_id": "3525045000612121530",
-      "etapa": "Detenida",
-      "jp": "Rocío Suárez",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:29:10-06:00"
-    },
-    {
-      "id": "3525045000631887143",
-      "nombre": "Pastos y Jardines Landscape",
-      "cuenta": "Pastos y Jardines Landscape",
-      "cuenta_id": "3525045000627032188",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:28:47-06:00"
-    },
-    {
-      "id": "3525045000634002110",
-      "nombre": "Implementación J&T EXPRESS METROPOLITANA",
-      "cuenta": "J&T EXPRESS",
-      "cuenta_id": "3525045000260992026",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-09-18",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:28:45-06:00"
-    },
-    {
-      "id": "3525045000637552242",
-      "nombre": "GROSS ARQUITECTURA",
-      "cuenta": "Gross arquitectura",
-      "cuenta_id": "3525045000633910128",
-      "etapa": "Detenida",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-10-09",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:28:42-06:00"
-    },
-    {
-      "id": "3525045000673909041",
-      "nombre": "vacaciones Entia",
-      "cuenta": "ENTIA DE MEXICO SA DE CV",
-      "cuenta_id": "3525045000630418441",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2027-01-12",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:28:33-06:00"
-    },
-    {
-      "id": "3525045000617371111",
-      "nombre": "TRANSPORTES RUGA - ASISTENCIA + VACACIONES",
-      "cuenta": "Transportes Ruga",
-      "cuenta_id": "3525045000578056486",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-07-29",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:28:14-06:00"
-    },
-    {
-      "id": "3525045000629762182",
-      "nombre": "Implementación | PENHEALTH | Asistencia",
-      "cuenta": "PENHEALTH",
-      "cuenta_id": "3525045000526296256",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-09-24",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:28:06-06:00"
-    },
-    {
-      "id": "3525045000647586571",
-      "nombre": "Implementación Asistencia SEICSA - GRUPO MO",
-      "cuenta": "SEICSA",
-      "cuenta_id": "3525045000053667600",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2027-01-05",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:28:02-06:00"
-    },
-    {
-      "id": "3525045000639450538",
-      "nombre": "Implementación | FORMEL D | Asistencia+ WF Vacaciones + Permisos",
-      "cuenta": "Formel D",
-      "cuenta_id": "3525045000511880161",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-10-16",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:27:49-06:00"
-    },
-    {
-      "id": "3525045000623054652",
-      "nombre": "WALLGROW - ASISTENCIA",
-      "cuenta": "WALLGROW",
-      "cuenta_id": "3525045000614159505",
-      "etapa": "Detenida",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:27:44-06:00"
-    },
-    {
-      "id": "3525045000639003260",
-      "nombre": "Implementación | PIVACSA | Asistencia+ WF Vacaciones",
-      "cuenta": "PIVACSA",
-      "cuenta_id": "3525045000551532404",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-10-02",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:27:14-06:00"
-    },
-    {
-      "id": "3525045000636114035",
-      "nombre": "Implementacion Dicka",
-      "cuenta": "DICKA LOGISTICS",
-      "cuenta_id": "3525045000545668197",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-10-27",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:26:44-06:00"
-    },
-    {
-      "id": "3525045000641549109",
-      "nombre": "Soluciones en Mantenimiento Industrial MAQUI",
-      "cuenta": "Soluciones en Mantenimiento Industrial MAQUI",
-      "cuenta_id": "3525045000631372239",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:26:38-06:00"
-    },
-    {
-      "id": "3525045000616755250",
-      "nombre": "DRILLMEC",
-      "cuenta": "DRILLMEC",
-      "cuenta_id": "3525045000606936298",
-      "etapa": "Detenida",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:23:45-06:00"
-    },
-    {
-      "id": "3525045000616728342",
-      "nombre": "Almacenadora AlSur",
-      "cuenta": "Almacenadora Sur SA de CV",
-      "cuenta_id": "3525045000417780328",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-07-08",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:23:13-06:00"
-    },
-    {
-      "id": "3525045000616665532",
-      "nombre": "Implementación J&T EXPRESS JALISCO",
-      "cuenta": "J&T EXPRESS",
-      "cuenta_id": "3525045000260992026",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-07-01",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:22:53-06:00"
-    },
-    {
-      "id": "3525045000612066080",
-      "nombre": "Implementación | NORVER | Asistencia+ WF Vacaciones",
-      "cuenta": "Empacadora NOR-VER",
-      "cuenta_id": "3525045000555178278",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-10-01",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:22:33-06:00"
-    },
-    {
-      "id": "3525045000569488082",
-      "nombre": "VI Group - asistencia",
-      "cuenta": "VI GROUP MX",
-      "cuenta_id": "3525045000502956105",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-07-31",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:22:33-06:00"
-    },
-    {
-      "id": "3525045000547256867",
-      "nombre": "CTS - ALTUR - ASISTENCIA - APP",
-      "cuenta": "CTS /Altour",
-      "cuenta_id": "3525045000375387064",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-09-23",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:21:46-06:00"
-    },
-    {
-      "id": "3525045000515309492",
-      "nombre": "Newrest - Asistencia",
-      "cuenta": "Newrest - México",
-      "cuenta_id": "3525045000459175562",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Daniel Peña",
-      "fecha_fin": "2026-06-12",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:17:59-06:00"
-    },
-    {
-      "id": "3525045000625765128",
-      "nombre": "Implementación J&T EXPRESS CEDIS TLANEPANTLA",
-      "cuenta": "J&T EXPRESS",
-      "cuenta_id": "3525045000260992026",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-07-10",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:08:16-06:00"
-    },
-    {
-      "id": "3525045000609743775",
-      "nombre": "Accesos internos Softys",
-      "cuenta": "Softys México",
-      "cuenta_id": "3525045000244055039",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Daniel Peña",
-      "fecha_fin": "2026-07-03",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:04:40-06:00"
-    },
-    {
-      "id": "3525045000648874281",
-      "nombre": "Migración Modulo de Vacaciones COMEX",
-      "cuenta": "COMEX MEXICALI",
-      "cuenta_id": "3525045000235830314",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-09-30",
-      "semaforo": "Verde",
-      "modificado": "2026-10-28T04:02:32-06:00"
     },
     {
       "id": "3525045000671277015",
@@ -11502,17 +11964,6 @@
       "modificado": "2026-10-26T15:01:41-06:00"
     },
     {
-      "id": "3525045000669321152",
-      "nombre": "Implementación | TEQUECHONGOS | Asistencia+ WF Vacaciones + WF Permisos",
-      "cuenta": "TEQUECHONGOS MÉXICO",
-      "cuenta_id": "3525045000629886007",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-01-22",
-      "semaforo": "Verde",
-      "modificado": "2026-10-26T08:54:56-06:00"
-    },
-    {
       "id": "3525045000671220264",
       "nombre": "ASISTENCIA - Sapori café",
       "cuenta": "SAPORI CAFE",
@@ -11533,17 +11984,6 @@
       "fecha_fin": null,
       "semaforo": "Verde",
       "modificado": "2026-10-26T08:17:51-06:00"
-    },
-    {
-      "id": "3525045000670429098",
-      "nombre": "Implementación | MAGER ALIMENTOS| Asistencia",
-      "cuenta": "ALIMENTOS MAGER MX",
-      "cuenta_id": "3525045000335205136",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-01-22",
-      "semaforo": "Verde",
-      "modificado": "2026-10-23T20:41:13-06:00"
     },
     {
       "id": "3525045000666664149",
@@ -11657,45 +12097,41 @@
     }
   ],
   "implementaciones_por_cuenta": {
-    "3525045000664574077": 1,
+    "3525045000661710158": 1,
+    "3525045000641973236": 3,
+    "3525045000629886007": 2,
+    "3525045000335205136": 2,
     "3525045000628609615": 2,
-    "3525045000672390408": 2,
-    "3525045000669488208": 1,
-    "3525045000668240238": 1,
-    "3525045000668118093": 1,
-    "3525045000634119041": 1,
-    "3525045000665863776": 1,
-    "3525045000659754080": 1,
-    "3525045000583179634": 1,
-    "3525045000631372459": 1,
-    "3525045000627573323": 1,
-    "3525045000664574094": 1,
     "3525045000674491198": 1,
+    "3525045000664574094": 1,
+    "3525045000094546145": 4,
+    "3525045000659754080": 1,
+    "3525045000010332421": 2,
     "3525045000660101549": 1,
     "3525045000667573186": 1,
     "3525045000659202629": 2,
-    "3525045000010332421": 2,
-    "3525045000666619636": 1,
     "3525045000668929159": 1,
+    "3525045000666619636": 1,
     "3525045000297122001": 1,
-    "3525045000629903007": 1,
+    "3525045000627573323": 1,
     "3525045000653101267": 1,
+    "3525045000629903007": 1,
     "3525045000629322699": 1,
     "3525045000666610145": 1,
+    "3525045000661691058": 2,
     "3525045000644858138": 1,
     "3525045000488297431": 1,
-    "3525045000661691058": 2,
+    "3525045000634119041": 1,
     "3525045000647681177": 1,
     "3525045000589982025": 1,
-    "3525045000598015098": 1,
-    "3525045000659788861": 1,
     "3525045000094546230": 1,
+    "3525045000659788861": 1,
+    "3525045000598015098": 1,
     "3525045000646504074": 1,
     "3525045000657233438": 3,
     "3525045000649620311": 1,
-    "3525045000641973236": 3,
-    "3525045000650473001": 3,
     "3525045000642410276": 1,
+    "3525045000650473001": 3,
     "3525045000647219305": 1,
     "3525045000646996779": 1,
     "3525045000651533322": 2,
@@ -11703,44 +12139,43 @@
     "3525045000602058423": 1,
     "3525045000645797107": 4,
     "3525045000638366322": 1,
-    "3525045000629886007": 2,
     "3525045000634837015": 1,
-    "3525045000657179255": 3,
     "3525045000641620017": 1,
+    "3525045000657179255": 3,
     "3525045000635505348": 2,
     "3525045000634303511": 1,
-    "3525045000625100316": 1,
     "3525045000625764077": 1,
-    "3525045000641985007": 1,
-    "3525045000394740282": 1,
     "3525045000618029667": 1,
+    "3525045000641985007": 1,
     "3525045000636647300": 2,
+    "3525045000394740282": 1,
+    "3525045000380249726": 2,
     "3525045000620978660": 1,
     "3525045000260992026": 12,
-    "3525045000380249726": 2,
-    "3525045000644833146": 2,
     "3525045000636267094": 1,
     "3525045000641040256": 1,
+    "3525045000644833146": 2,
     "3525045000636164502": 1,
     "3525045000637538654": 1,
+    "3525045000631372459": 1,
     "3525045000618987130": 1,
-    "3525045000629049003": 1,
-    "3525045000600047493": 1,
     "3525045000536386049": 1,
     "3525045000631328402": 1,
-    "3525045000640256202": 1,
     "3525045000631723177": 3,
+    "3525045000629049003": 1,
+    "3525045000600047493": 1,
     "3525045000612121530": 1,
     "3525045000577986714": 2,
+    "3525045000640256202": 1,
     "3525045000628074709": 1,
     "3525045000627032188": 1,
     "3525045000625100622": 1,
     "3525045000633910128": 2,
     "3525045000630418441": 3,
     "3525045000566681116": 2,
-    "3525045000578056486": 1,
     "3525045000526296256": 1,
     "3525045000053667600": 2,
+    "3525045000578056486": 1,
     "3525045000511880161": 1,
     "3525045000614159505": 1,
     "3525045000626460093": 1,
@@ -11751,42 +12186,44 @@
     "3525045000551532404": 1,
     "3525045000408599588": 2,
     "3525045000639884293": 1,
-    "3525045000545668197": 3,
     "3525045000636380233": 1,
     "3525045000631372239": 1,
+    "3525045000545668197": 3,
     "3525045000620547457": 1,
     "3525045000630200352": 1,
-    "3525045000612031877": 1,
     "3525045000611857693": 2,
+    "3525045000612031877": 1,
+    "3525045000625100316": 1,
     "3525045000393270954": 1,
     "3525045000584582097": 1,
     "3525045000582917522": 3,
     "3525045000613613127": 1,
-    "3525045000566038619": 1,
     "3525045000571369060": 1,
-    "3525045000574224853": 1,
     "3525045000565388760": 1,
+    "3525045000566038619": 1,
     "3525045000578206456": 1,
-    "3525045000587145112": 1,
+    "3525045000574224853": 1,
     "3525045000519591730": 1,
-    "3525045000576815598": 1,
+    "3525045000587145112": 1,
     "3525045000606936298": 1,
     "3525045000580033399": 2,
+    "3525045000576815598": 1,
     "3525045000549028530": 1,
-    "3525045000417780328": 1,
     "3525045000574325023": 1,
-    "3525045000600341137": 2,
+    "3525045000417780328": 1,
     "3525045000571370193": 2,
+    "3525045000600341137": 2,
     "3525045000584897633": 2,
+    "3525045000583179634": 1,
     "3525045000518035782": 1,
-    "3525045000555178278": 4,
+    "3525045000540756094": 1,
+    "3525045000068536437": 1,
     "3525045000502956105": 1,
     "3525045000544680587": 2,
     "3525045000546325033": 1,
-    "3525045000068536437": 1,
-    "3525045000540756094": 1,
-    "3525045000518381480": 1,
+    "3525045000555178278": 4,
     "3525045000560331298": 1,
+    "3525045000518381480": 1,
     "3525045000375387064": 1,
     "3525045000551150124": 1,
     "3525045000550487339": 1,
@@ -11797,33 +12234,33 @@
     "3525045000561231540": 1,
     "3525045000524890802": 1,
     "3525045000575010551": 1,
-    "3525045000551934673": 1,
     "3525045000570622533": 1,
+    "3525045000551934673": 1,
     "3525045000244460061": 1,
     "3525045000577650270": 1,
     "3525045000516029681": 1,
     "3525045000521739559": 1,
-    "3525045000025416632": 1,
-    "3525045000508295196": 1,
     "3525045000533201089": 1,
+    "3525045000025416632": 1,
     "3525045000513109886": 1,
+    "3525045000508295196": 1,
+    "3525045000459175562": 1,
     "3525045000511180274": 1,
     "3525045000508358018": 2,
-    "3525045000459175562": 1,
     "3525045000528255980": 1,
     "3525045000495419503": 2,
     "3525045000533201920": 1,
-    "3525045000461676230": 1,
     "3525045000522024087": 1,
-    "3525045000506213377": 2,
+    "3525045000461676230": 1,
     "3525045000521214256": 1,
+    "3525045000506213377": 2,
+    "3525045000516683281": 1,
     "3525045000363350205": 1,
     "3525045000487258080": 1,
-    "3525045000516683281": 1,
     "3525045000439364137": 1,
     "3525045000493783261": 1,
-    "3525045000502787792": 1,
     "3525045000480962031": 3,
+    "3525045000502787792": 1,
     "3525045000474892437": 1,
     "3525045000493980360": 1,
     "3525045000496045152": 1,
@@ -11834,14 +12271,14 @@
     "3525045000118266356": 1,
     "3525045000489102394": 1,
     "3525045000483500498": 1,
+    "3525045000475481802": 1,
     "3525045000472081471": 1,
     "3525045000470731263": 1,
-    "3525045000475481802": 1,
     "3525045000481159391": 1,
-    "3525045000480768693": 1,
     "3525045000240002125": 1,
-    "3525045000446689264": 2,
+    "3525045000480768693": 1,
     "3525045000415003356": 3,
+    "3525045000446689264": 2,
     "3525045000444464521": 1,
     "3525045000467374314": 2,
     "3525045000471379141": 1,
@@ -11857,24 +12294,29 @@
     "3525045000432988699": 1,
     "3525045000407862390": 1,
     "3525045000437102308": 1,
-    "3525045000271929046": 2,
     "3525045000347552003": 1,
+    "3525045000271929046": 2,
     "3525045000256954023": 3,
     "3525045000242976354": 3,
     "3525045000244055039": 10,
     "3525045000339943001": 1,
-    "3525045000606476589": 1,
     "3525045000397673553": 3,
+    "3525045000606476589": 1,
     "3525045000427802077": 1,
     "3525045000434973052": 1,
     "3525045000269312009": 1,
     "3525045000235830314": 3,
     "3525045000403780168": 1,
     "3525045000324636081": 2,
-    "3525045000344765038": 3,
     "3525045000402924413": 1,
+    "3525045000344765038": 3,
+    "3525045000664574077": 1,
+    "3525045000672390408": 2,
+    "3525045000669488208": 1,
+    "3525045000668240238": 1,
+    "3525045000668118093": 1,
+    "3525045000665863776": 1,
     "3525045000625553101": 1,
-    "3525045000094546145": 4,
     "3525045000669488110": 1,
     "3525045000584443150": 1,
     "3525045000495404771": 1,
@@ -11882,7 +12324,6 @@
     "3525045000443231435": 1,
     "3525045000667186013": 1,
     "3525045000668541840": 1,
-    "3525045000335205136": 2,
     "3525045000625528007": 2,
     "3525045000637352158": 1,
     "3525045000191388216": 2,
