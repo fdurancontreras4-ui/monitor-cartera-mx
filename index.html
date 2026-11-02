@@ -2502,6 +2502,8 @@ function renderKamTab(kam,sectionId){
     </div>`;
   }).join(''):`<p class="legend" style="margin-top:8px">Sin deals abiertos ${dealsProyFilter==='todo'?'':'de esta categoría '}para este KAM.</p>`}
   </div>`;
+  $(sectionId).insertAdjacentHTML('beforeend',`<div class="card"><h3>Métricas de cierre <span class="legend" style="font-weight:400">· % de deals que terminan facturando y por qué se pierden</span></h3><div id="${sectionId}-cierre"></div></div>`);
+  drawCierre(sectionId+'-cierre',kam);
   $(sectionId).insertAdjacentHTML('beforeend',`<div class="card"><h3>Deals perdidos <span class="legend" style="font-weight:400">· fecha en que pasaron a Cierre Perdido y razón de Zoho</span></h3><div id="${sectionId}-perdidos"></div></div>`);
   drawPerdidos(sectionId+'-perdidos',DEALS_DATA.filter(d=>d.kam===kam),false);
   $q('.kz-filtros').querySelectorAll('.toggle-chip').forEach(btn=>{btn.onclick=()=>{dealsProyFilter=btn.dataset.filtro;renderKamTab(kam,sectionId);};});
@@ -3209,6 +3211,48 @@ function drawMxAbiertos(){
   if(mxState.tipoDeals!=='todo')ds=ds.filter(d=>kzCategoria(d)===mxState.tipoDeals);
   ds.sort((a,b)=>(mxDias(b)||0)-(mxDias(a)||0));
   $('mxAbiertos').innerHTML=ds.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Módulo</th><th class="nosort">Etapa</th><th class="nosort">Sin mover</th><th class="nosort">Usuarios</th><th class="nosort">Precio/usuario</th><th class="nosort">Valor</th><th class="nosort">USD (TC 18)</th><th class="nosort">KAM</th></tr></thead><tbody>${ds.map(d=>{const dd=mxDias(d);const cli=d._acc?(d._acc.grupo||d._acc.cliente):d.cuenta;return`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td style="font-weight:500">${esc(cli)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(MATRIZ_MODS[mxModIdx(d)][1])}</td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td><span class="badge ${dd>MX_ESTANCADO_DIAS*2?'b-red':dd>MX_ESTANCADO_DIAS?'b-amber':'b-green'}">${dd==null?'—':dd+' días'}</span></td>${mxUsuariosPrecioTD(d)}<td>${mxValorTxt(d)}</td><td>${fmtUSD(kzUSD(d))}</td><td>${esc(kamShort(d.kam))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">No hay deals abiertos de estos módulos.</p>';
+}
+
+// Métricas de cierre (pestaña KAMs): de los deals que se cerraron en el período, qué % llegó a facturar.
+// Ganado = 8. Facturando o Facturación congelada (llegó a facturar), fechado por «Fecha paso a Facturando».
+// Perdido = Cierre Perdido, fechado por «Fecha paso a Cierre Perdido». Los «Deal Duplicado» no cuentan.
+const CIERRE_STATE={};
+const cierreGanado=d=>d.etapa==='8. Facturando'||d.etapa==='Facturación congelada';
+const cierrePerdido=d=>d.etapa==='Cierre Perdido'&&d.razon_perdida!=='Deal Duplicado';
+function cierreFecha(d){return cierreGanado(d)?d.fecha_facturando:cierrePerdido(d)?d.fecha_perdido:null;}
+function cierreStats(deals,st){
+  const desde=st.periodo==='todo'?null:st.periodo==='anio'?new Date(new Date().getFullYear(),0,1):new Date(Date.now()-(+st.periodo)*864e5);
+  const ds=deals.filter(d=>{if(!cierreGanado(d)&&!cierrePerdido(d))return false;if(st.tipo!=='todo'&&kzCategoria(d)!==st.tipo)return false;
+    const f=cierreFecha(d);if(!desde)return true;return f&&new Date(f)>=desde;});
+  const g=ds.filter(cierreGanado),p=ds.filter(cierrePerdido);
+  const usd=a=>a.reduce((t,d)=>t+(kzUSD(d)||0),0);
+  const ciclo=a=>{const v=a.map(d=>{const f=cierreFecha(d);return f&&d.creado?(new Date(f)-new Date(d.creado))/864e5:null;}).filter(x=>x!=null&&x>=0);return v.length?Math.round(v.reduce((t,x)=>t+x,0)/v.length):null;};
+  return{g,p,n:ds.length,rate:ds.length?g.length/ds.length:null,usdG:usd(g),usdP:usd(p),rateUsd:(usd(g)+usd(p))?usd(g)/(usd(g)+usd(p)):null,cicloG:ciclo(g),cicloP:ciclo(p)};
+}
+function drawCierre(boxId,kam){
+  const box=$(boxId);if(!box)return;
+  const st=CIERRE_STATE[boxId]=CIERRE_STATE[boxId]||{periodo:'anio',tipo:'todo'};
+  const mine=cierreStats(DEALS_DATA.filter(d=>d.kam===kam),st),team=cierreStats(DEALS_DATA,st);
+  const pct=x=>x==null?'—':Math.round(x*100)+'%';
+  const chip=(k,l)=>{const on=st.tipo===k;return`<button class="toggle-chip" data-tipo="${k}" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#0C447C':'var(--color-text-secondary)'};border-color:${on?'#85B7EB':'var(--color-border-secondary)'}">${l}</button>`;};
+  const tile=(v,l,sub)=>`<div class="stat3-it"><div class="stat3-v">${v}</div><div class="stat3-l">${l}</div>${sub?`<div class="legend" style="margin-top:2px">${sub}</div>`:''}</div>`;
+  const raz={};mine.p.forEach(d=>{const r=d.razon_perdida||'Sin razón';raz[r]=(raz[r]||0)+1;});
+  const razH=Object.entries(raz).sort((a,b)=>b[1]-a[1]).map(([r,n])=>{const w=Math.round(n/mine.p.length*100);
+    return`<div class="bar-row"><div class="bar-label" title="${esc(r)}">${esc(r)}</div><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:#E24B4A"></div></div><div class="bar-num" style="min-width:90px">${w}% · ${n}</div></div>`;}).join('');
+  box.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0">
+      <select class="cierre-per">${[['90','Últimos 90 días'],['anio','Este año'],['todo','Todo']].map(([k,l])=>`<option value="${k}"${st.periodo===k?' selected':''}>${l}</option>`).join('')}</select>
+      ${chip('todo','Todo')}${chip('cross','Cross')}${chip('upsell','Up')}${chip('arriendo','Arriendo')}
+    </div>
+    <p class="legend" style="margin:0 0 8px">De los deals que se cerraron en el período: <strong>ganado</strong> = llegó a <strong>8. Facturando</strong> (o hoy está en facturación congelada), fechado por «Fecha paso a Facturando»; <strong>perdido</strong> = Cierre Perdido, fechado por «Fecha paso a Cierre Perdido». No cuentan los «Deal Duplicado» ni los deals abiertos.</p>
+    ${mine.n?`<div class="stat3" style="margin-bottom:12px">
+      ${tile(pct(mine.rate),'deals cerrados con éxito',`${mine.g.length} ganados de ${mine.n} cerrados · equipo MX: ${pct(team.rate)}`)}
+      ${tile(pct(mine.rateUsd),'del valor cerrado se ganó',`${fmtUSD(mine.usdG)} ganado · ${fmtUSD(mine.usdP)} perdido (USD, TC 18)`)}
+      ${tile(mine.cicloG==null?'—':mine.cicloG+' días','ciclo promedio hasta facturar',`hasta perder: ${mine.cicloP==null?'—':mine.cicloP+' días'} · desde que se creó el deal`)}
+    </div>
+    <h4 style="margin:4px 0 6px;font-size:13px">Razones de pérdida <span class="legend" style="font-weight:400">· ${mine.p.length} deal${mine.p.length===1?'':'s'} perdido${mine.p.length===1?'':'s'} en el período</span></h4>
+    ${razH||'<p class="legend">Ningún deal perdido en el período.</p>'}`:'<p class="legend">No hay deals cerrados (ganados o perdidos) en este período.</p>'}`;
+  box.querySelector('.cierre-per').onchange=e=>{st.periodo=e.target.value;drawCierre(boxId,kam);};
+  box.querySelectorAll('[data-tipo]').forEach(b=>b.onclick=e=>{e.stopPropagation();st.tipo=b.dataset.tipo;drawCierre(boxId,kam);});
 }
 
 // Deals en Cierre Perdido: fecha en que pasaron a perdido (Fecha paso a Cierre Perdido) y razón de pérdida de Zoho.

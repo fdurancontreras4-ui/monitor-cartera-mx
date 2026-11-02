@@ -69,7 +69,7 @@ ZOHO_API = ENV("ZOHO_API_URL", "https://www.zohoapis.com").rstrip("/")
 ZOHO_FIELDS = ("id,Deal_Name,Account_Name,KAM,Owner,Territorio,Stage,Producto_Soluci_n,"
                "Valor_del_trato_Global,Correo_KAM,Created_Time,Modified_Time,"
                "Mes_cierre_Cross_UP,Tipo_Trato,Monda_del_trato,N_Empleados_que_marcan,Valor_por_usuario_Global,"
-               "Raz_n_de_P_rdida,Explicaci_n_Raz_n_P_rdida_Otro,Fecha_paso_a_Cierre_Perdido")
+               "Raz_n_de_P_rdida,Explicaci_n_Raz_n_P_rdida_Otro,Fecha_paso_a_Cierre_Perdido,Fecha_paso_a_Facturando")
 
 CACHE_SEGUNDOS = int(ENV("CACHE_SEGUNDOS", "60"))
 TIMEOUT = 60

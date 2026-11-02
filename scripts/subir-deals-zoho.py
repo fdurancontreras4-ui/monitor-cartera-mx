@@ -167,6 +167,8 @@ def dar_forma(r):
         "razon_perdida": r.get("Raz_n_de_P_rdida") or "",
         "razon_perdida_otro": (r.get("Explicaci_n_Raz_n_P_rdida_Otro") or "").strip(),
         "fecha_perdido": r.get("Fecha_paso_a_Cierre_Perdido"),
+        # métricas de cierre (pestaña KAMs): fecha en que el deal pasó a 8. Facturando
+        "fecha_facturando": r.get("Fecha_paso_a_Facturando"),
     }
 
 
