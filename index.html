@@ -2548,19 +2548,19 @@ function renderKamTab(kam,sectionId){
     th.onclick=()=>{const k=th.dataset.sortDeal;if(dealsProySort.campo===k)dealsProySort.dir*=-1;else{dealsProySort.campo=k;dealsProySort.dir=['cliente','producto','categoria'].includes(k)?1:-1;}renderKamTab(kam,sectionId);};
   });
   updateDealsSelectedSummary();
-  kamPlegables(sectionId);
+  seccionesPlegables(sectionId,'kam_plg');
 }
-// secciones plegables en las pestañas KAM: clic en el título de cada tarjeta la pliega o despliega;
-// se recuerda por título en este navegador (localStorage), igual para los tres KAM
-function kamPlgKey(h3){const t=[...h3.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());return'kam_plg:'+(t?t.textContent.trim():h3.textContent.trim()).slice(0,60);}
-function kamPlegables(sectionId){
+// secciones plegables (pestañas KAM y Matriz módulos): clic en el título de cada tarjeta la pliega o despliega;
+// se recuerda por título en este navegador (localStorage). En KAMs la clave es común a los tres KAM.
+function plgKey(ns,h3){const t=[...h3.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());return ns+':'+(t?t.textContent.trim():h3.textContent.trim()).slice(0,60);}
+function seccionesPlegables(sectionId,ns){
   const sec=$(sectionId);if(!sec)return;
   sec.classList.add('kam-plg');
-  sec.querySelectorAll('.card > h3').forEach(h=>{let off=false;try{off=localStorage.getItem(kamPlgKey(h))==='1';}catch(e){}h.parentElement.classList.toggle('plg-off',off);});
+  sec.querySelectorAll('.card > h3').forEach(h=>{let off=false;try{off=localStorage.getItem(plgKey(ns,h))==='1';}catch(e){}h.parentElement.classList.toggle('plg-off',off);});
   if(sec.dataset.plg)return;sec.dataset.plg='1';
   sec.addEventListener('click',e=>{const h=e.target.closest('.card > h3');if(!h||!sec.contains(h))return;
-    const card=h.parentElement;const off=!card.classList.contains('plg-off');card.classList.toggle('plg-off',off);
-    try{localStorage.setItem(kamPlgKey(h),off?'1':'0');}catch(err){}},true);
+    e.stopPropagation();const card=h.parentElement;const off=!card.classList.contains('plg-off');card.classList.toggle('plg-off',off);
+    try{localStorage.setItem(plgKey(ns,h),off?'1':'0');}catch(err){}},true);
 }
 function renderKamRaul(){renderKamTab('Ra\u00fal Campos','kam-raul');}
 function renderKamDafne(){renderKamTab('Dafne de la Rosa','kam-dafne');}
@@ -3181,7 +3181,7 @@ function renderMatriz(){
     <select id="mxMod"><option value="">Hueco en módulo…</option>${MATRIZ_MODS.map((m,i)=>`<option value="${i}">${esc(m[1])}</option>`).join('')}</select>
   </div>
   <p class="status-line" id="mxTitle" style="margin:-6px 0 8px"></p>
-  <div class="card" style="padding:.5rem"><div class="hm-wrap" id="mxWrap"></div></div>
+  <div class="card" style="padding:.5rem"><h3 style="margin:.4rem .5rem .6rem">Matriz por cliente</h3><div class="hm-wrap" id="mxWrap"></div></div>
   <div class="card"><h3>Deals abiertos para empujar <span class="legend" style="font-weight:400">· del más quieto al más reciente</span></h3><div id="mxTipoDeals" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"></div><div class="table-wrap" id="mxAbiertos"></div></div>
   <div class="card"><h3>Deals perdidos <span class="legend" style="font-weight:400">· del más reciente al más antiguo · fecha en que pasaron a Cierre Perdido y razón de Zoho</span></h3><div id="mxPerdidos"></div></div>
   <details class="card"><summary style="cursor:pointer;font-weight:600;font-size:14px">Qué actualizar en el Excel <span class="badge b-amber">${MX.difs.length}</span> <span class="legend" style="font-weight:400">— celdas de AT–BH que no coinciden con Zoho</span></summary>
@@ -3198,6 +3198,7 @@ function renderMatriz(){
   $('matriz').onclick=mxClick;
   $('mxDifXlsx').onclick=mxDifsXlsx;
   drawMatriz();drawMxAbiertos();drawMxPerdidos();drawMxDifs();
+  seccionesPlegables('matriz','mx_plg');
 }
 
 function drawMatriz(){
