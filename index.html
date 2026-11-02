@@ -2502,6 +2502,8 @@ function renderKamTab(kam,sectionId){
     </div>`;
   }).join(''):`<p class="legend" style="margin-top:8px">Sin deals abiertos ${dealsProyFilter==='todo'?'':'de esta categoría '}para este KAM.</p>`}
   </div>`;
+  $(sectionId).insertAdjacentHTML('beforeend',`<div class="card"><h3>Deals perdidos <span class="legend" style="font-weight:400">· fecha en que pasaron a Cierre Perdido y razón de Zoho</span></h3><div id="${sectionId}-perdidos"></div></div>`);
+  drawPerdidos(sectionId+'-perdidos',DEALS_DATA.filter(d=>d.kam===kam),false);
   $q('.kz-filtros').querySelectorAll('.toggle-chip').forEach(btn=>{btn.onclick=()=>{dealsProyFilter=btn.dataset.filtro;renderKamTab(kam,sectionId);};});
   // meta del Q: barra sólida = cross facturado en Zoho con mes de cierre en el Q; rayada = cross seleccionado abajo
   function drawMeta(){
@@ -3158,6 +3160,7 @@ function renderMatriz(){
   <p class="status-line" id="mxTitle" style="margin:-6px 0 8px"></p>
   <div class="card" style="padding:.5rem"><div class="hm-wrap" id="mxWrap"></div></div>
   <div class="card"><h3>Deals abiertos para empujar <span class="legend" style="font-weight:400">· del más quieto al más reciente</span></h3><div id="mxTipoDeals" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"></div><div class="table-wrap" id="mxAbiertos"></div></div>
+  <div class="card"><h3>Deals perdidos <span class="legend" style="font-weight:400">· del más reciente al más antiguo · fecha en que pasaron a Cierre Perdido y razón de Zoho</span></h3><div id="mxPerdidos"></div></div>
   <details class="card"><summary style="cursor:pointer;font-weight:600;font-size:14px">Qué actualizar en el Excel <span class="badge b-amber">${MX.difs.length}</span> <span class="legend" style="font-weight:400">— celdas de AT–BH que no coinciden con Zoho</span></summary>
     <p class="legend" style="margin:8px 0">La celda es la de <code>cartera.xlsx</code> (MARE MX); si alguien insertó filas en el Excel después, búscala por el nombre. <button class="btn" id="mxDifXlsx" style="margin-left:6px">⬇ Descargar .xlsx</button></p>
     <div class="table-wrap" id="mxDifs"></div></details>
@@ -3165,13 +3168,13 @@ function renderMatriz(){
   <div id="mxPop" class="mx-pop" hidden></div>`;
   $('mxKam').value=mxState.kam;$('mxCart').value=mxState.cartera;$('mxMod').value=mxState.modulo;
   $('mxQ').oninput=e=>{mxState.q=e.target.value;drawMatriz();};
-  $('mxKam').onchange=e=>{mxState.kam=e.target.value;drawMatriz();drawMxAbiertos();};
+  $('mxKam').onchange=e=>{mxState.kam=e.target.value;drawMatriz();drawMxAbiertos();drawMxPerdidos();};
   $('mxCart').onchange=e=>{mxState.cartera=e.target.value;drawMatriz();};
   $('mxMod').onchange=e=>{mxState.modulo=e.target.value;drawMatriz();};
   document.querySelectorAll('#matriz .mx-kpi').forEach(k=>k.onclick=()=>{mxState.vista=mxState.vista===k.dataset.vista?'':k.dataset.vista;renderMatriz();});
   $('matriz').onclick=mxClick;
   $('mxDifXlsx').onclick=mxDifsXlsx;
-  drawMatriz();drawMxAbiertos();drawMxDifs();
+  drawMatriz();drawMxAbiertos();drawMxPerdidos();drawMxDifs();
 }
 
 function drawMatriz(){
@@ -3207,6 +3210,40 @@ function drawMxAbiertos(){
   ds.sort((a,b)=>(mxDias(b)||0)-(mxDias(a)||0));
   $('mxAbiertos').innerHTML=ds.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Módulo</th><th class="nosort">Etapa</th><th class="nosort">Sin mover</th><th class="nosort">Usuarios</th><th class="nosort">Precio/usuario</th><th class="nosort">Valor</th><th class="nosort">USD (TC 18)</th><th class="nosort">KAM</th></tr></thead><tbody>${ds.map(d=>{const dd=mxDias(d);const cli=d._acc?(d._acc.grupo||d._acc.cliente):d.cuenta;return`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td style="font-weight:500">${esc(cli)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(MATRIZ_MODS[mxModIdx(d)][1])}</td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td><span class="badge ${dd>MX_ESTANCADO_DIAS*2?'b-red':dd>MX_ESTANCADO_DIAS?'b-amber':'b-green'}">${dd==null?'—':dd+' días'}</span></td>${mxUsuariosPrecioTD(d)}<td>${mxValorTxt(d)}</td><td>${fmtUSD(kzUSD(d))}</td><td>${esc(kamShort(d.kam))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">No hay deals abiertos de estos módulos.</p>';
 }
+
+// Deals en Cierre Perdido: fecha en que pasaron a perdido (Fecha paso a Cierre Perdido) y razón de pérdida de Zoho.
+// Se usa en la Matriz módulos y en cada pestaña de KAM; cada contenedor guarda sus propios filtros.
+const PERD_STATE={};
+function perdFecha(d){return d.fecha_perdido||null;}
+function perdDias(d){const f=perdFecha(d);return f?Math.floor((Date.now()-new Date(f).getTime())/864e5):null;}
+function drawPerdidos(boxId,deals,conKam){
+  const box=$(boxId);if(!box)return;
+  const st=PERD_STATE[boxId]=PERD_STATE[boxId]||{periodo:'90',razon:'',tipo:'todo'};
+  const enPeriodo=d=>{if(st.periodo==='todo')return true;const f=perdFecha(d);if(!f)return false;
+    if(st.periodo==='anio')return f.slice(0,4)===String(new Date().getFullYear());return perdDias(d)<=+st.periodo;};
+  let ds=deals.filter(d=>d.etapa==='Cierre Perdido'&&enPeriodo(d));
+  const cTipo={todo:ds.length};ds.forEach(d=>{const k=kzCategoria(d);cTipo[k]=(cTipo[k]||0)+1;});
+  if(st.tipo!=='todo')ds=ds.filter(d=>kzCategoria(d)===st.tipo);
+  const cRaz={};ds.forEach(d=>{const r=d.razon_perdida||'Sin razón';cRaz[r]=(cRaz[r]||0)+1;});
+  if(st.razon&&!cRaz[st.razon])st.razon='';
+  if(st.razon)ds=ds.filter(d=>(d.razon_perdida||'Sin razón')===st.razon);
+  ds.sort((a,b)=>String(perdFecha(b)||'').localeCompare(String(perdFecha(a)||'')));
+  const chip=(attr,k,l,on)=>`<button class="toggle-chip" data-${attr}="${esc(k)}" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#0C447C':'var(--color-text-secondary)'};border-color:${on?'#85B7EB':'var(--color-border-secondary)'}">${esc(l)}</button>`;
+  const usd=ds.reduce((t,d)=>t+(kzUSD(d)||0),0);
+  box.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0">
+      <select class="perd-per">${[['30','Últimos 30 días'],['90','Últimos 90 días'],['anio','Este año'],['todo','Todo']].map(([k,l])=>`<option value="${k}"${st.periodo===k?' selected':''}>${l}</option>`).join('')}</select>
+      ${[['todo','Todo'],['cross','Cross'],['upsell','Up'],['arriendo','Arriendo']].map(([k,l])=>chip('tipo',k,`${l} (${cTipo[k]||0})`,st.tipo===k)).join('')}
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px"><span class="legend" style="align-self:center">Razón:</span>${chip('razon','','Todas',!st.razon)}${Object.entries(cRaz).sort((a,b)=>b[1]-a[1]).map(([r,n])=>chip('razon',r,`${r} (${n})`,st.razon===r)).join('')}</div>
+    <p class="legend" style="margin:0 0 6px"><strong>${ds.length}</strong> deal${ds.length===1?'':'s'} perdido${ds.length===1?'':'s'} · ${fmtUSD(usd)} (TC 18)</p>
+    ${ds.length?`<div class="table-wrap" style="max-height:440px;overflow:auto"><table><thead><tr><th class="nosort">Fecha a perdido</th><th class="nosort">Cliente</th><th class="nosort">Producto</th><th class="nosort">Tipo</th><th class="nosort">Razón</th><th class="nosort">Valor</th><th class="nosort">USD (TC 18)</th>${conKam?'<th class="nosort">KAM</th>':''}</tr></thead><tbody>${ds.map(d=>{const f=perdFecha(d);const cli=d._acc?(d._acc.grupo||d._acc.cliente):d.cuenta;
+      return`<tr class="mx-link perd-row" data-url="${mxDealUrl(d)}" style="cursor:pointer"><td style="white-space:nowrap">${f?esc(f.slice(0,10)):'—'}${f?`<div class="legend">hace ${perdDias(d)} días</div>`:''}</td><td style="font-weight:500">${esc(cli)}<div class="legend">${esc(d.trato)}</div></td><td>${esc(d.producto||'—')}</td><td>${esc({cross:'Cross',upsell:'Up',arriendo:'Arriendo'}[kzCategoria(d)]||'—')}</td><td>${esc(d.razon_perdida||'Sin razón')}${d.razon_perdida_otro?`<div class="legend">${esc(d.razon_perdida_otro)}</div>`:''}</td><td>${mxValorTxt(d)}</td><td>${fmtUSD(kzUSD(d))}</td>${conKam?`<td>${esc(kamShort(d.kam))}</td>`:''}</tr>`;}).join('')}</tbody></table></div>`:'<p class="legend">No hay deals perdidos con estos filtros.</p>'}`;
+  box.querySelector('.perd-per').onchange=e=>{st.periodo=e.target.value;drawPerdidos(boxId,deals,conKam);};
+  box.querySelectorAll('[data-tipo]').forEach(b=>b.onclick=e=>{e.stopPropagation();st.tipo=b.dataset.tipo;drawPerdidos(boxId,deals,conKam);});
+  box.querySelectorAll('[data-razon]').forEach(b=>b.onclick=e=>{e.stopPropagation();st.razon=b.dataset.razon;drawPerdidos(boxId,deals,conKam);});
+  box.onclick=e=>{const r=e.target.closest('.perd-row');if(r){e.stopPropagation();window.open(r.dataset.url,'_blank','noopener');}};
+}
+function drawMxPerdidos(){drawPerdidos('mxPerdidos',DEALS_DATA.filter(d=>!mxState.kam||d.kam===mxState.kam),!mxState.kam);}
 
 function drawMxDifs(){
   const D=MX.difs.slice().sort((x,y)=>(x.a.kam||'').localeCompare(y.a.kam||'')||x.a.cliente.localeCompare(y.a.cliente));

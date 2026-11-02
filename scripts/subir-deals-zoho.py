@@ -163,6 +163,10 @@ def dar_forma(r):
         "moneda": r.get("Monda_del_trato") or "",
         "usuarios": r.get("N_Empleados_que_marcan"),
         "precio_usuario": r.get("Valor_por_usuario_Global"),
+        # sección «Deals perdidos» (Matriz módulos y KAMs): razón y fecha en que pasó a Cierre Perdido
+        "razon_perdida": r.get("Raz_n_de_P_rdida") or "",
+        "razon_perdida_otro": (r.get("Explicaci_n_Raz_n_P_rdida_Otro") or "").strip(),
+        "fecha_perdido": r.get("Fecha_paso_a_Cierre_Perdido"),
     }
 
 
