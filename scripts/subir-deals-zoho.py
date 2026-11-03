@@ -17,6 +17,10 @@ Criterio de Zoho (módulo Deals, vía searchRecords):
      and((KAM:equals:Dafne de la Rosa)
       or(KAM:equals:Raúl Campos)
       or(KAM:equals:Karla Patiño)))
+  más los deals con KAM asignado y otro Owner (los crea comercial a su nombre):
+    ((Owner:not_equal:3525045000270215054)and(Stage:not_equal:Cierre Perdido)
+     and((KAM:equals:Karla Patiño)or(KAM:equals:Raúl Campos)or(KAM:equals:Dafne de la Rosa)))
+  (lo que comercial perdió no se trae: no cuenta como pérdida del KAM)
 
 Uso:
     python3 scripts/subir-deals-zoho.py /tmp/deals-zoho-raw.json
@@ -195,12 +199,14 @@ def validar(crudos):
         k = (r.get("KAM") or "").strip() or "(sin KAM)"
         kams[k] = kams.get(k, 0) + 1
 
+    # Comercial a veces crea el deal de un cliente KAM a su nombre (p. ej.
+    # Planificador Inteligente DOMUS, de Adriana Delgado con KAM Karla). Manda
+    # el campo KAM: esos deals entran igual, solo se informan.
     ajenos = {o: n for o, n in dueños.items() if o != KAM_OWNER_NOMBRE}
+    ok(f"{len(crudos)} deals, {dueños.get(KAM_OWNER_NOMBRE, 0)} con Owner = {KAM_OWNER_NOMBRE}")
     if ajenos:
         detalle = ", ".join(f"{o}: {n}" for o, n in sorted(ajenos.items(), key=lambda x: -x[1])[:5])
-        morir(f"Hay deals que no son de {KAM_OWNER_NOMBRE} ({detalle}).",
-              "Revisa el criterio de búsqueda: Owner:equals:" + KAM_OWNER_ID)
-    ok(f"{len(crudos)} deals, todos con Owner = {KAM_OWNER_NOMBRE}")
+        aviso(f"con KAM asignado pero otro Owner: {detalle}")
 
     ajenos_t = {t: n for t, n in territorios.items() if t != TERRITORIO_ESPERADO}
     if ajenos_t:
@@ -393,6 +399,8 @@ def main():
         comercial = previo.get("comercial") or []
         if comercial:
             aviso(f"Sin --comercial: se conservan los {len(comercial)} deals de comercial que ya estaban.")
+    # Un deal con KAM asignado ya va en el pipeline del KAM; no se repite como comercial.
+    comercial = [c for c in comercial if str(c.get("id")) not in ids]
     if args.implementaciones:
         crudas = leer_crudos(Path(args.implementaciones).expanduser())
         impl = [forma_implementacion(r) for r in crudas

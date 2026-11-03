@@ -45,6 +45,24 @@ páginas), y va a seguir creciendo — repetir con `page` incremental hasta que
 `info.more_records` sea `false`, y juntar todas las páginas en **una sola
 lista plana** antes de pasársela al script (no una por archivo).
 
+## Deals con KAM pero creados por comercial (búsqueda extra)
+
+A veces comercial crea a su nombre el deal de un cliente KAM y le pone el campo
+KAM (p. ej. «Planificador Inteligente DOMUS», de Adriana Delgado con KAM Karla,
+3-nov-2026). Con el criterio por Owner no aparecen, así que se suman a la lista
+de deals con esta búsqueda (mismos `fields`; hoy es 1 deal, sale inline):
+
+```
+((Owner:not_equal:3525045000270215054)and(Stage:not_equal:Cierre Perdido)
+ and((KAM:equals:Karla Patiño)or(KAM:equals:Raúl Campos)or(KAM:equals:Dafne de la Rosa)))
+```
+
+Lo que comercial perdió no se trae: no cuenta como pérdida del KAM. El script
+los acepta y los informa con ⚠ «con KAM asignado pero otro Owner».
+
+Ojo: a veces Zoho devuelve el KAM con caracteres rotos («Ra��l Campos»);
+normalízalo a «Raúl Campos» antes de pasar el JSON al script.
+
 ## Módulos vendidos por comercial (segunda búsqueda)
 
 La pestaña **Matriz módulos** también marca los módulos que vendió **comercial**
