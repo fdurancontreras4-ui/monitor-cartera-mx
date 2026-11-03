@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-03T15:12:03-06:00",
+  "generado": "2026-11-03T15:14:50-06:00",
   "fuente": "Zoho CRM · Deals",
   "propietario": "KAM México",
   "territorio": "México",
@@ -8,7 +8,7 @@
     "Raúl Campos",
     "Karla Patiño"
   ],
-  "total": 469,
+  "total": 470,
   "deals": [
     {
       "id": "3525045000656377147",
@@ -3656,6 +3656,30 @@
       "razon_perdida": "Cierre por Inactividad",
       "razon_perdida_otro": "",
       "fecha_perdido": "2026-09-18T06:00:00-06:00",
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000679263138",
+      "trato": "Planificador Inteligente DOMUS",
+      "cuenta": "Casas Domus",
+      "cuenta_id": "3525045000347552003",
+      "kam": "Karla Patiño",
+      "correo_kam": "kpatino@geovictoria.com",
+      "etapa": "4. Propuesta Enviada / En Negociación",
+      "cerrado": false,
+      "producto": "Planificador Inteligente",
+      "valor": 1500,
+      "owner": "Adriana Delgado",
+      "creado": "2026-11-03T13:59:49-06:00",
+      "modificado": "2026-11-03T14:01:43-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 300,
+      "precio_usuario": 5,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
       "fecha_facturando": null
     },
     {
