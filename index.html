@@ -2451,7 +2451,9 @@ function renderKamTab(kam,sectionId){
   const sumUSD=rows=>rows.reduce((s,r)=>s+(r.usd||r.facturacionUSD||0),0);
   const sumMXN=rows=>rows.reduce((s,r)=>s+(r.mxn||0),0);
   const mesesCM=monthSums(cross,'mes',r=>r.usd||0),mesesUM=monthSums(upsell,'mes',r=>r.usd||0),mesesAM=monthSums(arriendo,'mes',r=>r.usd||0),mesesBM=monthSums(bajas,'mesBaja',r=>r.facturacionUSD||0);
-  const qC=qSum(cross,r=>r.usd||0),qU=qSum(upsell,r=>r.usd||0),qA=qSum(arriendo,r=>r.usd||0),qB=qSum(bajas,r=>r.facturacionUSD||0);
+  // Q sumado desde los meses (como el T): la columna Q de Detalle Fuga viene vacía en las bajas desde agosto
+  const qDeMeses=m=>({Q1:m.slice(0,3).reduce((a,b)=>a+b,0),Q2:m.slice(3,6).reduce((a,b)=>a+b,0),Q3:m.slice(6,9).reduce((a,b)=>a+b,0),Q4:m.slice(9,12).reduce((a,b)=>a+b,0)});
+  const qC=qDeMeses(mesesCM),qU=qDeMeses(mesesUM),qA=qDeMeses(mesesAM),qB=qDeMeses(mesesBM);
   const meta=kam?(KAM_META[kam]||{m1:0,m2:0,m3:0}):Object.values(KAM_META).reduce((t,m)=>({m1:t.m1+m.m1,m2:t.m2+m.m2,m3:t.m3+m.m3}),{m1:0,m2:0,m3:0});
   // ---- meta y deals: desde Zoho (deals-mx.json) ----
   // facturado para la meta = deal de CROSS de este KAM en «8. Facturando» con «Mes cierre Cross/UP» dentro del Q
@@ -2471,6 +2473,8 @@ function renderKamTab(kam,sectionId){
   const thMonths=MONTHS_SHORT.map(m=>`<th class="nosort">${m}</th>`).join('');
   const thDeal=(k,l)=>`<th data-sort-deal="${k}">${l}${dealsProySort.campo===k?(dealsProySort.dir>0?' \u25b2':' \u25bc'):''}</th>`;
   const rowHTML=(label,vals)=>{const total=vals.reduce((a,b)=>a+b,0);return `<tr style="cursor:default"><td style="font-weight:500">`+label+`</td>`+vals.map(c=>`<td>`+fmtUSDz(c)+`</td>`).join('')+`<td style="font-weight:600">`+fmtUSDz(total)+`</td></tr>`;};
+  // T = cuatrimestre, sumado desde los 12 meses: T1 ene–abr, T2 may–ago, T3 sep–dic
+  const rowTHTML=(label,m)=>`<tr style="cursor:default"><td style="font-weight:500">`+label+`</td>`+[0,4,8].map(i=>`<td>`+fmtUSDz(m.slice(i,i+4).reduce((a,b)=>a+b,0))+`</td>`).join('')+`</tr>`;
   const rowQHTML=(label,q)=>`<tr style="cursor:default"><td style="font-weight:500">`+label+`</td><td>`+fmtUSDz(q.Q1)+`</td><td>`+fmtUSDz(q.Q2)+`</td><td>`+fmtUSDz(q.Q3)+`</td><td>`+fmtUSDz(q.Q4)+`</td></tr>`;
   $(sectionId).innerHTML=`
   <div class="note-box"><strong>La meta y los deals abiertos (abajo) vienen de Zoho.</strong> Los totales YTD y las tablas por mes y Q siguen siendo el histórico de la hoja Ventas 2026. Cross-selling, upselling y arriendo de esas tablas vienen de la hoja <strong>Ventas 2026</strong> (solo Estado = Facturado; se excluyen Proyectados); fuga (solo Baja) de <strong>Detalle Fuga 2026</strong>; referidos, de la columna "Referido/Referencia" de la cartera MARE MX (dato disponible en pocas cuentas). Las tablas de mes/Q van en USD; la meta Q3 va en MXN (moneda en la que se definió). Fuente de Ventas/Fuga: ${esc(VENTAS_SOURCE)}.</div>
@@ -2486,6 +2490,10 @@ function renderKamTab(kam,sectionId){
   </tbody></table></div></div>
   <div class="card"><h3>Por Q (USD facturado)</h3><div class="table-wrap"><table><thead><tr><th>Concepto</th><th class="nosort">Q1</th><th class="nosort">Q2</th><th class="nosort">Q3</th><th class="nosort">Q4</th></tr></thead><tbody>
   ${rowQHTML('Cross-selling',qC)}${rowQHTML('Upselling',qU)}${rowQHTML('Arriendo',qA)}${rowQHTML('Bajas',qB)}
+  </tbody></table></div>
+  <h4 style="margin:16px 0 6px;font-size:13px">Por T (cuatrimestre) <span class="legend" style="font-weight:400">· T1 enero–abril · T2 mayo–agosto · T3 septiembre–diciembre</span></h4>
+  <div class="table-wrap"><table><thead><tr><th>Concepto</th><th class="nosort">T1 (ene–abr)</th><th class="nosort">T2 (may–ago)</th><th class="nosort">T3 (sep–dic)</th></tr></thead><tbody>
+  ${rowTHTML('Cross-selling',mesesCM)}${rowTHTML('Upselling',mesesUM)}${rowTHTML('Arriendo',mesesAM)}${rowTHTML('Bajas',mesesBM)}
   </tbody></table></div></div>
   <div class="card"><h3>Prepipe, pipe y forecast <span class="legend" style="font-weight:400">· deals abiertos en Zoho</span></h3><div id="${sectionId}-pipe"></div></div>
   <div class="card" id="${sectionId}-meta"></div>
