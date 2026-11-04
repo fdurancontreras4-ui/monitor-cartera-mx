@@ -336,12 +336,11 @@ tr.mx-link:hover td{background:var(--color-background-tertiary);}
     <button data-group="cuentasg">Cuentas</button>
     <button data-group="fugag">Fuga</button>
     <button data-group="venta">Venta</button>
-    <button data-group="kams">KAMs</button>
+    <button data-sec="kams">KAMs</button>
     <button data-group="tiempo" hidden>Tiempo Operativo</button><!-- oculta a pedido de Fernanda (29-oct-2026); el código sigue, quitar «hidden» para volver a mostrarla -->
     <button data-sec="tareas">Tareas</button>
     <button data-sec="implementacion">Implementaciones</button>
     <button data-sec="pipeline">Pipeline</button>
-    <button data-sec="matriz">Matriz módulos</button>
     <button data-sec="datos">Datos</button>
   </div>
   <div class="subnav" id="subnav-salud">
@@ -364,9 +363,10 @@ tr.mx-link:hover td{background:var(--color-background-tertiary);}
     <button data-sec="upsell">Upsell/Arriendo</button>
   </div>
   <div class="subnav" id="subnav-kams">
-    <button data-sec="kam-raul">Raúl</button>
-    <button data-sec="kam-dafne">Dafne</button>
-    <button data-sec="kam-karla">Karla</button>
+    <button data-kam="">Todos</button>
+    <button data-kam="Raúl Campos">Raúl</button>
+    <button data-kam="Dafne de la Rosa">Dafne</button>
+    <button data-kam="Karla Patiño">Karla</button>
   </div>
   <div class="subnav" id="subnav-tiempo">
     <button data-sec="tiempoRegistrar">Registrar</button>
@@ -384,16 +384,13 @@ tr.mx-link:hover td{background:var(--color-background-tertiary);}
   <div id="facturcritica" class="section"></div>
   <div id="cross" class="section"></div>
   <div id="upsell" class="section"></div>
-  <div id="kam-raul" class="section"></div>
-  <div id="kam-dafne" class="section"></div>
-  <div id="kam-karla" class="section"></div>
+  <div id="kams" class="section"><div id="kam-body"></div><div id="matriz"></div></div>
   <div id="tareas" class="section"></div>
   <div id="implementacion" class="section"></div>
   <div id="sinuso" class="section"></div>
   <div id="tiempoRegistrar" class="section"></div>
   <div id="tiempoRecuento" class="section"></div>
   <div id="pipeline" class="section"></div>
-  <div id="matriz" class="section"></div>
   <div id="datos" class="section"></div>
 </div>
 
@@ -2445,19 +2442,20 @@ function kzEnQ(d,q){const k=kzMesKey(d);return!!k&&k.startsWith('2026-')&&KZ_Q_M
 function renderKamTab(kam,sectionId){
   // las 3 pestañas de KAM repiten los mismos ids: buscar siempre dentro de la sección de este KAM
   const $q=sel=>document.querySelector('#'+sectionId+' '+sel);
-  const cross=VENTAS_DATA.filter(r=>r.categoria==='cross'&&r.kam===kam&&r.estado==='Facturado');
-  const upsell=VENTAS_DATA.filter(r=>r.categoria==='upsell'&&r.kam===kam&&r.estado==='Facturado');
-  const arriendo=VENTAS_DATA.filter(r=>r.categoria==='arriendo'&&r.kam===kam&&r.estado==='Facturado');
-  const bajas=FUGA_DETALLE.filter(r=>r.tipo==='Baja'&&r.kam===kam);
-  const referidos=ACCOUNTS.filter(a=>a.kam===kam&&a.referido);
+  const esK=r=>!kam||r.kam===kam; // kam '' = todo el equipo
+  const cross=VENTAS_DATA.filter(r=>r.categoria==='cross'&&esK(r)&&r.estado==='Facturado');
+  const upsell=VENTAS_DATA.filter(r=>r.categoria==='upsell'&&esK(r)&&r.estado==='Facturado');
+  const arriendo=VENTAS_DATA.filter(r=>r.categoria==='arriendo'&&esK(r)&&r.estado==='Facturado');
+  const bajas=FUGA_DETALLE.filter(r=>r.tipo==='Baja'&&esK(r));
+  const referidos=ACCOUNTS.filter(a=>esK(a)&&a.referido);
   const sumUSD=rows=>rows.reduce((s,r)=>s+(r.usd||r.facturacionUSD||0),0);
   const sumMXN=rows=>rows.reduce((s,r)=>s+(r.mxn||0),0);
   const mesesCM=monthSums(cross,'mes',r=>r.usd||0),mesesUM=monthSums(upsell,'mes',r=>r.usd||0),mesesAM=monthSums(arriendo,'mes',r=>r.usd||0),mesesBM=monthSums(bajas,'mesBaja',r=>r.facturacionUSD||0);
   const qC=qSum(cross,r=>r.usd||0),qU=qSum(upsell,r=>r.usd||0),qA=qSum(arriendo,r=>r.usd||0),qB=qSum(bajas,r=>r.facturacionUSD||0);
-  const meta=KAM_META[kam]||{m1:0,m2:0,m3:0};
+  const meta=kam?(KAM_META[kam]||{m1:0,m2:0,m3:0}):Object.values(KAM_META).reduce((t,m)=>({m1:t.m1+m.m1,m2:t.m2+m.m2,m3:t.m3+m.m3}),{m1:0,m2:0,m3:0});
   // ---- meta y deals: desde Zoho (deals-mx.json) ----
   // facturado para la meta = deal de CROSS de este KAM en «8. Facturando» con «Mes cierre Cross/UP» dentro del Q
-  const zDeals=DEALS_DATA.filter(d=>d.kam===kam);
+  const zDeals=DEALS_DATA.filter(esK);
   const zFact=zDeals.filter(d=>kzCategoria(d)==='cross'&&d.etapa==='8. Facturando'&&kzEnQ(d,KAM_META_Q));
   const zFactSinMes=zDeals.filter(d=>kzCategoria(d)==='cross'&&d.etapa==='8. Facturando'&&!d.mes_cierre).length;
   const qMetaMXN=zFact.reduce((s,d)=>s+kzMXN(d),0);
@@ -2489,9 +2487,10 @@ function renderKamTab(kam,sectionId){
   <div class="card"><h3>Por Q (USD facturado)</h3><div class="table-wrap"><table><thead><tr><th>Concepto</th><th class="nosort">Q1</th><th class="nosort">Q2</th><th class="nosort">Q3</th><th class="nosort">Q4</th></tr></thead><tbody>
   ${rowQHTML('Cross-selling',qC)}${rowQHTML('Upselling',qU)}${rowQHTML('Arriendo',qA)}${rowQHTML('Bajas',qB)}
   </tbody></table></div></div>
+  <div class="card"><h3>Prepipe, pipe y forecast <span class="legend" style="font-weight:400">· deals abiertos en Zoho</span></h3><div id="${sectionId}-pipe"></div></div>
   <div class="card" id="${sectionId}-meta"></div>
   <div class="card"><h3>Deals abiertos en Zoho</h3>
-  <p class="legend">Deals de ${esc(kamShort(kam))} en Zoho en etapas 1 a 7, agrupados por <strong>Mes cierre Cross/UP</strong> (el mes en que se debería cerrar). Los que no tienen ese campo van al final, en «Sin mes de cierre». Marca los de <strong>cross</strong> para simularlos en la meta de arriba (parte rayada). Clic en la fila para abrir el deal en Zoho.</p>
+  <p class="legend">Deals ${kam?'de '+esc(kamShort(kam)):'del equipo'} en Zoho en etapas 1 a 7, agrupados por <strong>Mes cierre Cross/UP</strong> (el mes en que se debería cerrar). Los que no tienen ese campo van al final, en «Sin mes de cierre». Marca los de <strong>cross</strong> para simularlos en la meta de arriba (parte rayada). Clic en la fila para abrir el deal en Zoho.</p>
   <div class="kz-filtros" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
     ${[['todo','Todo'],['cross','Cross'],['upsell','Up'],['arriendo','Arriendo']].map(([k,l])=>{const on=dealsProyFilter===k;return`<button class="toggle-chip" data-filtro="${k}" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#185FA5':'var(--color-text-secondary)'};border-color:${on?'#185FA5':'var(--color-border-secondary)'}">${l}</button>`;}).join('')}
   </div>
@@ -2505,15 +2504,16 @@ function renderKamTab(kam,sectionId){
     return `<div style="margin-top:14px">
       <p style="font-weight:600;font-size:13px;margin-bottom:6px">${k==='sin'?'Sin mes de cierre':esc(pfMesLabel(k))} <span class="legend" style="font-weight:400">· ${arr.length} deal${arr.length===1?'':'s'} · ${fmtMXN(tot)}</span></p>
       <div class="table-wrap"><table><thead><tr><th class="nosort" style="width:28px"></th>${thDeal('cliente','Cliente')}${thDeal('producto','Producto')}${thDeal('categoria','Tipo')}${thDeal('etapa','Etapa')}${thDeal('usuarios','Usuarios')}${thDeal('precio','Precio/usuario')}${thDeal('mxn','MXN')}${thDeal('usd','USD')}</tr></thead><tbody>
-        ${arr.map(d=>{const c=kzCategoria(d);const usd=(d.moneda||'').toUpperCase()==='USD';return`<tr class="kz-row" data-url="${mxDealUrl(d)}" style="cursor:pointer"><td><input type="checkbox" class="kz-chk" data-id="${esc(d.id)}"${sel.has(d.id)?' checked':''} style="width:15px;height:15px;cursor:pointer"></td><td style="max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(d.trato)}">${esc(d.cuenta||'—')}<div class="legend">${esc(d.trato)}</div></td><td style="font-size:12px">${esc(d.producto||'—')}</td><td><span class="badge ${c==='cross'?'b-blue':'b-gray'}">${c==='cross'?'Cross':c==='upsell'?'Up':'Arriendo'}</span></td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td>${d.usuarios!=null?Math.round(d.usuarios).toLocaleString('en-US'):'—'}</td><td>${d.precio_usuario!=null?'$'+(+d.precio_usuario).toLocaleString('en-US',{maximumFractionDigits:2})+(usd?' USD':''):'—'}</td><td style="font-weight:500">${fmtUSD(kzMXN(d))}</td><td style="font-weight:500">${fmtUSD(kzUSD(d))}</td></tr>`;}).join('')}
+        ${arr.map(d=>{const c=kzCategoria(d);const usd=(d.moneda||'').toUpperCase()==='USD';return`<tr class="kz-row" data-url="${mxDealUrl(d)}" style="cursor:pointer"><td><input type="checkbox" class="kz-chk" data-id="${esc(d.id)}"${sel.has(d.id)?' checked':''} style="width:15px;height:15px;cursor:pointer"></td><td style="max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(d.trato)}">${esc(d.cuenta||'—')}<div class="legend">${esc(d.trato)}${kam?'':' · '+esc(kamShort(d.kam))}</div></td><td style="font-size:12px">${esc(d.producto||'—')}</td><td><span class="badge ${c==='cross'?'b-blue':'b-gray'}">${c==='cross'?'Cross':c==='upsell'?'Up':'Arriendo'}</span></td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td>${d.usuarios!=null?Math.round(d.usuarios).toLocaleString('en-US'):'—'}</td><td>${d.precio_usuario!=null?'$'+(+d.precio_usuario).toLocaleString('en-US',{maximumFractionDigits:2})+(usd?' USD':''):'—'}</td><td style="font-weight:500">${fmtUSD(kzMXN(d))}</td><td style="font-weight:500">${fmtUSD(kzUSD(d))}</td></tr>`;}).join('')}
       </tbody></table></div>
     </div>`;
   }).join(''):`<p class="legend" style="margin-top:8px">Sin deals abiertos ${dealsProyFilter==='todo'?'':'de esta categoría '}para este KAM.</p>`}
   </div>`;
   $(sectionId).insertAdjacentHTML('beforeend',`<div class="card"><h3>Métricas de cierre <span class="legend" style="font-weight:400">· % de deals que terminan facturando y por qué se pierden</span></h3><div id="${sectionId}-cierre"></div></div>`);
+  drawPipeKam(sectionId+'-pipe',kam);
   drawCierre(sectionId+'-cierre',kam);
   $(sectionId).insertAdjacentHTML('beforeend',`<div class="card"><h3>Deals perdidos <span class="legend" style="font-weight:400">· fecha en que pasaron a Cierre Perdido y razón de Zoho</span></h3><div id="${sectionId}-perdidos"></div></div>`);
-  drawPerdidos(sectionId+'-perdidos',DEALS_DATA.filter(d=>d.kam===kam),false);
+  drawPerdidos(sectionId+'-perdidos',DEALS_DATA.filter(esK),!kam);
   $q('.kz-filtros').querySelectorAll('.toggle-chip').forEach(btn=>{btn.onclick=()=>{dealsProyFilter=btn.dataset.filtro;renderKamTab(kam,sectionId);};});
   // meta del Q: barra sólida = cross facturado en Zoho con mes de cierre en el Q; rayada = cross seleccionado abajo
   function drawMeta(){
@@ -2523,7 +2523,7 @@ function renderKamTab(kam,sectionId){
     const sig=metas.find(([,v])=>tot<v),pasada=[...metas].reverse().find(([,v])=>tot>=v);
     const base=nSim?'Con lo seleccionado':'Con lo facturado';
     const falta=sig?`${base}${pasada?` ya pasa <strong>${pasada[0]}</strong> y`:''} faltan <strong>${fmtMXN(sig[1]-tot)}</strong> para <strong>${sig[0]}</strong> (${fmtMXN(sig[1])}).`:`${base} supera <strong>Meta 3</strong> por <strong>${fmtMXN(tot-meta.m3)}</strong>. 🎉`;
-    $(sectionId+'-meta').innerHTML=`<h3>Avance a la meta de cross · ${KAM_META_Q} 2026 (MXN)</h3>
+    $(sectionId+'-meta').innerHTML=`<h3>Avance a la meta de cross · ${KAM_META_Q} 2026 (MXN)${kam?'':' · equipo (suma de las metas de los 3 KAM)'}</h3>
       <p class="legend">Cuenta como facturado el deal de <strong>cross</strong> en Zoho que está en <strong>8. Facturando</strong> y tiene <strong>Mes cierre Cross/UP</strong> dentro del ${KAM_META_Q}: <strong>${fmtMXN(qMetaMXN)}</strong> (${zFact.length} deal${zFact.length===1?'':'s'}). Metas: ${fmtMXN(meta.m1)} / ${fmtMXN(meta.m2)} / ${fmtMXN(meta.m3)}.
       ${zFactSinMes?` <span style="color:#854F0B">${zFactSinMes} deal${zFactSinMes===1?'':'s'} de cross en 8. Facturando no tiene${zFactSinMes===1?'':'n'} Mes cierre Cross/UP y no cuenta${zFactSinMes===1?'':'n'} hasta llenarlo.</span>`:''}
       ${nSim?` Simulación: <strong>+${fmtMXN(sim)}</strong> de ${nSim} deal${nSim===1?'':'s'} seleccionado${nSim===1?'':'s'}.`:''}
@@ -2562,9 +2562,39 @@ function seccionesPlegables(sectionId,ns){
     e.stopPropagation();const card=h.parentElement;const off=!card.classList.contains('plg-off');card.classList.toggle('plg-off',off);
     try{localStorage.setItem(plgKey(ns,h),off?'1':'0');}catch(err){}},true);
 }
-function renderKamRaul(){renderKamTab('Ra\u00fal Campos','kam-raul');}
-function renderKamDafne(){renderKamTab('Dafne de la Rosa','kam-dafne');}
-function renderKamKarla(){renderKamTab('Karla Pati\u00f1o','kam-karla');}
+// Pestaña KAMs (une KAMs + Matriz módulos): la barra flotante Todos | Raúl | Dafne | Karla filtra todo.
+// '' = todo el equipo (por defecto). La Matriz toma el mismo KAM (mxState.kam).
+let KAMS_SEL='';
+function renderKams(){
+  document.querySelectorAll('#subnav-kams [data-kam]').forEach(b=>{b.classList.toggle('active',b.dataset.kam===KAMS_SEL);
+    b.onclick=()=>{KAMS_SEL=b.dataset.kam;renderKams();};});
+  mxState.kam=KAMS_SEL;
+  renderKamTab(KAMS_SEL,'kam-body');
+  renderMatriz();
+}
+// Prepipe = etapas 1-3 · Pipe = 4 en adelante (4-7, abiertos) · Forecast = 6-7 (está dentro del pipe)
+const PIPE_BUCKETS=[['prepipe','Prepipe','etapas 1, 2 y 3',n=>n>=1&&n<=3],['pipe','Pipe','etapa 4 en adelante (4 a 7)',n=>n>=4&&n<=7],['forecast','Forecast','etapas 6 y 7',n=>n===6||n===7]];
+const KAM_COLOR={'Ra\u00fal Campos':'#185FA5','Dafne de la Rosa':'#0090cc','Karla Pati\u00f1o':'#7F56D9'};
+function etapaNum(e){const m=/^(\d)\./.exec(e||'');return m?+m[1]:null;}
+function drawPipeKam(boxId,kam){
+  const box=$(boxId);if(!box)return;
+  const ds=DEALS_DATA.filter(d=>(!kam||d.kam===kam)&&mxAbierto(d));
+  const kams=kam?[kam]:Object.keys(KAM_META);
+  const B=PIPE_BUCKETS.map(([k,l,sub,f])=>{const arr=ds.filter(d=>{const n=etapaNum(d.etapa);return n!=null&&f(n);});
+    return{k,l,sub,arr,mxn:arr.reduce((t,d)=>t+kzMXN(d),0),porKam:kams.map(K=>{const a=arr.filter(d=>d.kam===K);return{K,n:a.length,mxn:a.reduce((t,d)=>t+kzMXN(d),0)};})};});
+  const max=Math.max(1,...B.map(b=>b.mxn));
+  box.innerHTML=`<p class="legend" style="margin:0 0 10px">Deals abiertos en Zoho${kam?' de '+esc(kamShort(kam)):' del equipo'}, por valor (MXN; los de USD a TC ${TC_Q4}). <strong>Prepipe</strong> = etapas 1 a 3 · <strong>Pipe</strong> = etapa 4 en adelante (4 a 7) · <strong>Forecast</strong> = etapas 6 y 7, que también cuentan dentro del pipe. Clic en una barra para ver sus deals.</p>
+    ${kam?'':`<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px">${kams.map(K=>`<span class="legend" style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:${KAM_COLOR[K]}"></span>${esc(kamShort(K))}</span>`).join('')}</div>`}
+    ${B.map(b=>`<div class="bar-row pk-bar" data-b="${b.k}" style="cursor:pointer" title="${b.porKam.map(x=>kamShort(x.K)+': '+x.n+' deals · '+fmtMXN(x.mxn)).join('\n')}"><div class="bar-label"><strong style="color:var(--color-text-primary)">${b.l}</strong><div class="legend">${b.sub}</div></div>
+      <div class="bar-track" style="display:flex;height:26px">${b.porKam.filter(x=>x.mxn>0).map(x=>`<div class="bar-fill" style="width:${x.mxn/max*100}%;background:${KAM_COLOR[x.K]||'#185FA5'};border-radius:0"></div>`).join('')}</div>
+      <div class="bar-num" style="min-width:150px">${fmtMXN(b.mxn)} · ${b.arr.length} deal${b.arr.length===1?'':'s'}</div></div>`).join('')}
+    <div class="pk-list"></div>`;
+  let abierto='';
+  box.querySelectorAll('.pk-bar').forEach(r=>r.onclick=e=>{e.stopPropagation();abierto=abierto===r.dataset.b?'':r.dataset.b;
+    const b=B.find(x=>x.k===abierto);
+    box.querySelectorAll('.pk-bar').forEach(x=>x.style.opacity=abierto&&x.dataset.b!==abierto?.45:1);
+    box.querySelector('.pk-list').innerHTML=b?`<div class="table-wrap" style="margin-top:8px"><table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Producto</th><th class="nosort">Etapa</th><th class="nosort">MXN</th>${kam?'':'<th class="nosort">KAM</th>'}</tr></thead><tbody>${b.arr.slice().sort((x,y)=>kzMXN(y)-kzMXN(x)).map(d=>`<tr class="kz-row" data-url="${mxDealUrl(d)}" style="cursor:pointer"><td>${esc(d.cuenta||'—')}<div class="legend">${esc(d.trato)}</div></td><td style="font-size:12px">${esc(d.producto||'—')}</td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td style="font-weight:500">${fmtMXN(kzMXN(d))}</td>${kam?'':`<td>${esc(kamShort(d.kam))}</td>`}</tr>`).join('')}</tbody></table></div>`:'';});
+}
 // ---------- Tiempo operativo ----------
 let tiempoState={kam:'',fecha:''};
 function fmtMin(min){const h=Math.floor(min/60),m=min%60;if(h<=0)return m+' min';if(m===0)return h+'h';return h+'h '+m+'min';}
@@ -3152,9 +3182,8 @@ function mxImplIcono(arr,total){
 function mxLinkIcono(a){const l=a._linkDudoso;return` <span class="mx-link-mal" title="El link de Zoho de «${esc(a.cliente)}» (columna L) lleva a la cuenta «${esc(l.zoho)}»${l.movido?'; sus deals se asignaron a «'+esc(l.movido.cliente)+'» por nombre':''}. Revisa la columna L en el Excel.">🔗?</span>`;}
 function renderMatriz(){
   mxBuild();
-  const C=MX.clientes;
-  const kamOpts=[...new Set(ACCOUNTS.map(a=>a.kam))].sort();
-  const abiertos=DEALS_DATA.filter(d=>mxModIdx(d)>=0&&mxAbierto(d));
+  const C=MX.clientes.filter(g=>!mxState.kam||g.kams.includes(mxState.kam));
+  const abiertos=DEALS_DATA.filter(d=>mxModIdx(d)>=0&&mxAbierto(d)&&(!mxState.kam||d.kam===mxState.kam));
   const estanc=abiertos.filter(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS);
   const stat=(v,l,vista)=>`<div class="stat3-it mx-kpi${mxState.vista===vista?' on':''}" data-vista="${vista}"><div class="stat3-v">${v}</div><div class="stat3-l">${l}</div></div>`;
   $('matriz').innerHTML=`
@@ -3176,28 +3205,25 @@ function renderMatriz(){
   </div>
   <div class="controls" style="margin-top:14px">
     <input type="text" id="mxQ" placeholder="Buscar cliente o razón social…" value="${esc(mxState.q)}">
-    <select id="mxKam"><option value="">Todo KAM</option>${kamOpts.map(k=>`<option>${esc(k)}</option>`).join('')}</select>
     <select id="mxCart"><option value="">Toda cartera</option><option value="ENTERPRISE">Enterprise</option><option value="SMB">SMB</option></select>
     <select id="mxMod"><option value="">Hueco en módulo…</option>${MATRIZ_MODS.map((m,i)=>`<option value="${i}">${esc(m[1])}</option>`).join('')}</select>
   </div>
   <p class="status-line" id="mxTitle" style="margin:-6px 0 8px"></p>
   <div class="card" style="padding:.5rem"><h3 style="margin:.4rem .5rem .6rem">Matriz por cliente</h3><div class="hm-wrap" id="mxWrap"></div></div>
   <div class="card"><h3>Deals abiertos para empujar <span class="legend" style="font-weight:400">· del más quieto al más reciente</span></h3><div id="mxTipoDeals" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"></div><div class="table-wrap" id="mxAbiertos"></div></div>
-  <div class="card"><h3>Deals perdidos <span class="legend" style="font-weight:400">· del más reciente al más antiguo · fecha en que pasaron a Cierre Perdido y razón de Zoho</span></h3><div id="mxPerdidos"></div></div>
   <details class="card"><summary style="cursor:pointer;font-weight:600;font-size:14px">Qué actualizar en el Excel <span class="badge b-amber">${MX.difs.length}</span> <span class="legend" style="font-weight:400">— celdas de AT–BH que no coinciden con Zoho</span></summary>
     <p class="legend" style="margin:8px 0">La celda es la de <code>cartera.xlsx</code> (MARE MX); si alguien insertó filas en el Excel después, búscala por el nombre. <button class="btn" id="mxDifXlsx" style="margin-left:6px">⬇ Descargar .xlsx</button></p>
     <div class="table-wrap" id="mxDifs"></div></details>
   ${MX.sinCuenta.length?`<details class="card"><summary style="cursor:pointer;font-weight:600;font-size:14px">Deals sin cuenta en la cartera <span class="badge b-gray">${MX.sinCuenta.length}</span></summary><p class="legend" style="margin:8px 0">Su cuenta de Zoho no coincide con ninguna razón social de MARE MX (ni por id en la columna Zoho, ni por nombre, ni por grupo). No entran en la matriz.</p><div class="table-wrap"><table><thead><tr><th class="nosort">Cuenta en Zoho</th><th class="nosort">Producto</th><th class="nosort">Etapa</th><th class="nosort">KAM</th></tr></thead><tbody>${mxSort(MX.sinCuenta).map(d=>`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td>${esc(d.cuenta)}</td><td>${esc(d.producto)}</td><td>${esc(d.etapa)}</td><td>${esc(kamShort(d.kam))}</td></tr>`).join('')}</tbody></table></div></details>`:''}
   <div id="mxPop" class="mx-pop" hidden></div>`;
-  $('mxKam').value=mxState.kam;$('mxCart').value=mxState.cartera;$('mxMod').value=mxState.modulo;
+  $('mxCart').value=mxState.cartera;$('mxMod').value=mxState.modulo;
   $('mxQ').oninput=e=>{mxState.q=e.target.value;drawMatriz();};
-  $('mxKam').onchange=e=>{mxState.kam=e.target.value;drawMatriz();drawMxAbiertos();drawMxPerdidos();};
   $('mxCart').onchange=e=>{mxState.cartera=e.target.value;drawMatriz();};
   $('mxMod').onchange=e=>{mxState.modulo=e.target.value;drawMatriz();};
   document.querySelectorAll('#matriz .mx-kpi').forEach(k=>k.onclick=()=>{mxState.vista=mxState.vista===k.dataset.vista?'':k.dataset.vista;renderMatriz();});
   $('matriz').onclick=mxClick;
   $('mxDifXlsx').onclick=mxDifsXlsx;
-  drawMatriz();drawMxAbiertos();drawMxPerdidos();drawMxDifs();
+  drawMatriz();drawMxAbiertos();drawMxDifs();
   seccionesPlegables('matriz','mx_plg');
 }
 
@@ -3254,7 +3280,7 @@ function cierreStats(deals,st){
 function drawCierre(boxId,kam){
   const box=$(boxId);if(!box)return;
   const st=CIERRE_STATE[boxId]=CIERRE_STATE[boxId]||{periodo:'anio',tipo:'todo'};
-  const mine=cierreStats(DEALS_DATA.filter(d=>d.kam===kam),st),team=cierreStats(DEALS_DATA,st);
+  const mine=cierreStats(DEALS_DATA.filter(d=>!kam||d.kam===kam),st),team=cierreStats(DEALS_DATA,st);
   const pct=x=>x==null?'—':Math.round(x*100)+'%';
   const chip=(k,l)=>{const on=st.tipo===k;return`<button class="toggle-chip" data-tipo="${k}" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#0C447C':'var(--color-text-secondary)'};border-color:${on?'#85B7EB':'var(--color-border-secondary)'}">${l}</button>`;};
   const tile=(v,l,sub)=>`<div class="stat3-it"><div class="stat3-v">${v}</div><div class="stat3-l">${l}</div>${sub?`<div class="legend" style="margin-top:2px">${sub}</div>`:''}</div>`;
@@ -3267,7 +3293,7 @@ function drawCierre(boxId,kam){
     </div>
     <p class="legend" style="margin:0 0 8px">De los deals que se cerraron en el período: <strong>ganado</strong> = llegó a <strong>8. Facturando</strong> (o hoy está en facturación congelada), fechado por «Fecha paso a Facturando»; <strong>perdido</strong> = Cierre Perdido, fechado por «Fecha paso a Cierre Perdido». No cuentan los «Deal Duplicado» ni los deals abiertos.</p>
     ${mine.n?`<div class="stat3" style="margin-bottom:12px">
-      ${tile(pct(mine.rate),'deals cerrados con éxito',`${mine.g.length} ganados de ${mine.n} cerrados · equipo MX: ${pct(team.rate)}`)}
+      ${tile(pct(mine.rate),'deals cerrados con éxito',`${mine.g.length} ganados de ${mine.n} cerrados${kam?' · equipo MX: '+pct(team.rate):''}`)}
       ${tile(pct(mine.rateUsd),'del valor cerrado se ganó',`${fmtUSD(mine.usdG)} ganado · ${fmtUSD(mine.usdP)} perdido (USD, TC 18)`)}
       ${tile(mine.cicloG==null?'—':mine.cicloG+' días','ciclo promedio hasta facturar',`hasta perder: ${mine.cicloP==null?'—':mine.cicloP+' días'} · desde que se creó el deal`)}
     </div>
@@ -3309,7 +3335,6 @@ function drawPerdidos(boxId,deals,conKam){
   box.querySelectorAll('[data-razon]').forEach(b=>b.onclick=e=>{e.stopPropagation();st.razon=b.dataset.razon;drawPerdidos(boxId,deals,conKam);});
   box.onclick=e=>{const r=e.target.closest('.perd-row');if(r){e.stopPropagation();window.open(r.dataset.url,'_blank','noopener');}};
 }
-function drawMxPerdidos(){drawPerdidos('mxPerdidos',DEALS_DATA.filter(d=>!mxState.kam||d.kam===mxState.kam),!mxState.kam);}
 
 function drawMxDifs(){
   const D=MX.difs.slice().sort((x,y)=>(x.a.kam||'').localeCompare(y.a.kam||'')||x.a.cliente.localeCompare(y.a.cliente));
@@ -4061,11 +4086,11 @@ function tareasDownloadExcel(rows){
   XLSX.writeFile(wb,`tareas_${tareasState.resp?normName(tareasState.resp):'todas'}_${hoy}.xlsx`);
   toast('Descargando '+rows.length+' tareas…');
 }
-const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,'kam-raul':renderKamRaul,'kam-dafne':renderKamDafne,'kam-karla':renderKamKarla,tiempoRegistrar:renderTiempoRegistrar,tiempoRecuento:renderTiempoRecuento,implementacion:renderImplementacion,tareas:renderTareas,sinuso:renderSinUso,pipeline:renderPipeline,matriz:renderMatriz,datos:renderDatos};
+const RENDER={resumen:renderResumen,prioridad:renderPrioridad,priorizar:renderPriorizar,semanal:renderSemanal,tony:renderTony,cuentas:renderCuentas,fuga:renderFuga,disminuciones:renderDisminuciones,facturcritica:renderFacturCritica,cross:renderCross,upsell:renderUpsell,kams:renderKams,tiempoRegistrar:renderTiempoRegistrar,tiempoRecuento:renderTiempoRecuento,implementacion:renderImplementacion,tareas:renderTareas,sinuso:renderSinUso,pipeline:renderPipeline,datos:renderDatos};
 function renderAll(){applyAnnotationsToAccounts();applyApoyoToAccounts();Object.keys(RENDER).forEach(k=>{if($(k).classList.contains('active'))RENDER[k]();});updateSubtitle();}
 function updateSubtitle(){$('subtitle').innerHTML=`${ACCOUNTS.length} cuentas · ${SOURCE.length>34?esc(SOURCE.slice(0,34))+'…':esc(SOURCE)}${HEALTH.loaded?` · <span style="color:#3B6D11" title="${CURRENT_HEALTH_FILE?esc(CURRENT_HEALTH_FILE):''}">salud vigente: ${CURRENT_HEALTH_DATE?esc(CURRENT_HEALTH_DATE):'activa'}${CURRENT_HEALTH_FILE?' ('+esc(CURRENT_HEALTH_FILE)+')':''}</span>`:''} · <span title="Última vez que se (re)cargaron los datos">↻ ${fmtReload()}</span>`;}
 // mapa: id de sección real -> id de grupo (pestaña principal) al que pertenece
-const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',tony:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta','kam-raul':'kams','kam-dafne':'kams','kam-karla':'kams',tiempoRegistrar:'tiempo',tiempoRecuento:'tiempo',implementacion:'implementacion',tareas:'tareas',pipeline:'pipeline',matriz:'matriz',datos:'datos'};
+const SECTION_GROUP={resumen:'resumen',prioridad:'salud',priorizar:'salud',semanal:'salud',tony:'salud',cuentas:'cuentasg',sinuso:'cuentasg',fuga:'fugag',disminuciones:'fugag',facturcritica:'fugag',cross:'venta',upsell:'venta',kams:'kams',tiempoRegistrar:'tiempo',tiempoRecuento:'tiempo',implementacion:'implementacion',tareas:'tareas',pipeline:'pipeline',datos:'datos'};
 let NAV_LAST_CHILD={}; // recuerda qué sub-pestaña se vio por última vez en cada grupo con hijos
 // clic en una pestaña principal con sub-pestañas: abre la última vista o, si es la primera vez, la primera opción
 function showGroup(gid){
