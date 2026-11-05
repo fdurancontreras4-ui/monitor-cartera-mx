@@ -39,7 +39,7 @@
       "marcaje_maximo": 0.62,
       "razon": "De 8 usuarios, marcan máximo 5"
     },
-     {
+    {
       "id": "20172",
       "nombre": "MASTER BUILDER S.A. DE C.V. (GAYA)",
       "accion": "ajustar_marcaje",
@@ -60,5 +60,12 @@
       "razon": "Todas las cuentas de J&T quedan asociadas a Dafne."
     }
   ],
-  "_como_asignar_kam": "En 'asignaciones_kam' agrega {patron, kam}: cualquier cuenta cuyo nombre contenga ese patron (ej. 'J&T') queda asociada a ese KAM, sin importar sucursal."
+  "_como_asignar_kam": "En 'asignaciones_kam' agrega {patron, kam}: cualquier cuenta cuyo nombre contenga ese patron (ej. 'J&T') queda asociada a ese KAM, sin importar sucursal.",
+  "unir_sucursales_salud": [
+    {
+      "patron": "STED TRASLADOS",
+      "razon": "STED quincenal (24113) y semanal (24540) son dos empresas en plataforma pero la misma cuenta: en Salud van como una sola, con el marcaje ponderado por usuarios."
+    }
+  ],
+  "_como_unir_sucursales_salud": "Para cuentas con varios ID Geo en cartera (separados por '-') que en Salud deben verse como UNA sola cuenta y no una fila por sucursal, agrega {patron, razon} en 'unir_sucursales_salud' (el patron se busca en el nombre de la cuenta). El estado es el peor de las sucursales y el marcaje se pondera por usuarios activos."
 }

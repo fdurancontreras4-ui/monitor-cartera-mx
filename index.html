@@ -1074,9 +1074,16 @@ function worstBranch(branches){
   }
   return best;
 }
+function unirBranches(a,branches){
+  const w=worstBranch(branches),conAd=branches.filter(b=>b.adopcion!=null);
+  const usu=conAd.reduce((t,b)=>t+(b.usuarios||0),0);
+  const adopcion=!conAd.length?null:usu?conAd.reduce((t,b)=>t+b.adopcion*(b.usuarios||0),0)/usu:conAd.reduce((t,b)=>t+b.adopcion,0)/conAd.length;
+  const sum=k=>branches.some(b=>b[k]!=null)?branches.reduce((t,b)=>t+(b[k]||0),0):null;
+  return Object.assign({},w,{adopcion,usuarios:sum('usuarios'),inc30:sum('inc30'),nombre:a.cliente,id:branches.map(b=>b.id).join('-'),css:(branches.find(b=>b.css)||w).css});
+}
 function applyHealth(parsed){
   const byNorm={},byId={};parsed.rows.forEach(r=>{nameKeys(r.key).forEach(k=>{(byNorm[k]=byNorm[k]||[]).push(r);});if(r.id)byId[r.id]=r;});
-  let matched=0;const used=new Set();ACCOUNTS.forEach(a=>{a.health=null;a._healthBranches=null;});
+  let matched=0;const used=new Set();ACCOUNTS.forEach(a=>{a.health=null;a._healthBranches=null;a._saludUnida=false;});
   const hitToObj=hit=>({flag:hit.flag,categoria:hit.cat,adopcion:hit.ad,variacion:hit.vari,nps:hit.nps,inc30:hit.inc30,score:hit.score,css:hit.css,seg:hit.seg,usuarios:hit.usuarios!=null?hit.usuarios:null,raw:hit.raw,nombre:hit.key,id:hit.id});
   ACCOUNTS.forEach(a=>{
     const ids=(a._idList&&a._idList.length)?a._idList:(a.id?[cleanId(a.id)]:[]);
@@ -1084,7 +1091,11 @@ function applyHealth(parsed){
       // ID Geo concatenados con "-": varias sucursales del modelo de salud → la misma línea/razón social de cartera
       const branches=[];
       ids.forEach(pid=>{if(pid&&byId[pid]){const hit=byId[pid];branches.push(hitToObj(hit));used.add(hit.keyNorm||hit.id);matched++;}});
-      if(branches.length){a._healthBranches=branches;a.health=worstBranch(branches);}
+      if(branches.length){a._healthBranches=branches;a.health=worstBranch(branches);
+        // consideraciones.unir_sucursales_salud: empresas de plataforma que son la misma operación (ej. STED
+        // quincenal/semanal) → una sola entrada en Salud, con el marcaje ponderado por usuarios activos
+        a._saludUnida=branches.length>1&&(CONSID.unir_sucursales_salud||[]).some(r=>matchPattern(a.cliente,r.patron));
+        if(a._saludUnida)a.health=unirBranches(a,branches);}
       return;
     }
     let hit=null;const pid=ids[0]||cleanId(a.id);
@@ -1417,7 +1428,7 @@ function drawPrList(){
   // exactamente como antes.
   let rows=[];
   accRows.forEach(a=>{
-    if(a._healthBranches&&a._healthBranches.length>1)a._healthBranches.forEach(br=>rows.push({a,branch:br}));
+    if(a._healthBranches&&a._healthBranches.length>1&&!a._saludUnida)a._healthBranches.forEach(br=>rows.push({a,branch:br}));
     else rows.push({a,branch:null});
   });
   const eExcluded=e=>!!(e.a._congelada||e.a._forzarSano||e.a._cambioRazon||e.a._anotExcluir);
@@ -3797,7 +3808,7 @@ function openDetail(uid){
       const ad=br.adopcion!=null?Math.round(br.adopcion*100)+'%':'—';
       return `<tr><td style="font-weight:500">${esc(br.nombre||'')}</td><td><span class="badge ${fl}">${esc(lbl)}</span></td><td>${ad}</td><td>${br.nps!=null?br.nps:'—'}</td><td>${br.inc30!=null?br.inc30:'—'}</td><td style="font-size:11px;color:var(--color-text-secondary)">${br.id?esc(br.id):'—'}</td></tr>`;
     }).join('');
-    return `<div class="sec-title">Sucursales (ID Geo concatenados) <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· ${a._healthBranches.length} sucursales del modelo de salud asociadas a esta razón social — la facturación/MRR de arriba es una sola, para toda la cuenta</span></div>
+    return `<div class="sec-title">Sucursales (ID Geo concatenados) <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· ${a._healthBranches.length} sucursales del modelo de salud asociadas a esta razón social${a._saludUnida?' (en Salud se muestran como una sola cuenta, marcaje ponderado por usuarios)':''} — la facturación/MRR de arriba es una sola, para toda la cuenta</span></div>
     <div class="table-wrap"><table><thead><tr><th>Sucursal (modelo de salud)</th><th class="nosort">Estado</th><th class="nosort">Marcaje</th><th class="nosort">NPS</th><th class="nosort">Inc. 30d</th><th class="nosort">ID</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   })():'';
   const razonesSocialesHtml=(a._razonesSociales&&a._razonesSociales.length>1)?(function(){
