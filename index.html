@@ -3243,13 +3243,25 @@ function renderMatriz(){
       let fz=0,fx=0,usdF=0,nA=0,usdA=0,nFd=0;
       C.forEach(g=>{const c=g.celdas[i];if(c.s==='zv')fz++;else if(c.s==='xv')fx++;
         c.ds.forEach(d=>{if(d.etapa==='8. Facturando'){nFd++;usdF+=kzUSD(d)||0;}else if(mxAbierto(d)&&!d._com){nA++;usdA+=kzUSD(d)||0;}});});
-      return{nombre:m[1],fz,fx,f:fz+fx,usdF,nFd,nA,usdA};});
+      return{i,nombre:m[1],fz,fx,f:fz+fx,usdF,nFd,nA,usdA};});
+    const gNom=g=>(g.miembros.length>1&&g.miembros[0].grupo)||g.miembros[0].cliente;
+    // detalle al hacer clic en un producto: cuentas con el módulo facturando y deals abiertos de ese módulo
+    const detalle=i=>{
+      const fact=C.filter(g=>g.celdas[i].s==='zv'||g.celdas[i].s==='xv').sort((x,y)=>(y.mrr||0)-(x.mrr||0));
+      const ab=[];C.forEach(g=>g.celdas[i].ds.forEach(d=>{if(mxAbierto(d)&&!d._com)ab.push({g,d});}));
+      ab.sort((x,y)=>etapaRank(y.d.etapa)-etapaRank(x.d.etapa)||kzUSD(y.d)-kzUSD(x.d));
+      const tFact=fact.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Fuente</th><th class="nosort">Deal facturando (USD)</th><th class="nosort">MRR cliente</th><th class="nosort">KAM</th></tr></thead><tbody>${fact.map(g=>{const c=g.celdas[i];const df=c.ds.filter(d=>d.etapa==='8. Facturando');const usd=df.reduce((t,d)=>t+(kzUSD(d)||0),0);
+        return`<tr${df.length?` class="mx-link" data-url="${mxDealUrl(df[0])}"`:' style="cursor:default"'}><td style="font-weight:500">${esc(gNom(g))}${df.length?`<div class="legend">${esc(df.map(d=>d.trato).join(' · '))}</div>`:''}</td><td>${c.s==='zv'?(df.some(d=>d._com)?'Zoho (comercial)':'Zoho'):'<span class="legend">Solo Excel (OK)</span>'}</td><td>${df.length?fmtUSD(usd):'—'}</td><td>${fmtUSD(g.mrr||0)}</td><td>${esc(g.kams.map(kamShort).join(', '))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">Ninguna cuenta lo tiene facturando.</p>';
+      const tAb=ab.length?`<table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Etapa</th><th class="nosort">Sin mover</th><th class="nosort">USD</th><th class="nosort">KAM</th></tr></thead><tbody>${ab.map(({g,d})=>{const dd=mxDias(d);return`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td style="font-weight:500">${esc(gNom(g))}<div class="legend">${esc(d.trato)}</div></td><td><span class="badge" style="background:${ETAPA_COLOR[d.etapa]||'#67718c'};color:#fff">${esc(mxEtapaCorta(d.etapa))}</span></td><td>${dd==null?'—':dd+' días'}</td><td>${fmtUSD(kzUSD(d))}</td><td>${esc(kamShort(d.kam))}</td></tr>`;}).join('')}</tbody></table>`:'<p class="legend">No hay deals abiertos de este módulo.</p>';
+      return`<tr class="mxp-det"><td colspan="6" style="background:var(--color-background-secondary);padding:10px 12px">
+        <p style="font-weight:600;font-size:13px;margin:0 0 6px">Facturando · ${fact.length} cuenta${fact.length===1?'':'s'}</p><div class="table-wrap">${tFact}</div>
+        <p style="font-weight:600;font-size:13px;margin:14px 0 6px">Deals abiertos · ${ab.length}</p><div class="table-wrap">${tAb}</div></td></tr>`;};
     const tot=k=>filas.reduce((t,r)=>t+r[k],0);
     const pct=n=>C.length?Math.round(n/C.length*100)+'%':'—';
     return`<div class="card" id="mxProductos"><h3>Resumen por producto cruzado <span class="legend" style="font-weight:400">· cuentas facturando, deals abiertos y USD${mxState.kam?' · '+esc(kamShort(mxState.kam)):''}</span></h3>
-      <p class="legend" style="margin:8px 0">Sobre los ${C.length} clientes de la matriz. <strong>Cuentas facturando</strong> = celda verde: ✓ en Zoho (deal en 8. Facturando) u OK del Excel cuando Zoho no tiene deal. <strong>USD</strong> = valor de los deals en Zoho (TC 18). Los abiertos son etapas 1 a 7 de los KAM (sin lo de comercial).</p>
+      <p class="legend" style="margin:8px 0">Sobre los ${C.length} clientes de la matriz. <strong>Cuentas facturando</strong> = celda verde: ✓ en Zoho (deal en 8. Facturando) u OK del Excel cuando Zoho no tiene deal. <strong>USD</strong> = valor de los deals en Zoho (TC 18). Los abiertos son etapas 1 a 7 de los KAM (sin lo de comercial). Clic en un producto para ver sus cuentas; clic en una cuenta abre el deal en Zoho.</p>
       <div class="table-wrap"><table><thead><tr><th class="nosort">Producto</th><th class="nosort">Cuentas facturando</th><th class="nosort">Penetración</th><th class="nosort">USD facturando</th><th class="nosort">Deals abiertos</th><th class="nosort">USD en abiertos</th></tr></thead><tbody>
-      ${filas.sort((a,b)=>b.f-a.f||b.nA-a.nA).map(r=>`<tr style="cursor:default"><td style="font-weight:500">${esc(r.nombre)}</td><td><strong>${r.f}</strong>${r.fx?` <span class="legend">(${r.fz} Zoho · ${r.fx} solo Excel)</span>`:''}</td><td>${pct(r.f)}</td><td>${r.usdF?fmtUSD(r.usdF)+` <span class="legend">${r.nFd} deal${r.nFd===1?'':'s'}</span>`:'—'}</td><td>${r.nA||'—'}</td><td>${r.usdA?fmtUSD(r.usdA):'—'}</td></tr>`).join('')}
+      ${filas.sort((a,b)=>b.f-a.f||b.nA-a.nA).map(r=>{const on=mxState.prodSel===r.i;return`<tr class="mxp-row" data-prod="${r.i}" style="cursor:pointer${on?';background:var(--accent-soft)':''}" title="Clic para ver las cuentas"><td style="font-weight:500">${on?'▾':'▸'} ${esc(r.nombre)}</td><td><strong>${r.f}</strong>${r.fx?` <span class="legend">(${r.fz} Zoho · ${r.fx} solo Excel)</span>`:''}</td><td>${pct(r.f)}</td><td>${r.usdF?fmtUSD(r.usdF)+` <span class="legend">${r.nFd} deal${r.nFd===1?'':'s'}</span>`:'—'}</td><td>${r.nA||'—'}</td><td>${r.usdA?fmtUSD(r.usdA):'—'}</td></tr>${on?detalle(r.i):''}`;}).join('')}
       <tr style="cursor:default;font-weight:700"><td>Total</td><td>${tot('f')}</td><td></td><td>${fmtUSD(tot('usdF'))}</td><td>${tot('nA')}</td><td>${fmtUSD(tot('usdA'))}</td></tr>
       </tbody></table></div></div>`;})()}
   <div class="card"><h3>Deals abiertos para empujar <span class="legend" style="font-weight:400">· del más quieto al más reciente</span></h3><div id="mxTipoDeals" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"></div><div class="table-wrap" id="mxAbiertos"></div></div>
@@ -3264,6 +3276,7 @@ function renderMatriz(){
   $('mxMod').onchange=e=>{mxState.modulo=e.target.value;drawMatriz();};
   document.querySelectorAll('#matriz .mx-kpi').forEach(k=>k.onclick=()=>{mxState.vista=mxState.vista===k.dataset.vista?'':k.dataset.vista;renderMatriz();});
   $('matriz').onclick=mxClick;
+  document.querySelectorAll('#mxProductos .mxp-row').forEach(r=>r.onclick=e=>{e.stopPropagation();const i=+r.dataset.prod;mxState.prodSel=mxState.prodSel===i?null:i;renderMatriz();});
   $('mxDifXlsx').onclick=mxDifsXlsx;
   drawMatriz();drawMxAbiertos();drawMxDifs();
   seccionesPlegables('matriz','mx_plg');
