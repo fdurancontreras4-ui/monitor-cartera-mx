@@ -3236,6 +3236,22 @@ function renderMatriz(){
       <div class="stat3-it"><div class="stat3-v">${fmtUSD(mrrT)}</div><div class="stat3-l">MRR total de la cartera</div><div class="legend" style="margin-top:2px">${C.length} clientes${mxState.kam?' de '+esc(kamShort(mxState.kam)):''} · USD mensual · sin cuadrante Recuperar</div></div>
       <div class="stat3-it"><div class="stat3-v" style="color:var(--accent-strong)">${fmtUSD(mrrP)}</div><div class="stat3-l">MRR potencial</div><div class="legend" style="margin-top:2px">${pot.length} clientes con 0 a 3 módulos complementarios · ${mrrT?Math.round(mrrP/mrrT*100):0}% del MRR · no cuentan los de 4 o más</div></div>
     </div>`;})()}<div class="hm-wrap" id="mxWrap"></div></div>
+  ${(()=>{
+    // resumen por producto cruzado (módulos complementarios; sin Upselling/Arriendo), con el KAM elegido.
+    // Facturando = celda verde (✓ en Zoho o OK del Excel sin deal); USD = valor del deal en Zoho a TC 18.
+    const filas=MATRIZ_MODS.map((m,i)=>({m,i})).filter(x=>!x.m[3]).map(({m,i})=>{
+      let fz=0,fx=0,usdF=0,nA=0,usdA=0,nFd=0;
+      C.forEach(g=>{const c=g.celdas[i];if(c.s==='zv')fz++;else if(c.s==='xv')fx++;
+        c.ds.forEach(d=>{if(d.etapa==='8. Facturando'){nFd++;usdF+=kzUSD(d)||0;}else if(mxAbierto(d)&&!d._com){nA++;usdA+=kzUSD(d)||0;}});});
+      return{nombre:m[1],fz,fx,f:fz+fx,usdF,nFd,nA,usdA};});
+    const tot=k=>filas.reduce((t,r)=>t+r[k],0);
+    const pct=n=>C.length?Math.round(n/C.length*100)+'%':'—';
+    return`<details class="card" id="mxProductos"><summary style="cursor:pointer;font-weight:600;font-size:14px">Resumen por producto cruzado <span class="legend" style="font-weight:400">— cuentas facturando, deals abiertos y USD${mxState.kam?' · '+esc(kamShort(mxState.kam)):''}</span></summary>
+      <p class="legend" style="margin:8px 0">Sobre los ${C.length} clientes de la matriz. <strong>Cuentas facturando</strong> = celda verde: ✓ en Zoho (deal en 8. Facturando) u OK del Excel cuando Zoho no tiene deal. <strong>USD</strong> = valor de los deals en Zoho (TC 18). Los abiertos son etapas 1 a 7 de los KAM (sin lo de comercial).</p>
+      <div class="table-wrap"><table><thead><tr><th class="nosort">Producto</th><th class="nosort">Cuentas facturando</th><th class="nosort">Penetración</th><th class="nosort">USD facturando</th><th class="nosort">Deals abiertos</th><th class="nosort">USD en abiertos</th></tr></thead><tbody>
+      ${filas.sort((a,b)=>b.f-a.f||b.nA-a.nA).map(r=>`<tr style="cursor:default"><td style="font-weight:500">${esc(r.nombre)}</td><td><strong>${r.f}</strong>${r.fx?` <span class="legend">(${r.fz} Zoho · ${r.fx} solo Excel)</span>`:''}</td><td>${pct(r.f)}</td><td>${r.usdF?fmtUSD(r.usdF)+` <span class="legend">${r.nFd} deal${r.nFd===1?'':'s'}</span>`:'—'}</td><td>${r.nA||'—'}</td><td>${r.usdA?fmtUSD(r.usdA):'—'}</td></tr>`).join('')}
+      <tr style="cursor:default;font-weight:700"><td>Total</td><td>${tot('f')}</td><td></td><td>${fmtUSD(tot('usdF'))}</td><td>${tot('nA')}</td><td>${fmtUSD(tot('usdA'))}</td></tr>
+      </tbody></table></div></details>`;})()}
   <div class="card"><h3>Deals abiertos para empujar <span class="legend" style="font-weight:400">· del más quieto al más reciente</span></h3><div id="mxTipoDeals" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"></div><div class="table-wrap" id="mxAbiertos"></div></div>
   <details class="card"><summary style="cursor:pointer;font-weight:600;font-size:14px">Qué actualizar en el Excel <span class="badge b-amber">${MX.difs.length}</span> <span class="legend" style="font-weight:400">— celdas de AT–BH que no coinciden con Zoho</span></summary>
     <p class="legend" style="margin:8px 0">La celda es la de <code>cartera.xlsx</code> (MARE MX); si alguien insertó filas en el Excel después, búscala por el nombre. <button class="btn" id="mxDifXlsx" style="margin-left:6px">⬇ Descargar .xlsx</button></p>
