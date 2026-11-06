@@ -3233,7 +3233,7 @@ function renderMatriz(){
   const estanc=abiertos.filter(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS);
   const pc=n=>C.length?Math.round(n/C.length*100):0;
   const nRS=C.reduce((t,g)=>t+g.miembros.length,0);
-  const mrrT=C.reduce((t,g)=>t+(g.mrr||0),0),pot=C.filter(g=>(g.nMods||0)<=3),mrrP=pot.reduce((t,g)=>t+(g.mrr||0),0);
+  const mrrT=C.reduce((t,g)=>t+(g.mrr||0),0),pot=C.filter(g=>(g.nMods||0)<=2),mrrP=pot.reduce((t,g)=>t+(g.mrr||0),0);
   // tarjeta: número grande, % sobre los clientes de la matriz y barrita; con vista = clic filtra la matriz
   const tile=(v,l,vista,color,conPct)=>`<div class="mxk-tile${vista!=null?' mx-kpi':''}${vista!=null&&mxState.vista===vista?' on':''}"${vista!=null?` data-vista="${vista}"`:''} style="--c:${color}"><div class="mxk-v">${v}${conPct?`<span class="mxk-p">${pc(v)}%</span>`:''}</div><div class="mxk-l">${l}</div>${conPct?`<div class="mxk-bar"><i style="width:${pc(v)}%"></i></div>`:''}</div>`;
   const MODS_SEG=[['0','0 módulos','mods0','#E24B4A',g=>!g.nMods],['1','1 módulo','mods1','#EF9F27',g=>g.nMods===1],['2','2 módulos','mods2','#8FBF4D',g=>g.nMods===2],['3','3 módulos','mods3','#639922',g=>g.nMods===3],['4+','4 o más','mods4','#3B6D11',g=>g.nMods>=4]].map(([k,l,v,c,f])=>({k,l,v,c,n:C.filter(f).length}));
@@ -3242,7 +3242,7 @@ function renderMatriz(){
       ${tile(nRS,'razones sociales',null,'var(--accent-strong)')}
       ${tile(C.length,'clientes (grupos)','','var(--accent-strong)')}
       ${tile(fmtUSD(mrrT),'MRR total · USD mensual',null,'var(--accent-strong)')}
-      ${tile(fmtUSD(mrrP),`MRR potencial · ${pot.length} clientes con 0 a 3 módulos (${mrrT?Math.round(mrrP/mrrT*100):0}% del MRR)`,null,'var(--accent-strong)')}
+      ${tile(fmtUSD(mrrP),`MRR potencial · ${pot.length} clientes con 0 a 2 módulos (${mrrT?Math.round(mrrP/mrrT*100):0}% del MRR)`,null,'var(--accent-strong)')}
     </div></div>
     <div class="mxk-grp" style="--g:#7F56D9"><div class="mxk-t">Actividad comercial</div><div class="mxk-row mxk-3">
       ${tile(C.filter(g=>g.sinIntento).length,'sin ningún intento','sin','#E24B4A',true)}
