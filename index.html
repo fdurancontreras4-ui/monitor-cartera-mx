@@ -274,6 +274,30 @@ tr.hecha td:first-child{color:var(--tarea-ok);}
 .tarea-ok-lbl{color:var(--tarea-ok);font-weight:600;}
 /* Matriz módulos */
 .mx-kpis{grid-template-columns:repeat(5,1fr);}
+.mxk{display:grid;grid-template-columns:3fr 2fr;gap:10px;margin:0 .5rem .8rem;}
+.mxk-full{grid-column:1/-1;}
+.mxk-grp{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px 12px;border-top:3px solid var(--g);}
+.mxk-t{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:8px;}
+.mxk-row{display:grid;gap:8px;}
+.mxk-2{grid-template-columns:repeat(2,1fr);}.mxk-3{grid-template-columns:repeat(3,1fr);}.mxk-4{grid-template-columns:repeat(4,1fr);}.mxk-5{grid-template-columns:repeat(5,1fr);}
+.mxk-tile{background:var(--color-background-primary);border-radius:var(--border-radius-md);padding:10px 12px;border:1.5px solid transparent;border-left:4px solid var(--c);}
+.mxk-tile.mx-kpi{cursor:pointer;}
+.mxk-tile.mx-kpi:hover{border-color:var(--color-border-secondary);border-left-color:var(--c);}
+.mxk-tile.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c) inset;}
+.mxk-v{font-size:26px;font-weight:800;line-height:1.1;color:var(--color-text-primary);font-variant-numeric:tabular-nums;}
+.mxk-p{font-size:13px;font-weight:700;color:var(--c);margin-left:6px;}
+.mxk-l{font-size:11.5px;color:var(--color-text-secondary);margin-top:3px;line-height:1.3;}
+.mxk-bar{height:4px;border-radius:2px;background:var(--color-border-tertiary);margin-top:7px;overflow:hidden;}
+.mxk-bar i{display:block;height:100%;background:var(--c);border-radius:2px;}
+.mxk-seg{display:flex;height:30px;border-radius:8px;overflow:hidden;gap:2px;margin-bottom:10px;}
+.mxk-seg>div{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;cursor:pointer;min-width:4px;transition:filter .12s;}
+.mxk-seg>div:hover{filter:brightness(1.1);}
+.mxk-seg>div.on{box-shadow:0 0 0 2px var(--color-text-primary) inset;}
+.mx-info-btn{position:absolute;top:.55rem;right:.7rem;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--accent-text);cursor:pointer;}
+.mx-info-btn.on{background:var(--accent-soft);border-color:var(--accent-strong);}
+.kam-plg .card.plg-off > .mx-info-btn{display:none!important;}
+@media (max-width:900px){.mxk{grid-template-columns:1fr;}.mxk-4,.mxk-5{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:640px){.mxk-3{grid-template-columns:1fr 1fr;}}
 .mx-kpi{cursor:pointer;border:1.5px solid transparent;transition:border-color .12s;}
 .mx-kpi:hover{border-color:var(--color-border-secondary);}
 .mx-kpi.on{border-color:var(--accent);}
@@ -384,7 +408,7 @@ tr.mx-link:hover td{background:var(--color-background-tertiary);}
   <div id="facturcritica" class="section"></div>
   <div id="cross" class="section"></div>
   <div id="upsell" class="section"></div>
-  <div id="kams" class="section"><div id="kam-body"></div><div id="matriz"></div></div>
+  <div id="kams" class="section"><div id="matriz-top"></div><div id="kam-body"></div><div id="matriz"></div></div>
   <div id="tareas" class="section"></div>
   <div id="implementacion" class="section"></div>
   <div id="sinuso" class="section"></div>
@@ -2489,7 +2513,8 @@ function renderKamTab(kam,sectionId){
   const rowTHTML=(label,m)=>`<tr style="cursor:default"><td style="font-weight:500">`+label+`</td>`+[0,4,8].map(i=>`<td>`+fmtUSDz(m.slice(i,i+4).reduce((a,b)=>a+b,0))+`</td>`).join('')+`</tr>`;
   const rowQHTML=(label,q)=>`<tr style="cursor:default"><td style="font-weight:500">`+label+`</td><td>`+fmtUSDz(q.Q1)+`</td><td>`+fmtUSDz(q.Q2)+`</td><td>`+fmtUSDz(q.Q3)+`</td><td>`+fmtUSDz(q.Q4)+`</td></tr>`;
   $(sectionId).innerHTML=`
-  <div class="note-box"><strong>La meta y los deals abiertos (abajo) vienen de Zoho.</strong> Los totales YTD y las tablas por mes y Q siguen siendo el histórico de la hoja Ventas 2026. Cross-selling, upselling y arriendo de esas tablas vienen de la hoja <strong>Ventas 2026</strong> (solo Estado = Facturado; se excluyen Proyectados); fuga (solo Baja) de <strong>Detalle Fuga 2026</strong>; referidos, de la columna "Referido/Referencia" de la cartera MARE MX (dato disponible en pocas cuentas). Las tablas de mes/Q van en USD; la meta Q3 va en MXN (moneda en la que se definió). Fuente de Ventas/Fuga: ${esc(VENTAS_SOURCE)}.</div>
+  <div class="card"><h3>Facturado <span class="legend" style="font-weight:400">· por mes, Q y T (USD) · hoja Ventas 2026</span></h3>
+  <p class="legend" style="margin:6px 0 10px">Cross-selling, upselling y arriendo vienen de la hoja <strong>Ventas 2026</strong> (solo Estado = Facturado; se excluyen Proyectados); fuga (solo Baja) de <strong>Detalle Fuga 2026</strong>; referidos, de la columna "Referido/Referencia" de MARE MX. La meta usa lo facturado del Excel; la simulación y los deals abiertos vienen de Zoho. Fuente de Ventas/Fuga: ${esc(VENTAS_SOURCE)}.</p>
   <div class="metrics">
     <div class="metric"><div class="label">Cross-selling YTD</div><div class="value">${fmtUSD(sumUSD(cross))}</div><div class="sub">${cross.length} deals</div></div>
     <div class="metric"><div class="label">Upselling YTD</div><div class="value">${fmtUSD(sumUSD(upsell))}</div><div class="sub">${upsell.length} deals</div></div>
@@ -2497,10 +2522,12 @@ function renderKamTab(kam,sectionId){
     <div class="metric"><div class="label">Referidos</div><div class="value">${referidos.length}</div><div class="sub">cuentas marcadas</div></div>
     <div class="metric"><div class="label">Bajas (fuga real) YTD</div><div class="value" style="color:#E24B4A">${fmtUSD(sumUSD(bajas))}</div><div class="sub">${bajas.length} cuentas perdidas</div></div>
   </div>
-  <div class="card"><h3>Por mes (USD facturado)</h3><div class="table-wrap"><table><thead><tr><th>Concepto</th>${thMonths}<th class="nosort">Total</th></tr></thead><tbody>
+  <h4 style="margin:16px 0 6px;font-size:13px">Por mes</h4>
+  <div class="table-wrap"><table><thead><tr><th>Concepto</th>${thMonths}<th class="nosort">Total</th></tr></thead><tbody>
   ${rowHTML('Cross-selling',mesesCM)}${rowHTML('Upselling',mesesUM)}${rowHTML('Arriendo',mesesAM)}${rowHTML('Bajas',mesesBM)}
-  </tbody></table></div></div>
-  <div class="card"><h3>Por Q (USD facturado)</h3><div class="table-wrap"><table><thead><tr><th>Concepto</th><th class="nosort">Q1</th><th class="nosort">Q2</th><th class="nosort">Q3</th><th class="nosort">Q4</th></tr></thead><tbody>
+  </tbody></table></div>
+  <h4 style="margin:16px 0 6px;font-size:13px">Por Q</h4>
+  <div class="table-wrap"><table><thead><tr><th>Concepto</th><th class="nosort">Q1</th><th class="nosort">Q2</th><th class="nosort">Q3</th><th class="nosort">Q4</th></tr></thead><tbody>
   ${rowQHTML('Cross-selling',qC)}${rowQHTML('Upselling',qU)}${rowQHTML('Arriendo',qA)}${rowQHTML('Bajas',qB)}
   </tbody></table></div>
   <h4 style="margin:16px 0 6px;font-size:13px">Por T (cuatrimestre) <span class="legend" style="font-weight:400">· T1 enero–abril · T2 mayo–agosto · T3 septiembre–diciembre</span></h4>
@@ -3204,32 +3231,40 @@ function renderMatriz(){
   const C=MX.clientes.filter(g=>!mxState.kam||g.kams.includes(mxState.kam));
   const abiertos=DEALS_DATA.filter(d=>mxModIdx(d)>=0&&mxAbierto(d)&&(!mxState.kam||d.kam===mxState.kam));
   const estanc=abiertos.filter(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS);
-  // % = sobre el total de clientes de la matriz (con el KAM elegido)
-  const stat=(v,l,vista)=>`<div class="stat3-it mx-kpi${mxState.vista===vista?' on':''}" data-vista="${vista}"><div class="stat3-v">${v}${vista&&C.length?` <span style="font-size:13px;font-weight:600;color:var(--color-text-secondary)">${Math.round(v/C.length*100)}%</span>`:''}</div><div class="stat3-l">${l}</div></div>`;
-  $('matriz').innerHTML=`
+  const pc=n=>C.length?Math.round(n/C.length*100):0;
+  const nRS=C.reduce((t,g)=>t+g.miembros.length,0);
+  const mrrT=C.reduce((t,g)=>t+(g.mrr||0),0),pot=C.filter(g=>(g.nMods||0)<=3),mrrP=pot.reduce((t,g)=>t+(g.mrr||0),0);
+  // tarjeta: número grande, % sobre los clientes de la matriz y barrita; con vista = clic filtra la matriz
+  const tile=(v,l,vista,color,conPct)=>`<div class="mxk-tile${vista!=null?' mx-kpi':''}${vista!=null&&mxState.vista===vista?' on':''}"${vista!=null?` data-vista="${vista}"`:''} style="--c:${color}"><div class="mxk-v">${v}${conPct?`<span class="mxk-p">${pc(v)}%</span>`:''}</div><div class="mxk-l">${l}</div>${conPct?`<div class="mxk-bar"><i style="width:${pc(v)}%"></i></div>`:''}</div>`;
+  const MODS_SEG=[['0','0 módulos','mods0','#E24B4A',g=>!g.nMods],['1','1 módulo','mods1','#EF9F27',g=>g.nMods===1],['2','2 módulos','mods2','#8FBF4D',g=>g.nMods===2],['3','3 módulos','mods3','#639922',g=>g.nMods===3],['4+','4 o más','mods4','#3B6D11',g=>g.nMods>=4]].map(([k,l,v,c,f])=>({k,l,v,c,n:C.filter(f).length}));
+  const kpisHTML=`<div class="mxk">
+    <div class="mxk-grp mxk-full" style="--g:var(--accent-strong)"><div class="mxk-t">Cartera</div><div class="mxk-row mxk-4">
+      ${tile(nRS,'razones sociales',null,'var(--accent-strong)')}
+      ${tile(C.length,'clientes (grupos)','','var(--accent-strong)')}
+      ${tile(fmtUSD(mrrT),'MRR total · USD mensual',null,'var(--accent-strong)')}
+      ${tile(fmtUSD(mrrP),`MRR potencial · ${pot.length} clientes con 0 a 3 módulos (${mrrT?Math.round(mrrP/mrrT*100):0}% del MRR)`,null,'var(--accent-strong)')}
+    </div></div>
+    <div class="mxk-grp" style="--g:#7F56D9"><div class="mxk-t">Actividad comercial</div><div class="mxk-row mxk-3">
+      ${tile(C.filter(g=>g.sinIntento).length,'sin ningún intento','sin','#E24B4A',true)}
+      ${tile(C.filter(g=>g.abiertos).length,`con deal abierto · ${abiertos.length} deals`,'abiertos','#185FA5',true)}
+      ${tile(C.filter(g=>g.sinModulo&&g.sinAbierto).length,'sin deal abierto ni módulo contratado','ambos','#A32D2D',true)}
+    </div></div>
+    <div class="mxk-grp" style="--g:#EF9F27"><div class="mxk-t">Implementación</div><div class="mxk-row mxk-2">
+      ${tile(C.filter(g=>g.impl.length).length,'🔧 con implementación abierta','impl','#EF9F27',true)}
+      ${tile(C.filter(g=>g.implNuevo).length,'clientes nuevos (1.ª implementación)','implnuevo','#7F56D9',true)}
+    </div></div>
+    <div class="mxk-grp mxk-full" style="--g:#639922"><div class="mxk-t">Clientes por n° de módulos complementarios contratados</div>
+      <div class="mxk-seg">${MODS_SEG.filter(x=>x.n).map(x=>`<div class="mx-kpi${mxState.vista===x.v?' on':''}" data-vista="${x.v}" style="flex:${x.n};background:${x.c}" title="${x.n} clientes con ${x.l} · ${pc(x.n)}%">${pc(x.n)>=6?x.k:''}</div>`).join('')}</div>
+      <div class="mxk-row mxk-5">${MODS_SEG.map(x=>tile(x.n,x.l,x.v,x.c,true)).join('')}</div>
+    </div>
+  </div>`;
+  $('matriz-top').innerHTML=`
     ${DEALS_DATA.length?`<p class="status-line" style="margin:-6px 0 12px">Deals de Zoho al ${esc((DEALS_META.generado||'').slice(0,10))} · ${DEALS_DATA.length} deals de KAM + ${DEALS_COMERCIAL.length} módulos vendidos por comercial</p>`:'<p class="legend">Todavía no hay deals-mx.json cargado — la matriz solo muestra lo del Excel.</p>'}
-  <div class="card" style="padding:.5rem"><h3 style="margin:.4rem .5rem .6rem">Matriz por cliente</h3><div class="note-box" style="margin:0 .5rem .7rem"><strong>Matriz de módulos complementarios.</strong> Una fila por cliente (las razones sociales se juntan por la columna <strong>Grupo</strong> de MARE MX; si no tiene grupo, la razón social es el cliente). <strong>Manda Zoho</strong>: si hay un deal del módulo, su etapa define el color. Si Zoho no tiene nada, se usa lo que dice el Excel (columnas AT–BH) y la celda va con <strong>borde punteado</strong>. Clic en una celda para ir al deal en Zoho. Clic en el nombre para abrir la cuenta en Zoho; la flecha ▸ despliega sus razones sociales. 🔧 = la cuenta tiene una implementación abierta en Zoho (etapas 0 a 4 o Detenida); clic en 🔧 la abre. Fila <strong>morada</strong> = además es <strong>cliente nuevo</strong>: es su primera y única implementación. Si ya tuvo otras, va solo la 🔧, sin color. El número verde junto al nombre = cuántos módulos complementarios tiene contratados (celdas verdes). <span class="mx-sinmod">⊘</span> = no tiene ningún módulo complementario contratado (ninguna celda verde). <span class="mx-warn">⚠</span> = no tiene ningún deal abierto en Zoho (de ningún producto). No se muestran las razones sociales con cuadrante MARE <strong>Recuperar</strong>.<br>
+  <div class="card" style="padding:.5rem;position:relative"><h3 style="margin:.4rem .5rem .6rem">Matriz por cliente</h3>
+  <button class="mx-info-btn${mxState.info?' on':''}" id="mxInfoBtn" title="Ver cómo se lee la matriz">ⓘ Infografía</button>
+  <div class="note-box" id="mxInfo" style="margin:0 .5rem .7rem"${mxState.info?'':' hidden'}><strong>Matriz de módulos complementarios.</strong> Una fila por cliente (las razones sociales se juntan por la columna <strong>Grupo</strong> de MARE MX; si no tiene grupo, la razón social es el cliente). <strong>Manda Zoho</strong>: si hay un deal del módulo, su etapa define el color. Si Zoho no tiene nada, se usa lo que dice el Excel (columnas AT–BH) y la celda va con <strong>borde punteado</strong>. Clic en una celda para ir al deal en Zoho. Clic en el nombre para abrir la cuenta en Zoho; la flecha ▸ despliega sus razones sociales. 🔧 = la cuenta tiene una implementación abierta en Zoho (etapas 0 a 4 o Detenida); clic en 🔧 la abre. Fila <strong>morada</strong> = además es <strong>cliente nuevo</strong>: es su primera y única implementación. Si ya tuvo otras, va solo la 🔧, sin color. El número verde junto al nombre = cuántos módulos complementarios tiene contratados (celdas verdes). <span class="mx-sinmod">⊘</span> = no tiene ningún módulo complementario contratado (ninguna celda verde). <span class="mx-warn">⚠</span> = no tiene ningún deal abierto en Zoho (de ningún producto). No se muestran las razones sociales con cuadrante MARE <strong>Recuperar</strong>.<br>
   <span class="mx-leg mx-zv">✓</span> facturando · <span class="mx-leg mx-zv mx-comc">C</span> vendido por comercial (no KAM) · <span class="mx-leg mx-zy">4</span> deal abierto (el número es la etapa) · <span class="mx-leg mx-zy mx-stale">4</span> abierto y sin movimiento hace más de ${MX_ESTANCADO_DIAS} días · <span class="mx-leg mx-zc">❄</span> facturación congelada · <span class="mx-leg mx-zr">✕</span> perdido · <span class="mx-leg mx-xy">OP</span> oportunidad en el Excel sin deal · <span class="mx-leg mx-xr">✕</span> sin oportunidad según Excel · <span class="mx-leg mx-xv">✓</span> OK según Excel, sin deal en Zoho · <span class="mx-leg"></span> nada</div>
-  <div class="stat3 mx-kpis" style="margin:0 .5rem .7rem">
-    ${stat(C.length,'clientes','')}
-    ${stat(C.filter(g=>g.sinIntento).length,'sin ningún intento','sin')}
-    ${stat(C.filter(g=>g.abiertos).length,'con deals abiertos ('+abiertos.length+' deals)','abiertos')}
-    ${stat(C.filter(g=>g.estancados).length,'con deals estancados +'+MX_ESTANCADO_DIAS+' días','estancados')}
-    ${stat(C.filter(g=>g.sinModulo).length,'<span class="mx-sinmod">⊘</span> sin ningún módulo contratado','sinmod')}
-    ${stat(C.filter(g=>g.sinAbierto).length,'<span class="mx-warn">⚠</span> sin ningún deal abierto','sinabierto')}
-    ${stat(C.filter(g=>g.sinModulo&&g.sinAbierto).length,'<span class="mx-sinmod">⊘</span><span class="mx-warn">⚠</span> ni módulo ni deal abierto','ambos')}
-    ${stat(C.filter(g=>g.implNuevo).length,'🔧 cliente nuevo (1.ª implementación)','implnuevo')}
-    ${stat(C.filter(g=>g.impl.length).length,'🔧 con implementación abierta','impl')}
-    ${stat(C.filter(g=>g.okSinDeal).length,'con OK en Excel sin deal en Zoho','oksindeal')}
-    ${stat(C.filter(g=>g.opSinDeal).length,'con OP en Excel sin deal','op')}
-  </div>
-  ${(()=>{
-    // MRR potencial = MRR de los clientes con 0 a 3 módulos complementarios contratados (celdas verdes); 4 o más ya no es potencial
-    const mrrT=C.reduce((t,g)=>t+(g.mrr||0),0),pot=C.filter(g=>(g.nMods||0)<=3),mrrP=pot.reduce((t,g)=>t+(g.mrr||0),0);
-    return`<div class="stat3" style="grid-template-columns:1fr 1fr;margin:0 .5rem .7rem">
-      <div class="stat3-it"><div class="stat3-v">${fmtUSD(mrrT)}</div><div class="stat3-l">MRR total de la cartera</div><div class="legend" style="margin-top:2px">${C.length} clientes${mxState.kam?' de '+esc(kamShort(mxState.kam)):''} · USD mensual · sin cuadrante Recuperar</div></div>
-      <div class="stat3-it"><div class="stat3-v" style="color:var(--accent-strong)">${fmtUSD(mrrP)}</div><div class="stat3-l">MRR potencial</div><div class="legend" style="margin-top:2px">${pot.length} clientes con 0 a 3 módulos complementarios · ${mrrT?Math.round(mrrP/mrrT*100):0}% del MRR · no cuentan los de 4 o más</div></div>
-    </div>`;})()}
+  ${kpisHTML}
   <div class="controls" style="margin:0 .5rem .6rem">
     <input type="text" id="mxQ" placeholder="Buscar cliente o razón social…" value="${esc(mxState.q)}">
     <select id="mxCart"><option value="">Toda cartera</option><option value="ENTERPRISE">Enterprise</option><option value="SMB">SMB</option></select>
@@ -3237,6 +3272,8 @@ function renderMatriz(){
   </div>
   <p class="status-line" id="mxTitle" style="margin:0 .5rem 8px"></p>
 <div class="hm-wrap" id="mxWrap"></div></div>
+  <div id="mxPop" class="mx-pop" hidden></div>`;
+  $('matriz').innerHTML=`
   ${(()=>{
     // resumen por producto cruzado (módulos complementarios; sin Upselling/Arriendo), con el KAM elegido.
     // Facturando = celda verde (✓ en Zoho o OK del Excel sin deal); USD = valor del deal en Zoho a TC 18.
@@ -3270,17 +3307,18 @@ function renderMatriz(){
     <p class="legend" style="margin:8px 0">La celda es la de <code>cartera.xlsx</code> (MARE MX); si alguien insertó filas en el Excel después, búscala por el nombre. <button class="btn" id="mxDifXlsx" style="margin-left:6px">⬇ Descargar .xlsx</button></p>
     <div class="table-wrap" id="mxDifs"></div></details>
   ${MX.sinCuenta.length?`<details class="card"><summary style="cursor:pointer;font-weight:600;font-size:14px">Deals sin cuenta en la cartera <span class="badge b-gray">${MX.sinCuenta.length}</span></summary><p class="legend" style="margin:8px 0">Su cuenta de Zoho no coincide con ninguna razón social de MARE MX (ni por id en la columna Zoho, ni por nombre, ni por grupo). No entran en la matriz.</p><div class="table-wrap"><table><thead><tr><th class="nosort">Cuenta en Zoho</th><th class="nosort">Producto</th><th class="nosort">Etapa</th><th class="nosort">KAM</th></tr></thead><tbody>${mxSort(MX.sinCuenta).map(d=>`<tr class="mx-link" data-url="${mxDealUrl(d)}"><td>${esc(d.cuenta)}</td><td>${esc(d.producto)}</td><td>${esc(d.etapa)}</td><td>${esc(kamShort(d.kam))}</td></tr>`).join('')}</tbody></table></div></details>`:''}
-  <div id="mxPop" class="mx-pop" hidden></div>`;
+  `;
   $('mxCart').value=mxState.cartera;$('mxMod').value=mxState.modulo;
   $('mxQ').oninput=e=>{mxState.q=e.target.value;drawMatriz();};
   $('mxCart').onchange=e=>{mxState.cartera=e.target.value;drawMatriz();};
   $('mxMod').onchange=e=>{mxState.modulo=e.target.value;drawMatriz();};
-  document.querySelectorAll('#matriz .mx-kpi').forEach(k=>k.onclick=()=>{mxState.vista=mxState.vista===k.dataset.vista?'':k.dataset.vista;renderMatriz();});
-  $('matriz').onclick=mxClick;
+  document.querySelectorAll('#matriz-top .mx-kpi').forEach(k=>k.onclick=()=>{mxState.vista=mxState.vista===k.dataset.vista?'':k.dataset.vista;renderMatriz();});
+  $('matriz-top').onclick=mxClick;$('matriz').onclick=mxClick;
+  $('mxInfoBtn').onclick=e=>{e.stopPropagation();mxState.info=!mxState.info;$('mxInfo').hidden=!mxState.info;e.currentTarget.classList.toggle('on',mxState.info);};
   document.querySelectorAll('#mxProductos .mxp-row').forEach(r=>r.onclick=e=>{e.stopPropagation();const i=+r.dataset.prod;mxState.prodSel=mxState.prodSel===i?null:i;renderMatriz();});
   $('mxDifXlsx').onclick=mxDifsXlsx;
   drawMatriz();drawMxAbiertos();drawMxDifs();
-  seccionesPlegables('matriz','mx_plg');
+  seccionesPlegables('matriz-top','mx_plg');seccionesPlegables('matriz','mx_plg');
 }
 
 function drawMatriz(){
@@ -3290,7 +3328,7 @@ function drawMatriz(){
   if(mxState.cartera)rows=rows.filter(g=>g.cartera===mxState.cartera);
   if(mxState.modulo!==''){const mi=+mxState.modulo;rows=rows.filter(g=>{const s=g.celdas[mi].s;return s===''||s==='xy';});}
   const v=mxState.vista;
-  if(v==='sin')rows=rows.filter(g=>g.sinIntento);else if(v==='sinabierto')rows=rows.filter(g=>g.sinAbierto);else if(v==='implnuevo')rows=rows.filter(g=>g.implNuevo);else if(v==='impl')rows=rows.filter(g=>g.impl.length);else if(v==='oksindeal')rows=rows.filter(g=>g.okSinDeal);else if(v==='sinmod')rows=rows.filter(g=>g.sinModulo);else if(v==='ambos')rows=rows.filter(g=>g.sinModulo&&g.sinAbierto);else if(v==='abiertos')rows=rows.filter(g=>g.abiertos);else if(v==='estancados')rows=rows.filter(g=>g.estancados);else if(v==='op')rows=rows.filter(g=>g.opSinDeal);
+  if(v==='sin')rows=rows.filter(g=>g.sinIntento);else if(v==='sinabierto')rows=rows.filter(g=>g.sinAbierto);else if(v==='implnuevo')rows=rows.filter(g=>g.implNuevo);else if(v==='impl')rows=rows.filter(g=>g.impl.length);else if(v==='oksindeal')rows=rows.filter(g=>g.okSinDeal);else if(v==='sinmod')rows=rows.filter(g=>g.sinModulo);else if(v==='ambos')rows=rows.filter(g=>g.sinModulo&&g.sinAbierto);else if(v==='abiertos')rows=rows.filter(g=>g.abiertos);else if(v==='estancados')rows=rows.filter(g=>g.estancados);else if(v==='op')rows=rows.filter(g=>g.opSinDeal);else if(/^mods\d$/.test(v)){const n=+v.slice(4);rows=rows.filter(g=>n>=4?g.nMods>=4:(g.nMods||0)===n);}
   rows.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
   $('mxTitle').textContent=`${rows.length} clientes · ordenados por MRR${mxState.modulo!==''?' · sin nada (o solo OP) en '+MATRIZ_MODS[+mxState.modulo][1]:''}`;
   MX.refs=[];
