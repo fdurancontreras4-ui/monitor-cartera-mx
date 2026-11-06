@@ -70,8 +70,11 @@ La pestaña **Matriz módulos** también marca los módulos que vendió **comerc
 vacaciones con Alfredo Fuentes. Se trae con una segunda `searchRecords` sobre
 Deals, usando el criterio `CRITERIO_COMERCIAL` de `scripts/subir-deals-zoho.py`
 (cópialo de ahí; ya está armado con las 15 condiciones que admite Zoho):
-Territorio México, Owner ≠ KAM México, etapa 7 u 8, y producto de módulo.
-Son ~90 deals, una sola página.
+Territorio México, Owner ≠ KAM México, cualquier etapa salvo Cierre Perdido y Facturación congelada,
+y producto de módulo. Son ~170 deals, una sola página. El script publica todos los vendidos (7 / 8) y,
+de los abiertos (1 a 6), solo los de cuentas que están en `cartera.xlsx` (por id de Zoho o por nombre),
+para que la Matriz muestre como «C» lo que comercial está trabajando en clientes de la cartera
+(p. ej. Boburham/SEICSA, Alertas en etapa 6 con Alejandra Anzaldo y sin KAM).
 
 Si la respuesta es chica, el conector la devuelve inline y no queda en un
 archivo. Para que se guarde, pide la búsqueda **sin `fields`** (todos los

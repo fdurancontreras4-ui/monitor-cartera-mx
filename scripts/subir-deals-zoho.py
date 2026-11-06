@@ -38,6 +38,10 @@ Solo usa la librería estándar de Python 3 — no hay que instalar nada.
 """
 
 import argparse
+import html
+import re
+import unicodedata
+import zipfile
 import datetime as dt
 import json
 import subprocess
@@ -61,8 +65,9 @@ ORDEN_ETAPAS = [
 ETAPAS_CERRADAS = {"Cierre Perdido", "Facturación congelada"}
 
 # Módulos que vende COMERCIAL (no KAM) a clientes que hoy están en la cartera — p. ej. Ambiark compró
-# vacaciones con Alfredo Fuentes. Solo se traen los ya vendidos (7. Implementando / 8. Facturando): lo que
-# comercial perdió o tiene en proceso es venta nueva, no postventa. Van en la llave "comercial" de
+# vacaciones con Alfredo Fuentes, o SEICSA/Boburham con Alertas en 6. Listo para Cierre (Alejandra Anzaldo,
+# sin KAM). Se traen los vendidos (7 / 8) de cualquier cuenta y los ABIERTOS (1 a 6) solo de cuentas que
+# están en la cartera (cartera.xlsx); lo perdido o congelado no. Van en la llave "comercial" de
 # deals-mx.json, aparte de "deals", para no mezclarlos en la pestaña Pipeline; los usa Matriz módulos.
 # El tope de searchRecords es 15 condiciones: por eso no entran Alertas Mail, Optimizador ni Formularios.
 PRODUCTOS_COMERCIAL = [
@@ -73,7 +78,7 @@ PRODUCTOS_COMERCIAL = [
 ETAPAS_VENDIDO = {"7. Implementando", "8. Facturando"}
 CRITERIO_COMERCIAL = (
     "((Territorio:equals:México)and(Owner:not_equal:3525045000270215054)"
-    "and((Stage:equals:8. Facturando)or(Stage:equals:7. Implementando))and("
+    "and(Stage:not_equal:Cierre Perdido)and(Stage:not_equal:Facturación congelada)and("
     + "or".join(f"(Producto_Soluci_n:equals:{p})" for p in PRODUCTOS_COMERCIAL) + "))"
 )
 
@@ -232,22 +237,52 @@ def validar(crudos):
     return ids
 
 
+def _norm(t):
+    return re.sub(r"[^a-z0-9]+", " ", unicodedata.normalize("NFKD", t or "").encode("ascii", "ignore").decode().lower()).strip()
+
+
+def cuentas_cartera():
+    """Ids de cuenta de Zoho (links de la columna Zoho) y textos normalizados de cartera.xlsx.
+    Solo librería estándar: lee los textos compartidos del .xlsx (el repo no instala openpyxl)."""
+    xlsx = Path(__file__).resolve().parent.parent / "cartera.xlsx"
+    if not xlsx.exists():
+        return None, None
+    with zipfile.ZipFile(xlsx) as z:
+        xml = z.read("xl/sharedStrings.xml").decode("utf-8", "ignore")
+    textos = [html.unescape(t) for t in re.findall(r"<t[^>]*>([^<]*)</t>", xml)]
+    ids = set(re.findall(r"Accounts/(\d+)", " ".join(textos)))
+    return ids, {_norm(t) for t in textos if t.strip()}
+
+
 def validar_comercial(crudos):
-    titulo("Validando deals vendidos por comercial")
+    titulo("Validando deals de módulos de comercial")
     malos = [r for r in crudos
              if (r.get("Owner") or {}).get("id") == KAM_OWNER_ID
              or (r.get("Territorio") or "") != TERRITORIO_ESPERADO
-             or (r.get("Stage") or "").strip() not in ETAPAS_VENDIDO]
+             or (r.get("Stage") or "").strip() in ("Cierre Perdido", "Facturación congelada")]
     if malos:
-        morir(f"{len(malos)} deals de --comercial no cumplen el criterio (dueño KAM México, otro territorio o etapa no vendida).",
+        morir(f"{len(malos)} deals de --comercial no cumplen el criterio (dueño KAM México, otro territorio, perdido o congelado).",
               "Revisa que se haya usado CRITERIO_COMERCIAL de este script.")
-    vistos, out = set(), []
+    ids_cartera, nombres_cartera = cuentas_cartera()
+    if ids_cartera is None:
+        aviso("No está cartera.xlsx: solo se publican los vendidos (7 / 8) de comercial")
+    vistos, out, fuera = set(), [], 0
     for r in crudos:
         d = dar_forma(r)
-        if d["id"] not in vistos:
-            vistos.add(d["id"]); out.append(d)
+        if d["id"] in vistos:
+            continue
+        vistos.add(d["id"])
+        # abiertos: solo de cuentas que están en la cartera (por id de Zoho o por nombre)
+        if d["etapa"] not in ETAPAS_VENDIDO and not (
+                ids_cartera is not None and (d["cuenta_id"] in ids_cartera or _norm(d["cuenta"]) in nombres_cartera)):
+            fuera += 1
+            continue
+        out.append(d)
     out.sort(key=lambda d: (d["cuenta"].lower(), d["producto"]))
-    ok(f"{len(out)} deals de módulos vendidos por comercial")
+    n_ab = sum(d["etapa"] not in ETAPAS_VENDIDO for d in out)
+    ok(f"{len(out) - n_ab} deals de módulos vendidos por comercial + {n_ab} abiertos en cuentas de la cartera")
+    if fuera:
+        dato(f"{fuera} abiertos de comercial fuera de la cartera (no se publican)")
     return out
 
 
