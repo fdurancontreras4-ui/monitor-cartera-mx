@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-06T14:21:12-06:00",
+  "generado": "2026-11-06T14:24:15-06:00",
   "fuente": "Zoho CRM · Deals",
   "propietario": "KAM México",
   "territorio": "México",
@@ -11461,6 +11461,54 @@
   ],
   "comercial": [
     {
+      "id": "3525045000667080082",
+      "trato": "Agave Desarrollos BI",
+      "cuenta": "Agave Desarrollos",
+      "cuenta_id": "3525045000589982025",
+      "kam": "",
+      "correo_kam": "",
+      "etapa": "6. Listo para Cierre",
+      "cerrado": false,
+      "producto": "Dashboard BI",
+      "valor": 1000,
+      "owner": "Andrés Kalifa",
+      "creado": "2026-09-29T09:47:29-06:00",
+      "modificado": "2026-10-29T10:30:58-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 5,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000667080075",
+      "trato": "Agave Desarrollos Vacaciones",
+      "cuenta": "Agave Desarrollos",
+      "cuenta_id": "3525045000589982025",
+      "kam": "",
+      "correo_kam": "",
+      "etapa": "6. Listo para Cierre",
+      "cerrado": false,
+      "producto": "Módulo Vacaciones",
+      "valor": 3000,
+      "owner": "Andrés Kalifa",
+      "creado": "2026-09-29T09:42:40-06:00",
+      "modificado": "2026-10-29T10:30:58-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
       "id": "3525045000600341500",
       "trato": "Alliance Solutions Vacaciones",
       "cuenta": "Alliance Solutions",
@@ -11478,7 +11526,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 85,
-      "precio_usuario": 18
+      "precio_usuario": 18,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-03-30T10:40:00-06:00"
     },
     {
       "id": "3525045000480042023",
@@ -11498,7 +11550,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 9,
-      "precio_usuario": 22
+      "precio_usuario": 22,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-07-31T12:31:00-06:00"
     },
     {
       "id": "3525045000482143027",
@@ -11518,7 +11574,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 300,
-      "precio_usuario": 10
+      "precio_usuario": 10,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-08-04T12:10:00-06:00"
     },
     {
       "id": "3525045000482143001",
@@ -11538,7 +11598,35 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 300,
-      "precio_usuario": 5
+      "precio_usuario": 5,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-08-04T12:11:00-06:00"
+    },
+    {
+      "id": "3525045000679308026",
+      "trato": "CARESTREAM INTERNACIONAL (Dashboard BI)",
+      "cuenta": "CARESTREAM INTERNACIONAL",
+      "cuenta_id": "3525045000637601153",
+      "kam": "",
+      "correo_kam": "",
+      "etapa": "7. Implementando",
+      "cerrado": false,
+      "producto": "Dashboard BI",
+      "valor": 2300,
+      "owner": "Alejandra Anzaldo",
+      "creado": "2026-11-03T13:00:21-06:00",
+      "modificado": "2026-11-04T16:01:33-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 115,
+      "precio_usuario": 20,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
     },
     {
       "id": "3525045000633736011",
@@ -11558,7 +11646,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 30,
-      "precio_usuario": 0
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-08-06T12:49:00-06:00"
     },
     {
       "id": "3525045000468247431",
@@ -11578,7 +11670,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 350,
-      "precio_usuario": 12
+      "precio_usuario": 12,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-07-16T13:14:00-06:00"
     },
     {
       "id": "3525045000469885259",
@@ -11598,7 +11694,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 350,
-      "precio_usuario": 12
+      "precio_usuario": 12,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-07-16T13:13:00-06:00"
     },
     {
       "id": "3525045000468247400",
@@ -11618,7 +11718,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 350,
-      "precio_usuario": 17
+      "precio_usuario": 17,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-07-16T13:14:00-06:00"
     },
     {
       "id": "3525045000587091827",
@@ -11638,7 +11742,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 300,
-      "precio_usuario": 14
+      "precio_usuario": 14,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-04-22T11:42:00-06:00"
     },
     {
       "id": "3525045000353238249",
@@ -11658,27 +11766,35 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 586,
-      "precio_usuario": 18
+      "precio_usuario": 18,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2024-12-20T10:43:00-06:00"
     },
     {
-      "id": "3525045000677310407",
-      "trato": "CONCREMEX (Calendario Inteligente)",
+      "id": "3525045000540519528",
+      "trato": "CONCREMEX (Módulo Vacaciones (Crosselling))",
       "cuenta": "CONCREMEX",
       "cuenta_id": "3525045000488297431",
       "kam": "",
       "correo_kam": "",
-      "etapa": "8. Facturando",
+      "etapa": "4. Propuesta Enviada / En Negociación",
       "cerrado": false,
-      "producto": "Planificador Inteligente",
-      "valor": 3348,
+      "producto": "Módulo Vacaciones",
+      "valor": 5250,
       "owner": "Alejandra Anzaldo",
-      "creado": "2026-10-28T16:50:38-06:00",
-      "modificado": "2026-10-29T00:00:29-06:00",
-      "tipo": "",
+      "creado": "2025-11-19T13:46:18-06:00",
+      "modificado": "2026-11-06T13:55:42-06:00",
+      "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
-      "usuarios": 54,
-      "precio_usuario": 62
+      "usuarios": 350,
+      "precio_usuario": 15,
+      "razon_perdida": "Otro",
+      "razon_perdida_otro": "Cliente por ahora solo requiere el control de asistencia",
+      "fecha_perdido": "2026-07-28T13:02:00-06:00",
+      "fecha_facturando": null
     },
     {
       "id": "3525045000476275722",
@@ -11698,7 +11814,11 @@
       "mes_cierre": null,
       "moneda": "UF",
       "usuarios": 100,
-      "precio_usuario": 0.009
+      "precio_usuario": 0.009,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-06-24T07:50:00-06:00"
     },
     {
       "id": "3525045000505654156",
@@ -11718,7 +11838,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 17,
-      "precio_usuario": 0
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-09-10T15:27:00-06:00"
     },
     {
       "id": "3525045000473758069",
@@ -11738,7 +11862,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 580,
-      "precio_usuario": 15
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-06-30T08:55:00-06:00"
     },
     {
       "id": "3525045000664323108",
@@ -11758,7 +11886,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 20,
-      "precio_usuario": null
+      "precio_usuario": null,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-07T12:46:00-06:00"
     },
     {
       "id": "3525045000664323115",
@@ -11778,7 +11910,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 20,
-      "precio_usuario": null
+      "precio_usuario": null,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-07T12:45:00-06:00"
     },
     {
       "id": "3525045000282644066",
@@ -11798,7 +11934,35 @@
       "mes_cierre": null,
       "moneda": "MNX",
       "usuarios": 500,
-      "precio_usuario": 40
+      "precio_usuario": 40,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2024-01-31T06:00:32-06:00"
+    },
+    {
+      "id": "3525045000621325291",
+      "trato": "CTS / altour (Integracion)",
+      "cuenta": "CTS /Altour",
+      "cuenta_id": "3525045000375387064",
+      "kam": "",
+      "correo_kam": "",
+      "etapa": "6. Listo para Cierre",
+      "cerrado": false,
+      "producto": "Integraciones Victoria Connect",
+      "valor": 2160,
+      "owner": "Karla Guerrero",
+      "creado": "2026-04-23T17:13:06-06:00",
+      "modificado": "2026-10-27T11:31:46-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 550,
+      "precio_usuario": 36,
+      "razon_perdida": "Cierre por Inactividad",
+      "razon_perdida_otro": "",
+      "fecha_perdido": "2026-08-31T06:01:00-06:00",
+      "fecha_facturando": null
     },
     {
       "id": "3525045000643914083",
@@ -11818,7 +11982,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 550,
-      "precio_usuario": 2500
+      "precio_usuario": 2500,
+      "razon_perdida": "Cierre por Inactividad",
+      "razon_perdida_otro": "",
+      "fecha_perdido": "2026-09-05T06:01:00-06:00",
+      "fecha_facturando": null
     },
     {
       "id": "3525045000569606655",
@@ -11838,7 +12006,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 511,
-      "precio_usuario": 30
+      "precio_usuario": 30,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-04-29T10:24:00-06:00"
     },
     {
       "id": "3525045000636647093",
@@ -11858,7 +12030,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 4,
-      "precio_usuario": 40
+      "precio_usuario": 40,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-07-03T13:10:00-06:00"
     },
     {
       "id": "3525045000574275229",
@@ -11878,7 +12054,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 1406,
-      "precio_usuario": null
+      "precio_usuario": null,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-07-29T10:08:00-06:00"
     },
     {
       "id": "3525045000635391262",
@@ -11898,7 +12078,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 1406,
-      "precio_usuario": null
+      "precio_usuario": null,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-07-29T10:08:00-06:00"
     },
     {
       "id": "3525045000338559535",
@@ -11918,7 +12102,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 270,
-      "precio_usuario": 30
+      "precio_usuario": 30,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2024-08-09T09:00:00-06:00"
     },
     {
       "id": "3525045000641049110",
@@ -11938,7 +12126,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 400,
-      "precio_usuario": 9
+      "precio_usuario": 9,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-13T12:24:00-06:00"
     },
     {
       "id": "3525045000643356090",
@@ -11958,7 +12150,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 400,
-      "precio_usuario": 1
+      "precio_usuario": 1,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-13T12:23:00-06:00"
     },
     {
       "id": "3525045000630185092",
@@ -11978,7 +12174,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 130,
-      "precio_usuario": 5
+      "precio_usuario": 5,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-07-06T16:44:00-06:00"
     },
     {
       "id": "3525045000592716431",
@@ -11998,7 +12198,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 43,
-      "precio_usuario": 19
+      "precio_usuario": 19,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-04-17T11:59:00-06:00"
     },
     {
       "id": "3525045000592716346",
@@ -12018,7 +12222,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 43,
-      "precio_usuario": 15
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-06-22T15:15:00-06:00"
     },
     {
       "id": "3525045000638877530",
@@ -12038,7 +12246,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 370,
-      "precio_usuario": 0
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-08-26T12:15:00-06:00"
     },
     {
       "id": "3525045000643598165",
@@ -12058,7 +12270,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 338,
-      "precio_usuario": 11
+      "precio_usuario": 11,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
     },
     {
       "id": "3525045000638877521",
@@ -12078,7 +12294,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 338,
-      "precio_usuario": 11
+      "precio_usuario": 11,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-08-26T12:14:00-06:00"
     },
     {
       "id": "3525045000657890216",
@@ -12098,7 +12318,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 339,
-      "precio_usuario": 2500
+      "precio_usuario": 2500,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
     },
     {
       "id": "3525045000533661033",
@@ -12118,7 +12342,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 221,
-      "precio_usuario": 3
+      "precio_usuario": 3,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-12-29T15:05:00-06:00"
     },
     {
       "id": "3525045000511193444",
@@ -12138,7 +12366,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 120,
-      "precio_usuario": 35
+      "precio_usuario": 35,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-10-16T10:17:00-06:00"
     },
     {
       "id": "3525045000511193470",
@@ -12158,7 +12390,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 60,
-      "precio_usuario": 20
+      "precio_usuario": 20,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-10-16T10:16:00-06:00"
     },
     {
       "id": "3525045000636008099",
@@ -12178,7 +12414,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 20,
-      "precio_usuario": 35
+      "precio_usuario": 35,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-07-06T17:23:00-06:00"
     },
     {
       "id": "3525045000584897733",
@@ -12198,7 +12438,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 5,
-      "precio_usuario": null
+      "precio_usuario": null,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-03-17T10:40:00-06:00"
     },
     {
       "id": "3525045000661527344",
@@ -12218,7 +12462,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 30,
-      "precio_usuario": 30
+      "precio_usuario": 30,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-09-30T09:57:00-06:00"
     },
     {
       "id": "3525045000661527355",
@@ -12238,7 +12486,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 30,
-      "precio_usuario": 10
+      "precio_usuario": 10,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-09-30T09:56:00-06:00"
     },
     {
       "id": "3525045000636814001",
@@ -12258,7 +12510,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 70,
-      "precio_usuario": 15
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-07-03T11:45:00-06:00"
     },
     {
       "id": "3525045000586271397",
@@ -12278,7 +12534,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 200,
-      "precio_usuario": 15
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-04-17T11:58:00-06:00"
     },
     {
       "id": "3525045000500944007",
@@ -12298,7 +12558,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 20,
-      "precio_usuario": 15
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-09-09T12:03:00-06:00"
     },
     {
       "id": "3525045000534957003",
@@ -12318,7 +12582,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 21,
-      "precio_usuario": 20
+      "precio_usuario": 20,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-02-26T14:47:00-06:00"
     },
     {
       "id": "3525045000515984789",
@@ -12333,12 +12601,16 @@
       "valor": 0,
       "owner": "David Ballesteros",
       "creado": "2025-10-01T12:38:42-06:00",
-      "modificado": "2026-04-09T08:15:58-06:00",
+      "modificado": "2026-11-06T13:55:42-06:00",
       "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 500,
-      "precio_usuario": null
+      "precio_usuario": null,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-12-29T15:06:00-06:00"
     },
     {
       "id": "3525045000298783031",
@@ -12358,7 +12630,11 @@
       "mes_cierre": null,
       "moneda": "MNX",
       "usuarios": 2026,
-      "precio_usuario": 8
+      "precio_usuario": 8,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2024-04-12T12:55:22-06:00"
     },
     {
       "id": "3525045000515364035",
@@ -12378,7 +12654,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 300,
-      "precio_usuario": null
+      "precio_usuario": null,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-10-27T19:21:00-06:00"
     },
     {
       "id": "3525045000582917533",
@@ -12398,7 +12678,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 250,
-      "precio_usuario": 40
+      "precio_usuario": 40,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-06-22T15:14:00-06:00"
     },
     {
       "id": "3525045000586271643",
@@ -12418,7 +12702,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 250,
-      "precio_usuario": 15
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-06-22T15:15:00-06:00"
     },
     {
       "id": "3525045000651752137",
@@ -12438,7 +12726,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 2815,
-      "precio_usuario": 5
+      "precio_usuario": 5,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-14T12:39:00-06:00"
     },
     {
       "id": "3525045000651752123",
@@ -12458,7 +12750,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 2050,
-      "precio_usuario": 5
+      "precio_usuario": 5,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-14T12:37:00-06:00"
     },
     {
       "id": "3525045000651752130",
@@ -12478,7 +12774,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 2050,
-      "precio_usuario": 3
+      "precio_usuario": 3,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-14T12:38:00-06:00"
     },
     {
       "id": "3525045000651752112",
@@ -12498,7 +12798,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 2050,
-      "precio_usuario": 3
+      "precio_usuario": 3,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-14T12:36:00-06:00"
     },
     {
       "id": "3525045000631324048",
@@ -12518,7 +12822,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 400,
-      "precio_usuario": 15
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-06-30T13:38:00-06:00"
     },
     {
       "id": "3525045000631712973",
@@ -12538,7 +12846,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 300,
-      "precio_usuario": 10
+      "precio_usuario": 10,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-07-14T08:03:00-06:00"
     },
     {
       "id": "3525045000473278075",
@@ -12558,7 +12870,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 140,
-      "precio_usuario": 20
+      "precio_usuario": 20,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-07-07T16:17:00-06:00"
     },
     {
       "id": "3525045000144842322",
@@ -12578,7 +12894,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 300,
-      "precio_usuario": 0
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2023-01-16T07:02:59-06:00"
     },
     {
       "id": "3525045000508844047",
@@ -12598,7 +12918,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 25,
-      "precio_usuario": null
+      "precio_usuario": null,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-09-10T15:26:00-06:00"
     },
     {
       "id": "3525045000668035825",
@@ -12618,7 +12942,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 97,
-      "precio_usuario": 12
+      "precio_usuario": 12,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-20T07:39:00-06:00"
     },
     {
       "id": "3525045000668035957",
@@ -12638,7 +12966,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 97,
-      "precio_usuario": 10
+      "precio_usuario": 10,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-20T07:39:00-06:00"
     },
     {
       "id": "3525045000625800002",
@@ -12658,7 +12990,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 3000,
-      "precio_usuario": 0
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-05-25T15:01:00-06:00"
     },
     {
       "id": "3525045000669701412",
@@ -12678,7 +13014,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 90,
-      "precio_usuario": 10
+      "precio_usuario": 10,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-08T12:06:00-06:00"
     },
     {
       "id": "3525045000651671108",
@@ -12698,7 +13038,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 78,
-      "precio_usuario": 10
+      "precio_usuario": 10,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-02T16:08:00-06:00"
     },
     {
       "id": "3525045000519554316",
@@ -12718,7 +13062,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 1000,
-      "precio_usuario": 27
+      "precio_usuario": 27,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-04-09T11:51:00-06:00"
     },
     {
       "id": "3525045000631713144",
@@ -12738,7 +13086,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 50,
-      "precio_usuario": 0
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-08-05T11:38:00-06:00"
     },
     {
       "id": "3525045000631713109",
@@ -12758,7 +13110,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 50,
-      "precio_usuario": 0
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-08-05T11:57:00-06:00"
     },
     {
       "id": "3525045000568662001",
@@ -12773,12 +13129,16 @@
       "valor": 760,
       "owner": "David Ballesteros",
       "creado": "2026-01-16T09:40:50-06:00",
-      "modificado": "2026-03-23T12:27:21-06:00",
+      "modificado": "2026-11-06T13:55:46-06:00",
       "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 19,
-      "precio_usuario": 40
+      "precio_usuario": 40,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-02-04T12:02:00-06:00"
     },
     {
       "id": "3525045000117526011",
@@ -12798,7 +13158,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 90,
-      "precio_usuario": 0
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2021-09-23T09:11:50-05:00"
     },
     {
       "id": "3525045000660995049",
@@ -12818,7 +13182,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 30,
-      "precio_usuario": 15
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
     },
     {
       "id": "3525045000665863174",
@@ -12838,7 +13206,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 112,
-      "precio_usuario": 23
+      "precio_usuario": 23,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-20T07:41:00-06:00"
     },
     {
       "id": "3525045000665863036",
@@ -12858,7 +13230,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 112,
-      "precio_usuario": 5
+      "precio_usuario": 5,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-20T07:41:00-06:00"
     },
     {
       "id": "3525045000665863306",
@@ -12878,7 +13254,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 112,
-      "precio_usuario": 24
+      "precio_usuario": 24,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-20T07:41:00-06:00"
     },
     {
       "id": "3525045000521952787",
@@ -12898,7 +13278,35 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 251,
-      "precio_usuario": 37
+      "precio_usuario": 37,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2025-10-31T11:25:00-06:00"
+    },
+    {
+      "id": "3525045000649350010",
+      "trato": "Profina (BI)",
+      "cuenta": "Profina",
+      "cuenta_id": "3525045000641620017",
+      "kam": "",
+      "correo_kam": "",
+      "etapa": "6. Listo para Cierre",
+      "cerrado": false,
+      "producto": "Dashboard BI",
+      "valor": 0,
+      "owner": "Alfredo Fuentes",
+      "creado": "2026-08-04T09:39:56-06:00",
+      "modificado": "2026-08-07T15:03:32-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 500,
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
     },
     {
       "id": "3525045000647395345",
@@ -12918,7 +13326,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 562,
-      "precio_usuario": 6
+      "precio_usuario": 6,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-09-08T13:05:00-06:00"
     },
     {
       "id": "3525045000551202087",
@@ -12938,7 +13350,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 21,
-      "precio_usuario": 8
+      "precio_usuario": 8,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-01-26T17:00:00-06:00"
     },
     {
       "id": "3525045000612029075",
@@ -12958,7 +13374,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 27,
-      "precio_usuario": 20
+      "precio_usuario": 20,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-04-14T17:22:00-06:00"
     },
     {
       "id": "3525045000549715041",
@@ -12978,7 +13398,59 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 60,
-      "precio_usuario": 21.73
+      "precio_usuario": 21.73,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-06-05T14:46:00-06:00"
+    },
+    {
+      "id": "3525045000647360574",
+      "trato": "SEICSA (Alertas)",
+      "cuenta": "SEICSA",
+      "cuenta_id": "3525045000053667600",
+      "kam": "",
+      "correo_kam": "",
+      "etapa": "6. Listo para Cierre",
+      "cerrado": false,
+      "producto": "Alertas",
+      "valor": 16743,
+      "owner": "Alejandra Anzaldo",
+      "creado": "2026-07-28T18:40:04-06:00",
+      "modificado": "2026-10-14T16:00:07-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 5581,
+      "precio_usuario": 3,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000672042129",
+      "trato": "SEICSA (Reporte a Medida)",
+      "cuenta": "SEICSA",
+      "cuenta_id": "3525045000053667600",
+      "kam": "",
+      "correo_kam": "",
+      "etapa": "6. Listo para Cierre",
+      "cerrado": false,
+      "producto": "Reporte a Medida",
+      "valor": 0,
+      "owner": "Alejandra Anzaldo",
+      "creado": "2026-10-14T15:51:43-06:00",
+      "modificado": "2026-10-14T16:05:38-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 0,
+      "precio_usuario": null,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
     },
     {
       "id": "3525045000647360741",
@@ -12998,7 +13470,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 588,
-      "precio_usuario": 6
+      "precio_usuario": 6,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-09-25T16:03:00-06:00"
     },
     {
       "id": "3525045000672907251",
@@ -13018,7 +13494,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 39,
-      "precio_usuario": 10
+      "precio_usuario": 10,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-23T17:22:00-06:00"
     },
     {
       "id": "3525045000641063336",
@@ -13033,12 +13513,16 @@
       "valor": 150,
       "owner": "Karla Guerrero",
       "creado": "2026-07-08T11:16:09-06:00",
-      "modificado": "2026-10-21T14:26:30-06:00",
+      "modificado": "2026-11-06T13:55:52-06:00",
       "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 5,
-      "precio_usuario": 30
+      "precio_usuario": 30,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
     },
     {
       "id": "3525045000655503749",
@@ -13053,12 +13537,16 @@
       "valor": 10000,
       "owner": "Karla Guerrero",
       "creado": "2026-08-24T12:28:30-06:00",
-      "modificado": "2026-10-14T11:23:21-06:00",
+      "modificado": "2026-11-06T13:55:56-06:00",
       "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 250,
-      "precio_usuario": 40
+      "precio_usuario": 40,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
     },
     {
       "id": "3525045000567531628",
@@ -13078,7 +13566,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 280,
-      "precio_usuario": 12
+      "precio_usuario": 12,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-03-02T16:20:00-06:00"
     },
     {
       "id": "3525045000567531063",
@@ -13098,7 +13590,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 280,
-      "precio_usuario": 12
+      "precio_usuario": 12,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-03-02T16:20:00-06:00"
     },
     {
       "id": "3525045000582795248",
@@ -13118,7 +13614,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 650,
-      "precio_usuario": 15
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-04-23T09:43:00-06:00"
     },
     {
       "id": "3525045000672907156",
@@ -13138,7 +13638,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 102,
-      "precio_usuario": 10
+      "precio_usuario": 10,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-10-28T13:43:00-06:00"
     },
     {
       "id": "3525045000628611168",
@@ -13158,7 +13662,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 90,
-      "precio_usuario": 13
+      "precio_usuario": 13,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-06-23T12:03:00-06:00"
     },
     {
       "id": "3525045000628611141",
@@ -13178,7 +13686,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 270,
-      "precio_usuario": 13
+      "precio_usuario": 13,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-06-23T12:02:00-06:00"
     },
     {
       "id": "3525045000638908045",
@@ -13198,7 +13710,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 12,
-      "precio_usuario": 40
+      "precio_usuario": 40,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-07-07T10:19:00-06:00"
     },
     {
       "id": "3525045000636391044",
@@ -13218,7 +13734,11 @@
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 24,
-      "precio_usuario": 0
+      "precio_usuario": 0,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": "2026-07-22T12:43:00-06:00"
     }
   ],
   "implementaciones": [
