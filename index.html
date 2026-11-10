@@ -3329,6 +3329,24 @@ function renderMatriz(){
   seccionesPlegables('matriz-top','mx_plg');seccionesPlegables('matriz','mx_plg');
 }
 
+// tooltip de la Matriz: marcaje (% adopción) del último modelo de salud cargado, por razón social
+function mxSaludLinea(h){
+  const ad=h.adopcion!=null?Math.round(h.adopcion*100)+'%':'—';
+  const vr=h.variacion!=null&&h.variacion!==0?` (${h.variacion>0?'+':''}${Math.round(h.variacion*100)}pp variación)`:'';
+  return`marcaje ${ad}${vr} · ${h.categoria||'sin categoría'}${h.usuarios!=null?' · '+h.usuarios+' usuarios activos':''}`;}
+// cada empresa del modelo de salud una sola vez (varias razones sociales pueden compartir la misma; una
+// razón social con ID Geo concatenados tiene varias sucursales de salud, salvo que se unan en una sola)
+function mxSaludTitle(accs){
+  if(!HEALTH.loaded)return'Salud: modelo de salud no cargado';
+  const f=CURRENT_HEALTH_DATE?' ('+CURRENT_HEALTH_DATE+')':'';
+  const vis=new Set(),hs=[];let sin=0;
+  accs.forEach(a=>{const lista=a._healthBranches&&!a._saludUnida?a._healthBranches:a.health?[a.health]:[];
+    if(!lista.length){sin++;return;}
+    lista.forEach(h=>{const k=h.id||h.nombre;if(vis.has(k))return;vis.add(k);hs.push(h);});});
+  if(!hs.length)return`Último estado de salud${f}: sin dato en el modelo de salud`;
+  const sinTxt=sin?`\n(${sin} razón${sin===1?'':'es'} social${sin===1?'':'es'} sin dato en el modelo de salud)`:'';
+  if(hs.length===1)return`Último estado de salud${f}: ${mxSaludLinea(hs[0])}${sinTxt}`;
+  return`Último estado de salud${f}:\n`+hs.map(h=>`• ${h.nombre}: ${mxSaludLinea(h)}`).join('\n')+sinTxt;}
 function drawMatriz(){
   let rows=MX.clientes.slice();
   const q=normName(mxState.q);if(q)rows=rows.filter(g=>g.buscar.includes(q));
@@ -3344,8 +3362,8 @@ function drawMatriz(){
   const body=rows.map(g=>{
     const multi=g.miembros.length>1,open=!!mxState.abiertos[g.key];
     const zp=g.miembros.find(m=>m.zohoId&&!m._linkDudoso)||g.miembros.find(m=>m._linkDudoso);
-    const head=`<tr class="mx-row${g.implNuevo?' mx-impl-row':''}"><td class="hm-emp mx-name">${g.impl.length?mxImplIcono(g.impl,g.implTotal):''}${multi?`<span class="mx-tog" data-g="${esc(g.key)}" title="Ver razones sociales">${open?'▾':'▸'}</span>`:''}<span class="mx-nmod${g.nMods?'':' cero'}" title="${g.nMods} módulo${g.nMods===1?'':'s'} complementario${g.nMods===1?'':'s'} contratado${g.nMods===1?'':'s'}">${g.nMods}</span>${g.sinModulo?MX_ICON_SINMOD:''}${g.sinAbierto?'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>':''}${mxCuentaLink(zp,`<b>${esc(g.nombre)}</b>`)}${g.miembros.some(m=>m._linkDudoso)?mxLinkIcono(g.miembros.find(m=>m._linkDudoso)):''}${g.sub?`<div class="legend" style="text-transform:none">${esc(g.sub)}${g.miembros.length>1?' y '+(g.miembros.length-1)+' más':''}</div>`:''}${multi?` <span class="legend">${g.miembros.length} RS</span>`:''}<div class="legend">${esc(g.kams.map(kamShort).join(', '))} · ${fmtUSD(g.mrr)}</div></td>${g.celdas.map(c=>mxCeldaHTML(c,ref({ds:c.ds,raws:c.raws,accs:g.miembros,nombre:g.nombre}))).join('')}</tr>`;
-    const subs=multi&&open?g.miembros.map(a=>`<tr class="mx-sub${a._impl.length&&g.implNuevo?' mx-impl-row':''}"><td class="hm-emp" title="${esc(a.cliente)}">↳ ${a._impl.length?mxImplIcono(a._impl,Math.max(a._impl.length,IMPL_CONTEO[a.zohoId]||0)):''}${MATRIZ_MODS.some((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return r&&(r.s==='zv'||r.s==='xv');})?'':MX_ICON_SINMOD}${a._deals.some(mxAbierto)?'':'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>'}${mxCuentaLink(a,esc(a.cliente))}${a._linkDudoso?mxLinkIcono(a):''}<div class="legend">${esc(kamShort(a.kam))} · ${fmtUSD(a.mrr)}</div></td>${MATRIZ_MODS.map((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return mxCeldaHTML({s:r.s,ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],estancado:r.ds.some(d=>mxAbierto(d)&&!d._com)&&r.ds.filter(d=>mxAbierto(d)&&!d._com).every(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS),etapa:r.ds.filter(mxAbierto).sort((x,y)=>etapaRank(y.etapa)-etapaRank(x.etapa))[0]?.etapa||null},ref({ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],accs:[a],nombre:a.cliente}));}).join('')}</tr>`).join(''):'';
+    const head=`<tr class="mx-row${g.implNuevo?' mx-impl-row':''}"><td class="hm-emp mx-name" title="${esc(mxSaludTitle(g.miembros))}">${g.impl.length?mxImplIcono(g.impl,g.implTotal):''}${multi?`<span class="mx-tog" data-g="${esc(g.key)}" title="Ver razones sociales">${open?'▾':'▸'}</span>`:''}<span class="mx-nmod${g.nMods?'':' cero'}" title="${g.nMods} módulo${g.nMods===1?'':'s'} complementario${g.nMods===1?'':'s'} contratado${g.nMods===1?'':'s'}">${g.nMods}</span>${g.sinModulo?MX_ICON_SINMOD:''}${g.sinAbierto?'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>':''}${mxCuentaLink(zp,`<b>${esc(g.nombre)}</b>`)}${g.miembros.some(m=>m._linkDudoso)?mxLinkIcono(g.miembros.find(m=>m._linkDudoso)):''}${g.sub?`<div class="legend" style="text-transform:none">${esc(g.sub)}${g.miembros.length>1?' y '+(g.miembros.length-1)+' más':''}</div>`:''}${multi?` <span class="legend">${g.miembros.length} RS</span>`:''}<div class="legend">${esc(g.kams.map(kamShort).join(', '))} · ${fmtUSD(g.mrr)}</div></td>${g.celdas.map(c=>mxCeldaHTML(c,ref({ds:c.ds,raws:c.raws,accs:g.miembros,nombre:g.nombre}))).join('')}</tr>`;
+    const subs=multi&&open?g.miembros.map(a=>`<tr class="mx-sub${a._impl.length&&g.implNuevo?' mx-impl-row':''}"><td class="hm-emp" title="${esc(a.cliente+'\n'+mxSaludTitle([a]))}">↳ ${a._impl.length?mxImplIcono(a._impl,Math.max(a._impl.length,IMPL_CONTEO[a.zohoId]||0)):''}${MATRIZ_MODS.some((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return r&&(r.s==='zv'||r.s==='xv');})?'':MX_ICON_SINMOD}${a._deals.some(mxAbierto)?'':'<span class="mx-warn" title="Sin ningún deal abierto en Zoho">⚠</span>'}${mxCuentaLink(a,esc(a.cliente))}${a._linkDudoso?mxLinkIcono(a):''}<div class="legend">${esc(kamShort(a.kam))} · ${fmtUSD(a.mrr)}</div></td>${MATRIZ_MODS.map((m,mi)=>{const r=g.celdas[mi].rs.find(x=>x.a===a);return mxCeldaHTML({s:r.s,ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],estancado:r.ds.some(d=>mxAbierto(d)&&!d._com)&&r.ds.filter(d=>mxAbierto(d)&&!d._com).every(d=>(mxDias(d)||0)>MX_ESTANCADO_DIAS),etapa:r.ds.filter(mxAbierto).sort((x,y)=>etapaRank(y.etapa)-etapaRank(x.etapa))[0]?.etapa||null},ref({ds:r.ds,raws:r.raw?[{a,raw:r.raw}]:[],accs:[a],nombre:a.cliente}));}).join('')}</tr>`).join(''):'';
     return head+subs;
   }).join('');
   $('mxWrap').innerHTML=rows.length?`<table class="hm mx"><thead><tr><th class="hm-emp hm-corner">Cliente</th>${MATRIZ_MODS.map(m=>`<th class="mx-h"><span>${esc(m[1])}</span></th>`).join('')}</tr></thead><tbody>${body}</tbody></table>`:'<p class="legend" style="padding:10px">No hay clientes con estos filtros.</p>';
