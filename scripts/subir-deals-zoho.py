@@ -256,6 +256,11 @@ def cuentas_cartera():
 
 def validar_comercial(crudos):
     titulo("Validando deals de módulos de comercial")
+    # a veces Zoho devuelve «México» con caracteres rotos («M��xico»): se normaliza antes de validar
+    for r in crudos:
+        t = r.get("Territorio") or ""
+        if t != TERRITORIO_ESPERADO and re.fullmatch(r"M\W{1,3}xico", t):
+            r["Territorio"] = TERRITORIO_ESPERADO
     malos = [r for r in crudos
              if (r.get("Owner") or {}).get("id") == KAM_OWNER_ID
              or (r.get("Territorio") or "") != TERRITORIO_ESPERADO
