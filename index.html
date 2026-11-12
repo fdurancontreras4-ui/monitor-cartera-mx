@@ -880,7 +880,7 @@ function parseVentasSheet(wb){
   if(hdr<0)return null;
   const headers=aoa[hdr].map(c=>c==null?'':String(c).trim());
   const find=re=>headers.findIndex(h=>re.test(h));
-  const c={estado:find(/^estado$/i),q:find(/^q$/i),mes:find(/mes\s*servicio/i),kam:find(/^kam$/i),tipo:find(/^tipo$/i),producto:find(/producto/i),cliente:find(/^cliente$/i),usuarios:find(/usuarios/i),mxn:find(/^mxn$/i),usd:find(/^usd$/i),segmento:find(/segmento/i)};
+  const c={estado:find(/^estado$/i),q:find(/^q$/i),mes:find(/mes\s*servicio/i),kam:find(/^kam$/i),tipo:find(/^tipo$/i),producto:find(/producto/i),cliente:find(/^cliente$/i),usuarios:find(/^usuarios$/i),valorUsuario:find(/valor\s*usuario/i),factura:find(/factura/i),mxn:find(/^mxn$/i),usd:find(/^usd$/i),segmento:find(/segmento/i)};
   if(c.tipo<0||c.kam<0)return null;
   const out=[];
   for(let r=hdr+1;r<aoa.length;r++){
@@ -893,7 +893,7 @@ function parseVentasSheet(wb){
     let mesKey=null;if(mesRaw){for(const mm of MONTHS_FULL){if(mesRaw.toLowerCase().includes(mm.toLowerCase())){mesKey=mm;break;}}}
     let seg=txt(c.segmento>=0?row[c.segmento]:null)||'Sin dato';const segUp=seg.toUpperCase();
     const segNorm=segUp.includes('ENTER')?'ENTERPRISE':segUp.includes('SMB')?'SMB':'Sin dato';
-    out.push({categoria:cat,estado:txt(c.estado>=0?row[c.estado]:null)||'Sin dato',q:txt(c.q>=0?row[c.q]:null),mes:mesKey||mesRaw,kam:txt(c.kam>=0?row[c.kam]:null)||'No Asignado',producto:txt(c.producto>=0?row[c.producto]:null),cliente:txt(c.cliente>=0?row[c.cliente]:null),usuarios:num(c.usuarios>=0?row[c.usuarios]:null),mxn:num(c.mxn>=0?row[c.mxn]:null),usd:num(c.usd>=0?row[c.usd]:null),segmento:segNorm});
+    out.push({categoria:cat,estado:txt(c.estado>=0?row[c.estado]:null)||'Sin dato',q:txt(c.q>=0?row[c.q]:null),mes:mesKey||mesRaw,kam:txt(c.kam>=0?row[c.kam]:null)||'No Asignado',producto:txt(c.producto>=0?row[c.producto]:null),cliente:txt(c.cliente>=0?row[c.cliente]:null),usuarios:num(c.usuarios>=0?row[c.usuarios]:null),mxn:num(c.mxn>=0?row[c.mxn]:null),usd:num(c.usd>=0?row[c.usd]:null),segmento:segNorm,valorUsuario:num(c.valorUsuario>=0?row[c.valorUsuario]:null),factura:txt(c.factura>=0?row[c.factura]:null)});
   }
   return out;
 }
@@ -2454,15 +2454,16 @@ const TC_Q4=18; // MXN por USD de la hoja Ventas 2026, solo si un deal proyectad
 let dealsProyFilter='todo'; // 'todo' | 'cross' | 'upsell' | 'arriendo'
 let dealsSelected={}; // {[kam]: Set(índices en VENTAS_DATA)} — selección de deals para sumar USD, por KAM
 let dealsProySort={campo:'mxn',dir:-1};
+const META_FACT_OPEN={}; // {[sectionId]: true} — despliegue de deals facturados bajo las tarjetas de % de meta
 let dealsSelectedZ={}; // {[kam]: Set(id de deal de Zoho)} — deals abiertos marcados para simular la meta // orden compartido entre los grupos de mes de la tabla de deals proyectados
 const fmtMXN=n=>(n==null||isNaN(n))?'—':'$'+Math.round(n).toLocaleString('en-US')+' MXN';
-function metaTiersHTML(achieved,m1,m2,m3,sim){
+function metaTiersHTML(achieved,m1,m2,m3,sim,abierto){
   sim=sim||0;const real=achieved;achieved=real+sim;
   const cap=Math.max(m3,achieved)*1.02||1;
   const pct=v=>Math.min(100,v/cap*100);
   const color=achieved>=m3?'#639922':achieved>=m2?'#00AFF2':achieved>=m1?'#EF9F27':'#E24B4A';
   const marks=[[m1,'Meta 1'],[m2,'Meta 2'],[m3,'Meta 3']];
-  const tierCell=(v,label)=>{const reached=achieved>=v;const p=v?Math.min(100,achieved/v*100):0;return `<div class="stat3-it"><div class="stat3-v" style="color:${reached?'#639922':'#E24B4A'}">${reached?'✓ '+p.toFixed(0)+'%':p.toFixed(0)+'%'}</div><div class="stat3-l">${label} · ${fmtMXN(v)}</div></div>`;};
+  const tierCell=(v,label)=>{const reached=achieved>=v;const p=v?Math.min(100,achieved/v*100):0;return `<div class="stat3-it meta-tier" title="Clic para ${abierto?'ocultar':'ver'} los deals facturados" style="cursor:pointer"><div class="stat3-v" style="color:${reached?'#639922':'#E24B4A'}">${reached?'✓ '+p.toFixed(0)+'%':p.toFixed(0)+'%'}</div><div class="stat3-l">${label} · ${fmtMXN(v)} <span style="opacity:.7">${abierto?'▴':'▾'}</span></div></div>`;};
   return `<div style="margin-top:6px">
     <div style="position:relative;height:26px;background:var(--color-background-secondary);border-radius:6px;margin-top:22px;margin-bottom:30px">
       ${sim?`<div style="position:absolute;left:0;top:0;bottom:0;width:${pct(achieved)}%;background:repeating-linear-gradient(135deg,${color} 0 6px,${color}66 6px 12px);border-radius:6px;transition:width .3s" title="Simulado con los deals seleccionados: ${fmtMXN(sim)}"></div>`:''}
@@ -2573,6 +2574,16 @@ function renderKamTab(kam,sectionId){
   drawPerdidos(sectionId+'-perdidos',DEALS_DATA.filter(esK),!kam);
   $q('.kz-filtros').querySelectorAll('.toggle-chip').forEach(btn=>{btn.onclick=()=>{dealsProyFilter=btn.dataset.filtro;renderKamTab(kam,sectionId);};});
   // meta del Q: barra sólida = cross facturado en Zoho con mes de cierre en el Q; rayada = cross seleccionado abajo
+  // deals facturados del Q de la meta (hoja Ventas 2026): los de cross que cuentan y, en gris, los que no
+  function metaFactHTML(){
+    const filas=[...xFact.map(r=>({r,cuenta:true})),...xFuera.map(r=>({r,cuenta:false}))];
+    if(!filas.length)return`<p class="legend" style="margin-top:10px">No hay filas Facturado de ${KAM_META_Q} en la hoja Ventas 2026${kam?' para este KAM':''}.</p>`;
+    const tc=r=>r.mxn&&r.usd?r.mxn/r.usd:TC_Q4;
+    return`<div class="meta-fact" style="margin-top:12px"><p style="font-weight:600;font-size:13px;margin-bottom:6px">Deals facturados en ${KAM_META_Q} <span class="legend" style="font-weight:400">· ${xFact.length} cuenta${xFact.length===1?'':'n'} para la meta · ${fmtMXN(qMetaMXN)}${xFuera.length?` · ${xFuera.length} no cuenta${xFuera.length===1?'':'n'} (no es cross)`:''} · clic en una tarjeta de % para ocultar</span></p>
+      <div class="table-wrap"><table><thead><tr><th class="nosort">Cliente</th><th class="nosort">Producto</th><th class="nosort">Tipo</th><th class="nosort">Estado</th><th class="nosort">Usuarios</th><th class="nosort">Precio/usuario</th><th class="nosort">MXN</th><th class="nosort">USD</th><th class="nosort">Mes</th><th class="nosort">Factura</th></tr></thead><tbody>
+      ${filas.map(({r,cuenta})=>{const c=r.categoria;return`<tr style="cursor:default;${cuenta?'':'opacity:.55'}"${cuenta?'':' title="No cuenta para la meta: la meta es solo cross"'}><td style="max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(r.cliente||'')}">${esc(r.cliente||'—')}${kam?'':`<div class="legend">${esc(kamShort(r.kam))}</div>`}</td><td style="font-size:12px">${esc(r.producto||'—')}</td><td><span class="badge ${c==='cross'?'b-blue':'b-gray'}">${c==='cross'?'Cross':c==='upsell'?'Up':'Arriendo'}</span>${cuenta?'':'<div class="legend">no cuenta</div>'}</td><td><span class="badge" style="background:${ETAPA_COLOR['8. Facturando']||'#639922'};color:#fff">${esc(r.estado)}</span></td><td>${r.usuarios!=null?Math.round(r.usuarios).toLocaleString('en-US'):'—'}</td><td>${r.valorUsuario!=null?'$'+(+r.valorUsuario).toLocaleString('en-US',{maximumFractionDigits:2}):'—'}</td><td style="font-weight:500">${fmtUSD(xMXN(r))}</td><td style="font-weight:500">${fmtUSD(r.usd!=null?r.usd:xMXN(r)/tc(r))}</td><td>${esc(r.mes||'—')}</td><td style="white-space:nowrap">${esc(r.factura||'—')}</td></tr>`;}).join('')}
+      </tbody></table></div></div>`;
+  }
   function drawMeta(){
     let sim=0,nSim=0,nFuera=0;
     sel.forEach(id=>{const d=zDeals.find(x=>x.id===id);if(!d)return;if(kzCategoria(d)!=='cross'){nFuera++;return;}nSim++;sim+=kzMXN(d);});
@@ -2586,8 +2597,9 @@ function renderKamTab(kam,sectionId){
       ${xFuera.length?` <span style="color:#854F0B">No cuenta${xFuera.length===1?'':'n'} (la meta es solo cross): ${xFuera.map(r=>`${esc(r.cliente||'—')} · ${r.categoria==='upsell'?'Up selling':'Arriendo'} · ${fmtMXN(xMXN(r))}`).join('; ')}.</span>`:''}
       ${nFuera?` <span style="color:#854F0B">${nFuera} seleccionado${nFuera===1?'':'s'} de up/arriendo no suma${nFuera===1?'':'n'}: la meta es solo cross.</span>`:''}</p>
       <div class="note-box" style="margin:10px 0 0;font-size:13px;color:var(--color-text-primary);background:${sig?'var(--accent-soft)':'#EAF3DE'}">${falta}</div>
-      ${metaTiersHTML(qMetaMXN,meta.m1,meta.m2,meta.m3,sim)}
-      ${xFact.length?`<details style="margin-top:10px"><summary class="legend" style="cursor:pointer">Ver las ${xFact.length} filas del Excel que cuentan</summary><div class="table-wrap"><table><tbody>${xFact.map(r=>`<tr style="cursor:default"><td>${esc(r.cliente||'—')}<div class="legend">${esc(r.producto||'')}${kam?'':' · '+esc(kamShort(r.kam))}</div></td><td>${esc(r.mes||'—')}</td><td>${fmtMXN(xMXN(r))}</td></tr>`).join('')}</tbody></table></div></details>`:''}`;
+      ${metaTiersHTML(qMetaMXN,meta.m1,meta.m2,meta.m3,sim,!!META_FACT_OPEN[sectionId])}
+      ${META_FACT_OPEN[sectionId]?metaFactHTML():''}`;
+    $(sectionId+'-meta').querySelectorAll('.meta-tier').forEach(t=>t.onclick=e=>{e.stopPropagation();META_FACT_OPEN[sectionId]=!META_FACT_OPEN[sectionId];drawMeta();});
   }
   function updateDealsSelectedSummary(){
     drawMeta();
