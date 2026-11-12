@@ -2505,6 +2505,8 @@ function renderKamTab(kam,sectionId){
   const xMXN=r=>r.mxn!=null?+r.mxn||0:(+r.usd||0)*TC_Q4;
   const xFact=VENTAS_DATA.filter(r=>r.categoria==='cross'&&esK(r)&&/factur/i.test(r.estado||'')&&enQMeta(r));
   const qMetaMXN=xFact.reduce((s,r)=>s+xMXN(r),0);
+  // filas facturadas del Q que NO cuentan para la meta (up / arriendo): se muestran aparte para que no parezca que faltan
+  const xFuera=VENTAS_DATA.filter(r=>r.categoria!=='cross'&&esK(r)&&/factur/i.test(r.estado||'')&&enQMeta(r));
   const abiertosTodos=zDeals.filter(mxAbierto);
   const abiertos=dealsProyFilter==='todo'?abiertosTodos:abiertosTodos.filter(d=>kzCategoria(d)===dealsProyFilter);
   const porMes={};abiertos.forEach(d=>{const k=kzMesKey(d)||'sin';(porMes[k]=porMes[k]||[]).push(d);});
@@ -2581,6 +2583,7 @@ function renderKamTab(kam,sectionId){
     $(sectionId+'-meta').innerHTML=`<h3>Avance a la meta de cross · ${KAM_META_Q} 2026 (MXN)${kam?'':' · equipo (suma de las metas de los 3 KAM)'}</h3>
       <p class="legend">Cuenta como facturado lo de <strong>cross</strong> en la hoja <strong>Ventas 2026</strong> del Excel con Estado <strong>Facturado</strong> y Q <strong>${KAM_META_Q}</strong>: <strong>${fmtMXN(qMetaMXN)}</strong> (${xFact.length} fila${xFact.length===1?'':'s'}). La simulación (parte rayada) suma los deals abiertos de Zoho que marques abajo. Metas: ${fmtMXN(meta.m1)} / ${fmtMXN(meta.m2)} / ${fmtMXN(meta.m3)}. Fuente del Excel: ${esc(VENTAS_SOURCE)}.
       ${nSim?` Simulación: <strong>+${fmtMXN(sim)}</strong> de ${nSim} deal${nSim===1?'':'s'} seleccionado${nSim===1?'':'s'}.`:''}
+      ${xFuera.length?` <span style="color:#854F0B">No cuenta${xFuera.length===1?'':'n'} (la meta es solo cross): ${xFuera.map(r=>`${esc(r.cliente||'—')} · ${r.categoria==='upsell'?'Up selling':'Arriendo'} · ${fmtMXN(xMXN(r))}`).join('; ')}.</span>`:''}
       ${nFuera?` <span style="color:#854F0B">${nFuera} seleccionado${nFuera===1?'':'s'} de up/arriendo no suma${nFuera===1?'':'n'}: la meta es solo cross.</span>`:''}</p>
       <div class="note-box" style="margin:10px 0 0;font-size:13px;color:var(--color-text-primary);background:${sig?'var(--accent-soft)':'#EAF3DE'}">${falta}</div>
       ${metaTiersHTML(qMetaMXN,meta.m1,meta.m2,meta.m3,sim)}
