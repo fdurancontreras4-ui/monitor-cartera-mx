@@ -124,10 +124,10 @@ tr:last-child td{border-bottom:none;}
 @media (max-width:680px){.grid2{grid-template-columns:1fr;}.bar-label{min-width:120px;max-width:120px;}}
 .note-box{font-size:12px;color:var(--color-text-secondary);background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:11px 14px;margin-bottom:1rem;line-height:1.55;}
 .controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.15rem;align-items:center;}
-.controls input[type=text],.controls select,.urlrow input,.urlrow select{font-family:var(--font-sans);font-size:13.5px;font-weight:500;padding:10px 14px;border-radius:12px;border:1.5px solid var(--color-border-secondary);background-color:var(--color-background-primary);color:var(--color-text-primary);box-shadow:var(--shadow-sm);transition:border-color .12s,box-shadow .12s;}
+.controls input[type=text],.controls input[type=number],.controls select,.urlrow input,.urlrow select{font-family:var(--font-sans);font-size:13.5px;font-weight:500;padding:10px 14px;border-radius:12px;border:1.5px solid var(--color-border-secondary);background-color:var(--color-background-primary);color:var(--color-text-primary);box-shadow:var(--shadow-sm);transition:border-color .12s,box-shadow .12s;}
 .controls select,.urlrow select{padding-right:32px;appearance:none;-webkit-appearance:none;-moz-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='16' viewBox='0 0 10 16'%3E%3Cpolygon points='5,0 9,6 1,6' fill='%2367718c'/%3E%3Cpolygon points='5,16 9,10 1,10' fill='%2367718c'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:9px 14px;cursor:pointer;}
-.controls select:hover,.controls input[type=text]:hover,.urlrow input:hover,.urlrow select:hover{border-color:var(--color-border-primary);}
-.controls select:focus,.controls input[type=text]:focus,.urlrow input:focus,.urlrow select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.controls select:hover,.controls input[type=text]:hover,.controls input[type=number]:hover,.urlrow input:hover,.urlrow select:hover{border-color:var(--color-border-primary);}
+.controls select:focus,.controls input[type=text]:focus,.controls input[type=number]:focus,.urlrow input:focus,.urlrow select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .controls input[type=text]{flex:1;min-width:160px;}
 .btn{font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:999px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;box-shadow:var(--shadow-sm);transition:border-color .12s,box-shadow .12s;}
 .btn:hover{border-color:var(--color-border-primary);box-shadow:var(--shadow-md);}
@@ -2254,8 +2254,8 @@ function renderFuga(){
   <div class="card"><h3>Detalle de cuentas fugadas · <span id="fdN">${detalle.length}</span></h3>
   <div class="controls" style="margin:6px 0 8px;flex-wrap:wrap;gap:8px">
     <select id="fdSeg" title="Segmento por última facturación"><option value="">Todos los segmentos</option>${SEG_ORDER.map(g=>`<option value="${g}"${FD_ST.seg===g?' selected':''}>${SEG_LBL[g]}</option>`).join('')}</select>
-    <label class="legend" style="display:flex;align-items:center;gap:4px">Facturación USD mín <input type="number" id="fdMin" min="0" step="1" value="${FD_ST.min}" style="width:90px"></label>
-    <label class="legend" style="display:flex;align-items:center;gap:4px">máx <input type="number" id="fdMax" min="0" step="1" value="${FD_ST.max}" style="width:90px"></label>
+    <label class="legend" style="display:flex;align-items:center;gap:6px;font-size:13px">Facturación USD mín <input type="number" id="fdMin" min="0" step="1" placeholder="0" value="${FD_ST.min}" style="width:120px"></label>
+    <label class="legend" style="display:flex;align-items:center;gap:6px;font-size:13px">máx <input type="number" id="fdMax" min="0" step="1" placeholder="sin tope" value="${FD_ST.max}" style="width:120px"></label>
     <button class="btn" id="fdLimpiar" style="font-size:11px;padding:4px 10px">Limpiar filtros</button>
   </div>
   <p class="legend" style="margin-bottom:8px">Segmento según la <strong>última facturación</strong> (USD): <strong>Small</strong> hasta $100, <strong>Medium</strong> de $101 a $499, <strong>Enterprise</strong> $500 o más. Clic en el encabezado de una columna para ordenar (otro clic invierte el orden). Clic en una fila para abrir su ficha, si todavía existe en la cartera actual.</p>
