@@ -129,6 +129,7 @@ tr:last-child td{border-bottom:none;}
 .controls select:hover,.controls input[type=text]:hover,.controls input[type=number]:hover,.urlrow input:hover,.urlrow select:hover{border-color:var(--color-border-primary);}
 .controls select:focus,.controls input[type=text]:focus,.controls input[type=number]:focus,.urlrow input:focus,.urlrow select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .controls input[type=text]{flex:1;min-width:160px;}
+.fd-bar{position:sticky;top:0;z-index:30;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:12px;padding:10px 14px;margin-bottom:12px;box-shadow:0 4px 14px rgba(18,24,43,.08);}
 .btn{font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:999px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;box-shadow:var(--shadow-sm);transition:border-color .12s,box-shadow .12s;}
 .btn:hover{border-color:var(--color-border-primary);box-shadow:var(--shadow-md);}
 .btn-primary{background:var(--accent-strong);color:#fff;border-color:var(--accent-strong);}
@@ -2229,42 +2230,60 @@ function matchFugaToAccount(r){
   return null;
 }
 function renderFuga(){
-  const bajasReal=FUGA_DETALLE.filter(r=>r.tipo==='Baja');
-  const fdMotivos=groupCount(bajasReal,r=>r.motivo);
-  const fdPorMes=monthCounts(bajasReal,'mesBaja');
-  const fdMontoPorMes=monthSums(bajasReal,'mesBaja',r=>r.facturacionUSD||r.facturacionMXN);
-  const fdPorQ=qCount(bajasReal);
-  const fdMontoAnio=bajasReal.reduce((s,r)=>s+(r.facturacionUSD||0),0);
-  const detalle=bajasReal.slice().sort((a,b)=>(b.facturacionUSD||0)-(a.facturacionUSD||0));
+  FD_DATA=FUGA_DETALLE.filter(r=>r.tipo==='Baja');
+  // barra de filtros flotante (sticky): filtra TODA la pestaña; se pinta una sola vez para no perder el foco al escribir
   $('fuga').innerHTML=`
-  <div class="note-box">Solo se considera <strong>Baja</strong> (Tipo = Baja en Detalle Fuga 2026). Se excluyen <strong>Disminución</strong> y <strong>Cambio de razón social</strong> — revísalas en la pestaña <strong>Disminuciones</strong>.</div>
-  <div class="metrics">
-    <div class="metric"><div class="label">Bajas en el año</div><div class="value" style="color:#E24B4A">${bajasReal.length}</div><div class="sub">${fmtUSD(fdMontoAnio)} perdidos (USD)</div></div>
-    <div class="metric"><div class="label">Bajas Q1</div><div class="value">${fdPorQ.Q1||0}</div><div class="sub">enero-marzo</div></div>
-    <div class="metric"><div class="label">Bajas Q2</div><div class="value">${fdPorQ.Q2||0}</div><div class="sub">abril-junio</div></div>
+  <div class="fd-bar">
+    <div class="controls" style="margin:0;flex-wrap:wrap;gap:8px;align-items:center">
+      <strong style="font-size:13px">Filtrar fuga</strong>
+      <select id="fdSeg" title="Segmento por última facturación"><option value="">Todos los segmentos</option>${SEG_ORDER.map(g=>`<option value="${g}"${FD_ST.seg===g?' selected':''}>${SEG_LBL[g]}</option>`).join('')}</select>
+      <label class="legend" style="display:flex;align-items:center;gap:6px;font-size:13px">Facturación USD mín <input type="number" id="fdMin" min="0" step="1" placeholder="0" value="${FD_ST.min}" style="width:120px"></label>
+      <label class="legend" style="display:flex;align-items:center;gap:6px;font-size:13px">máx <input type="number" id="fdMax" min="0" step="1" placeholder="sin tope" value="${FD_ST.max}" style="width:120px"></label>
+      <button class="btn" id="fdLimpiar" style="font-size:11px;padding:4px 10px">Limpiar filtros</button>
+      <span class="legend" id="fdResumen" style="font-size:12px"></span>
+    </div>
   </div>
+  <div id="fugaBody"></div>`;
+  drawFugaBody();
+  const re=()=>{FD_ST.seg=$('fdSeg').value;FD_ST.min=$('fdMin').value;FD_ST.max=$('fdMax').value;drawFugaBody();};
+  $('fdSeg').onchange=re;$('fdMin').oninput=re;$('fdMax').oninput=re;
+  $('fdLimpiar').onclick=()=>{FD_ST.seg='';FD_ST.min='';FD_ST.max='';$('fdSeg').value='';$('fdMin').value='';$('fdMax').value='';drawFugaBody();};
+}
+// bajas que pasan los filtros de la barra (segmento por última facturación + mín/máx USD)
+function fdFiltradas(){
+  const mn=FD_ST.min===''?null:+FD_ST.min,mx=FD_ST.max===''?null:+FD_ST.max;
+  return FD_DATA.filter(r=>{const v=r.facturacionUSD||0;if(FD_ST.seg&&segMonto(v)!==FD_ST.seg)return false;if(mn!=null&&v<mn)return false;if(mx!=null&&v>mx)return false;return true;});
+}
+function drawFugaBody(){
+  const box=$('fugaBody');if(!box)return;
+  const bajas=fdFiltradas(),filtrado=bajas.length!==FD_DATA.length||FD_ST.seg||FD_ST.min!==''||FD_ST.max!=='';
+  const fdMotivos=groupCount(bajas,r=>r.motivo);
+  const fdPorMes=monthCounts(bajas,'mesBaja');
+  const fdMontoPorMes=monthSums(bajas,'mesBaja',r=>r.facturacionUSD||r.facturacionMXN).map(v=>Math.round(v||0));
+  // Q desde el mes de baja: la columna Q de Detalle Fuga viene vacía en las bajas desde agosto
+  const fdPorQ={Q1:0,Q2:0,Q3:0,Q4:0};fdPorMes.forEach((n,i)=>{fdPorQ['Q'+(Math.floor(i/3)+1)]+=n||0;});
+  const sinMes=bajas.length-fdPorMes.reduce((t,n)=>t+(n||0),0);
+  const monto=bajas.reduce((s,r)=>s+(r.facturacionUSD||0),0);
+  const r=$('fdResumen');if(r)r.innerHTML=filtrado?`Mostrando <strong>${bajas.length}</strong> de ${FD_DATA.length} bajas · <strong>${fmtUSD(monto)}</strong>`:`${FD_DATA.length} bajas · ${fmtUSD(monto)}`;
+  const qTile=(q,l)=>`<div class="metric"><div class="label">Bajas ${q}</div><div class="value">${fdPorQ[q]||0}</div><div class="sub">${l}</div></div>`;
+  box.innerHTML=`
+  <div class="note-box">Solo se considera <strong>Baja</strong> (Tipo = Baja en Detalle Fuga 2026). Se excluyen <strong>Disminución</strong> y <strong>Cambio de razón social</strong> — revísalas en la pestaña <strong>Disminuciones</strong>. Segmento según la <strong>última facturación</strong> (USD): <strong>Small</strong> hasta $100, <strong>Medium</strong> de $101 a $499, <strong>Enterprise</strong> $500 o más.${filtrado?' <strong>Todo lo de esta pestaña está filtrado</strong> por la barra de arriba.':''}</div>
+  <div class="metrics">
+    <div class="metric"><div class="label">Bajas en el año</div><div class="value" style="color:#E24B4A">${bajas.length}</div><div class="sub">${fmtUSD(monto)} perdidos (USD)</div></div>
+    ${qTile('Q1','enero-marzo')}${qTile('Q2','abril-junio')}${qTile('Q3','julio-septiembre')}${qTile('Q4','octubre-diciembre')}
+  </div>${sinMes?`<p class="legend" style="margin:-4px 0 10px">${sinMes} baja${sinMes===1?'':'s'} sin mes de baja (no entra${sinMes===1?'':'n'} en ningún Q).</p>`:''}
   <div class="card"><h3>Fuga por mes (Detalle Fuga 2026 · solo Baja)</h3>
   <div class="grid2">
     <div><p class="legend" style="margin-bottom:8px">Cantidad de cuentas dadas de baja, por mes de baja de MRR.</p>${barMonthly(fdPorMes,'#E24B4A')}</div>
     <div><p class="legend" style="margin-bottom:8px">Monto USD perdido, por mes de baja.</p>${barMonthly(fdMontoPorMes,'#EF9F27')}</div>
   </div>
-  <p class="legend" style="margin-top:8px">Monto total perdido en el año: <strong style="color:var(--color-text-primary)">${fmtUSD(fdMontoAnio)}</strong> (USD, según Detalle Fuga 2026).</p>
+  <p class="legend" style="margin-top:8px">Monto total perdido${filtrado?' (filtrado)':' en el año'}: <strong style="color:var(--color-text-primary)">${fmtUSD(monto)}</strong> (USD, según Detalle Fuga 2026).</p>
   </div>
-  <div class="card"><h3>Motivos de baja (% del total)</h3>${pieSVG(fdMotivos)}</div>
-  <div class="card"><h3>Detalle de cuentas fugadas · <span id="fdN">${detalle.length}</span></h3>
-  <div class="controls" style="margin:6px 0 8px;flex-wrap:wrap;gap:8px">
-    <select id="fdSeg" title="Segmento por última facturación"><option value="">Todos los segmentos</option>${SEG_ORDER.map(g=>`<option value="${g}"${FD_ST.seg===g?' selected':''}>${SEG_LBL[g]}</option>`).join('')}</select>
-    <label class="legend" style="display:flex;align-items:center;gap:6px;font-size:13px">Facturación USD mín <input type="number" id="fdMin" min="0" step="1" placeholder="0" value="${FD_ST.min}" style="width:120px"></label>
-    <label class="legend" style="display:flex;align-items:center;gap:6px;font-size:13px">máx <input type="number" id="fdMax" min="0" step="1" placeholder="sin tope" value="${FD_ST.max}" style="width:120px"></label>
-    <button class="btn" id="fdLimpiar" style="font-size:11px;padding:4px 10px">Limpiar filtros</button>
-  </div>
-  <p class="legend" style="margin-bottom:8px">Segmento según la <strong>última facturación</strong> (USD): <strong>Small</strong> hasta $100, <strong>Medium</strong> de $101 a $499, <strong>Enterprise</strong> $500 o más. Clic en el encabezado de una columna para ordenar (otro clic invierte el orden). Clic en una fila para abrir su ficha, si todavía existe en la cartera actual.</p>
-  <div class="table-wrap" id="fdTabla"></div></div>
-`;
-  FD_DATA=detalle;drawFugaDetalle();
-  const re=()=>{FD_ST.seg=$('fdSeg').value;FD_ST.min=$('fdMin').value;FD_ST.max=$('fdMax').value;drawFugaDetalle();};
-  $('fdSeg').onchange=re;$('fdMin').oninput=re;$('fdMax').oninput=re;
-  $('fdLimpiar').onclick=()=>{FD_ST.seg='';FD_ST.min='';FD_ST.max='';$('fdSeg').value='';$('fdMin').value='';$('fdMax').value='';drawFugaDetalle();};
+  <div class="card"><h3>Motivos de baja (% del total)</h3>${bajas.length?pieSVG(fdMotivos):'<p class="legend">Sin bajas con estos filtros.</p>'}</div>
+  <div class="card"><h3>Detalle de cuentas fugadas · <span id="fdN"></span></h3>
+  <p class="legend" style="margin-bottom:8px">Clic en el encabezado de una columna para ordenar (otro clic invierte el orden). Clic en una fila para abrir su ficha, si todavía existe en la cartera actual.</p>
+  <div class="table-wrap" id="fdTabla"></div></div>`;
+  drawFugaDetalle();
 }
 // detalle de cuentas fugadas: filtros (segmento por última facturación, mín/máx USD) y orden por columna
 const FD_ST={seg:'',min:'',max:'',campo:'fact',dir:-1};let FD_DATA=[];
@@ -2273,8 +2292,7 @@ function drawFugaDetalle(){
   const mesIx=m=>{const i=MONTHS_FULL.findIndex(x=>String(m||'').toLowerCase().includes(x.toLowerCase()));return i<0?99:i;};
   const segRank={'SMB small':0,'SMB medium':1,'Enterprise':2};
   const cols=[['cliente','Cliente',r=>(r.cliente||'').toLowerCase()],['kam','KAM',r=>(r.kam||'').toLowerCase()],['seg','Segmento',r=>segRank[segMonto(r.facturacionUSD)]],['motivo','Motivo',r=>(r.motivo||'').toLowerCase()],['mes','Mes de baja',r=>mesIx(r.mesBaja)],['fact','Última facturación',r=>r.facturacionUSD||0]];
-  const mn=FD_ST.min===''?null:+FD_ST.min,mx=FD_ST.max===''?null:+FD_ST.max;
-  let rows=FD_DATA.filter(r=>{const v=r.facturacionUSD||0;if(FD_ST.seg&&segMonto(v)!==FD_ST.seg)return false;if(mn!=null&&v<mn)return false;if(mx!=null&&v>mx)return false;return true;});
+  let rows=fdFiltradas();
   const c=cols.find(x=>x[0]===FD_ST.campo)||cols[5];
   rows.sort((a,b)=>{const x=c[2](a),y=c[2](b);return(x<y?-1:x>y?1:0)*FD_ST.dir||(b.facturacionUSD||0)-(a.facturacionUSD||0);});
   const tot=rows.reduce((t,r)=>t+(r.facturacionUSD||0),0);
