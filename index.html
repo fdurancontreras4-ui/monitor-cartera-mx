@@ -2281,6 +2281,7 @@ function drawFugaBody(){
   </div>
   <div class="card"><h3>Motivos de baja (% del total)</h3>${bajas.length?pieSVG(fdMotivos):'<p class="legend">Sin bajas con estos filtros.</p>'}</div>
   <div class="card"><h3>Detalle de cuentas fugadas · <span id="fdN"></span></h3>
+  <div id="fdKams"></div>
   <p class="legend" style="margin-bottom:8px">Clic en el encabezado de una columna para ordenar (otro clic invierte el orden). Clic en una fila para abrir su ficha, si todavía existe en la cartera actual.</p>
   <div class="table-wrap" id="fdTabla"></div></div>`;
   drawFugaDetalle();
@@ -2297,6 +2298,11 @@ function drawFugaDetalle(){
   rows.sort((a,b)=>{const x=c[2](a),y=c[2](b);return(x<y?-1:x>y?1:0)*FD_ST.dir||(b.facturacionUSD||0)-(a.facturacionUSD||0);});
   const tot=rows.reduce((t,r)=>t+(r.facturacionUSD||0),0);
   $('fdN').textContent=rows.length===FD_DATA.length?rows.length:`${rows.length} de ${FD_DATA.length} · ${fmtUSD(tot)}`;
+  // tarjetas por responsable (con los filtros de la barra): n° de cuentas y MRR perdido; «Sin Kam» cuenta como No asignado
+  const grupoKam=k=>{const n=normName(k||'');return /implement/.test(n)?'Implementación':/karla/.test(n)?'Karla':/raul/.test(n)?'Raúl':/dafne/.test(n)?'Dafne':'No asignado';};
+  const GK=['Implementación','No asignado','Karla','Raúl','Dafne'],agg={};GK.forEach(g=>agg[g]={n:0,mrr:0});
+  rows.forEach(r=>{const a=agg[grupoKam(r.kam)];a.n++;a.mrr+=r.facturacionUSD||0;});
+  const kb=$('fdKams');if(kb)kb.innerHTML=`<div class="metrics" style="margin:4px 0 10px">${GK.map(g=>`<div class="metric"><div class="label">${g}</div><div class="value">${agg[g].n} <span style="font-size:13px;font-weight:500;color:var(--color-text-secondary)">cuenta${agg[g].n===1?'':'s'}</span></div><div class="sub">${fmtUSD(agg[g].mrr)} MRR perdido${tot?' · '+Math.round(agg[g].mrr/tot*100)+'%':''}</div></div>`).join('')}</div><p class="legend" style="margin:-4px 0 8px">«No asignado» incluye las bajas con KAM «No Asignado» y «Sin Kam». MRR = última facturación (USD) de cada baja.</p>`;
   const segB={'Enterprise':'b-blue','SMB medium':'b-teal','SMB small':'b-gray'};
   box.innerHTML=`<table><thead><tr>${cols.map(([k,l])=>`<th class="nosort fd-th" data-k="${k}" style="cursor:pointer;white-space:nowrap">${l}${FD_ST.campo===k?(FD_ST.dir>0?' ▲':' ▼'):' <span style="opacity:.35">↕</span>'}</th>`).join('')}</tr></thead><tbody>
   ${rows.map(r=>{const acc=matchFugaToAccount(r);const g=segMonto(r.facturacionUSD);return`<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${esc(r.cliente)}">${esc(r.cliente)}${!acc?' <span class="legend">(ya no está en la cartera)</span>':''}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.kam)}</td><td><span class="badge ${segB[g]}">${SEG_LBL[g]}</span></td><td style="font-size:12px">${esc(r.motivo)}</td><td style="font-size:12px">${esc(r.mesBaja||'—')}</td><td style="font-weight:500">${fmtUSD(r.facturacionUSD)}</td></tr>`;}).join('')||'<tr><td colspan="6" class="legend">Ninguna baja con estos filtros.</td></tr>'}
