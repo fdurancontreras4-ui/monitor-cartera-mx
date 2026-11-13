@@ -1212,8 +1212,10 @@ let RES_SEG_SEL=''; // segmento abierto en «MRR por segmento» del Resumen ('' 
 function resSegToggle(g){RES_SEG_SEL=RES_SEG_SEL===g?'':g;renderResumen();const c=document.getElementById('resSegCard');if(c&&RES_SEG_SEL)c.scrollIntoView({block:'nearest'});}
 // segmento por facturación (Resumen): sale solo de cartera.xlsx («Facturación actual USD»):
 // Small hasta 100 USD · Medium más de 100 y menos de 500 · Enterprise 500 o más
-function segMRR(a){const m=Math.round(a.mrr||0); // redondeado a dólar entero, como se muestra
+function segMonto(v){const m=Math.round(v||0); // redondeado a dólar entero, como se muestra
   return m>=500?'Enterprise':m>100?'SMB medium':'SMB small';}
+function segMRR(a){return segMonto(a.mrr);}
+const SEG_LBL={'Enterprise':'Enterprise','SMB medium':'Medium','SMB small':'Small'};
 function renderResumen(){
   const A=ACCOUNTS,N=A.length||1;
   const mrrTotal=A.reduce((s,a)=>s+(a.mrr||0),0);
@@ -2249,10 +2251,39 @@ function renderFuga(){
   <p class="legend" style="margin-top:8px">Monto total perdido en el año: <strong style="color:var(--color-text-primary)">${fmtUSD(fdMontoAnio)}</strong> (USD, según Detalle Fuga 2026).</p>
   </div>
   <div class="card"><h3>Motivos de baja (% del total)</h3>${pieSVG(fdMotivos)}</div>
-  <div class="card"><h3>Detalle de cuentas fugadas · ${detalle.length}</h3><p class="legend" style="margin-bottom:8px">Clic en una fila para abrir su ficha completa, si todavía existe en la cartera actual.</p><div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="nosort">KAM</th><th class="nosort">Segmento</th><th class="nosort">Motivo</th><th class="nosort">Mes de baja</th><th class="nosort">Última facturación</th></tr></thead><tbody>
-  ${detalle.map(r=>{const acc=matchFugaToAccount(r);return`<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${esc(r.cliente)}${!acc?' <span class=\"legend\">(ya no está en la cartera)</span>':''}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.kam)}</td><td style="font-size:12px">${esc(r.segmento||'—')}</td><td style="font-size:12px">${esc(r.motivo)}</td><td style="font-size:12px">${esc(r.mesBaja||'—')}</td><td style="font-weight:500">${fmtUSD(r.facturacionUSD)}</td></tr>`;}).join('')||'<tr><td colspan="6" class="legend">Sin bajas registradas.</td></tr>'}
-  </tbody></table></div></div>
+  <div class="card"><h3>Detalle de cuentas fugadas · <span id="fdN">${detalle.length}</span></h3>
+  <div class="controls" style="margin:6px 0 8px;flex-wrap:wrap;gap:8px">
+    <select id="fdSeg" title="Segmento por última facturación"><option value="">Todos los segmentos</option>${SEG_ORDER.map(g=>`<option value="${g}"${FD_ST.seg===g?' selected':''}>${SEG_LBL[g]}</option>`).join('')}</select>
+    <label class="legend" style="display:flex;align-items:center;gap:4px">Facturación USD mín <input type="number" id="fdMin" min="0" step="1" value="${FD_ST.min}" style="width:90px"></label>
+    <label class="legend" style="display:flex;align-items:center;gap:4px">máx <input type="number" id="fdMax" min="0" step="1" value="${FD_ST.max}" style="width:90px"></label>
+    <button class="btn" id="fdLimpiar" style="font-size:11px;padding:4px 10px">Limpiar filtros</button>
+  </div>
+  <p class="legend" style="margin-bottom:8px">Segmento según la <strong>última facturación</strong> (USD): <strong>Small</strong> hasta $100, <strong>Medium</strong> de $101 a $499, <strong>Enterprise</strong> $500 o más. Clic en el encabezado de una columna para ordenar (otro clic invierte el orden). Clic en una fila para abrir su ficha, si todavía existe en la cartera actual.</p>
+  <div class="table-wrap" id="fdTabla"></div></div>
 `;
+  FD_DATA=detalle;drawFugaDetalle();
+  const re=()=>{FD_ST.seg=$('fdSeg').value;FD_ST.min=$('fdMin').value;FD_ST.max=$('fdMax').value;drawFugaDetalle();};
+  $('fdSeg').onchange=re;$('fdMin').oninput=re;$('fdMax').oninput=re;
+  $('fdLimpiar').onclick=()=>{FD_ST.seg='';FD_ST.min='';FD_ST.max='';$('fdSeg').value='';$('fdMin').value='';$('fdMax').value='';drawFugaDetalle();};
+}
+// detalle de cuentas fugadas: filtros (segmento por última facturación, mín/máx USD) y orden por columna
+const FD_ST={seg:'',min:'',max:'',campo:'fact',dir:-1};let FD_DATA=[];
+function drawFugaDetalle(){
+  const box=$('fdTabla');if(!box)return;
+  const mesIx=m=>{const i=MONTHS_FULL.findIndex(x=>String(m||'').toLowerCase().includes(x.toLowerCase()));return i<0?99:i;};
+  const segRank={'SMB small':0,'SMB medium':1,'Enterprise':2};
+  const cols=[['cliente','Cliente',r=>(r.cliente||'').toLowerCase()],['kam','KAM',r=>(r.kam||'').toLowerCase()],['seg','Segmento',r=>segRank[segMonto(r.facturacionUSD)]],['motivo','Motivo',r=>(r.motivo||'').toLowerCase()],['mes','Mes de baja',r=>mesIx(r.mesBaja)],['fact','Última facturación',r=>r.facturacionUSD||0]];
+  const mn=FD_ST.min===''?null:+FD_ST.min,mx=FD_ST.max===''?null:+FD_ST.max;
+  let rows=FD_DATA.filter(r=>{const v=r.facturacionUSD||0;if(FD_ST.seg&&segMonto(v)!==FD_ST.seg)return false;if(mn!=null&&v<mn)return false;if(mx!=null&&v>mx)return false;return true;});
+  const c=cols.find(x=>x[0]===FD_ST.campo)||cols[5];
+  rows.sort((a,b)=>{const x=c[2](a),y=c[2](b);return(x<y?-1:x>y?1:0)*FD_ST.dir||(b.facturacionUSD||0)-(a.facturacionUSD||0);});
+  const tot=rows.reduce((t,r)=>t+(r.facturacionUSD||0),0);
+  $('fdN').textContent=rows.length===FD_DATA.length?rows.length:`${rows.length} de ${FD_DATA.length} · ${fmtUSD(tot)}`;
+  const segB={'Enterprise':'b-blue','SMB medium':'b-teal','SMB small':'b-gray'};
+  box.innerHTML=`<table><thead><tr>${cols.map(([k,l])=>`<th class="nosort fd-th" data-k="${k}" style="cursor:pointer;white-space:nowrap">${l}${FD_ST.campo===k?(FD_ST.dir>0?' ▲':' ▼'):' <span style="opacity:.35">↕</span>'}</th>`).join('')}</tr></thead><tbody>
+  ${rows.map(r=>{const acc=matchFugaToAccount(r);const g=segMonto(r.facturacionUSD);return`<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${esc(r.cliente)}">${esc(r.cliente)}${!acc?' <span class="legend">(ya no está en la cartera)</span>':''}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.kam)}</td><td><span class="badge ${segB[g]}">${SEG_LBL[g]}</span></td><td style="font-size:12px">${esc(r.motivo)}</td><td style="font-size:12px">${esc(r.mesBaja||'—')}</td><td style="font-weight:500">${fmtUSD(r.facturacionUSD)}</td></tr>`;}).join('')||'<tr><td colspan="6" class="legend">Ninguna baja con estos filtros.</td></tr>'}
+  </tbody></table>`;
+  box.querySelectorAll('.fd-th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(FD_ST.campo===k)FD_ST.dir=-FD_ST.dir;else{FD_ST.campo=k;FD_ST.dir=(k==='fact'||k==='seg')?-1:1;}drawFugaDetalle();});
 }
 function disminucionAlert(a){
   const meses=a.meses||[];const idxs=[];meses.forEach((m,i)=>{if(m!=null)idxs.push(i);});
