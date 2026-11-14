@@ -622,18 +622,10 @@ const csOf=a=>a.css||(a.health&&a.health.css)||null;
 // y si la cuenta no tiene match de salud usa el estimado de cartera ("Usuarios potenciales") como respaldo
 const usersOf=a=>(a.health&&a.health.usuarios!=null)?a.health.usuarios:(a.usuarios!=null?a.usuarios:null);
 const hasCS=a=>!!csOf(a);
-// segmento: Enterprise / SMB medium (>=100 usuarios) / SMB small (<100)
+// segmento de una cuenta en TODO el monitor: por facturación de cartera.xlsx (promedio de los últimos 3 meses con
+// facturación): Small hasta 100 USD · Medium 101–499 · Enterprise 500+. Ver segMRR / mrrProm3 / segMonto.
 const SEG_ORDER=['Enterprise','SMB medium','SMB small'];
-function segOf(a){
-  const s=a.health&&a.health.seg;
-  if(s){if(/enterprise/i.test(s))return'Enterprise';
-    if(/small|peque|<\s*100|<100/i.test(s))return'SMB small';
-    if(/medium|median|>=?\s*100|>100/i.test(s))return'SMB medium';
-    return'SMB small';}
-  if(a.cartera==='ENTERPRISE')return'Enterprise';
-  if(a.usuarios!=null)return a.usuarios>=100?'SMB medium':'SMB small';
-  return'SMB small';
-}
+function segOf(a){return segMRR(a);}
 function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return false;return !!(a.health&&a.health.flag==='critico');}
 // cuenta marcada "Implementando?" = Sí en la cartera (columna de cartera.xlsx, no del modelo de salud)
 function isImplementando(a){return /^s[ií]$/i.test(String(a.implementando||'').trim());}
@@ -1215,7 +1207,10 @@ function resSegToggle(g){RES_SEG_SEL=RES_SEG_SEL===g?'':g;renderResumen();const 
 // Small hasta 100 USD · Medium más de 100 y menos de 500 · Enterprise 500 o más
 function segMonto(v){const m=Math.round(v||0); // redondeado a dólar entero, como se muestra
   return m>=500?'Enterprise':m>100?'SMB medium':'SMB small';}
-function segMRR(a){return segMonto(a.mrr);}
+// promedio de facturación de los últimos 3 meses con facturación (>0) de cartera.xlsx; sin historial, la facturación actual.
+// Se usa para el segmento del Resumen, así una baja puntual (p. ej. 516 → 497) no cambia a la cuenta de segmento.
+function mrrProm3(a){const v=(a.meses||[]).filter(m=>m!=null&&m>0).slice(-3);return v.length?v.reduce((t,m)=>t+m,0)/v.length:(a.mrr||0);}
+function segMRR(a){return segMonto(mrrProm3(a));}
 const SEG_LBL={'Enterprise':'Enterprise','SMB medium':'Medium','SMB small':'Small'};
 function renderResumen(){
   const A=ACCOUNTS,N=A.length||1;
@@ -1267,13 +1262,13 @@ function renderResumen(){
     const selX=seg.find(x=>x.g===RES_SEG_SEL);
     const lista=selX?(()=>{const arr=A.filter(a=>segMRR(a)===selX.g).sort((x,y)=>(y.mrr||0)-(x.mrr||0));
       return`<div style="margin-top:12px"><p style="font-weight:600;font-size:13px;margin-bottom:6px">${lbl(selX.g)} · ${arr.length} cuentas · ${fmtUSD(selX.mrr)} <span class="legend" style="font-weight:400">· facturación actual (USD mensual) · clic en la tarjeta para ocultar · clic en una cuenta para ver su detalle</span></p>
-      <div class="table-wrap" style="max-height:420px;overflow:auto"><table><thead><tr><th class="nosort">Cuenta</th><th class="nosort">KAM</th><th class="nosort">Cartera</th><th class="nosort">Usuarios</th><th class="nosort">Facturación actual</th><th class="nosort">% del segmento</th></tr></thead><tbody>
-      ${arr.map(a=>{const u=usersOf(a);return`<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${esc(a.cliente)}">${esc(a.cliente)}${a.grupo?`<div class="legend">${esc(a.grupo)}</div>`:''}</td><td style="font-size:12px">${esc(kamShort(a.kam))}</td><td>${carteraBadge(a.cartera)}</td><td>${u!=null?Math.round(u).toLocaleString('en-US'):'—'}</td><td style="font-weight:500">${fmtUSD(a.mrr||0)}</td><td>${selX.mrr?((a.mrr||0)/selX.mrr*100).toFixed(1)+'%':'—'}</td></tr>`;}).join('')}
+      <div class="table-wrap" style="max-height:420px;overflow:auto"><table><thead><tr><th class="nosort">Cuenta</th><th class="nosort">KAM</th><th class="nosort">Cartera</th><th class="nosort">Usuarios</th><th class="nosort">Promedio 3 meses</th><th class="nosort">Facturación actual</th><th class="nosort">% del segmento</th></tr></thead><tbody>
+      ${arr.map(a=>{const u=usersOf(a);return`<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${esc(a.cliente)}">${esc(a.cliente)}${a.grupo?`<div class="legend">${esc(a.grupo)}</div>`:''}</td><td style="font-size:12px">${esc(kamShort(a.kam))}</td><td>${carteraBadge(a.cartera)}</td><td>${u!=null?Math.round(u).toLocaleString('en-US'):'—'}</td><td>${fmtUSD(mrrProm3(a))}</td><td style="font-weight:500">${fmtUSD(a.mrr||0)}</td><td>${selX.mrr?((a.mrr||0)/selX.mrr*100).toFixed(1)+'%':'—'}</td></tr>`;}).join('')}
       </tbody></table></div></div>`;})():'';
     return`<div class="card" id="resSegCard"><h3>MRR por segmento <span style="font-weight:400;color:var(--color-text-secondary);font-size:13px">· USD mensual</span></h3>
       <div style="display:flex;height:14px;border-radius:7px;overflow:hidden;gap:2px;margin:6px 0 12px">${seg.filter(x=>x.mrr>0).map(x=>`<div style="flex:${x.mrr};background:${COL[x.g]}" title="${x.g}: ${fmtUSD(x.mrr)} (${Math.round(x.pct)}%)"></div>`).join('')}</div>
       <div class="metrics" style="margin:0">${seg.map(x=>`<div class="metric" onclick="resSegToggle('${x.g}')" title="Clic para ${RES_SEG_SEL===x.g?'ocultar':'ver'} las cuentas" style="cursor:pointer;border-left:4px solid ${COL[x.g]};${RES_SEG_SEL===x.g?'background:var(--accent-soft);':''}"><div class="label">${lbl(x.g)} <span style="opacity:.6">${RES_SEG_SEL===x.g?'▴':'▾'}</span></div><div class="value">${fmtUSD(x.mrr)}</div><div class="sub">${Math.round(x.pct)}% del MRR · ${x.n} cuentas · ticket prom. ${fmtUSD(x.n?x.mrr/x.n:0)}</div></div>`).join('')}</div>
-      <p class="legend" style="margin-top:8px">Segmento por <strong>facturación actual</strong> de cada cuenta en <code>cartera.xlsx</code> (hoja MARE MX, columna «Facturación actual USD»): <strong>Small</strong> hasta $100 USD, <strong>Medium</strong> de $101 a $499 y <strong>Enterprise</strong> $500 o más. No usa el segmento del modelo de salud. Toca un segmento para ver sus cuentas.</p>${lista}</div>`;})()}
+      <p class="legend" style="margin-top:8px">Segmento por el <strong>promedio de facturación de los últimos 3 meses</strong> con facturación de cada cuenta en <code>cartera.xlsx</code> (hoja MARE MX): <strong>Small</strong> hasta $100 USD, <strong>Medium</strong> de $101 a $499 y <strong>Enterprise</strong> $500 o más. Así una baja puntual de un mes no cambia a la cuenta de segmento. El MRR de cada segmento es la suma de la facturación actual. No usa el segmento del modelo de salud. Toca un segmento para ver sus cuentas.</p>${lista}</div>`;})()}
   <div class="grid2" style="align-items:stretch">
     <div class="card"><h3>MRR mensual ${mrrTrendPill} <span style="font-weight:400;color:var(--color-text-secondary);font-size:13px">· enero → ${mrrSerie.length?mrrSerie[mrrSerie.length-1].mes:'—'}</span></h3>
       ${(function(){const m=mrrSerie;const mx=Math.max(...m.map(x=>x.mrr),1);return`<div class="big-bars" style="height:124px">${m.map(x=>`<div class="bb"><div class="amt">${fmtUSD(x.mrr)}</div><div class="bar" style="height:${Math.max(4,Math.round(x.mrr/mx*92))}px"></div><div class="lbl">${x.corto}</div></div>`).join('')}</div><p class="status-line">Suma de facturación de las ${A.length} cuentas por mes. ${m.length<5?'La cartera base llega hasta Abril; al cargar un Excel con la columna <strong>Mayo</strong> (y siguientes) el gráfico y el cross-sell se extienden solos.':''}</p>`;})()}
@@ -1334,7 +1329,7 @@ function renderPrioridad(){
     const marc=a=>(a.health&&a.health.adopcion!=null)?a.health.adopcion:Infinity;
     arr.sort(segSel.estado==='critica'?((x,y)=>marc(x)-marc(y)||y._score-x._score):((x,y)=>(y._score||0)-(x._score||0)));
     const lbl={critica:'críticas',riesgo:'en riesgo',sano:'saludables'}[segSel.estado];
-    segListHtml=`<div class="card" id="segList"><h3>${esc(segSel.seg)} · ${arr.length} ${lbl} <span style="font-weight:400;color:var(--color-text-secondary)">· clic de nuevo en el indicador para cerrar</span></h3>${arr.length?arr.map((a,i)=>prCard(a,i+1)).join(''):'<p class="legend">Sin cuentas en este grupo.</p>'}</div>`;
+    segListHtml=`<div class="card" id="segList"><h3>${esc(SEG_LBL[segSel.seg]||segSel.seg)} · ${arr.length} ${lbl} <span style="font-weight:400;color:var(--color-text-secondary)">· clic de nuevo en el indicador para cerrar</span></h3>${arr.length?arr.map((a,i)=>prCard(a,i+1)).join(''):'<p class="legend">Sin cuentas en este grupo.</p>'}</div>`;
   }
   $('prioridad').innerHTML=`
   <div class="note-box"><strong>Estado de salud de la cartera.</strong> Cada lunes carga el <strong>modelo de salud</strong> en Datos para refrescar el semáforo. Toca una tarjeta para abrir la lista <strong>Salud - Segmentos</strong> ya filtrada, o toca un número en <strong>Indicadores por segmento</strong> para desplegar esas cuentas aquí mismo. ${HEALTH.loaded?`<span style="color:#3B6D11">Salud aplicada: ${HEALTH.matched}/${HEALTH.total} emparejadas.</span>`:`Sin salud cargada se usa la señal base (fuga + estado MARE).`}</div>
@@ -1348,9 +1343,9 @@ function renderPrioridad(){
   ${sinCS.length?`<div class="callout"><strong>${sinCS.length} cuentas en riesgo o críticas no tienen Customer Success</strong> y representan <strong>${fmtUSD(sinCSmonto)}/mes</strong>. Son la prioridad de prevención de churn: asignar gestión antes de que la facturación caiga.<br><button onclick="prSet('atrisk','sin')">Ver solo sin CS en Salud - Segmentos →</button></div>`:''}
   <div class="card"><h3>Indicadores por segmento <span style="font-weight:400;color:var(--color-text-secondary);font-size:12px">· clic en un número para ver las cuentas</span></h3>
     <div class="table-wrap"><table><thead><tr><th>Segmento</th><th class="nosort">Cuentas</th><th class="nosort">Críticas</th><th class="nosort">En riesgo</th><th class="nosort">Saludables</th><th class="nosort">En riesgo sin CS</th><th class="nosort">MRR expuesto</th></tr></thead><tbody>
-    ${SEG_ORDER.map(seg=>{const arr=ACCOUNTS.filter(a=>segOf(a)===seg);const crit=arr.filter(isCritica),ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a)),sano=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));const sinCSn=crit.concat(ries).filter(a=>!hasCS(a));const mrrExp=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);const sel=e=>(segSel.seg===seg&&segSel.estado===e)?'outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px;':'';return `<tr><td style="font-weight:500">${seg}</td><td>${arr.length}</td><td style="cursor:pointer;${sel('critica')}" onclick="segShow('${seg}','critica')"><span class="badge b-red">${crit.length}</span></td><td style="cursor:pointer;${sel('riesgo')}" onclick="segShow('${seg}','riesgo')"><span class="badge b-amber">${ries.length}</span></td><td style="cursor:pointer;${sel('sano')}" onclick="segShow('${seg}','sano')"><span class="badge b-green">${sano.length}</span></td><td>${sinCSn.length}</td><td style="font-weight:500">${fmtUSD(mrrExp)}</td></tr>`;}).join('')}
+    ${SEG_ORDER.map(seg=>{const arr=ACCOUNTS.filter(a=>segOf(a)===seg);const crit=arr.filter(isCritica),ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a)),sano=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));const sinCSn=crit.concat(ries).filter(a=>!hasCS(a));const mrrExp=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);const sel=e=>(segSel.seg===seg&&segSel.estado===e)?'outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px;':'';return `<tr><td style="font-weight:500">${SEG_LBL[seg]}</td><td>${arr.length}</td><td style="cursor:pointer;${sel('critica')}" onclick="segShow('${seg}','critica')"><span class="badge b-red">${crit.length}</span></td><td style="cursor:pointer;${sel('riesgo')}" onclick="segShow('${seg}','riesgo')"><span class="badge b-amber">${ries.length}</span></td><td style="cursor:pointer;${sel('sano')}" onclick="segShow('${seg}','sano')"><span class="badge b-green">${sano.length}</span></td><td>${sinCSn.length}</td><td style="font-weight:500">${fmtUSD(mrrExp)}</td></tr>`;}).join('')}
     </tbody></table></div>
-    <p class="legend" style="margin-top:8px">Segmento: <strong>Enterprise</strong>, <strong>SMB medium</strong> (≥100 usuarios) y <strong>SMB small</strong> (&lt;100). Tomado del modelo de salud; si una cuenta no tiene segmento en salud, se deduce de su cartera y usuarios.</p>
+    <p class="legend" style="margin-top:8px">Segmento por <strong>facturación</strong> (promedio de los últimos 3 meses con facturación en cartera.xlsx): <strong>Small</strong> hasta $100 USD, <strong>Medium</strong> de $101 a $499, <strong>Enterprise</strong> $500 o más.</p>
   </div>
   ${segListHtml}
   <div class="card"><h3>Ponderación del índice de prioridad</h3><p class="legend">MRR (hasta ${WEIGHTS.mrr}) · Fuga baja (+${WEIGHTS.fugaBaja}) / disminución (+${WEIGHTS.fugaDism}) · Salud crítica MARE (+${WEIGHTS.saludCritico}) · Salud semanal crítico (+${WEIGHTS.healthCritico}) / atención (+${WEIGHTS.healthAtencion}) · <strong>En riesgo y sin CS (+${WEIGHTS.churnGap})</strong> · Retener (+${WEIGHTS.cuadRetener}) / Expandir (+${WEIGHTS.cuadExpandir}) · cada oportunidad cross (+${WEIGHTS.upside}).</p>
@@ -1451,7 +1446,7 @@ function renderPriorizar(){
     <select id="prCS"><option value="">Toda cobertura CS</option><option value="sin">Sin CS</option><option value="con">Con CS</option></select>
     <select id="prRazon" title="Solo afecta a las cuentas críticas · por qué está crítica"><option value="">Todo motivo</option><option value="marcaje">📉 Adopción/marcaje bajo</option><option value="ticket">🎫 Tickets sin resolver</option><option value="nps">😠 NPS detractor</option></select>
     <select id="prAntig" title="Solo afecta a las cuentas críticas"><option value="">Toda antigüedad</option><option value="nueva">🆕 Nuevas esta semana</option><option value="recurrente">🔁 Recurrentes (2+ semanas)</option></select>
-    <select id="prSegmento" title="Enterprise / SMB medium (≥100 usuarios) / SMB small (<100)"><option value="">Todo segmento</option>${SEG_ORDER.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('')}</select>
+    <select id="prSegmento" title="Segmento por facturación (promedio 3 meses): Small ≤$100 · Medium $101–499 · Enterprise $500+"><option value="">Todo segmento</option>${SEG_ORDER.map(s=>`<option value="${esc(s)}">${esc(SEG_LBL[s])}</option>`).join('')}</select>
   </div>
   <div class="controls" id="prGestionToggles" title="Solo afecta a las cuentas críticas · clic para mostrar/ocultar cada categoría">
     ${GESTION_BUCKETS.map(b=>{const on=prState.gestionBuckets.has(b.key);return `<button class="toggle-chip" data-bucket="${b.key}" style="background:${on?b.bg:'transparent'};color:${on?b.color:'var(--color-text-secondary)'};border-color:${on?b.color:'var(--color-border-secondary)'};opacity:${on?'1':'.55'}"><span class="dot" style="background:${b.dot}"></span>${b.label}</button>`;}).join('')}
@@ -1497,7 +1492,7 @@ function drawPrList(){
   // exactamente lo que queda visible con todos estos filtros aplicados, sea lo que sea.
   if(prState.cs==='sin')dispRows=dispRows.filter(e=>!hasCS(e.a));
   else if(prState.cs==='con')dispRows=dispRows.filter(e=>hasCS(e.a));
-  const eSeg=e=>segOf({health:e.branch||e.a.health,cartera:e.a.cartera,usuarios:e.a.usuarios});
+  const eSeg=e=>segOf(e.a);
   if(prState.segmento)dispRows=dispRows.filter(e=>eSeg(e)===prState.segmento);
   if(prState.razon)dispRows=dispRows.filter(e=>eCritica(e)&&eRazon(e)===prState.razon);
   dispRows.forEach(e=>{if(eCritica(e)&&e.a._streak===undefined)computeTracking(e.a);});
@@ -2035,15 +2030,19 @@ function renderSemanal(){
   // tan concentrado está el problema ahí); el % de la fila Total es sobre el total de la cartera esa semana
   // (igual que las tarjetas "Saludable/En riesgo/Crítico" de arriba de todo del dashboard).
   const SEG_ORDER=['Enterprise','SMB Medium','SMB Small'];
+  // segmento de cada empresa de la semana = segmento ACTUAL por facturación de su cuenta en cartera (segOf),
+  // buscada por el nombre de la empresa en el modelo de salud; si no está en la cartera → «Sin segmento»
+  const semSegMap={};const SEM_LBL={'Enterprise':'Enterprise','SMB medium':'SMB Medium','SMB small':'SMB Small'};
+  ACCOUNTS.forEach(a=>{const g=SEM_LBL[segOf(a)];[a.cliente,a.health&&a.health.nombre,...(a._healthBranches||[]).map(b=>b.nombre)].filter(Boolean).forEach(n=>{const k=normName(n);if(k&&!semSegMap[k])semSegMap[k]=g;});});
   const STATES=[{key:'critico',label:'🔴 Crítico',color:'#A32D2D'},{key:'aten',label:'🟡 En riesgo',color:'#854F0B'},{key:'ok',label:'🟢 Saludable',color:'#3B6D11'}];
   const weekStats=weeks.map(w=>{
     const segTotals={total:0,'Enterprise':0,'SMB Medium':0,'SMB Small':0,'Sin segmento':0};
     const byState={};STATES.forEach(s=>byState[s.key]={total:0,'Enterprise':0,'SMB Medium':0,'SMB Small':0,'Sin segmento':0});
-    Object.values(w.snap).forEach(v=>{
+    Object.entries(w.snap).forEach(([emp,v])=>{
       if(snapSinUso(v))return; // "Sin Uso" trae flag='critico' a propósito (para el mapa de calor), pero no cuenta como Crítico aquí — mismo criterio que el resto del dashboard
       const f=snapFlag(v);if(f==null)return;
       const stKey=f==='ok'?'ok':f==='aten'?'aten':'critico';
-      const seg=snapSeg(v);const segKey=(seg==='Enterprise'||seg==='SMB Medium'||seg==='SMB Small')?seg:'Sin segmento';
+      const seg=semSegMap[normName(emp)]||null;const segKey=(seg==='Enterprise'||seg==='SMB Medium'||seg==='SMB Small')?seg:'Sin segmento';
       segTotals.total++;segTotals[segKey]++;
       byState[stKey].total++;byState[stKey][segKey]++;
     });
@@ -2236,7 +2235,7 @@ function renderFuga(){
   <div class="fd-bar">
     <div class="controls" style="margin:0;flex-wrap:wrap;gap:8px;align-items:center">
       <strong style="font-size:13px">Filtrar fuga</strong>
-      <select id="fdSeg" title="Segmento por última facturación"><option value="">Todos los segmentos</option>${SEG_ORDER.map(g=>`<option value="${g}"${FD_ST.seg===g?' selected':''}>${SEG_LBL[g]}</option>`).join('')}</select>
+      <select id="fdSeg" title="Segmento por facturación (promedio 3 meses de la cuenta; si ya no está en cartera, su última facturación)"><option value="">Todos los segmentos</option>${SEG_ORDER.map(g=>`<option value="${g}"${FD_ST.seg===g?' selected':''}>${SEG_LBL[g]}</option>`).join('')}</select>
       <label class="legend" style="display:flex;align-items:center;gap:6px;font-size:13px">Facturación USD mín <input type="number" id="fdMin" min="0" step="1" placeholder="0" value="${FD_ST.min}" style="width:120px"></label>
       <label class="legend" style="display:flex;align-items:center;gap:6px;font-size:13px">máx <input type="number" id="fdMax" min="0" step="1" placeholder="sin tope" value="${FD_ST.max}" style="width:120px"></label>
       <button class="btn" id="fdLimpiar" style="font-size:11px;padding:4px 10px">Limpiar filtros</button>
@@ -2249,10 +2248,12 @@ function renderFuga(){
   $('fdSeg').onchange=re;$('fdMin').oninput=re;$('fdMax').oninput=re;
   $('fdLimpiar').onclick=()=>{FD_ST.seg='';FD_ST.min='';FD_ST.max='';$('fdSeg').value='';$('fdMin').value='';$('fdMax').value='';drawFugaBody();};
 }
-// bajas que pasan los filtros de la barra (segmento por última facturación + mín/máx USD)
+// segmento de una baja: el de su cuenta en cartera (promedio 3 meses con facturación); si ya no está, por su última facturación
+function fdSeg(r){if(r._seg===undefined){const a=matchFugaToAccount(r);r._seg=a?segOf(a):segMonto(r.facturacionUSD);}return r._seg;}
+// bajas que pasan los filtros de la barra (segmento + mín/máx USD de última facturación)
 function fdFiltradas(){
   const mn=FD_ST.min===''?null:+FD_ST.min,mx=FD_ST.max===''?null:+FD_ST.max;
-  return FD_DATA.filter(r=>{const v=r.facturacionUSD||0;if(FD_ST.seg&&segMonto(v)!==FD_ST.seg)return false;if(mn!=null&&v<mn)return false;if(mx!=null&&v>mx)return false;return true;});
+  return FD_DATA.filter(r=>{const v=r.facturacionUSD||0;if(FD_ST.seg&&fdSeg(r)!==FD_ST.seg)return false;if(mn!=null&&v<mn)return false;if(mx!=null&&v>mx)return false;return true;});
 }
 function drawFugaBody(){
   const box=$('fugaBody');if(!box)return;
@@ -2267,7 +2268,7 @@ function drawFugaBody(){
   const r=$('fdResumen');if(r)r.innerHTML=filtrado?`Mostrando <strong>${bajas.length}</strong> de ${FD_DATA.length} bajas · <strong>${fmtUSD(monto)}</strong>`:`${FD_DATA.length} bajas · ${fmtUSD(monto)}`;
   const qTile=(q,l)=>`<div class="metric"><div class="label">Bajas ${q}</div><div class="value">${fdPorQ[q]||0}</div><div class="sub">${l}</div></div>`;
   box.innerHTML=`
-  <div class="note-box">Solo se considera <strong>Baja</strong> (Tipo = Baja en Detalle Fuga 2026). Se excluyen <strong>Disminución</strong> y <strong>Cambio de razón social</strong> — revísalas en la pestaña <strong>Disminuciones</strong>. Segmento según la <strong>última facturación</strong> (USD): <strong>Small</strong> hasta $100, <strong>Medium</strong> de $101 a $499, <strong>Enterprise</strong> $500 o más.${filtrado?' <strong>Todo lo de esta pestaña está filtrado</strong> por la barra de arriba.':''}</div>
+  <div class="note-box">Solo se considera <strong>Baja</strong> (Tipo = Baja en Detalle Fuga 2026). Se excluyen <strong>Disminución</strong> y <strong>Cambio de razón social</strong> — revísalas en la pestaña <strong>Disminuciones</strong>. Segmento por facturación: el de la cuenta en cartera (promedio de los últimos 3 meses con facturación); si ya no está en la cartera, por su <strong>última facturación</strong>. <strong>Small</strong> hasta $100 USD, <strong>Medium</strong> de $101 a $499, <strong>Enterprise</strong> $500 o más.${filtrado?' <strong>Todo lo de esta pestaña está filtrado</strong> por la barra de arriba.':''}</div>
   <div class="metrics">
     <div class="metric"><div class="label">Bajas en el año</div><div class="value" style="color:#E24B4A">${bajas.length}</div><div class="sub">${fmtUSD(monto)} perdidos (USD)</div></div>
     ${qTile('Q1','enero-marzo')}${qTile('Q2','abril-junio')}${qTile('Q3','julio-septiembre')}${qTile('Q4','octubre-diciembre')}
@@ -2292,7 +2293,7 @@ function drawFugaDetalle(){
   const box=$('fdTabla');if(!box)return;
   const mesIx=m=>{const i=MONTHS_FULL.findIndex(x=>String(m||'').toLowerCase().includes(x.toLowerCase()));return i<0?99:i;};
   const segRank={'SMB small':0,'SMB medium':1,'Enterprise':2};
-  const cols=[['cliente','Cliente',r=>(r.cliente||'').toLowerCase()],['kam','KAM',r=>(r.kam||'').toLowerCase()],['seg','Segmento',r=>segRank[segMonto(r.facturacionUSD)]],['motivo','Motivo',r=>(r.motivo||'').toLowerCase()],['mes','Mes de baja',r=>mesIx(r.mesBaja)],['fact','Última facturación',r=>r.facturacionUSD||0]];
+  const cols=[['cliente','Cliente',r=>(r.cliente||'').toLowerCase()],['kam','KAM',r=>(r.kam||'').toLowerCase()],['seg','Segmento',r=>segRank[fdSeg(r)]],['motivo','Motivo',r=>(r.motivo||'').toLowerCase()],['mes','Mes de baja',r=>mesIx(r.mesBaja)],['fact','Última facturación',r=>r.facturacionUSD||0]];
   let rows=fdFiltradas();
   const c=cols.find(x=>x[0]===FD_ST.campo)||cols[5];
   rows.sort((a,b)=>{const x=c[2](a),y=c[2](b);return(x<y?-1:x>y?1:0)*FD_ST.dir||(b.facturacionUSD||0)-(a.facturacionUSD||0);});
@@ -2305,7 +2306,7 @@ function drawFugaDetalle(){
   const kb=$('fdKams');if(kb)kb.innerHTML=`<div class="metrics" style="margin:4px 0 10px">${GK.map(g=>`<div class="metric"><div class="label">${g}</div><div class="value">${agg[g].n} <span style="font-size:13px;font-weight:500;color:var(--color-text-secondary)">cuenta${agg[g].n===1?'':'s'}</span></div><div class="sub">${fmtUSD(agg[g].mrr)} MRR perdido${tot?' · '+Math.round(agg[g].mrr/tot*100)+'%':''}</div></div>`).join('')}</div><p class="legend" style="margin:-4px 0 8px">«No asignado» incluye las bajas con KAM «No Asignado» y «Sin Kam». MRR = última facturación (USD) de cada baja.</p>`;
   const segB={'Enterprise':'b-blue','SMB medium':'b-teal','SMB small':'b-gray'};
   box.innerHTML=`<table><thead><tr>${cols.map(([k,l])=>`<th class="nosort fd-th" data-k="${k}" style="cursor:pointer;white-space:nowrap">${l}${FD_ST.campo===k?(FD_ST.dir>0?' ▲':' ▼'):' <span style="opacity:.35">↕</span>'}</th>`).join('')}</tr></thead><tbody>
-  ${rows.map(r=>{const acc=matchFugaToAccount(r);const g=segMonto(r.facturacionUSD);return`<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${esc(r.cliente)}">${esc(r.cliente)}${!acc?' <span class="legend">(ya no está en la cartera)</span>':''}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.kam)}</td><td><span class="badge ${segB[g]}">${SEG_LBL[g]}</span></td><td style="font-size:12px">${esc(r.motivo)}</td><td style="font-size:12px">${esc(r.mesBaja||'—')}</td><td style="font-weight:500">${fmtUSD(r.facturacionUSD)}</td></tr>`;}).join('')||'<tr><td colspan="6" class="legend">Ninguna baja con estos filtros.</td></tr>'}
+  ${rows.map(r=>{const acc=matchFugaToAccount(r);const g=fdSeg(r);return`<tr style="cursor:${acc?'pointer':'default'}" ${acc?`onclick="openDetail('${acc._uid}')"`:''}><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${esc(r.cliente)}">${esc(r.cliente)}${!acc?' <span class="legend">(ya no está en la cartera)</span>':''}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(r.kam)}</td><td><span class="badge ${segB[g]}">${SEG_LBL[g]}</span></td><td style="font-size:12px">${esc(r.motivo)}</td><td style="font-size:12px">${esc(r.mesBaja||'—')}</td><td style="font-weight:500">${fmtUSD(r.facturacionUSD)}</td></tr>`;}).join('')||'<tr><td colspan="6" class="legend">Ninguna baja con estos filtros.</td></tr>'}
   </tbody></table>`;
   box.querySelectorAll('.fd-th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(FD_ST.campo===k)FD_ST.dir=-FD_ST.dir;else{FD_ST.campo=k;FD_ST.dir=(k==='fact'||k==='seg')?-1:1;}drawFugaDetalle();});
 }
@@ -2474,12 +2475,24 @@ function renderCross(){
   </tbody></table></div></div>`;
 }
 
+// segmento de una fila de Ventas 2026: el de su cuenta en cartera (por nombre de cliente o grupo)
+// (nombre exacto; si no, la cuenta cuyo nombre/grupo/nombre en salud contiene todas las palabras del cliente; gana la de mayor MRR)
+function ventaCuenta(nombre){
+  const base=String(nombre||'').split(' - ')[0];
+  const a=matchFugaToAccount({cliente:base})||ACCOUNTS.find(x=>x.grupo&&normName(x.grupo)===normName(base));if(a)return a;
+  const STOP=new Set(['grupo','gpo','corporativo','corp','mexico','de','del','la','las','los','el','y','sa','cv','rl','s','company','co','cia']);
+  const tk=normName(base).split(/\s+/).filter(t=>t.length>2&&!STOP.has(t));if(!tk.length)return null;
+  // todas las palabras significativas del cliente aparecen (como palabra o inicio de palabra) en razón social + grupo + nombre en salud
+  const hits=ACCOUNTS.filter(x=>{const w=normName([x.cliente,x.grupo,x.health&&x.health.nombre].filter(Boolean).join(' ')).split(/\s+/);return tk.every(t=>w.some(p=>p===t||(t.length>=4&&p.startsWith(t))));});
+  return hits.sort((x,y)=>(y.mrr||0)-(x.mrr||0))[0]||null;
+}
+function ventaSeg(r){if(r._seg===undefined){const a=ventaCuenta(r.cliente);r._seg=a?SEG_LBL[segOf(a)]:'Sin cuenta en cartera';}return r._seg;}
 function renderUpsell(){
   const rows=VENTAS_DATA.filter(r=>(r.categoria==='upsell'||r.categoria==='arriendo')&&r.estado==='Facturado');
   const upRows=rows.filter(r=>r.categoria==='upsell'),arRows=rows.filter(r=>r.categoria==='arriendo');
   const montoPorMes=monthSums(rows,'mes',r=>r.usd||0);
   const montoPorQ=qSum(rows,r=>r.usd||0),montoAnio=rows.reduce((s,r)=>s+(r.usd||0),0);
-  const porSeg=groupSum(rows,r=>r.segmento,r=>r.usd||0);
+  const porSeg=groupSum(rows,r=>ventaSeg(r),r=>r.usd||0);
   const montoPorSeg=porSeg;
   const porKamMes={};rows.forEach(r=>{const k=r.kam||'No Asignado';if(!porKamMes[k])porKamMes[k]={};porKamMes[k][r.mes]=(porKamMes[k][r.mes]||0)+(r.usd||0);});
   const kams=Object.keys(porKamMes).sort();
@@ -2500,8 +2513,8 @@ function renderUpsell(){
   <p class="legend" style="margin-bottom:8px">Monto USD de upsell/arriendo facturado, por mes.</p>${barMonthlyMoney(montoPorMes,'#185FA5')}
   <p class="legend" style="margin-top:8px">Monto total en lo que va del año: <strong style="color:var(--color-text-primary)">${fmtUSD(montoAnio)}</strong> (USD).</p>
   </div>
-  <div class="card"><h3>Por segmento (Enterprise / SMB)</h3>${pieSVG(porSeg)}
-    <p class="legend" style="margin-top:10px">Monto USD por segmento: <strong style="color:var(--color-text-primary)">${fmtUSD(montoPorSeg['ENTERPRISE']||0)}</strong> ENTERPRISE · <strong style="color:var(--color-text-primary)">${fmtUSD(montoPorSeg['SMB']||0)}</strong> SMB · <strong style="color:var(--color-text-primary)">${fmtUSD(montoPorSeg['Sin dato']||0)}</strong> Sin dato</p>
+  <div class="card"><h3>Por segmento (Enterprise / Medium / Small)</h3>${pieSVG(porSeg)}
+    <p class="legend" style="margin-top:10px">Monto USD por segmento: ${['Enterprise','Medium','Small','Sin cuenta en cartera'].filter(k=>montoPorSeg[k]).map(k=>`<strong style="color:var(--color-text-primary)">${fmtUSD(montoPorSeg[k])}</strong> ${k}`).join(' · ')}. Segmento de la cuenta en cartera por facturación (promedio 3 meses): Small ≤$100, Medium $101–499, Enterprise $500+.</p>
   </div>
   <div class="card"><h3>Por KAM y mes (USD facturado)</h3><div class="table-wrap"><table><thead><tr><th>KAM</th>${MONTHS_SHORT.map(m=>`<th class="nosort">${m}</th>`).join('')}<th class="nosort">Total</th></tr></thead><tbody>
   ${kams.map(k=>{const row=porKamMes[k];const meses=MONTHS_FULL;const total=meses.reduce((s,m)=>s+(row[m]||0),0);return `<tr style="cursor:default"><td style="font-weight:500">`+esc(k)+`</td>`+meses.map(m=>`<td>`+fmtUSDz(row[m]||0)+`</td>`).join('')+`<td style="font-weight:600">`+fmtUSDz(total)+`</td></tr>`;}).join('')}
