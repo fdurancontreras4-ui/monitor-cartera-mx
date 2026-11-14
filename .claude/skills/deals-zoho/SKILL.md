@@ -5,7 +5,7 @@ description: Sincroniza el pipeline de Zoho CRM (Deals) con la pestaña Pipeline
 
 # Sincronizar el pipeline de Zoho CRM
 
-El repo es `~/Geo/monitor-cartera-mx`, que es **público** (GitHub Pages sobre
+El repo es `~/Geo (Onedrive)/monitor-cartera-mx`, que es **público** (GitHub Pages sobre
 `main`) — por eso este flujo nunca mete credenciales de Zoho en el repo. La
 lectura de Zoho la hace quien corre esta skill (yo, con el conector MCP de
 Zoho ya autorizado en la cuenta); `scripts/subir-deals-zoho.py` solo valida,
@@ -96,11 +96,25 @@ Para marcar **cliente nuevo** (fila morada) se cuentan además TODAS las impleme
 cuenta: `searchRecords` con `(Pa_s:equals:México)`, sin `fields`, recorriendo páginas y deduplicando por
 `id`; vuelca la lista a `/tmp/implementaciones-todas.json` y pásala con `--implementaciones-todas`.
 
+## Antes de publicar: traer la cartera (Cuentas Postventa → cartera.xlsx)
+
+Cada vez que se actualizan los deals, primero se copia el Excel **«Cuentas Postventa»** de OneDrive
+(`~/Library/CloudStorage/OneDrive-VictoriaS.A/PostVenta/Cuentas Postventa.xlsx`) al repo como `cartera.xlsx`:
+
+```bash
+cd "~/Geo (Onedrive)/monitor-cartera-mx" && scripts/copiar-cartera.sh
+```
+
+El script solo **lee** el Excel original (nunca lo modifica), valida que la primera hoja sea «MARE MX», y si
+cambió hace commit + push **solo de `cartera.xlsx`**. Va antes de `subir-deals-zoho.py` porque ese script usa
+`cartera.xlsx` para decidir qué deals abiertos de comercial son de cuentas de la cartera. En el reporte, di si
+la cartera se actualizó (y la hora en que se guardó el Excel) o si ya estaba al día.
+
 ## Publicar
 
 1. Volcar la lista combinada a un JSON temporal, por ejemplo
    `/tmp/deals-zoho-raw.json` (fuera del repo — nunca dentro de
-   `~/Geo/monitor-cartera-mx`, para no arriesgarse a commitear un archivo de
+   `~/Geo (Onedrive)/monitor-cartera-mx`, para no arriesgarse a commitear un archivo de
    trabajo a medio hacer).
 2. Correr:
    ```bash
