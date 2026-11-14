@@ -628,7 +628,30 @@ const SEG_ORDER=['Enterprise','SMB medium','SMB small'];
 function segOf(a){return segMRR(a);}
 function isCritica(a){if(a._congelada||a._forzarSano||a._cambioRazon||a._anotExcluir)return false;return !!(a.health&&a.health.flag==='critico');}
 // cuenta marcada "Implementando?" = Sí en la cartera (columna de cartera.xlsx, no del modelo de salud)
-function isImplementando(a){return /^s[ií]$/i.test(String(a.implementando||'').trim());}
+// «Implementando» sale del CRM (módulo Implementaciones de Zoho, vía deals-mx.json → implementaciones_resumen):
+// la cuenta (por su id de Zoho) tiene una implementación abierta (etapa 0 a 4 o Detenida) y NINGUNA finalizada con
+// éxito antes (5. Finalizada Conforme / 6. Finalizada sin capacitación) — es su primera implementación en curso, o
+// las anteriores fueron abandono / rechazo / no show. Si todavía no se cargó ese resumen, se usa la columna
+// «Implementando?» de cartera.xlsx como respaldo.
+let IMPL_RES=null; // {id de cuenta Zoho: [total, abiertas, finalizadas con éxito]}
+function isImplementando(a){
+  if(IMPL_RES){
+    // sin id de Zoho en cartera: se busca la cuenta por nombre entre las implementaciones abiertas de Zoho
+    let id=a.zohoId;
+    if(!id){if(a._implIdNombre===undefined){const ks=nameKeys(a.cliente||'');const hit=(IMPL_ZOHO||[]).find(i=>nameKeys(i.cuenta||i.nombre||'').some(k=>ks.includes(k)));a._implIdNombre=hit?hit.cuenta_id:null;}id=a._implIdNombre;}
+    const t=id&&IMPL_RES[id];return !!(t&&t[1]>0&&!t[2]);
+  }
+  return /^s[ií]$/i.test(String(a.implementando||'').trim());
+}
+// filtro de implementación en Salud (General y Segmentada): 'todo' | 'excluir' | 'solo'
+let SALUD_IMPL='todo';
+function saludImplOk(a){return SALUD_IMPL==='todo'||(SALUD_IMPL==='solo'?isImplementando(a):!isImplementando(a));}
+function setSaludImpl(v){SALUD_IMPL=v;renderPrioridad();renderPriorizar();}
+function saludImplCtl(){
+  const n=ACCOUNTS.filter(isImplementando).length;
+  const chip=(k,l)=>{const on=SALUD_IMPL===k;return`<button class="toggle-chip" onclick="setSaludImpl('${k}')" style="background:${on?'#E6F1FB':'transparent'};color:${on?'#185FA5':'var(--color-text-secondary)'};border-color:${on?'#185FA5':'var(--color-border-secondary)'}">${l}</button>`;};
+  return`<div class="controls" style="margin:0 0 10px;align-items:center;gap:6px"><span class="legend" style="font-size:13px">Implementación:</span>${chip('todo','Ver todo')}${chip('excluir','Excluir implementación')}${chip('solo','Solo implementación')}<span class="legend" title="Según Zoho: implementación abierta y ninguna finalizada antes">${n} cuenta${n===1?'':'s'} implementando (CRM)</span></div>`;
+}
 // clasifica una cuenta en exactamente una de 4 categorías de gestión, en orden de prioridad — la misma lógica
 // que ya pintaba el fondo de cada tarjeta (gestionClass en prCard), ahora centralizada para reusarla también
 // en el filtro de checkboxes. Si hay nota/responsable pero sin Estado formal elegido (Seguimiento/Resuelta),
@@ -1173,7 +1196,7 @@ function prCard(a,rank,branch){
   const accion=pb?`<div class="pr-accion">${pbBadge(pb)} <strong>Acción a realizar:</strong> ${!hasCS(a)?'<strong style="color:#A32D2D">Asignar CSS · </strong>':''}${esc(pb.first)} <span style="opacity:.7">(${pb.sla})</span></div>`:'';
   const anotBadge=(function(){if(!a._anot)return'';const es=ANNOT_ESTADOS[a._anot.estado];const tag=es?`<span class="badge ${es.badge}">📝 ${es.label}</span>`:'<span class="badge b-gray">📝 Nota</span>';return tag+' ';})();
   const responsableBadge=(a._anot&&a._anot.autor)?`<span class="badge b-blue" title="Columna Responsable de gestion.xlsx — quién está trabajando esta cuenta ahora mismo">👤 ${esc(a._anot.autor)}</span> `:'';
-  const implBadge=isImplementando(a)?'<span class="badge b-blue" title="Marcada Implementando? = Sí en la cartera">🔵 Implementando</span> ':'';
+  const implBadge=isImplementando(a)?'<span class="badge b-blue" title="Implementación en curso en Zoho (primera, o las anteriores fueron abandono/rechazo)">🔵 Implementando</span> ':'';
   // seguimiento semanal: nueva vs recurrente (WEEKS) + señal de "sin gestionar" cuando no hay anotación de equipo
   // (a nivel de cuenta/razón social — no varía entre sucursales de una misma cuenta)
   let trackBadge='';
@@ -1313,16 +1336,16 @@ let segSel={seg:'',estado:''};
 function segShow(seg,estado){segSel=(segSel.seg===seg&&segSel.estado===estado)?{seg:'',estado:''}:{seg,estado};renderPrioridad();const el=$('segList');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function renderPrioridad(){
   ACCOUNTS.forEach(priority);
-  const atRisk=ACCOUNTS.filter(a=>isCritica(a)||isRiesgo(a));
-  const criticas=ACCOUNTS.filter(isCritica);
-  const enRiesgo=ACCOUNTS.filter(a=>isRiesgo(a)&&!isCritica(a));
-  const sanas=ACCOUNTS.filter(a=>!isCritica(a)&&!isRiesgo(a));
+  const atRisk=ACCOUNTS.filter(saludImplOk).filter(a=>isCritica(a)||isRiesgo(a));
+  const criticas=ACCOUNTS.filter(saludImplOk).filter(isCritica);
+  const enRiesgo=ACCOUNTS.filter(saludImplOk).filter(a=>isRiesgo(a)&&!isCritica(a));
+  const sanas=ACCOUNTS.filter(saludImplOk).filter(a=>!isCritica(a)&&!isRiesgo(a));
   const sinCS=atRisk.filter(a=>!hasCS(a));
   const sinCSmonto=sinCS.reduce((s,a)=>s+(a.mrr||0),0);
   // lista inline por segmento (al clicar un indicador)
   let segListHtml='';
   if(segSel.seg){
-    let arr=ACCOUNTS.filter(a=>segOf(a)===segSel.seg);
+    let arr=ACCOUNTS.filter(saludImplOk).filter(a=>segOf(a)===segSel.seg);
     if(segSel.estado==='critica')arr=arr.filter(isCritica);
     else if(segSel.estado==='riesgo')arr=arr.filter(a=>isRiesgo(a)&&!isCritica(a));
     else arr=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));
@@ -1332,6 +1355,7 @@ function renderPrioridad(){
     segListHtml=`<div class="card" id="segList"><h3>${esc(SEG_LBL[segSel.seg]||segSel.seg)} · ${arr.length} ${lbl} <span style="font-weight:400;color:var(--color-text-secondary)">· clic de nuevo en el indicador para cerrar</span></h3>${arr.length?arr.map((a,i)=>prCard(a,i+1)).join(''):'<p class="legend">Sin cuentas en este grupo.</p>'}</div>`;
   }
   $('prioridad').innerHTML=`
+  ${saludImplCtl()}
   <div class="note-box"><strong>Estado de salud de la cartera.</strong> Cada lunes carga el <strong>modelo de salud</strong> en Datos para refrescar el semáforo. Toca una tarjeta para abrir la lista <strong>Salud - Segmentos</strong> ya filtrada, o toca un número en <strong>Indicadores por segmento</strong> para desplegar esas cuentas aquí mismo. ${HEALTH.loaded?`<span style="color:#3B6D11">Salud aplicada: ${HEALTH.matched}/${HEALTH.total} emparejadas.</span>`:`Sin salud cargada se usa la señal base (fuga + estado MARE).`}</div>
   <div class="metrics">
     <div class="metric mclick" onclick="prSet('critica',prState.cs)"><div class="label">Críticas</div><div class="value" style="color:#E24B4A">${criticas.length}</div><div class="sub">salud / fuga baja · priorizar →</div></div>
@@ -1343,7 +1367,7 @@ function renderPrioridad(){
   ${sinCS.length?`<div class="callout"><strong>${sinCS.length} cuentas en riesgo o críticas no tienen Customer Success</strong> y representan <strong>${fmtUSD(sinCSmonto)}/mes</strong>. Son la prioridad de prevención de churn: asignar gestión antes de que la facturación caiga.<br><button onclick="prSet('atrisk','sin')">Ver solo sin CS en Salud - Segmentos →</button></div>`:''}
   <div class="card"><h3>Indicadores por segmento <span style="font-weight:400;color:var(--color-text-secondary);font-size:12px">· clic en un número para ver las cuentas</span></h3>
     <div class="table-wrap"><table><thead><tr><th>Segmento</th><th class="nosort">Cuentas</th><th class="nosort">Críticas</th><th class="nosort">En riesgo</th><th class="nosort">Saludables</th><th class="nosort">En riesgo sin CS</th><th class="nosort">MRR expuesto</th></tr></thead><tbody>
-    ${SEG_ORDER.map(seg=>{const arr=ACCOUNTS.filter(a=>segOf(a)===seg);const crit=arr.filter(isCritica),ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a)),sano=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));const sinCSn=crit.concat(ries).filter(a=>!hasCS(a));const mrrExp=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);const sel=e=>(segSel.seg===seg&&segSel.estado===e)?'outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px;':'';return `<tr><td style="font-weight:500">${SEG_LBL[seg]}</td><td>${arr.length}</td><td style="cursor:pointer;${sel('critica')}" onclick="segShow('${seg}','critica')"><span class="badge b-red">${crit.length}</span></td><td style="cursor:pointer;${sel('riesgo')}" onclick="segShow('${seg}','riesgo')"><span class="badge b-amber">${ries.length}</span></td><td style="cursor:pointer;${sel('sano')}" onclick="segShow('${seg}','sano')"><span class="badge b-green">${sano.length}</span></td><td>${sinCSn.length}</td><td style="font-weight:500">${fmtUSD(mrrExp)}</td></tr>`;}).join('')}
+    ${SEG_ORDER.map(seg=>{const arr=ACCOUNTS.filter(saludImplOk).filter(a=>segOf(a)===seg);const crit=arr.filter(isCritica),ries=arr.filter(a=>isRiesgo(a)&&!isCritica(a)),sano=arr.filter(a=>!isCritica(a)&&!isRiesgo(a));const sinCSn=crit.concat(ries).filter(a=>!hasCS(a));const mrrExp=crit.concat(ries).reduce((s,a)=>s+(a.mrr||0),0);const sel=e=>(segSel.seg===seg&&segSel.estado===e)?'outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px;':'';return `<tr><td style="font-weight:500">${SEG_LBL[seg]}</td><td>${arr.length}</td><td style="cursor:pointer;${sel('critica')}" onclick="segShow('${seg}','critica')"><span class="badge b-red">${crit.length}</span></td><td style="cursor:pointer;${sel('riesgo')}" onclick="segShow('${seg}','riesgo')"><span class="badge b-amber">${ries.length}</span></td><td style="cursor:pointer;${sel('sano')}" onclick="segShow('${seg}','sano')"><span class="badge b-green">${sano.length}</span></td><td>${sinCSn.length}</td><td style="font-weight:500">${fmtUSD(mrrExp)}</td></tr>`;}).join('')}
     </tbody></table></div>
     <p class="legend" style="margin-top:8px">Segmento por <strong>facturación</strong> (promedio de los últimos 3 meses con facturación en cartera.xlsx): <strong>Small</strong> hasta $100 USD, <strong>Medium</strong> de $101 a $499, <strong>Enterprise</strong> $500 o más.</p>
   </div>
@@ -1439,6 +1463,7 @@ function renderPriorizar(){
     return `<tr style="cursor:pointer" onclick="openDetail('${a._uid}')"><td style="font-weight:500">${esc(a.cliente)}</td><td>${b.join(' ')}</td><td style="font-size:12px;color:var(--color-text-secondary)">${esc(com)}</td></tr>`;};
   const excHtml=`<details class="card" style="padding:0"><summary style="cursor:pointer;padding:1rem 1.25rem;font-size:14px;font-weight:500;color:var(--color-text-secondary)">Excepciones <span class="badge b-gray">${exc.length}</span> <span style="font-weight:400;font-size:12px">— cuentas con un ajuste de consideraciones aplicado</span></summary><div style="padding:0 1.25rem 1rem">${exc.length?`<div class="table-wrap"><table><thead><tr><th>Cuenta</th><th class="nosort">Excepción</th><th class="nosort">Comentario</th></tr></thead><tbody>${exc.map(excRow).join('')}</tbody></table></div>`:'<p class="legend">Sin excepciones aplicadas. Se gestionan en <code>consideraciones.json</code> (pestaña Datos).</p>'}</div></details>`;
   $('priorizar').innerHTML=`
+  ${saludImplCtl()}
   <div class="note-box"><strong>Salud por segmentos y KAM.</strong> Las cuentas se agrupan <strong>por KAM</strong> y, dentro de cada uno, las <strong>críticas se ordenan por marcaje ascendente</strong> (el peor marcaje primero), seguidas de las en riesgo. Usa los filtros para acotar — el de <strong>motivo</strong> deja ver solo las críticas por adopción/marcaje bajo, por tickets sin resolver o por NPS detractor. Debajo, los 4 <strong>botones de gestión</strong> (Sin comentario / Seguimiento / Resuelto / Implementación) funcionan como casillas independientes — clic para mostrar u ocultar cada categoría, se pueden combinar como quieras; solo afectan a las críticas. El botón <strong>"📋 Copiar cuentas"</strong> de cada KAM copia exactamente lo que está viendo en ese momento con todos estos filtros aplicados (Estado, CS, motivo, antigüedad, segmento y gestión) — si quieres copiar solo lo que aún no tiene comentario, apaga Seguimiento/Resuelto/Implementación en los botones de gestión antes de copiar. Al final aparece el bloque <strong>"⚠ Sin emparejar en cartera"</strong>. Las cuentas <strong>Sin Uso</strong> ya no aparecen aquí — tienen su propia pestaña <strong>"Sin uso"</strong>. Arriba tienes el desplegable de <strong>Excepciones</strong> con las cuentas que llevan un ajuste de consideraciones. Si varias razones sociales de cartera comparten el mismo ID Geo (la misma cuenta operativa en el modelo de salud, solo con distinta facturación/RFC), se agrupan bajo una sola tarjeta — la de mayor MRR — con el MRR combinado; las demás no se cuentan aparte para evitar inflar el número de críticas. El detalle de esa tarjeta muestra el desglose completo en "Razones sociales agrupadas". Esto solo afecta esta pestaña — en Cuentas, KAMs y el resto del dashboard cada razón social sigue apareciendo por separado, tal como está en tu cartera.<br><br>Lo crítico de esta pestaña viene <strong>solo del archivo de salud vigente</strong> (marcaje, NPS, tickets, o <strong>% Variación</strong> — este último se etiqueta "crítico por % variación 30 días", es variación de <em>adopción</em>, no de facturación). Las caídas de <strong>facturación</strong> ya no se mezclan aquí — tienen su propia pestaña <strong>Fuga → Críticas por facturación</strong>, con el mismo agrupado por KAM.<br><br><strong>Seguimiento semanal:</strong> cada crítica muestra si es <strong>🆕 nueva esta semana</strong> o <strong>🔁 recurrente</strong> (comparando contra las semanas guardadas en "Salud semanal"). Cuando hay nota, aparece el tag <strong>👤 Responsable</strong> — es la columna <strong>Responsable</strong> de <code>gestion.xlsx</code>, que puede ser distinta del KAM asignado (por ejemplo, si un CS está llevando el seguimiento puntual). Esa señal se llena desde <code>gestion.xlsx</code> en el repo (mismo mecanismo que <code>cartera.xlsx</code>); si aún no subiste ese archivo, todas las críticas saldrán como "Sin comentario" aunque se estén trabajando — no es que nadie las atienda, es que el dashboard todavía no tiene de dónde leerlo. Las tarjetas se pintan igual que los 4 botones: <strong style="color:#3B6D11">verde</strong> si está "Resuelto", <strong style="color:#854F0B">amarillo</strong> si está "En seguimiento" (incluye notas sin Estado formal elegido todavía), <strong style="color:#A32D2D">rojo</strong> si es crítica y no tiene ningún comentario, y <strong style="color:#185FA5">celeste</strong> si la cartera trae <code>Implementando? = Sí</code> para esa cuenta.</div>
   ${excHtml}
   <div class="controls">
@@ -1490,6 +1515,7 @@ function drawPrList(){
   else if(prState.estado==='sano')dispRows=dispRows.filter(e=>!eCritica(e)&&!eRiesgo(e));
   // 2) filtros de refinamiento (CS, motivo, antigüedad, gestión): acotan la pantalla — y el copiado copia
   // exactamente lo que queda visible con todos estos filtros aplicados, sea lo que sea.
+  dispRows=dispRows.filter(e=>saludImplOk(e.a));
   if(prState.cs==='sin')dispRows=dispRows.filter(e=>!hasCS(e.a));
   else if(prState.cs==='con')dispRows=dispRows.filter(e=>hasCS(e.a));
   const eSeg=e=>segOf(e.a);
@@ -3785,6 +3811,7 @@ async function loadDealsURL(url,opts){
     DEALS_DATA=json.deals;
     IMPL_ZOHO=Array.isArray(json.implementaciones)?json.implementaciones:[];
     IMPL_CONTEO=json.implementaciones_por_cuenta||{};
+    IMPL_RES=json.implementaciones_resumen||null;
     DEALS_COMERCIAL=(Array.isArray(json.comercial)?json.comercial:[]).map(d=>Object.assign({},d,{_com:true}));
     DEALS_META={generado:json.generado||'',total:json.total||json.deals.length};
     LAST.dealsUrl=url;persist('last_deals_url',url);

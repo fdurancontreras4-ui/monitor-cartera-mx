@@ -86,6 +86,9 @@ CRITERIO_COMERCIAL = (
 # marca con 🔧 las cuentas que tienen una. Abiertas = etapas 0 a 4 y «Detenida». Van en la llave
 # "implementaciones" de deals-mx.json.
 ETAPAS_IMPL_ABIERTAS = ("0.", "1.", "2.", "3.", "4.", "Detenida")
+# implementación terminada con éxito (la cuenta ya quedó implementada): 5. Finalizada Conforme / 6. Finalizada sin
+# capacitación. Abandono, Solicitud Rechazada y «Finalizado por no show / sin uso de plataforma» NO cuentan como éxito.
+ETAPAS_IMPL_EXITO = ("5.", "6.")
 CRITERIO_IMPLEMENTACIONES = (
     "((Pa_s:equals:México)and((Etapa_Implementaci_n:equals:0. Sin Asignar)"
     "or(Etapa_Implementaci_n:equals:1. En Traspaso)or(Etapa_Implementaci_n:equals:2. En Planificación)"
@@ -452,15 +455,26 @@ def main():
         impl = previo.get("implementaciones") or []
     if args.implementaciones_todas:
         todas = json.loads(Path(args.implementaciones_todas).expanduser().read_text(encoding="utf-8"))
-        conteo = {}
+        conteo, resumen = {}, {}
         for r in {str(r.get("id")): r for r in todas}.values():
             cid = str(r.get("cuenta_id") or ((r.get("Cliente") or {}).get("id")) or "")
             if cid:
                 conteo[cid] = conteo.get(cid, 0) + 1
-        ok(f"{sum(conteo.values())} implementaciones históricas en {len(conteo)} cuentas")
-        distinto = distinto or conteo != previo.get("implementaciones_por_cuenta")
+                et = (r.get("Etapa_Implementaci_n") or r.get("etapa") or "").strip()
+                t = resumen.setdefault(cid, [0, 0, 0])   # [total, abiertas, finalizadas con éxito]
+                t[0] += 1
+                if et.startswith(ETAPAS_IMPL_ABIERTAS):
+                    t[1] += 1
+                elif et.startswith(ETAPAS_IMPL_EXITO):
+                    t[2] += 1
+        n_impl = sum(1 for t in resumen.values() if t[1] and not t[2])
+        ok(f"{sum(conteo.values())} implementaciones históricas en {len(conteo)} cuentas · "
+           f"{n_impl} cuentas implementando (abierta y ninguna finalizada antes)")
+        distinto = distinto or conteo != previo.get("implementaciones_por_cuenta") \
+            or resumen != previo.get("implementaciones_resumen")
     else:
         conteo = previo.get("implementaciones_por_cuenta") or {}
+        resumen = previo.get("implementaciones_resumen") or {}
     if not distinto and not args.forzar:
         morir("El pipeline no cambió desde la última publicación — no hay nada que subir.",
               "Si de verdad quieres forzar la publicación, corre de nuevo con --forzar.")
@@ -478,6 +492,9 @@ def main():
         "implementaciones": impl,
         # {id de cuenta Zoho: n.º de implementaciones en toda su historia} — 1 = cliente nuevo
         "implementaciones_por_cuenta": conteo,
+        # {id de cuenta Zoho: [total, abiertas, finalizadas con éxito]} — «implementando» = abiertas > 0 y
+        # ninguna finalizada con éxito (las anteriores, si hay, fueron abandono / rechazo / no show)
+        "implementaciones_resumen": resumen,
     }
 
     publicar(payload, args.dry_run, push=not args.no_push, forzar_commit_vacio=args.forzar)

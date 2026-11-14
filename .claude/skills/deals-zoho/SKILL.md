@@ -95,6 +95,10 @@ Ojo: los paréntesis dentro de un valor rompen el criterio; por eso la etapa 4 s
 Para marcar **cliente nuevo** (fila morada) se cuentan además TODAS las implementaciones de México por
 cuenta: `searchRecords` con `(Pa_s:equals:México)`, sin `fields`, recorriendo páginas y deduplicando por
 `id`; vuelca la lista a `/tmp/implementaciones-todas.json` y pásala con `--implementaciones-todas`.
+Con esa misma lista el script arma `implementaciones_resumen` ({id de cuenta: [total, abiertas, finalizadas con éxito]}),
+que es de donde sale «Implementando» en Salud: implementación abierta (0 a 4 o Detenida) y ninguna finalizada con
+éxito (5. Finalizada Conforme / 6. Finalizada sin capacitación). Abandono, Solicitud Rechazada y «Finalizado por no
+show / sin uso» no cuentan como éxito. Ya no se usa la columna «Implementando?» del Excel (solo de respaldo).
 
 ## Antes de publicar: traer la cartera (Cuentas Postventa → cartera.xlsx)
 
