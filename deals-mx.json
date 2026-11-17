@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-17T09:33:11-06:00",
+  "generado": "2026-11-17T15:38:38-06:00",
   "fuente": "Zoho CRM · Deals",
   "propietario": "KAM México",
   "territorio": "México",
@@ -8,7 +8,7 @@
     "Raúl Campos",
     "Karla Patiño"
   ],
-  "total": 486,
+  "total": 490,
   "deals": [
     {
       "id": "3525045000656377147",
@@ -407,7 +407,7 @@
       "valor": 2226,
       "owner": "KAM México",
       "creado": "2026-11-13T13:15:37-06:00",
-      "modificado": "2026-11-17T08:02:32-06:00",
+      "modificado": "2026-11-17T12:02:20-06:00",
       "tipo": "Producto/Solución Nuevo (Cross Selling)",
       "mes_cierre": null,
       "moneda": "MXN",
@@ -6695,12 +6695,84 @@
       "valor": 16000,
       "owner": "KAM México",
       "creado": "2026-10-08T11:11:32-06:00",
-      "modificado": "2026-11-10T12:13:32-06:00",
+      "modificado": "2026-11-17T11:56:03-06:00",
       "tipo": "Producto/Solución Nuevo (Cross Selling)",
       "mes_cierre": null,
       "moneda": "MXN",
       "usuarios": 2000,
       "precio_usuario": 8,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000684307297",
+      "trato": "DICIPA COP",
+      "cuenta": "dicipa",
+      "cuenta_id": "3525045000118304484",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Centro de Operaciones",
+      "valor": 5930,
+      "owner": "KAM México",
+      "creado": "2026-11-17T12:11:41-06:00",
+      "modificado": "2026-11-17T12:13:55-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1186,
+      "precio_usuario": 5,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000684307304",
+      "trato": "Alertas Dicipa",
+      "cuenta": "dicipa",
+      "cuenta_id": "3525045000118304484",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Alertas",
+      "valor": 2372,
+      "owner": "KAM México",
+      "creado": "2026-11-17T12:13:31-06:00",
+      "modificado": "2026-11-17T12:15:56-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1186,
+      "precio_usuario": 2,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000684307317",
+      "trato": "RAM VI GROUP",
+      "cuenta": "VI GROUP MX",
+      "cuenta_id": "3525045000502956105",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Reporte a Medida",
+      "valor": 612,
+      "owner": "KAM México",
+      "creado": "2026-11-17T12:17:38-06:00",
+      "modificado": "2026-11-17T12:20:01-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 306,
+      "precio_usuario": 2,
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
@@ -6827,30 +6899,6 @@
       "fecha_facturando": null
     },
     {
-      "id": "3525045000682274107",
-      "trato": "MARZAM (Control de Asistencia)",
-      "cuenta": "Marzam",
-      "cuenta_id": "3525045000118274992",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "4. Propuesta Enviada / En Negociación",
-      "cerrado": false,
-      "producto": "Control de Asistencia",
-      "valor": 17550,
-      "owner": "David Ballesteros",
-      "creado": "2026-11-10T14:00:08-06:00",
-      "modificado": "2026-11-13T11:51:05-06:00",
-      "tipo": "Cliente Nuevo",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 650,
-      "precio_usuario": 27,
-      "razon_perdida": "",
-      "razon_perdida_otro": "",
-      "fecha_perdido": null,
-      "fecha_facturando": null
-    },
-    {
       "id": "3525045000644512040",
       "trato": "Victoria Connect Aleatica",
       "cuenta": "Grupo Aleática",
@@ -6923,6 +6971,30 @@
       "fecha_facturando": null
     },
     {
+      "id": "3525045000627572015",
+      "trato": "Planificador Int Dicipa 2.0",
+      "cuenta": "dicipa",
+      "cuenta_id": "3525045000118304484",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "4. Propuesta Enviada / En Negociación",
+      "cerrado": false,
+      "producto": "Planificador Inteligente",
+      "valor": 7116,
+      "owner": "KAM México",
+      "creado": "2026-05-15T12:48:16-06:00",
+      "modificado": "2026-11-17T12:14:20-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1186,
+      "precio_usuario": 6,
+      "razon_perdida": "Cierre por Inactividad",
+      "razon_perdida_otro": "",
+      "fecha_perdido": "2026-08-13T07:00:00-06:00",
+      "fecha_facturando": null
+    },
+    {
       "id": "3525045000676385166",
       "trato": "WA Innova Schools",
       "cuenta": "Innova Schools",
@@ -6965,30 +7037,6 @@
       "moneda": "MXN",
       "usuarios": 900,
       "precio_usuario": 2,
-      "razon_perdida": "",
-      "razon_perdida_otro": "",
-      "fecha_perdido": null,
-      "fecha_facturando": null
-    },
-    {
-      "id": "3525045000683515054",
-      "trato": "MARZAM (Comedor)",
-      "cuenta": "Marzam",
-      "cuenta_id": "3525045000118274992",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "4. Propuesta Enviada / En Negociación",
-      "cerrado": false,
-      "producto": "Servicio de Comedor",
-      "valor": 1600,
-      "owner": "David Ballesteros",
-      "creado": "2026-11-13T11:33:03-06:00",
-      "modificado": "2026-11-17T09:29:24-06:00",
-      "tipo": "Cliente Nuevo",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 200,
-      "precio_usuario": 8,
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
@@ -7109,6 +7157,78 @@
       "moneda": "MXN",
       "usuarios": 700,
       "precio_usuario": 8,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000682274107",
+      "trato": "MARZAM (Control de Asistencia)",
+      "cuenta": "Marzam",
+      "cuenta_id": "3525045000118274992",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "6. Listo para Cierre",
+      "cerrado": false,
+      "producto": "Control de Asistencia",
+      "valor": 13000,
+      "owner": "David Ballesteros",
+      "creado": "2026-11-10T14:00:08-06:00",
+      "modificado": "2026-11-17T11:46:55-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 650,
+      "precio_usuario": 20,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000684328157",
+      "trato": "MARZAM (Alertas)",
+      "cuenta": "Marzam",
+      "cuenta_id": "3525045000118274992",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "6. Listo para Cierre",
+      "cerrado": false,
+      "producto": "Alertas",
+      "valor": 5200,
+      "owner": "David Ballesteros",
+      "creado": "2026-11-17T11:06:21-06:00",
+      "modificado": "2026-11-17T11:46:58-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 650,
+      "precio_usuario": 8,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000683515054",
+      "trato": "MARZAM (Comedor)",
+      "cuenta": "Marzam",
+      "cuenta_id": "3525045000118274992",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "6. Listo para Cierre",
+      "cerrado": false,
+      "producto": "Servicio de Comedor",
+      "valor": 1200,
+      "owner": "David Ballesteros",
+      "creado": "2026-11-13T11:33:03-06:00",
+      "modificado": "2026-11-17T11:46:57-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 200,
+      "precio_usuario": 6,
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
@@ -9776,30 +9896,6 @@
       "razon_perdida": "Cierre por Inactividad",
       "razon_perdida_otro": "",
       "fecha_perdido": "2026-10-08T06:01:00-06:00",
-      "fecha_facturando": null
-    },
-    {
-      "id": "3525045000627572015",
-      "trato": "Planificador Int Dicipa 2.0",
-      "cuenta": "dicipa",
-      "cuenta_id": "3525045000118304484",
-      "kam": "Raúl Campos",
-      "correo_kam": "rcampos@geovictoria.com",
-      "etapa": "Cierre Perdido",
-      "cerrado": true,
-      "producto": "Planificador Inteligente",
-      "valor": 6162,
-      "owner": "KAM México",
-      "creado": "2026-05-15T12:48:16-06:00",
-      "modificado": "2026-11-06T14:40:53-06:00",
-      "tipo": "Producto/Solución Nuevo (Cross Selling)",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 1027,
-      "precio_usuario": 6,
-      "razon_perdida": "Cierre por Inactividad",
-      "razon_perdida_otro": "",
-      "fecha_perdido": "2026-08-13T07:00:00-06:00",
       "fecha_facturando": null
     },
     {
@@ -13525,6 +13621,30 @@
       "fecha_facturando": null
     },
     {
+      "id": "3525045000684353091",
+      "trato": "PHARDERMA (vacaciones)",
+      "cuenta": "Pharderma",
+      "cuenta_id": "3525045000576839450",
+      "kam": "",
+      "correo_kam": "",
+      "etapa": "7. Implementando",
+      "cerrado": false,
+      "producto": "Módulo Vacaciones",
+      "valor": 360,
+      "owner": "Laura Medina",
+      "creado": "2026-11-17T09:20:54-06:00",
+      "modificado": "2026-11-17T09:46:54-06:00",
+      "tipo": "Cliente Nuevo",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 36,
+      "precio_usuario": 10,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
       "id": "3525045000665863174",
       "trato": "PQ CORPORATION (Módulo Vacaciones)",
       "cuenta": "PQ CORPORATION",
@@ -14175,15 +14295,92 @@
   ],
   "implementaciones": [
     {
+      "id": "3525045000679547221",
+      "nombre": "Implementación | CARESTREAM INTERNACIONAL | Asistencia",
+      "cuenta": "CARESTREAM INTERNACIONAL",
+      "cuenta_id": "3525045000637601153",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-02-02",
+      "semaforo": "Verde",
+      "modificado": "2026-11-17T14:55:46-06:00"
+    },
+    {
+      "id": "3525045000684353172",
+      "nombre": "PHARDERMA",
+      "cuenta": "Pharderma",
+      "cuenta_id": "3525045000576839450",
+      "etapa": "1. En Traspaso",
+      "jp": "Rocío Suárez",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-17T13:59:31-06:00"
+    },
+    {
+      "id": "3525045000684356637",
+      "nombre": "Implementacion MARZAM",
+      "cuenta": "Marzam",
+      "cuenta_id": "3525045000118274992",
+      "etapa": "0. Sin Asignar",
+      "jp": "",
+      "fecha_fin": null,
+      "semaforo": "",
+      "modificado": "2026-11-17T13:10:56-06:00"
+    },
+    {
+      "id": "3525045000678163445",
+      "nombre": "ASISTENCIA - EMBOBINADOS RTG",
+      "cuenta": "Embobinados RTG",
+      "cuenta_id": "3525045000661355382",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-17T11:42:39-06:00"
+    },
+    {
       "id": "3525045000683350507",
       "nombre": "Prothesika",
       "cuenta": "Prothesika",
       "cuenta_id": "3525045000676853936",
-      "etapa": "1. En Traspaso",
+      "etapa": "3. En Ejecución",
       "jp": "Luis Cervantes",
       "fecha_fin": null,
       "semaforo": "Verde",
-      "modificado": "2026-11-17T09:30:04-06:00"
+      "modificado": "2026-11-17T11:35:06-06:00"
+    },
+    {
+      "id": "3525045000644825076",
+      "nombre": "Migración vacaciones y permisos - Office Max",
+      "cuenta": "Office Max",
+      "cuenta_id": "3525045000349800122",
+      "etapa": "Detenida",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2027-01-29",
+      "semaforo": "Verde",
+      "modificado": "2026-11-17T11:26:27-06:00"
+    },
+    {
+      "id": "3525045000666144001",
+      "nombre": "Implementación | GRUPO DALSI | Asistencia",
+      "cuenta": "Grupo Dalsi",
+      "cuenta_id": "3525045000661691058",
+      "etapa": "Detenida",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-12-29",
+      "semaforo": "Verde",
+      "modificado": "2026-11-17T10:18:22-06:00"
+    },
+    {
+      "id": "3525045000666594086",
+      "nombre": "APP y WA Kosmos",
+      "cuenta": "Corporativo Kosmos",
+      "cuenta_id": "3525045000094546230",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-30",
+      "semaforo": "Verde",
+      "modificado": "2026-11-17T10:14:29-06:00"
     },
     {
       "id": "3525045000678112079",
@@ -14206,17 +14403,6 @@
       "fecha_fin": "2027-03-19",
       "semaforo": "Verde",
       "modificado": "2026-11-17T08:55:52-06:00"
-    },
-    {
-      "id": "3525045000679547221",
-      "nombre": "Implementación | CARESTREAM INTERNACIONAL | Asistencia",
-      "cuenta": "CARESTREAM INTERNACIONAL",
-      "cuenta_id": "3525045000637601153",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-02-02",
-      "semaforo": "Verde",
-      "modificado": "2026-11-17T04:28:11-06:00"
     },
     {
       "id": "3525045000676343044",
@@ -14527,17 +14713,6 @@
       "modificado": "2026-11-17T04:27:18-06:00"
     },
     {
-      "id": "3525045000678163445",
-      "nombre": "ASISTENCIA - EMBOBINADOS RTG",
-      "cuenta": "Embobinados RTG",
-      "cuenta_id": "3525045000661355382",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-17T04:27:17-06:00"
-    },
-    {
       "id": "3525045000670516043",
       "nombre": "PQ SIDESA - ASISTENCIA/PERMISOS Y VACACIONES/PLANIFICADOR/COMEDOR/ APP SUP",
       "cuenta": "PQ CORPORATION",
@@ -14659,17 +14834,6 @@
       "modificado": "2026-11-17T04:26:47-06:00"
     },
     {
-      "id": "3525045000666594086",
-      "nombre": "APP y WA Kosmos",
-      "cuenta": "Corporativo Kosmos",
-      "cuenta_id": "3525045000094546230",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-30",
-      "semaforo": "Verde",
-      "modificado": "2026-11-17T04:26:47-06:00"
-    },
-    {
       "id": "3525045000667086288",
       "nombre": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
       "cuenta": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
@@ -14701,17 +14865,6 @@
       "fecha_fin": "2026-11-27",
       "semaforo": "Verde",
       "modificado": "2026-11-17T04:26:10-06:00"
-    },
-    {
-      "id": "3525045000656011433",
-      "nombre": "Cazcon farmacias similares",
-      "cuenta": "CAZCON S.A. DE C.V.",
-      "cuenta_id": "3525045000647219305",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-03",
-      "semaforo": "Verde",
-      "modificado": "2026-11-17T04:26:06-06:00"
     },
     {
       "id": "3525045000659248227",
@@ -14778,17 +14931,6 @@
       "fecha_fin": "2026-11-18",
       "semaforo": "Verde",
       "modificado": "2026-11-17T04:25:24-06:00"
-    },
-    {
-      "id": "3525045000666144001",
-      "nombre": "Implementación | GRUPO DALSI | Asistencia",
-      "cuenta": "Grupo Dalsi",
-      "cuenta_id": "3525045000661691058",
-      "etapa": "Detenida",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-12-29",
-      "semaforo": "Verde",
-      "modificado": "2026-11-17T04:25:18-06:00"
     },
     {
       "id": "3525045000660516308",
@@ -15264,17 +15406,6 @@
       "modificado": "2026-11-04T14:29:19-06:00"
     },
     {
-      "id": "3525045000644825076",
-      "nombre": "Migración vacaciones y permisos - Office Max",
-      "cuenta": "Office Max",
-      "cuenta_id": "3525045000349800122",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2027-01-29",
-      "semaforo": "Verde",
-      "modificado": "2026-11-03T19:47:03-06:00"
-    },
-    {
       "id": "3525045000649628008",
       "nombre": "Migración Modulo de Vacaciones TRANSMAL",
       "cuenta": "Transmal",
@@ -15342,10 +15473,17 @@
     }
   ],
   "implementaciones_por_cuenta": {
+    "3525045000637601153": 2,
+    "3525045000576839450": 1,
+    "3525045000118274992": 1,
+    "3525045000661355382": 1,
+    "3525045000647219305": 1,
     "3525045000676853936": 1,
+    "3525045000349800122": 3,
+    "3525045000661691058": 2,
+    "3525045000094546230": 1,
     "3525045000653007084": 2,
     "3525045000672861200": 1,
-    "3525045000637601153": 2,
     "3525045000669488110": 1,
     "3525045000673842457": 1,
     "3525045000630204344": 2,
@@ -15375,7 +15513,6 @@
     "3525045000672591418": 1,
     "3525045000627573323": 1,
     "3525045000653101267": 1,
-    "3525045000661355382": 1,
     "3525045000629322699": 1,
     "3525045000666610145": 1,
     "3525045000629903007": 1,
@@ -15389,13 +15526,11 @@
     "3525045000589982025": 1,
     "3525045000598015098": 1,
     "3525045000659788861": 1,
-    "3525045000094546230": 1,
     "3525045000646504074": 1,
     "3525045000657233438": 3,
     "3525045000649620311": 1,
     "3525045000650473001": 3,
     "3525045000642410276": 1,
-    "3525045000647219305": 1,
     "3525045000646996779": 1,
     "3525045000651533322": 2,
     "3525045000647219629": 3,
@@ -15408,7 +15543,6 @@
     "3525045000641620017": 1,
     "3525045000635505348": 2,
     "3525045000634303511": 1,
-    "3525045000661691058": 2,
     "3525045000644858138": 1,
     "3525045000488297431": 1,
     "3525045000618029667": 1,
@@ -15594,7 +15728,6 @@
     "3525045000335205136": 2,
     "3525045000668240238": 1,
     "3525045000641973236": 3,
-    "3525045000349800122": 3,
     "3525045000584443150": 1,
     "3525045000443231435": 1,
     "3525045000667186013": 1,
@@ -15783,7 +15916,6 @@
     "3525045000189394046": 1,
     "3525045000249988478": 1,
     "3525045000283615289": 1,
-    "3525045000285149779": 1,
     "3525045000273201025": 1,
     "3525045000226817152": 1,
     "3525045000223883010": 1,
@@ -15800,8 +15932,9 @@
     "3525045000255069448": 1,
     "3525045000233865195": 1,
     "3525045000236726293": 1,
-    "3525045000252357525": 1,
     "3525045000251705399": 1,
+    "3525045000285149779": 1,
+    "3525045000252357525": 1,
     "3525045000232619049": 1,
     "3525045000231536047": 1,
     "3525045000232432039": 1,
@@ -15830,7 +15963,47 @@
     "3525045000136022031": 1
   },
   "implementaciones_resumen": {
+    "3525045000637601153": [
+      2,
+      1,
+      0
+    ],
+    "3525045000576839450": [
+      1,
+      1,
+      0
+    ],
+    "3525045000118274992": [
+      1,
+      1,
+      0
+    ],
+    "3525045000661355382": [
+      1,
+      1,
+      0
+    ],
+    "3525045000647219305": [
+      1,
+      0,
+      1
+    ],
     "3525045000676853936": [
+      1,
+      1,
+      0
+    ],
+    "3525045000349800122": [
+      3,
+      1,
+      1
+    ],
+    "3525045000661691058": [
+      2,
+      1,
+      0
+    ],
+    "3525045000094546230": [
       1,
       1,
       0
@@ -15842,11 +16015,6 @@
     ],
     "3525045000672861200": [
       1,
-      1,
-      0
-    ],
-    "3525045000637601153": [
-      2,
       1,
       0
     ],
@@ -15995,11 +16163,6 @@
       1,
       0
     ],
-    "3525045000661355382": [
-      1,
-      1,
-      0
-    ],
     "3525045000629322699": [
       1,
       1,
@@ -16065,11 +16228,6 @@
       1,
       0
     ],
-    "3525045000094546230": [
-      1,
-      1,
-      0
-    ],
     "3525045000646504074": [
       1,
       0,
@@ -16091,11 +16249,6 @@
       0
     ],
     "3525045000642410276": [
-      1,
-      1,
-      0
-    ],
-    "3525045000647219305": [
       1,
       1,
       0
@@ -16159,11 +16312,6 @@
       1,
       0,
       1
-    ],
-    "3525045000661691058": [
-      2,
-      1,
-      0
     ],
     "3525045000644858138": [
       1,
@@ -17089,11 +17237,6 @@
       3,
       0,
       0
-    ],
-    "3525045000349800122": [
-      3,
-      1,
-      1
     ],
     "3525045000584443150": [
       1,
@@ -18035,11 +18178,6 @@
       0,
       1
     ],
-    "3525045000285149779": [
-      1,
-      0,
-      1
-    ],
     "3525045000273201025": [
       1,
       0,
@@ -18120,12 +18258,17 @@
       0,
       1
     ],
-    "3525045000252357525": [
+    "3525045000251705399": [
       1,
       0,
       1
     ],
-    "3525045000251705399": [
+    "3525045000285149779": [
+      1,
+      0,
+      1
+    ],
+    "3525045000252357525": [
       1,
       0,
       1
