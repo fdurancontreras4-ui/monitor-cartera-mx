@@ -3378,8 +3378,9 @@ function mxCeldaHTML(c,ref){
 }
 
 function mxCuentaLink(a,html){
-  if(a&&a._linkDudoso)return`<span title="No se enlaza: el link de la columna L lleva a «${esc(a._linkDudoso.zoho)}»">${html}</span>`;
-  return a&&a.zohoId?`<a class="mx-acc" href="${ZOHO_TAB}Accounts/${a.zohoId}" target="_blank" rel="noopener" title="Abrir la cuenta en Zoho">${html}</a>`:`<span title="Sin link de Zoho en la columna L de la cartera">${html}</span>`;
+  // clic → detalle de la cuenta (ahí está el enlace a Zoho)
+  if(!a)return html;
+  return`<a class="mx-acc" href="#" onclick="event.preventDefault();event.stopPropagation();openDetail('${a._uid}')" title="Ver detalle de la cuenta (con enlace a Zoho)">${html}</a>`;
 }
 const MX_ICON_SINMOD='<span class="mx-sinmod" title="Sin ningún módulo complementario contratado">⊘</span>';
 // 🔧 implementación abierta: clic abre la implementación en Zoho (la más reciente si hay varias)
