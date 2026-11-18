@@ -297,6 +297,9 @@ tr.hecha td:first-child{color:var(--tarea-ok);}
 .mx-info-btn{position:absolute;top:.55rem;right:.7rem;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--accent-text);cursor:pointer;}
 .mx-info-btn.on{background:var(--accent-soft);border-color:var(--accent-strong);}
 .mx-info-btn.pr-info-btn{position:static;}
+.zoho-link{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;font-weight:600;white-space:nowrap;border:1px solid var(--color-border-secondary);color:var(--accent-text);text-decoration:none;}
+a.zoho-link:hover{background:var(--accent-soft);border-color:var(--accent-strong);}
+.zoho-link.off{color:var(--color-text-secondary);font-weight:400;border-style:dashed;cursor:help;}
 .kam-plg .card.plg-off > .mx-info-btn{display:none!important;}
 @media (max-width:900px){.mxk{grid-template-columns:1fr;}.mxk-4,.mxk-5{grid-template-columns:repeat(2,1fr);}}
 @media (max-width:640px){.mxk-3{grid-template-columns:1fr 1fr;}}
@@ -776,7 +779,7 @@ function applyRazonSocialGroups(){
     if(group.length<2)return;
     group.sort((x,y)=>(y.mrr||0)-(x.mrr||0));
     const primary=group[0];
-    primary._razonesSociales=group.map(g=>({cliente:g.cliente,mrr:g.mrr,_uid:g._uid}));
+    primary._razonesSociales=group.map(g=>({cliente:g.cliente,mrr:g.mrr,_uid:g._uid,zohoId:g.zohoId}));
     primary._mrrCombinado=group.reduce((s,g)=>s+(g.mrr||0),0);
     primary._mesesCombinados=primary.meses.map((_,i)=>{const vals=group.map(g=>g.meses[i]).filter(v=>v!=null);return vals.length?vals.reduce((s,v)=>s+v,0):null;});
     for(let i=1;i<group.length;i++)group[i]._esRazonSocialSecundaria=true;
@@ -3239,6 +3242,11 @@ function mxEtapaCorta(e){const m=/^(\d)\.\s*(.*)$/.exec(e||'');return m?m[1]+' �
 function mxValorTxt(d){const v=+d.valor||0;return String(d.moneda||'MXN').toUpperCase()==='USD'?fmtUSD(v)+' USD':fmtMXN(v);}
 function mxUsuariosPrecioTD(d){const usd=String(d.moneda||'').toUpperCase()==='USD';return`<td>${d.usuarios!=null?Math.round(d.usuarios).toLocaleString('en-US'):'—'}</td><td>${d.precio_usuario!=null?'$'+(+d.precio_usuario).toLocaleString('en-US',{maximumFractionDigits:2})+(usd?' USD':''):'—'}</td>`;}
 function mxDealUrl(d){return ZOHO_TAB+'Potentials/'+d.id;}
+function zohoCuentaHtml(a){
+  if(a._linkDudoso)return`<span class="zoho-link off" title="El link de Zoho de la columna L lleva a «${esc(a._linkDudoso.zoho)}», que no parece ser esta cuenta. Revísalo en la cartera.">⚠ Link de Zoho por revisar</span>`;
+  if(!a.zohoId)return'<span class="zoho-link off" title="Sin link de Zoho en la columna L de la cartera">Sin link de Zoho</span>';
+  return`<a class="zoho-link" href="${ZOHO_TAB}Accounts/${a.zohoId}" target="_blank" rel="noopener" title="Abrir la cuenta en Zoho">↗ Cuenta en Zoho</a>`;
+}
 function mxSort(ds){return ds.slice().sort((a,b)=>{const ra=mxAbierto(a)?0:a.etapa==='8. Facturando'?1:2,rb=mxAbierto(b)?0:b.etapa==='8. Facturando'?1:2;if(ra!==rb)return ra-rb;return etapaRank(b.etapa)-etapaRank(a.etapa);});}
 
 // estado de un conjunto de deals + el texto del Excel → código de color
@@ -4045,7 +4053,8 @@ function openDetail(uid){
     <div class="table-wrap"><table><thead><tr><th>Sucursal (modelo de salud)</th><th class="nosort">Estado</th><th class="nosort">Marcaje</th><th class="nosort">NPS</th><th class="nosort">Inc. 30d</th><th class="nosort">ID</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   })():'';
   const razonesSocialesHtml=(a._razonesSociales&&a._razonesSociales.length>1)?(function(){
-    const rows=a._razonesSociales.map(r=>`<tr${r._uid===a._uid?' style="font-weight:700"':''}><td>${esc(r.cliente)}${r._uid===a._uid?' <span class="legend">(principal)</span>':''}</td><td>${fmtUSD(r.mrr)}</td></tr>`).join('')+`<tr style="font-weight:700;border-top:2px solid var(--color-border-secondary)"><td>Total · ${a._razonesSociales.length} razones sociales</td><td>${fmtUSD(a._mrrCombinado)}</td></tr>`;
+    const variosZoho=new Set(a._razonesSociales.map(r=>r.zohoId).filter(Boolean)).size>1;
+    const rows=a._razonesSociales.map(r=>`<tr${r._uid===a._uid?' style="font-weight:700"':''}><td>${variosZoho&&r.zohoId?`<a href="${ZOHO_TAB}Accounts/${r.zohoId}" target="_blank" rel="noopener" title="Abrir esta razón social en Zoho">${esc(r.cliente)} ↗</a>`:esc(r.cliente)}${r._uid===a._uid?' <span class="legend">(principal)</span>':''}</td><td>${fmtUSD(r.mrr)}</td></tr>`).join('')+`<tr style="font-weight:700;border-top:2px solid var(--color-border-secondary)"><td>Total · ${a._razonesSociales.length} razones sociales</td><td>${fmtUSD(a._mrrCombinado)}</td></tr>`;
     return `<div class="sec-title">Razones sociales agrupadas <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px">· mismo ID Geo (${esc(a.id)}) — mismo marcaje/salud en el modelo, distinta facturación cada una. El MRR y el gráfico de arriba son la suma de todas.</span></div>
     <div class="table-wrap"><table><thead><tr><th>Razón social</th><th class="nosort">MRR</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   })():'';
@@ -4084,7 +4093,7 @@ function openDetail(uid){
   </div>`;
   $('modal').innerHTML=`
     <div class="modal-head"><h2>${esc(nombreCuenta(a))}</h2><button class="close-x" onclick="closeDetail()">×</button></div>
-    <div style="margin-bottom:10px">${carteraBadge(a.cartera)} ${fugaCell(a)} <span class="badge b-gray">${esc(a.kam)}${a._kamReasignado?' · reasignado':''}</span> ${hasCS(a)?`<span class="badge b-teal">Customer Success: ${esc(a.css)}</span>`:'<span class="badge b-gray">Sin Customer Success</span>'} ${a.estado?`<span class="chip">${esc(a.estado)}</span>`:''} ${a.rubro?`<span class="chip">${esc(a.rubro)}</span>`:''}</div>
+    <div style="margin-bottom:10px">${carteraBadge(a.cartera)} ${fugaCell(a)} <span class="badge b-gray">${esc(a.kam)}${a._kamReasignado?' · reasignado':''}</span> ${hasCS(a)?`<span class="badge b-teal">Customer Success: ${esc(a.css)}</span>`:'<span class="badge b-gray">Sin Customer Success</span>'} ${a.estado?`<span class="chip">${esc(a.estado)}</span>`:''} ${a.rubro?`<span class="chip">${esc(a.rubro)}</span>`:''} ${zohoCuentaHtml(a)}</div>
     ${a.desc?`<p style="font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:10px">${esc(a.desc)}</p>`:''}
     ${metricsHtml}
     ${alertsHtml}
