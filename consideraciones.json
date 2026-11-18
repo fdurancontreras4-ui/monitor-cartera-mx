@@ -67,5 +67,13 @@
       "razon": "STED quincenal (24113) y semanal (24540) son dos empresas en plataforma pero la misma cuenta: en Salud van como una sola, con el marcaje ponderado por usuarios."
     }
   ],
-  "_como_unir_sucursales_salud": "Para cuentas con varios ID Geo en cartera (separados por '-') que en Salud deben verse como UNA sola cuenta y no una fila por sucursal, agrega {patron, razon} en 'unir_sucursales_salud' (el patron se busca en el nombre de la cuenta). El estado es el peor de las sucursales y el marcaje se pondera por usuarios activos."
+  "_como_unir_sucursales_salud": "Para cuentas con varios ID Geo en cartera (separados por '-') que en Salud deben verse como UNA sola cuenta y no una fila por sucursal, agrega {patron, razon} en 'unir_sucursales_salud' (el patron se busca en el nombre de la cuenta). El estado es el peor de las sucursales y el marcaje se pondera por usuarios activos.",
+  "_como_asignar_zoho": "En 'zoho_ids' agrega {nombre, zoho_id}: si la fila de la cartera con ese nombre no trae link de Zoho en la columna L, el monitor usa ese id de cuenta de Zoho (Matriz, deals, implementaciones).",
+  "zoho_ids": [
+    {
+      "nombre": "WYN COACALCO",
+      "zoho_id": "3525045000620620931",
+      "razon": "En Zoho es ADMINISTRADORA ENTRETENIMIENTO PLATINO MEXICO SA DE CV (la cartera no trae link en la columna L)."
+    }
+  ]
 }

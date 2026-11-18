@@ -757,6 +757,15 @@ function applyConsideraciones(){
     if(target){a.kam=target;a._kamReasignado=(target!==a._kamOrig);}
     else{a.kam=a._kamOrig;a._kamReasignado=false;}
   });
+  // cuenta de Zoho manual para filas de la cartera sin link en la columna L (ej. WYN COACALCO)
+  const zids=CONSID.zoho_ids||[];
+  ACCOUNTS.forEach(a=>{
+    if(a._zohoIdOrig===undefined)a._zohoIdOrig=a.zohoId;
+    a.zohoId=a._zohoIdOrig;a._zohoIdManual=false;
+    if(a.zohoId)return;
+    const r=zids.find(z=>z.zoho_id&&normName(z.nombre)===normName(a.cliente));
+    if(r){a.zohoId=String(r.zoho_id);a._zohoIdManual=true;}
+  });
   ACCOUNTS.forEach(a=>{if(!a._congelada&&isCritica(a))a._razonCritico=razonCritico(a);});
 }
 // varias razones sociales (filas de cartera) que comparten el MISMO ID Geo son, en la práctica, una sola
@@ -3277,7 +3286,7 @@ function mxBuild(){
     // si no se parece, el link de la columna L probablemente está mal (p. ej. FIDEICOMISO F/1596 → HEINEKEN) y
     // se intenta por nombre; si por nombre no aparece nada, se queda con el id pero se marca como link dudoso
     let porIdDudoso=null;
-    if(d.cuenta_id&&porId[d.cuenta_id]){const c=top(porId[d.cuenta_id]);if(porId[d.cuenta_id].some(x=>mxParecido(d.cuenta,x.cliente)||mxParecido(d.cuenta,x.grupo)))a=c;else porIdDudoso=c;}
+    if(d.cuenta_id&&porId[d.cuenta_id]){const c=top(porId[d.cuenta_id]);if(porId[d.cuenta_id].some(x=>x._zohoIdManual||mxParecido(d.cuenta,x.cliente)||mxParecido(d.cuenta,x.grupo)))a=c;else porIdDudoso=c;}
     if(a){}
     else if(porNombre[normName(d.cuenta)]){a=top(porNombre[normName(d.cuenta)]);via='nombre';}
     else if(porLoose[mxLoose(d.cuenta)]){a=top(porLoose[mxLoose(d.cuenta)]);via='nombre';}
