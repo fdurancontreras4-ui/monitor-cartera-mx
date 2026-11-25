@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-24T22:59:42-06:00",
+  "generado": "2026-11-25T12:25:18-06:00",
   "fuente": "Zoho CRM · Deals",
   "propietario": "KAM México",
   "territorio": "México",
@@ -8,128 +8,8 @@
     "Raúl Campos",
     "Karla Patiño"
   ],
-  "total": 501,
+  "total": 503,
   "deals": [
-    {
-      "id": "3525045000656377147",
-      "trato": "VictorIA - Conect",
-      "cuenta": "IDINSA",
-      "cuenta_id": "3525045000416193121",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Integraciones Victoria Connect",
-      "valor": 9000,
-      "owner": "KAM México",
-      "creado": "2026-08-27T12:37:39-06:00",
-      "modificado": "2026-11-06T14:42:41-06:00",
-      "tipo": "Producto/Solución Nuevo (Cross Selling)",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 900,
-      "precio_usuario": 10,
-      "razon_perdida": "",
-      "razon_perdida_otro": "",
-      "fecha_perdido": null,
-      "fecha_facturando": null
-    },
-    {
-      "id": "3525045000656377136",
-      "trato": "ALERTAS IDINSA",
-      "cuenta": "IDINSA",
-      "cuenta_id": "3525045000416193121",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "ddelarosa@geovictoria.com",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Alertas",
-      "valor": 7200,
-      "owner": "KAM México",
-      "creado": "2026-08-27T12:34:41-06:00",
-      "modificado": "2026-11-06T14:42:41-06:00",
-      "tipo": "Crecimiento (Up Selling)",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 900,
-      "precio_usuario": 8,
-      "razon_perdida": "",
-      "razon_perdida_otro": "",
-      "fecha_perdido": null,
-      "fecha_facturando": null
-    },
-    {
-      "id": "3525045000656377129",
-      "trato": "CALENDARIO IDINSA",
-      "cuenta": "IDINSA",
-      "cuenta_id": "3525045000416193121",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "ddelarosa@geovictoria.com",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Alertas",
-      "valor": 7200,
-      "owner": "KAM México",
-      "creado": "2026-08-27T12:33:36-06:00",
-      "modificado": "2026-11-06T14:42:41-06:00",
-      "tipo": "Crecimiento (Up Selling)",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 900,
-      "precio_usuario": 8,
-      "razon_perdida": "",
-      "razon_perdida_otro": "",
-      "fecha_perdido": null,
-      "fecha_facturando": null
-    },
-    {
-      "id": "3525045000656377028",
-      "trato": "MODULO DE VACACIONES / PERMISOS",
-      "cuenta": "IDINSA",
-      "cuenta_id": "3525045000416193121",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "ddelarosa@geovictoria.com",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Módulo Vacaciones",
-      "valor": 7200,
-      "owner": "KAM México",
-      "creado": "2026-08-27T11:37:03-06:00",
-      "modificado": "2026-11-06T14:42:41-06:00",
-      "tipo": "Crecimiento (Up Selling)",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 900,
-      "precio_usuario": 8,
-      "razon_perdida": "",
-      "razon_perdida_otro": "",
-      "fecha_perdido": null,
-      "fecha_facturando": null
-    },
-    {
-      "id": "3525045000656377053",
-      "trato": "ALERTAS",
-      "cuenta": "IPISA",
-      "cuenta_id": "3525045000577986714",
-      "kam": "Dafne de la Rosa",
-      "correo_kam": "",
-      "etapa": "2. Primera Reunion Realizada",
-      "cerrado": false,
-      "producto": "Alertas",
-      "valor": 2770,
-      "owner": "KAM México",
-      "creado": "2026-08-27T11:59:52-06:00",
-      "modificado": "2026-11-06T14:42:41-06:00",
-      "tipo": "Producto/Solución Nuevo (Cross Selling)",
-      "mes_cierre": null,
-      "moneda": "MXN",
-      "usuarios": 277,
-      "precio_usuario": 10,
-      "razon_perdida": "",
-      "razon_perdida_otro": "",
-      "fecha_perdido": null,
-      "fecha_facturando": null
-    },
     {
       "id": "3525045000675413388",
       "trato": "Centro de Operaciones",
@@ -2243,6 +2123,30 @@
       "fecha_facturando": null
     },
     {
+      "id": "3525045000656377147",
+      "trato": "VictorIA - Conect",
+      "cuenta": "IDINSA",
+      "cuenta_id": "3525045000416193121",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Integraciones Victoria Connect",
+      "valor": 9000,
+      "owner": "KAM México",
+      "creado": "2026-08-27T12:37:39-06:00",
+      "modificado": "2026-11-25T06:01:29-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 10,
+      "razon_perdida": "Cierre por Inactividad",
+      "razon_perdida_otro": "",
+      "fecha_perdido": "2026-11-25T06:01:00-06:00",
+      "fecha_facturando": null
+    },
+    {
       "id": "3525045000572032278",
       "trato": "Vacaciones Rena comercializadora",
       "cuenta": "Rena Comercializadora",
@@ -2288,6 +2192,78 @@
       "razon_perdida": "Cierre por Inactividad",
       "razon_perdida_otro": "",
       "fecha_perdido": "2025-02-09T15:00:00-06:00",
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000656377136",
+      "trato": "ALERTAS IDINSA",
+      "cuenta": "IDINSA",
+      "cuenta_id": "3525045000416193121",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Alertas",
+      "valor": 7200,
+      "owner": "KAM México",
+      "creado": "2026-08-27T12:34:41-06:00",
+      "modificado": "2026-11-25T06:01:28-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 8,
+      "razon_perdida": "Cierre por Inactividad",
+      "razon_perdida_otro": "",
+      "fecha_perdido": "2026-11-25T06:01:00-06:00",
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000656377129",
+      "trato": "CALENDARIO IDINSA",
+      "cuenta": "IDINSA",
+      "cuenta_id": "3525045000416193121",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Alertas",
+      "valor": 7200,
+      "owner": "KAM México",
+      "creado": "2026-08-27T12:33:36-06:00",
+      "modificado": "2026-11-25T06:01:28-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 8,
+      "razon_perdida": "Cierre por Inactividad",
+      "razon_perdida_otro": "",
+      "fecha_perdido": "2026-11-25T06:01:00-06:00",
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000656377028",
+      "trato": "MODULO DE VACACIONES / PERMISOS",
+      "cuenta": "IDINSA",
+      "cuenta_id": "3525045000416193121",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "ddelarosa@geovictoria.com",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Módulo Vacaciones",
+      "valor": 7200,
+      "owner": "KAM México",
+      "creado": "2026-08-27T11:37:03-06:00",
+      "modificado": "2026-11-25T06:01:24-06:00",
+      "tipo": "Crecimiento (Up Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 900,
+      "precio_usuario": 8,
+      "razon_perdida": "Cierre por Inactividad",
+      "razon_perdida_otro": "",
+      "fecha_perdido": "2026-11-25T06:01:00-06:00",
       "fecha_facturando": null
     },
     {
@@ -2528,6 +2504,30 @@
       "razon_perdida": "Cierre por Inactividad",
       "razon_perdida_otro": "",
       "fecha_perdido": "2026-06-03T07:01:00-06:00",
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000656377053",
+      "trato": "ALERTAS",
+      "cuenta": "IPISA",
+      "cuenta_id": "3525045000577986714",
+      "kam": "Dafne de la Rosa",
+      "correo_kam": "",
+      "etapa": "Cierre Perdido",
+      "cerrado": true,
+      "producto": "Alertas",
+      "valor": 2770,
+      "owner": "KAM México",
+      "creado": "2026-08-27T11:59:52-06:00",
+      "modificado": "2026-11-25T06:01:10-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 277,
+      "precio_usuario": 10,
+      "razon_perdida": "Cierre por Inactividad",
+      "razon_perdida_otro": "",
+      "fecha_perdido": "2026-11-25T06:01:00-06:00",
       "fecha_facturando": null
     },
     {
@@ -6815,7 +6815,7 @@
       "valor": 7,
       "owner": "KAM México",
       "creado": "2026-08-19T15:42:42-06:00",
-      "modificado": "2026-11-24T09:38:15-06:00",
+      "modificado": "2026-11-25T04:08:02-06:00",
       "tipo": "Producto/Solución Nuevo (Cross Selling)",
       "mes_cierre": null,
       "moneda": "MXN",
@@ -6917,6 +6917,54 @@
       "moneda": "MXN",
       "usuarios": 2000,
       "precio_usuario": 8,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000688338020",
+      "trato": "Planificador Int - Office Max",
+      "cuenta": "Office Max",
+      "cuenta_id": "3525045000349800122",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Optimizador de Turnos",
+      "valor": 8500,
+      "owner": "KAM México",
+      "creado": "2026-11-25T12:05:05-06:00",
+      "modificado": "2026-11-25T12:07:38-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1700,
+      "precio_usuario": 5,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
+      "id": "3525045000688338009",
+      "trato": "Optimizador - Office Max",
+      "cuenta": "Office Max",
+      "cuenta_id": "3525045000349800122",
+      "kam": "Raúl Campos",
+      "correo_kam": "rcampos@geovictoria.com",
+      "etapa": "1. Trato Creado",
+      "cerrado": false,
+      "producto": "Optimizador de Turnos",
+      "valor": 8500,
+      "owner": "KAM México",
+      "creado": "2026-11-25T11:55:09-06:00",
+      "modificado": "2026-11-25T11:57:27-06:00",
+      "tipo": "Producto/Solución Nuevo (Cross Selling)",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 1700,
+      "precio_usuario": 5,
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
@@ -12437,8 +12485,8 @@
       "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
-      "usuarios": null,
-      "precio_usuario": null,
+      "usuarios": 350,
+      "precio_usuario": 15,
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
@@ -13045,6 +13093,30 @@
       "fecha_facturando": "2025-12-29T15:05:00-06:00"
     },
     {
+      "id": "3525045000687934154",
+      "trato": "Farmacia Ortega (Vacaciones)",
+      "cuenta": "Farmacia Ortega",
+      "cuenta_id": "3525045000674627018",
+      "kam": "",
+      "correo_kam": "",
+      "etapa": "7. Implementando",
+      "cerrado": false,
+      "producto": "Módulo Vacaciones",
+      "valor": 165,
+      "owner": "Laura Medina",
+      "creado": "2026-11-24T16:31:24-06:00",
+      "modificado": "2026-11-25T11:12:09-06:00",
+      "tipo": "",
+      "mes_cierre": null,
+      "moneda": "MXN",
+      "usuarios": 11,
+      "precio_usuario": 15,
+      "razon_perdida": "",
+      "razon_perdida_otro": "",
+      "fecha_perdido": null,
+      "fecha_facturando": null
+    },
+    {
       "id": "3525045000677467914",
       "trato": "Farmacéuticos Rayere (alertas)",
       "cuenta": "Farmacéuticos Rayere",
@@ -13373,7 +13445,7 @@
       "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
-      "usuarios": null,
+      "usuarios": 500,
       "precio_usuario": null,
       "razon_perdida": "",
       "razon_perdida_otro": "",
@@ -13723,13 +13795,13 @@
       "cuenta_id": "3525045000669488110",
       "kam": "",
       "correo_kam": "",
-      "etapa": "7. Implementando",
+      "etapa": "8. Facturando",
       "cerrado": false,
       "producto": "Módulo Vacaciones",
       "valor": 555,
       "owner": "Laura Medina",
       "creado": "2026-10-26T16:51:58-06:00",
-      "modificado": "2026-11-13T11:25:57-06:00",
+      "modificado": "2026-11-25T11:28:07-06:00",
       "tipo": "",
       "mes_cierre": null,
       "moneda": "MXN",
@@ -13738,7 +13810,7 @@
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
-      "fecha_facturando": null
+      "fecha_facturando": "2026-11-25T11:28:00-06:00"
     },
     {
       "id": "3525045000508844047",
@@ -13973,8 +14045,8 @@
       "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
-      "usuarios": null,
-      "precio_usuario": null,
+      "usuarios": 19,
+      "precio_usuario": 40,
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
@@ -14035,13 +14107,13 @@
       "cuenta_id": "3525045000576839450",
       "kam": "",
       "correo_kam": "",
-      "etapa": "7. Implementando",
+      "etapa": "8. Facturando",
       "cerrado": false,
       "producto": "Módulo Vacaciones",
       "valor": 360,
       "owner": "Laura Medina",
       "creado": "2026-11-17T09:20:54-06:00",
-      "modificado": "2026-11-17T09:46:54-06:00",
+      "modificado": "2026-11-25T11:26:27-06:00",
       "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
@@ -14050,7 +14122,7 @@
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
-      "fecha_facturando": null
+      "fecha_facturando": "2026-11-25T11:26:00-06:00"
     },
     {
       "id": "3525045000665863174",
@@ -14179,13 +14251,13 @@
       "cuenta_id": "3525045000677206660",
       "kam": "",
       "correo_kam": "",
-      "etapa": "7. Implementando",
+      "etapa": "8. Facturando",
       "cerrado": false,
       "producto": "Módulo Vacaciones",
       "valor": 90,
       "owner": "Laura Medina",
       "creado": "2026-11-18T16:48:43-06:00",
-      "modificado": "2026-11-18T18:17:41-06:00",
+      "modificado": "2026-11-25T11:26:08-06:00",
       "tipo": "",
       "mes_cierre": null,
       "moneda": "MXN",
@@ -14194,7 +14266,7 @@
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
-      "fecha_facturando": null
+      "fecha_facturando": "2026-11-25T11:26:00-06:00"
     },
     {
       "id": "3525045000649350010",
@@ -14525,8 +14597,8 @@
       "tipo": "Cliente Nuevo",
       "mes_cierre": null,
       "moneda": "MXN",
-      "usuarios": null,
-      "precio_usuario": null,
+      "usuarios": 250,
+      "precio_usuario": 40,
       "razon_perdida": "",
       "razon_perdida_otro": "",
       "fecha_perdido": null,
@@ -14775,15 +14847,444 @@
   ],
   "implementaciones": [
     {
-      "id": "3525045000685709016",
-      "nombre": "App Equipos (Migración)",
-      "cuenta": "JUGUETRON LEGO",
-      "cuenta_id": "3525045000272607068",
+      "id": "3525045000687748684",
+      "nombre": "Tequilera Santa Lucia",
+      "cuenta": "Tequilera Santa Lucia",
+      "cuenta_id": "3525045000647972055",
+      "etapa": "1. En Traspaso",
+      "jp": "Ximena Quintero",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T12:20:26-06:00"
+    },
+    {
+      "id": "3525045000687897094",
+      "nombre": "Implementación NOVIBET (Asistencia)",
+      "cuenta": "NOVIBET",
+      "cuenta_id": "3525045000687897077",
+      "etapa": "1. En Traspaso",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T12:10:16-06:00"
+    },
+    {
+      "id": "3525045000688396049",
+      "nombre": "FARMACIAS ORTEGA",
+      "cuenta": "Farmacia Ortega",
+      "cuenta_id": "3525045000674627018",
+      "etapa": "0. Sin Asignar",
+      "jp": "",
+      "fecha_fin": null,
+      "semaforo": "",
+      "modificado": "2026-11-25T11:21:59-06:00"
+    },
+    {
+      "id": "3525045000667485658",
+      "nombre": "Implementación | CORROCON GDL| Asistencia+ WF Vacaciones + WF Permisos + Planificador Inteligente",
+      "cuenta": "Corrocon",
+      "cuenta_id": "3525045000659202629",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-12-09",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T10:53:10-06:00"
+    },
+    {
+      "id": "3525045000679871043",
+      "nombre": "Kepler - Asistencia - Integración - Vacaciones - Permisos - Acceso Falso",
+      "cuenta": "KLEPER Constructora",
+      "cuenta_id": "3525045000648820001",
+      "etapa": "3. En Ejecución",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2027-02-03",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T09:59:18-06:00"
+    },
+    {
+      "id": "3525045000683350507",
+      "nombre": "Prothesika",
+      "cuenta": "Prothesika",
+      "cuenta_id": "3525045000676853936",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T08:57:26-06:00"
+    },
+    {
+      "id": "3525045000683228051",
+      "nombre": "El mirador de chapultepec",
+      "cuenta": "Recruiter",
+      "cuenta_id": "3525045000678091042",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T08:52:19-06:00"
+    },
+    {
+      "id": "3525045000676988026",
+      "nombre": "EIA CONSTRUCCIONES",
+      "cuenta": "EIA CONTRUCCIONES",
+      "cuenta_id": "3525045000664574077",
       "etapa": "3. En Ejecución",
       "jp": "Egla Rivas",
-      "fecha_fin": "2027-03-24",
+      "fecha_fin": "2026-12-28",
       "semaforo": "Verde",
-      "modificado": "2026-11-24T17:49:09-06:00"
+      "modificado": "2026-11-25T08:50:40-06:00"
+    },
+    {
+      "id": "3525045000683271021",
+      "nombre": "Asesores Multinacionales",
+      "cuenta": "Asesores Multinacionales SLI",
+      "cuenta_id": "3525045000673842457",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T08:49:50-06:00"
+    },
+    {
+      "id": "3525045000687861578",
+      "nombre": "PRANSO ASISTENCIA",
+      "cuenta": "PRANSO SOLUCIONES",
+      "cuenta_id": "3525045000681840460",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T08:44:03-06:00"
+    },
+    {
+      "id": "3525045000682804247",
+      "nombre": "Implementación | DISAN | Asistencia + WF Vacaciones + WF Permisos",
+      "cuenta": "Disan",
+      "cuenta_id": "3525045000635884135",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-03-30",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T08:36:36-06:00"
+    },
+    {
+      "id": "3525045000668218263",
+      "nombre": "Implementación Maomi Desarrollos",
+      "cuenta": "Maomi Desarrollos",
+      "cuenta_id": "3525045000666619636",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-18",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:28:59-06:00"
+    },
+    {
+      "id": "3525045000679217137",
+      "nombre": "Implementación | SUNSHINE DELIVERS | Asistencia + Integración Buk",
+      "cuenta": "Sunshine Delivers",
+      "cuenta_id": "3525045000668118093",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-01-25",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:28:30-06:00"
+    },
+    {
+      "id": "3525045000679547221",
+      "nombre": "Implementación | CARESTREAM INTERNACIONAL | Asistencia",
+      "cuenta": "CARESTREAM INTERNACIONAL",
+      "cuenta_id": "3525045000637601153",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-02-02",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:28:28-06:00"
+    },
+    {
+      "id": "3525045000669502504",
+      "nombre": "Sucarheza - Asistencia, vacaciones, biometricos, app",
+      "cuenta": "DISTRIBUIDORA SUCAHERZA SA DE CV",
+      "cuenta_id": "3525045000627573323",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-28",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:28:13-06:00"
+    },
+    {
+      "id": "3525045000670516043",
+      "nombre": "PQ SIDESA - ASISTENCIA/PERMISOS Y VACACIONES/PLANIFICADOR/COMEDOR/ APP SUP",
+      "cuenta": "PQ CORPORATION",
+      "cuenta_id": "3525045000629322699",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-18",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:28:06-06:00"
+    },
+    {
+      "id": "3525045000679547203",
+      "nombre": "Implementación | CARESTREAM | Asistencia",
+      "cuenta": "CARESTREAM",
+      "cuenta_id": "3525045000630204344",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-02-09",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:28:03-06:00"
+    },
+    {
+      "id": "3525045000668008906",
+      "nombre": "Terminal Logistics implementacion",
+      "cuenta": "Términal Logistics",
+      "cuenta_id": "3525045000297122001",
+      "etapa": "Detenida",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-22",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:59-06:00"
+    },
+    {
+      "id": "3525045000681866089",
+      "nombre": "Implementación | SAN FELIPE ESCOLAR | Asistencia",
+      "cuenta": "San Felipe Escolar",
+      "cuenta_id": "3525045000656218114",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-03-12",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:58-06:00"
+    },
+    {
+      "id": "3525045000666594086",
+      "nombre": "APP y WA Kosmos",
+      "cuenta": "Corporativo Kosmos",
+      "cuenta_id": "3525045000094546230",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-30",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:54-06:00"
+    },
+    {
+      "id": "3525045000676899766",
+      "nombre": "MS Comercializadora e Importadora",
+      "cuenta": "MS COMERCIALIZADORA E IMPORTADORA",
+      "cuenta_id": "3525045000672390408",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-31",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:48-06:00"
+    },
+    {
+      "id": "3525045000676343044",
+      "nombre": "Implementación | MEJORAMIENTO DE SUELOS MENARD MEXICO| Asistencia+ WF Vacaciones + WF Permisos",
+      "cuenta": "MEJORAMIENTO DE SUELOS MENARD MEXICO",
+      "cuenta_id": "3525045000669488110",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-02-26",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:40-06:00"
+    },
+    {
+      "id": "3525045000682262487",
+      "nombre": "Implementacion | COLORERIAS | Asistencia",
+      "cuenta": "Colorerias SA de CV",
+      "cuenta_id": "3525045000645829047",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-03-10",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:39-06:00"
+    },
+    {
+      "id": "3525045000678112079",
+      "nombre": "Implementación Lubricantes Fuchs",
+      "cuenta": "Lubricantes Fuchs",
+      "cuenta_id": "3525045000653007084",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-31",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:33-06:00"
+    },
+    {
+      "id": "3525045000670572009",
+      "nombre": "Implementación | PIGSA | Asistencia",
+      "cuenta": "PIGSA",
+      "cuenta_id": "3525045000653101267",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-01-12",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:32-06:00"
+    },
+    {
+      "id": "3525045000669463068",
+      "nombre": "Asistencia - app - biométricos",
+      "cuenta": "Distribuidora Mariscos Bahía Kino, S.A. de C.V.",
+      "cuenta_id": "3525045000664574094",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-04",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:31-06:00"
+    },
+    {
+      "id": "3525045000662947048",
+      "nombre": "Asistencia - comedor y falso acceso",
+      "cuenta": "Nominativa (Asistencia)",
+      "cuenta_id": "3525045000650473001",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-24",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:31-06:00"
+    },
+    {
+      "id": "3525045000678034457",
+      "nombre": "Implementación | PRECISION VEHICLE | Asistencia + WF Vacaciones + WF Permisos",
+      "cuenta": "Precision Vehicle Logistics de México",
+      "cuenta_id": "3525045000672861200",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-03-19",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:29-06:00"
+    },
+    {
+      "id": "3525045000631926028",
+      "nombre": "Accesos,asistencia, permisos y vacaciones Netafim",
+      "cuenta": "NETAFIM",
+      "cuenta_id": "3525045000010332421",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-12-02",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:29-06:00"
+    },
+    {
+      "id": "3525045000653121190",
+      "nombre": "Implementación | SERVISEG | Asistencia+ Planificador Inteligente",
+      "cuenta": "SERVISEG (Seguridad)",
+      "cuenta_id": "3525045000642410276",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-11-27",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:03-06:00"
+    },
+    {
+      "id": "3525045000671912155",
+      "nombre": "Implementación | VINDE DINAMICA EMPRESARIAL | Asistencia + WF Vacaciones + WF Permisos",
+      "cuenta": "VINDE DINAMICA EMPRESARIAL S DE RL",
+      "cuenta_id": "3525045000659754080",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-02-26",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:27:00-06:00"
+    },
+    {
+      "id": "3525045000677446821",
+      "nombre": "LearningLab",
+      "cuenta": "LEARNING LAB",
+      "cuenta_id": "3525045000661710158",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:58-06:00"
+    },
+    {
+      "id": "3525045000682783336",
+      "nombre": "GRUPO AISEN",
+      "cuenta": "AISEN",
+      "cuenta_id": "3525045000672920081",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:55-06:00"
+    },
+    {
+      "id": "3525045000667080125",
+      "nombre": "Implementación | AGAVE DESARROLLOS | Asistencia+ WF Vacaciones + BI",
+      "cuenta": "Agave Desarrollos",
+      "cuenta_id": "3525045000589982025",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-12-17",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:55-06:00"
+    },
+    {
+      "id": "3525045000674491385",
+      "nombre": "Merici - Asistencia",
+      "cuenta": "MERICI",
+      "cuenta_id": "3525045000674491198",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:49-06:00"
+    },
+    {
+      "id": "3525045000676911116",
+      "nombre": "CDR de Coatzacoalcos",
+      "cuenta": "CDR de Coatzacoalcos",
+      "cuenta_id": "3525045000669488208",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:48-06:00"
+    },
+    {
+      "id": "3525045000673916311",
+      "nombre": "PACKMASTER SYSTEMS",
+      "cuenta": "Packmaster Systems",
+      "cuenta_id": "3525045000660101549",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:48-06:00"
+    },
+    {
+      "id": "3525045000669295198",
+      "nombre": "Bukal",
+      "cuenta": "BUKAL",
+      "cuenta_id": "3525045000667573186",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:41-06:00"
+    },
+    {
+      "id": "3525045000679150385",
+      "nombre": "Implementacion Rayere",
+      "cuenta": "Farmacéuticos Rayere",
+      "cuenta_id": "3525045000674530014",
+      "etapa": "3. En Ejecución",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2027-01-12",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:37-06:00"
+    },
+    {
+      "id": "3525045000682777091",
+      "nombre": "Romosa Tolúca",
+      "cuenta": "Romosa Toluca s de RL de CV",
+      "cuenta_id": "3525045000678740369",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:36-06:00"
     },
     {
       "id": "3525045000682288242",
@@ -14794,7 +15295,18 @@
       "jp": "Luis Cervantes",
       "fecha_fin": null,
       "semaforo": "Verde",
-      "modificado": "2026-11-24T17:38:34-06:00"
+      "modificado": "2026-11-25T04:26:34-06:00"
+    },
+    {
+      "id": "3525045000649031511",
+      "nombre": "Trafalgar sicoss",
+      "cuenta": "TRAFALGAR",
+      "cuenta_id": "3525045000634837015",
+      "etapa": "Detenida",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-10-02",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:30-06:00"
     },
     {
       "id": "3525045000682262574",
@@ -14805,18 +15317,469 @@
       "jp": "Luis Cervantes",
       "fecha_fin": null,
       "semaforo": "Verde",
-      "modificado": "2026-11-24T17:34:35-06:00"
+      "modificado": "2026-11-25T04:26:26-06:00"
     },
     {
-      "id": "3525045000687861578",
-      "nombre": "PRANSO ASISTENCIA",
-      "cuenta": "PRANSO SOLUCIONES",
-      "cuenta_id": "3525045000681840460",
+      "id": "3525045000684353172",
+      "nombre": "Implementación | PHARDERMA | Asistencia + WF Vacaciones + WF Permisos",
+      "cuenta": "Pharderma",
+      "cuenta_id": "3525045000576839450",
       "etapa": "2. En Planificación",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-03-01",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:25-06:00"
+    },
+    {
+      "id": "3525045000679195454",
+      "nombre": "STROKKUR",
+      "cuenta": "Strokkur de México",
+      "cuenta_id": "3525045000676870182",
+      "etapa": "3. En Ejecución",
       "jp": "Luis Cervantes",
       "fecha_fin": null,
       "semaforo": "Verde",
-      "modificado": "2026-11-24T17:02:09-06:00"
+      "modificado": "2026-11-25T04:26:23-06:00"
+    },
+    {
+      "id": "3525045000649526066",
+      "nombre": "Implementación Profina (Sicoss)",
+      "cuenta": "Profina",
+      "cuenta_id": "3525045000641620017",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-11-18",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:22-06:00"
+    },
+    {
+      "id": "3525045000670462522",
+      "nombre": "Liliana Mendoza Angeles",
+      "cuenta": "Liliana Mendoza Angeles",
+      "cuenta_id": "3525045000668929159",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:21-06:00"
+    },
+    {
+      "id": "3525045000660541105",
+      "nombre": "Sicop Asistencia Equipo",
+      "cuenta": "SICOP",
+      "cuenta_id": "3525045000647219629",
+      "etapa": "Detenida",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-12-04",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:19-06:00"
+    },
+    {
+      "id": "3525045000681866134",
+      "nombre": "Zapopan Escolar - Asistencia",
+      "cuenta": "Zapopan Escolar",
+      "cuenta_id": "3525045000677049004",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:17-06:00"
+    },
+    {
+      "id": "3525045000681852203",
+      "nombre": "La Dinastía",
+      "cuenta": "La Dinastía S de Rl de CV",
+      "cuenta_id": "3525045000672920288",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:16-06:00"
+    },
+    {
+      "id": "3525045000664531005",
+      "nombre": "Geckologistics Pto Vallarta",
+      "cuenta": "GECKOLOGISTICS",
+      "cuenta_id": "3525045000657179255",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-27",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:15-06:00"
+    },
+    {
+      "id": "3525045000681820149",
+      "nombre": "Centro de Rehabilitación RIE",
+      "cuenta": "Centro de Rehabilitación RIE",
+      "cuenta_id": "3525045000672591418",
+      "etapa": "3. En Ejecución",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:14-06:00"
+    },
+    {
+      "id": "3525045000668601356",
+      "nombre": "CENTRO DE RECICLAJE BAJA TEC",
+      "cuenta": "CENTRO DE RECICLAJE BAJA TEC MEXICO",
+      "cuenta_id": "3525045000629903007",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:10-06:00"
+    },
+    {
+      "id": "3525045000678163445",
+      "nombre": "ASISTENCIA - EMBOBINADOS RTG",
+      "cuenta": "Embobinados RTG",
+      "cuenta_id": "3525045000661355382",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:09-06:00"
+    },
+    {
+      "id": "3525045000666616572",
+      "nombre": "Implementación | TEVA MÉXICO | Asistencia+ WF Vacaciones + Permisos + Accesos + SSO",
+      "cuenta": "Teva Mexico",
+      "cuenta_id": "3525045000634119041",
+      "etapa": "3. En Ejecución",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2027-02-04",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:07-06:00"
+    },
+    {
+      "id": "3525045000640254064",
+      "nombre": "ARBOS",
+      "cuenta": "Arbos",
+      "cuenta_id": "3525045000636267094",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:07-06:00"
+    },
+    {
+      "id": "3525045000670429093",
+      "nombre": "EDIFICA ARLE",
+      "cuenta": "EDIFICA ARLE",
+      "cuenta_id": "3525045000666610145",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:26:06-06:00"
+    },
+    {
+      "id": "3525045000667856156",
+      "nombre": "Implementación - Asistencia - Go Trade - Frigosystem",
+      "cuenta": "Go trade MX S DE RL DE CV",
+      "cuenta_id": "3525045000053592412",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:25:51-06:00"
+    },
+    {
+      "id": "3525045000659248227",
+      "nombre": "Multimédica Metepec",
+      "cuenta": "Multimédica Metepec",
+      "cuenta_id": "3525045000651533322",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:25:48-06:00"
+    },
+    {
+      "id": "3525045000624117266",
+      "nombre": "ROKKINA",
+      "cuenta": "ROKKINA",
+      "cuenta_id": "3525045000612121530",
+      "etapa": "Detenida",
+      "jp": "Rocío Suárez",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:25:48-06:00"
+    },
+    {
+      "id": "3525045000667974109",
+      "nombre": "VENTAS ACUARIO",
+      "cuenta": "Ventas Acuario",
+      "cuenta_id": "3525045000659788861",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:25:42-06:00"
+    },
+    {
+      "id": "3525045000651752612",
+      "nombre": "Asistencia, Integración, vacaciones y permisos - IAMSA",
+      "cuenta": "IAMSA",
+      "cuenta_id": "3525045000602058423",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2027-01-08",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:25:22-06:00"
+    },
+    {
+      "id": "3525045000667086288",
+      "nombre": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
+      "cuenta": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
+      "cuenta_id": "3525045000649620311",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:25:06-06:00"
+    },
+    {
+      "id": "3525045000666144001",
+      "nombre": "Implementación | GRUPO DALSI | Asistencia",
+      "cuenta": "Grupo Dalsi",
+      "cuenta_id": "3525045000661691058",
+      "etapa": "Detenida",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-12-29",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:24:52-06:00"
+    },
+    {
+      "id": "3525045000660516308",
+      "nombre": "Industrias DCBS",
+      "cuenta": "Industrias DCBS",
+      "cuenta_id": "3525045000644858138",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-11-09",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:24:51-06:00"
+    },
+    {
+      "id": "3525045000631887143",
+      "nombre": "Pastos y Jardines Landscape",
+      "cuenta": "Pastos y Jardines Landscape",
+      "cuenta_id": "3525045000627032188",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:24:49-06:00"
+    },
+    {
+      "id": "3525045000630525175",
+      "nombre": "Schätz & Catanni",
+      "cuenta": "Schätz & Cattani Spa México",
+      "cuenta_id": "3525045000536386049",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": "2026-08-19",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:24:23-06:00"
+    },
+    {
+      "id": "3525045000639003260",
+      "nombre": "Implementación | PIVACSA | Asistencia+ WF Vacaciones",
+      "cuenta": "PIVACSA",
+      "cuenta_id": "3525045000551532404",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-10-02",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:24:11-06:00"
+    },
+    {
+      "id": "3525045000634002110",
+      "nombre": "Implementación J&T EXPRESS METROPOLITANA",
+      "cuenta": "J&T EXPRESS",
+      "cuenta_id": "3525045000260992026",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-09-18",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:24:08-06:00"
+    },
+    {
+      "id": "3525045000648621238",
+      "nombre": "CT AMÉRICA LATINA",
+      "cuenta": "CT AMERICA LATINA",
+      "cuenta_id": "3525045000641985007",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:24:05-06:00"
+    },
+    {
+      "id": "3525045000636114035",
+      "nombre": "Implementacion Dicka",
+      "cuenta": "DICKA LOGISTICS",
+      "cuenta_id": "3525045000545668197",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-10-27",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:24:03-06:00"
+    },
+    {
+      "id": "3525045000641282258",
+      "nombre": "CONSTRUCTORADEBASCULAS",
+      "cuenta": "CONSTRUCTORA DE BASCULAS",
+      "cuenta_id": "3525045000618029667",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:23:38-06:00"
+    },
+    {
+      "id": "3525045000623054652",
+      "nombre": "WALLGROW - ASISTENCIA",
+      "cuenta": "WALLGROW",
+      "cuenta_id": "3525045000614159505",
+      "etapa": "Detenida",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:23:37-06:00"
+    },
+    {
+      "id": "3525045000639367007",
+      "nombre": "Xander Asistencia y Vacaciones",
+      "cuenta": "XANDER",
+      "cuenta_id": "3525045000636647300",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:23:33-06:00"
+    },
+    {
+      "id": "3525045000617371111",
+      "nombre": "TRANSPORTES RUGA - ASISTENCIA + VACACIONES",
+      "cuenta": "Transportes Ruga",
+      "cuenta_id": "3525045000578056486",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-07-29",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:23:31-06:00"
+    },
+    {
+      "id": "3525045000629762182",
+      "nombre": "Implementación | PENHEALTH | Asistencia",
+      "cuenta": "PENHEALTH",
+      "cuenta_id": "3525045000526296256",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-09-24",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:23:29-06:00"
+    },
+    {
+      "id": "3525045000647586571",
+      "nombre": "Implementación Asistencia SEICSA - GRUPO MO",
+      "cuenta": "SEICSA",
+      "cuenta_id": "3525045000053667600",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2027-01-05",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:23:27-06:00"
+    },
+    {
+      "id": "3525045000673909041",
+      "nombre": "vacaciones Entia",
+      "cuenta": "ENTIA DE MEXICO SA DE CV",
+      "cuenta_id": "3525045000630418441",
+      "etapa": "Detenida",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2027-01-12",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:23:08-06:00"
+    },
+    {
+      "id": "3525045000630185119",
+      "nombre": "Implementación | DIVYA | Asistencia+ WF Vacaciones",
+      "cuenta": "DIVYA",
+      "cuenta_id": "3525045000625764077",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Rocío Suárez",
+      "fecha_fin": "2026-10-19",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:23:01-06:00"
+    },
+    {
+      "id": "3525045000641549109",
+      "nombre": "Soluciones en Mantenimiento Industrial MAQUI",
+      "cuenta": "Soluciones en Mantenimiento Industrial MAQUI",
+      "cuenta_id": "3525045000631372239",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Luis Cervantes",
+      "fecha_fin": null,
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:22:47-06:00"
+    },
+    {
+      "id": "3525045000616665532",
+      "nombre": "Implementación J&T EXPRESS JALISCO",
+      "cuenta": "J&T EXPRESS",
+      "cuenta_id": "3525045000260992026",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-07-01",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:20:53-06:00"
+    },
+    {
+      "id": "3525045000616728342",
+      "nombre": "Almacenadora AlSur",
+      "cuenta": "Almacenadora Sur SA de CV",
+      "cuenta_id": "3525045000417780328",
+      "etapa": "4. a) En Marcha Blanca (con pendientes)",
+      "jp": "Ximena Quintero",
+      "fecha_fin": "2026-07-24",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:20:14-06:00"
+    },
+    {
+      "id": "3525045000685709016",
+      "nombre": "App Equipos (Migración)",
+      "cuenta": "JUGUETRON LEGO",
+      "cuenta_id": "3525045000272607068",
+      "etapa": "3. En Ejecución",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2027-03-24",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:04:18-06:00"
+    },
+    {
+      "id": "3525045000609743775",
+      "nombre": "Accesos internos Softys",
+      "cuenta": "Softys México",
+      "cuenta_id": "3525045000244055039",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Daniel Peña",
+      "fecha_fin": "2026-07-03",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:03:43-06:00"
+    },
+    {
+      "id": "3525045000648874281",
+      "nombre": "Migración Modulo de Vacaciones COMEX",
+      "cuenta": "COMEX MEXICALI",
+      "cuenta_id": "3525045000235830314",
+      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
+      "jp": "Egla Rivas",
+      "fecha_fin": "2026-09-30",
+      "semaforo": "Verde",
+      "modificado": "2026-11-25T04:02:26-06:00"
     },
     {
       "id": "3525045000685997406",
@@ -14830,17 +15793,6 @@
       "modificado": "2026-11-24T16:55:00-06:00"
     },
     {
-      "id": "3525045000687897094",
-      "nombre": "Implementación NOVIBET (Asistencia)",
-      "cuenta": "NOVIBET",
-      "cuenta_id": "3525045000687897077",
-      "etapa": "0. Sin Asignar",
-      "jp": "",
-      "fecha_fin": null,
-      "semaforo": "",
-      "modificado": "2026-11-24T16:54:00-06:00"
-    },
-    {
       "id": "3525045000685784101",
       "nombre": "Imp Vacaciones Mesones",
       "cuenta": "BODEGA DE PAPEL MESONES SA DE CV",
@@ -14850,28 +15802,6 @@
       "fecha_fin": null,
       "semaforo": "Verde",
       "modificado": "2026-11-24T16:49:57-06:00"
-    },
-    {
-      "id": "3525045000687748684",
-      "nombre": "Tequilera Santa Lucia",
-      "cuenta": "Tequilera Santa Lucia",
-      "cuenta_id": "3525045000647972055",
-      "etapa": "0. Sin Asignar",
-      "jp": "",
-      "fecha_fin": null,
-      "semaforo": "",
-      "modificado": "2026-11-24T14:20:14-06:00"
-    },
-    {
-      "id": "3525045000687803062",
-      "nombre": "IMPLEMENTACIÓN GRUPO VENAT",
-      "cuenta": "GRUPO VENAT",
-      "cuenta_id": "3525045000675403136",
-      "etapa": "0. Sin Asignar",
-      "jp": "",
-      "fecha_fin": null,
-      "semaforo": "",
-      "modificado": "2026-11-24T13:59:16-06:00"
     },
     {
       "id": "3525045000687962343",
@@ -14907,28 +15837,6 @@
       "modificado": "2026-11-24T12:33:50-06:00"
     },
     {
-      "id": "3525045000683228051",
-      "nombre": "El mirador de chapultepec",
-      "cuenta": "Recruiter",
-      "cuenta_id": "3525045000678091042",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T12:10:27-06:00"
-    },
-    {
-      "id": "3525045000679871043",
-      "nombre": "Kepler - Asistencia - Integración - Vacaciones - Permisos - Acceso Falso",
-      "cuenta": "KLEPER Constructora",
-      "cuenta_id": "3525045000648820001",
-      "etapa": "3. En Ejecución",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2027-02-03",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T11:31:15-06:00"
-    },
-    {
       "id": "3525045000681866053",
       "nombre": "Geotecnica - Asistencia - Planificador Inteligente",
       "cuenta": "Geotecnia y Supevision Tecnica sa de cv",
@@ -14949,842 +15857,6 @@
       "fecha_fin": "2026-11-03",
       "semaforo": "Verde",
       "modificado": "2026-11-24T09:28:52-06:00"
-    },
-    {
-      "id": "3525045000683271021",
-      "nombre": "Asesores Multinacionales",
-      "cuenta": "Asesores Multinacionales SLI",
-      "cuenta_id": "3525045000673842457",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T06:32:34-06:00"
-    },
-    {
-      "id": "3525045000682783336",
-      "nombre": "GRUPO AISEN",
-      "cuenta": "AISEN",
-      "cuenta_id": "3525045000672920081",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:31-06:00"
-    },
-    {
-      "id": "3525045000679547203",
-      "nombre": "Implementación | CARESTREAM | Asistencia",
-      "cuenta": "CARESTREAM",
-      "cuenta_id": "3525045000630204344",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-02-09",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:30-06:00"
-    },
-    {
-      "id": "3525045000682262487",
-      "nombre": "Implementacion | COLORERIAS | Asistencia",
-      "cuenta": "Colorerias SA de CV",
-      "cuenta_id": "3525045000645829047",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-03-10",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:29-06:00"
-    },
-    {
-      "id": "3525045000676988026",
-      "nombre": "EIA CONSTRUCCIONES",
-      "cuenta": "EIA CONTRUCCIONES",
-      "cuenta_id": "3525045000664574077",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-28",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:28-06:00"
-    },
-    {
-      "id": "3525045000677446821",
-      "nombre": "LearningLab",
-      "cuenta": "LEARNING LAB",
-      "cuenta_id": "3525045000661710158",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:26-06:00"
-    },
-    {
-      "id": "3525045000676899766",
-      "nombre": "MS Comercializadora e Importadora",
-      "cuenta": "MS COMERCIALIZADORA E IMPORTADORA",
-      "cuenta_id": "3525045000672390408",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-31",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:25-06:00"
-    },
-    {
-      "id": "3525045000676911116",
-      "nombre": "CDR de Coatzacoalcos",
-      "cuenta": "CDR de Coatzacoalcos",
-      "cuenta_id": "3525045000669488208",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:19-06:00"
-    },
-    {
-      "id": "3525045000674491385",
-      "nombre": "Merici - Asistencia",
-      "cuenta": "MERICI",
-      "cuenta_id": "3525045000674491198",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:16-06:00"
-    },
-    {
-      "id": "3525045000673916311",
-      "nombre": "PACKMASTER SYSTEMS",
-      "cuenta": "Packmaster Systems",
-      "cuenta_id": "3525045000660101549",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:15-06:00"
-    },
-    {
-      "id": "3525045000682777091",
-      "nombre": "Romosa Tolúca",
-      "cuenta": "Romosa Toluca s de RL de CV",
-      "cuenta_id": "3525045000678740369",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:12-06:00"
-    },
-    {
-      "id": "3525045000669295198",
-      "nombre": "Bukal",
-      "cuenta": "BUKAL",
-      "cuenta_id": "3525045000667573186",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:09-06:00"
-    },
-    {
-      "id": "3525045000667485658",
-      "nombre": "Implementación | CORROCON GDL| Asistencia+ WF Vacaciones + WF Permisos + Planificador Inteligente",
-      "cuenta": "Corrocon",
-      "cuenta_id": "3525045000659202629",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-12-09",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:08-06:00"
-    },
-    {
-      "id": "3525045000679217137",
-      "nombre": "Implementación | SUNSHINE DELIVERS | Asistencia + Integración Buk",
-      "cuenta": "Sunshine Delivers",
-      "cuenta_id": "3525045000668118093",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-01-25",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:26:07-06:00"
-    },
-    {
-      "id": "3525045000684353172",
-      "nombre": "Implementación | PHARDERMA | Asistencia + WF Vacaciones + WF Permisos",
-      "cuenta": "Pharderma",
-      "cuenta_id": "3525045000576839450",
-      "etapa": "2. En Planificación",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-03-01",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:59-06:00"
-    },
-    {
-      "id": "3525045000679150385",
-      "nombre": "Implementacion Rayere",
-      "cuenta": "Farmacéuticos Rayere",
-      "cuenta_id": "3525045000674530014",
-      "etapa": "3. En Ejecución",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2027-01-12",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:59-06:00"
-    },
-    {
-      "id": "3525045000670462522",
-      "nombre": "Liliana Mendoza Angeles",
-      "cuenta": "Liliana Mendoza Angeles",
-      "cuenta_id": "3525045000668929159",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:58-06:00"
-    },
-    {
-      "id": "3525045000631926028",
-      "nombre": "Accesos,asistencia, permisos y vacaciones Netafim",
-      "cuenta": "NETAFIM",
-      "cuenta_id": "3525045000010332421",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-12-02",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:57-06:00"
-    },
-    {
-      "id": "3525045000679195454",
-      "nombre": "STROKKUR",
-      "cuenta": "Strokkur de México",
-      "cuenta_id": "3525045000676870182",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:53-06:00"
-    },
-    {
-      "id": "3525045000668008906",
-      "nombre": "Terminal Logistics implementacion",
-      "cuenta": "Términal Logistics",
-      "cuenta_id": "3525045000297122001",
-      "etapa": "Detenida",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-22",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:53-06:00"
-    },
-    {
-      "id": "3525045000668218263",
-      "nombre": "Implementación Maomi Desarrollos",
-      "cuenta": "Maomi Desarrollos",
-      "cuenta_id": "3525045000666619636",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-18",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:52-06:00"
-    },
-    {
-      "id": "3525045000681866134",
-      "nombre": "Zapopan Escolar - Asistencia",
-      "cuenta": "Zapopan Escolar",
-      "cuenta_id": "3525045000677049004",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:50-06:00"
-    },
-    {
-      "id": "3525045000681852203",
-      "nombre": "La Dinastía",
-      "cuenta": "La Dinastía S de Rl de CV",
-      "cuenta_id": "3525045000672920288",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:48-06:00"
-    },
-    {
-      "id": "3525045000669502504",
-      "nombre": "Sucarheza - Asistencia, vacaciones, biometricos, app",
-      "cuenta": "DISTRIBUIDORA SUCAHERZA SA DE CV",
-      "cuenta_id": "3525045000627573323",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-28",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:48-06:00"
-    },
-    {
-      "id": "3525045000683350507",
-      "nombre": "Prothesika",
-      "cuenta": "Prothesika",
-      "cuenta_id": "3525045000676853936",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:47-06:00"
-    },
-    {
-      "id": "3525045000681820149",
-      "nombre": "Centro de Rehabilitación RIE",
-      "cuenta": "Centro de Rehabilitación RIE",
-      "cuenta_id": "3525045000672591418",
-      "etapa": "3. En Ejecución",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:47-06:00"
-    },
-    {
-      "id": "3525045000670572009",
-      "nombre": "Implementación | PIGSA | Asistencia",
-      "cuenta": "PIGSA",
-      "cuenta_id": "3525045000653101267",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-01-12",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:44-06:00"
-    },
-    {
-      "id": "3525045000670429093",
-      "nombre": "EDIFICA ARLE",
-      "cuenta": "EDIFICA ARLE",
-      "cuenta_id": "3525045000666610145",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:42-06:00"
-    },
-    {
-      "id": "3525045000670516043",
-      "nombre": "PQ SIDESA - ASISTENCIA/PERMISOS Y VACACIONES/PLANIFICADOR/COMEDOR/ APP SUP",
-      "cuenta": "PQ CORPORATION",
-      "cuenta_id": "3525045000629322699",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-18",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:41-06:00"
-    },
-    {
-      "id": "3525045000668601356",
-      "nombre": "CENTRO DE RECICLAJE BAJA TEC",
-      "cuenta": "CENTRO DE RECICLAJE BAJA TEC MEXICO",
-      "cuenta_id": "3525045000629903007",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:39-06:00"
-    },
-    {
-      "id": "3525045000678163445",
-      "nombre": "ASISTENCIA - EMBOBINADOS RTG",
-      "cuenta": "Embobinados RTG",
-      "cuenta_id": "3525045000661355382",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:38-06:00"
-    },
-    {
-      "id": "3525045000682804247",
-      "nombre": "Implementación | DISAN | Asistencia + WF Vacaciones + WF Permisos",
-      "cuenta": "Disan",
-      "cuenta_id": "3525045000635884135",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-03-30",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:19-06:00"
-    },
-    {
-      "id": "3525045000681866089",
-      "nombre": "Implementación | SAN FELIPE ESCOLAR | Asistencia",
-      "cuenta": "San Felipe Escolar",
-      "cuenta_id": "3525045000656218114",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-03-12",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:18-06:00"
-    },
-    {
-      "id": "3525045000678112079",
-      "nombre": "Implementación Lubricantes Fuchs",
-      "cuenta": "Lubricantes Fuchs",
-      "cuenta_id": "3525045000653007084",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-31",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:17-06:00"
-    },
-    {
-      "id": "3525045000678034457",
-      "nombre": "Implementación | PRECISION VEHICLE | Asistencia + WF Vacaciones + WF Permisos",
-      "cuenta": "Precision Vehicle Logistics de México",
-      "cuenta_id": "3525045000672861200",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-03-19",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:17-06:00"
-    },
-    {
-      "id": "3525045000679547221",
-      "nombre": "Implementación | CARESTREAM INTERNACIONAL | Asistencia",
-      "cuenta": "CARESTREAM INTERNACIONAL",
-      "cuenta_id": "3525045000637601153",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-02-02",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:16-06:00"
-    },
-    {
-      "id": "3525045000676343044",
-      "nombre": "Implementación | MEJORAMIENTO DE SUELOS MENARD MEXICO| Asistencia+ WF Vacaciones + WF Permisos",
-      "cuenta": "MEJORAMIENTO DE SUELOS MENARD MEXICO",
-      "cuenta_id": "3525045000669488110",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-02-26",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:15-06:00"
-    },
-    {
-      "id": "3525045000669463068",
-      "nombre": "Asistencia - app - biométricos",
-      "cuenta": "Distribuidora Mariscos Bahía Kino, S.A. de C.V.",
-      "cuenta_id": "3525045000664574094",
-      "etapa": "3. En Ejecución",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-04",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:14-06:00"
-    },
-    {
-      "id": "3525045000671912155",
-      "nombre": "Implementación | VINDE DINAMICA EMPRESARIAL | Asistencia + WF Vacaciones + WF Permisos",
-      "cuenta": "VINDE DINAMICA EMPRESARIAL S DE RL",
-      "cuenta_id": "3525045000659754080",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-02-26",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:13-06:00"
-    },
-    {
-      "id": "3525045000667856156",
-      "nombre": "Implementación - Asistencia - Go Trade - Frigosystem",
-      "cuenta": "Go trade MX S DE RL DE CV",
-      "cuenta_id": "3525045000053592412",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:12-06:00"
-    },
-    {
-      "id": "3525045000667080125",
-      "nombre": "Implementación | AGAVE DESARROLLOS | Asistencia+ WF Vacaciones + BI",
-      "cuenta": "Agave Desarrollos",
-      "cuenta_id": "3525045000589982025",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-12-17",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:08-06:00"
-    },
-    {
-      "id": "3525045000667974109",
-      "nombre": "VENTAS ACUARIO",
-      "cuenta": "Ventas Acuario",
-      "cuenta_id": "3525045000659788861",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:06-06:00"
-    },
-    {
-      "id": "3525045000666594086",
-      "nombre": "APP y WA Kosmos",
-      "cuenta": "Corporativo Kosmos",
-      "cuenta_id": "3525045000094546230",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-30",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:25:01-06:00"
-    },
-    {
-      "id": "3525045000667086288",
-      "nombre": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
-      "cuenta": "CERCA - CENTRO DE ENERGIA RENOVABLE Y CALIDAD AMBIENTAL",
-      "cuenta_id": "3525045000649620311",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:24:39-06:00"
-    },
-    {
-      "id": "3525045000653121190",
-      "nombre": "Implementación | SERVISEG | Asistencia+ Planificador Inteligente",
-      "cuenta": "SERVISEG (Seguridad)",
-      "cuenta_id": "3525045000642410276",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-11-27",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:24:27-06:00"
-    },
-    {
-      "id": "3525045000662947048",
-      "nombre": "Asistencia - comedor y falso acceso",
-      "cuenta": "Nominativa (Asistencia)",
-      "cuenta_id": "3525045000650473001",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-24",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:24:26-06:00"
-    },
-    {
-      "id": "3525045000659248227",
-      "nombre": "Multimédica Metepec",
-      "cuenta": "Multimédica Metepec",
-      "cuenta_id": "3525045000651533322",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:24:21-06:00"
-    },
-    {
-      "id": "3525045000660541105",
-      "nombre": "Sicop Asistencia Equipo",
-      "cuenta": "SICOP",
-      "cuenta_id": "3525045000647219629",
-      "etapa": "Detenida",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-12-04",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:24:14-06:00"
-    },
-    {
-      "id": "3525045000651752612",
-      "nombre": "Asistencia, Integración, vacaciones y permisos - IAMSA",
-      "cuenta": "IAMSA",
-      "cuenta_id": "3525045000602058423",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2027-01-08",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:24:11-06:00"
-    },
-    {
-      "id": "3525045000649031511",
-      "nombre": "Trafalgar sicoss",
-      "cuenta": "TRAFALGAR",
-      "cuenta_id": "3525045000634837015",
-      "etapa": "Detenida",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-10-02",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:57-06:00"
-    },
-    {
-      "id": "3525045000664531005",
-      "nombre": "Geckologistics Pto Vallarta",
-      "cuenta": "GECKOLOGISTICS",
-      "cuenta_id": "3525045000657179255",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-27",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:52-06:00"
-    },
-    {
-      "id": "3525045000649526066",
-      "nombre": "Implementación Profina (Sicoss)",
-      "cuenta": "Profina",
-      "cuenta_id": "3525045000641620017",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-11-18",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:52-06:00"
-    },
-    {
-      "id": "3525045000666144001",
-      "nombre": "Implementación | GRUPO DALSI | Asistencia",
-      "cuenta": "Grupo Dalsi",
-      "cuenta_id": "3525045000661691058",
-      "etapa": "Detenida",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-12-29",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:47-06:00"
-    },
-    {
-      "id": "3525045000660516308",
-      "nombre": "Industrias DCBS",
-      "cuenta": "Industrias DCBS",
-      "cuenta_id": "3525045000644858138",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-11-09",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:46-06:00"
-    },
-    {
-      "id": "3525045000666616572",
-      "nombre": "Implementación | TEVA MÉXICO | Asistencia+ WF Vacaciones + Permisos + Accesos + SSO",
-      "cuenta": "Teva Mexico",
-      "cuenta_id": "3525045000634119041",
-      "etapa": "3. En Ejecución",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2027-02-04",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:41-06:00"
-    },
-    {
-      "id": "3525045000648621238",
-      "nombre": "CT AMÉRICA LATINA",
-      "cuenta": "CT AMERICA LATINA",
-      "cuenta_id": "3525045000641985007",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:39-06:00"
-    },
-    {
-      "id": "3525045000639367007",
-      "nombre": "Xander Asistencia y Vacaciones",
-      "cuenta": "XANDER",
-      "cuenta_id": "3525045000636647300",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:33-06:00"
-    },
-    {
-      "id": "3525045000640254064",
-      "nombre": "ARBOS",
-      "cuenta": "Arbos",
-      "cuenta_id": "3525045000636267094",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:25-06:00"
-    },
-    {
-      "id": "3525045000630525175",
-      "nombre": "Schätz & Catanni",
-      "cuenta": "Schätz & Cattani Spa México",
-      "cuenta_id": "3525045000536386049",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": "2026-08-19",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:14-06:00"
-    },
-    {
-      "id": "3525045000624117266",
-      "nombre": "ROKKINA",
-      "cuenta": "ROKKINA",
-      "cuenta_id": "3525045000612121530",
-      "etapa": "Detenida",
-      "jp": "Rocío Suárez",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:23:08-06:00"
-    },
-    {
-      "id": "3525045000631887143",
-      "nombre": "Pastos y Jardines Landscape",
-      "cuenta": "Pastos y Jardines Landscape",
-      "cuenta_id": "3525045000627032188",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:22:52-06:00"
-    },
-    {
-      "id": "3525045000634002110",
-      "nombre": "Implementación J&T EXPRESS METROPOLITANA",
-      "cuenta": "J&T EXPRESS",
-      "cuenta_id": "3525045000260992026",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-09-18",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:22:49-06:00"
-    },
-    {
-      "id": "3525045000673909041",
-      "nombre": "vacaciones Entia",
-      "cuenta": "ENTIA DE MEXICO SA DE CV",
-      "cuenta_id": "3525045000630418441",
-      "etapa": "Detenida",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2027-01-12",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:22:47-06:00"
-    },
-    {
-      "id": "3525045000617371111",
-      "nombre": "TRANSPORTES RUGA - ASISTENCIA + VACACIONES",
-      "cuenta": "Transportes Ruga",
-      "cuenta_id": "3525045000578056486",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-07-29",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:22:30-06:00"
-    },
-    {
-      "id": "3525045000629762182",
-      "nombre": "Implementación | PENHEALTH | Asistencia",
-      "cuenta": "PENHEALTH",
-      "cuenta_id": "3525045000526296256",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-09-24",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:22:20-06:00"
-    },
-    {
-      "id": "3525045000647586571",
-      "nombre": "Implementación Asistencia SEICSA - GRUPO MO",
-      "cuenta": "SEICSA",
-      "cuenta_id": "3525045000053667600",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2027-01-05",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:22:19-06:00"
-    },
-    {
-      "id": "3525045000623054652",
-      "nombre": "WALLGROW - ASISTENCIA",
-      "cuenta": "WALLGROW",
-      "cuenta_id": "3525045000614159505",
-      "etapa": "Detenida",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:22:06-06:00"
-    },
-    {
-      "id": "3525045000639003260",
-      "nombre": "Implementación | PIVACSA | Asistencia+ WF Vacaciones",
-      "cuenta": "PIVACSA",
-      "cuenta_id": "3525045000551532404",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-10-02",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:21:47-06:00"
-    },
-    {
-      "id": "3525045000636114035",
-      "nombre": "Implementacion Dicka",
-      "cuenta": "DICKA LOGISTICS",
-      "cuenta_id": "3525045000545668197",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-10-27",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:21:19-06:00"
-    },
-    {
-      "id": "3525045000641549109",
-      "nombre": "Soluciones en Mantenimiento Industrial MAQUI",
-      "cuenta": "Soluciones en Mantenimiento Industrial MAQUI",
-      "cuenta_id": "3525045000631372239",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:21:17-06:00"
-    },
-    {
-      "id": "3525045000630185119",
-      "nombre": "Implementación | DIVYA | Asistencia+ WF Vacaciones",
-      "cuenta": "DIVYA",
-      "cuenta_id": "3525045000625764077",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Rocío Suárez",
-      "fecha_fin": "2026-10-19",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:21:02-06:00"
-    },
-    {
-      "id": "3525045000641282258",
-      "nombre": "CONSTRUCTORADEBASCULAS",
-      "cuenta": "CONSTRUCTORA DE BASCULAS",
-      "cuenta_id": "3525045000618029667",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Luis Cervantes",
-      "fecha_fin": null,
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:20:57-06:00"
-    },
-    {
-      "id": "3525045000616728342",
-      "nombre": "Almacenadora AlSur",
-      "cuenta": "Almacenadora Sur SA de CV",
-      "cuenta_id": "3525045000417780328",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-07-24",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:18:37-06:00"
-    },
-    {
-      "id": "3525045000616665532",
-      "nombre": "Implementación J&T EXPRESS JALISCO",
-      "cuenta": "J&T EXPRESS",
-      "cuenta_id": "3525045000260992026",
-      "etapa": "4. a) En Marcha Blanca (con pendientes)",
-      "jp": "Ximena Quintero",
-      "fecha_fin": "2026-07-01",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:18:21-06:00"
-    },
-    {
-      "id": "3525045000609743775",
-      "nombre": "Accesos internos Softys",
-      "cuenta": "Softys México",
-      "cuenta_id": "3525045000244055039",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Daniel Peña",
-      "fecha_fin": "2026-07-03",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:03:30-06:00"
-    },
-    {
-      "id": "3525045000648874281",
-      "nombre": "Migración Modulo de Vacaciones COMEX",
-      "cuenta": "COMEX MEXICALI",
-      "cuenta_id": "3525045000235830314",
-      "etapa": "4. b) En Marcha Blanca (sin pendientes)",
-      "jp": "Egla Rivas",
-      "fecha_fin": "2026-09-30",
-      "semaforo": "Verde",
-      "modificado": "2026-11-24T04:02:13-06:00"
     },
     {
       "id": "3525045000687120818",
@@ -16074,198 +16146,201 @@
     }
   ],
   "implementaciones_por_cuenta": {
-    "3525045000272607068": 3,
-    "3525045000616641169": 2,
-    "3525045000633910449": 1,
-    "3525045000681840460": 1,
-    "3525045000664793653": 1,
-    "3525045000687897077": 1,
-    "3525045000628074709": 3,
     "3525045000647972055": 1,
     "3525045000675403136": 2,
-    "3525045000684462054": 1,
-    "3525045000676278494": 2,
-    "3525045000118274992": 1,
-    "3525045000678091042": 2,
-    "3525045000648820001": 1,
-    "3525045000647219467": 1,
-    "3525045000478422670": 2,
-    "3525045000673842457": 1,
-    "3525045000672920081": 3,
-    "3525045000630204344": 2,
-    "3525045000645829047": 1,
-    "3525045000664574077": 1,
-    "3525045000661710158": 1,
-    "3525045000672390408": 2,
-    "3525045000669488208": 1,
-    "3525045000094546145": 4,
-    "3525045000674491198": 1,
-    "3525045000660101549": 1,
-    "3525045000678740369": 2,
-    "3525045000667573186": 1,
+    "3525045000687897077": 1,
+    "3525045000674627018": 1,
     "3525045000659202629": 2,
-    "3525045000668118093": 2,
-    "3525045000576839450": 1,
-    "3525045000674530014": 1,
-    "3525045000668929159": 1,
-    "3525045000010332421": 2,
-    "3525045000676870182": 1,
-    "3525045000297122001": 1,
+    "3525045000648820001": 1,
+    "3525045000676853936": 1,
+    "3525045000678091042": 2,
+    "3525045000664574077": 1,
+    "3525045000673842457": 1,
+    "3525045000681840460": 1,
+    "3525045000635884135": 1,
     "3525045000666619636": 1,
+    "3525045000668118093": 2,
+    "3525045000637601153": 2,
+    "3525045000627573323": 1,
+    "3525045000629322699": 1,
+    "3525045000630204344": 2,
+    "3525045000297122001": 1,
+    "3525045000656218114": 1,
+    "3525045000094546145": 4,
+    "3525045000094546230": 1,
+    "3525045000672390408": 2,
+    "3525045000669488110": 1,
+    "3525045000645829047": 1,
+    "3525045000653007084": 2,
+    "3525045000653101267": 1,
+    "3525045000664574094": 1,
+    "3525045000650473001": 3,
+    "3525045000672861200": 1,
+    "3525045000010332421": 2,
+    "3525045000598015098": 1,
+    "3525045000642410276": 1,
+    "3525045000659754080": 1,
+    "3525045000661710158": 1,
+    "3525045000672920081": 3,
+    "3525045000589982025": 1,
+    "3525045000674491198": 1,
+    "3525045000669488208": 1,
+    "3525045000660101549": 1,
+    "3525045000667573186": 1,
+    "3525045000631723177": 3,
+    "3525045000600047493": 1,
+    "3525045000674530014": 1,
+    "3525045000645797107": 4,
+    "3525045000678740369": 2,
+    "3525045000616641169": 2,
+    "3525045000657233438": 3,
+    "3525045000647219305": 1,
+    "3525045000634837015": 1,
+    "3525045000633910449": 1,
+    "3525045000576839450": 1,
+    "3525045000676870182": 1,
+    "3525045000641620017": 1,
+    "3525045000668929159": 1,
+    "3525045000647219629": 3,
     "3525045000677049004": 1,
     "3525045000672920288": 1,
-    "3525045000627573323": 1,
-    "3525045000676853936": 1,
+    "3525045000657179255": 3,
     "3525045000672591418": 1,
-    "3525045000653101267": 1,
-    "3525045000666610145": 1,
-    "3525045000629322699": 1,
     "3525045000629903007": 1,
+    "3525045000488297431": 1,
     "3525045000661355382": 1,
-    "3525045000635884135": 1,
-    "3525045000656218114": 1,
-    "3525045000653007084": 2,
-    "3525045000672861200": 1,
-    "3525045000637601153": 2,
-    "3525045000669488110": 1,
-    "3525045000664574094": 1,
-    "3525045000659754080": 1,
+    "3525045000634119041": 1,
+    "3525045000636267094": 1,
+    "3525045000666610145": 1,
     "3525045000053592412": 2,
-    "3525045000647681177": 1,
-    "3525045000589982025": 1,
+    "3525045000629049003": 1,
+    "3525045000651533322": 2,
+    "3525045000612121530": 1,
+    "3525045000646996779": 1,
     "3525045000637352158": 1,
     "3525045000659788861": 1,
-    "3525045000598015098": 1,
-    "3525045000094546230": 1,
-    "3525045000646504074": 1,
-    "3525045000657233438": 3,
-    "3525045000649620311": 1,
-    "3525045000642410276": 1,
-    "3525045000650473001": 3,
-    "3525045000647219305": 1,
-    "3525045000646996779": 1,
-    "3525045000651533322": 2,
-    "3525045000647219629": 3,
+    "3525045000260992026": 12,
+    "3525045000636164502": 1,
     "3525045000602058423": 1,
-    "3525045000645797107": 4,
-    "3525045000629886007": 2,
-    "3525045000638366322": 1,
-    "3525045000634837015": 1,
-    "3525045000657179255": 3,
-    "3525045000634303511": 1,
-    "3525045000641620017": 1,
-    "3525045000635505348": 2,
+    "3525045000646504074": 1,
+    "3525045000647681177": 1,
+    "3525045000628074709": 3,
+    "3525045000394740282": 1,
+    "3525045000380249726": 2,
+    "3525045000649620311": 1,
+    "3525045000631372459": 1,
+    "3525045000577986714": 2,
     "3525045000661691058": 2,
     "3525045000644858138": 1,
-    "3525045000634119041": 1,
-    "3525045000488297431": 1,
-    "3525045000641985007": 1,
-    "3525045000394740282": 1,
-    "3525045000620978660": 1,
-    "3525045000260992026": 12,
-    "3525045000636647300": 2,
-    "3525045000644833146": 2,
-    "3525045000380249726": 2,
-    "3525045000600047493": 1,
-    "3525045000636267094": 1,
-    "3525045000636164502": 1,
-    "3525045000637538654": 1,
-    "3525045000618987130": 1,
-    "3525045000641040256": 1,
-    "3525045000631372459": 1,
-    "3525045000629049003": 1,
-    "3525045000536386049": 1,
-    "3525045000577986714": 2,
-    "3525045000631328402": 1,
-    "3525045000631723177": 3,
-    "3525045000640256202": 1,
-    "3525045000612121530": 1,
     "3525045000627032188": 1,
-    "3525045000625100622": 1,
-    "3525045000630418441": 3,
-    "3525045000633910128": 2,
     "3525045000566681116": 2,
+    "3525045000573928378": 1,
+    "3525045000637538654": 1,
+    "3525045000638366322": 1,
+    "3525045000629886007": 2,
+    "3525045000618987130": 1,
+    "3525045000633910128": 2,
+    "3525045000536386049": 1,
+    "3525045000635505348": 2,
+    "3525045000634303511": 1,
+    "3525045000551532404": 1,
+    "3525045000620620931": 1,
+    "3525045000641985007": 1,
+    "3525045000545668197": 3,
+    "3525045000639884293": 1,
+    "3525045000620978660": 1,
+    "3525045000644833146": 2,
+    "3525045000625100316": 1,
+    "3525045000631328402": 1,
+    "3525045000641040256": 1,
+    "3525045000628609615": 2,
+    "3525045000618029667": 1,
+    "3525045000614159505": 1,
+    "3525045000511880161": 1,
+    "3525045000636647300": 2,
+    "3525045000640256202": 1,
     "3525045000578056486": 1,
     "3525045000526296256": 1,
     "3525045000053667600": 2,
-    "3525045000511880161": 1,
-    "3525045000614159505": 1,
-    "3525045000626460093": 1,
-    "3525045000628609615": 2,
-    "3525045000573928378": 1,
-    "3525045000551532404": 1,
-    "3525045000516354275": 1,
-    "3525045000620620931": 1,
-    "3525045000408599588": 2,
-    "3525045000639884293": 1,
-    "3525045000636380233": 1,
-    "3525045000545668197": 3,
-    "3525045000631372239": 1,
-    "3525045000620547457": 1,
-    "3525045000630200352": 1,
     "3525045000611857693": 2,
-    "3525045000612031877": 1,
-    "3525045000625100316": 1,
-    "3525045000625764077": 1,
-    "3525045000618029667": 1,
-    "3525045000584582097": 1,
-    "3525045000582917522": 3,
+    "3525045000625100622": 1,
+    "3525045000630200352": 1,
+    "3525045000620547457": 1,
     "3525045000613613127": 1,
-    "3525045000571369060": 1,
-    "3525045000566038619": 1,
-    "3525045000574224853": 1,
-    "3525045000565388760": 1,
+    "3525045000630418441": 3,
+    "3525045000408599588": 2,
+    "3525045000625764077": 1,
+    "3525045000516354275": 1,
+    "3525045000631372239": 1,
     "3525045000578206456": 1,
-    "3525045000587145112": 1,
+    "3525045000636380233": 1,
+    "3525045000571369060": 1,
+    "3525045000612031877": 1,
+    "3525045000626460093": 1,
+    "3525045000582917522": 3,
+    "3525045000584582097": 1,
+    "3525045000565388760": 1,
+    "3525045000574224853": 1,
+    "3525045000566038619": 1,
+    "3525045000068536437": 1,
     "3525045000519591730": 1,
-    "3525045000606936298": 1,
     "3525045000576815598": 1,
+    "3525045000606936298": 1,
+    "3525045000600341137": 2,
+    "3525045000518381480": 1,
+    "3525045000584897633": 2,
+    "3525045000587145112": 1,
+    "3525045000502956105": 1,
+    "3525045000583179634": 1,
     "3525045000580033399": 2,
     "3525045000549028530": 1,
-    "3525045000417780328": 1,
     "3525045000574325023": 1,
-    "3525045000600341137": 2,
-    "3525045000571370193": 2,
-    "3525045000584897633": 2,
-    "3525045000583179634": 1,
-    "3525045000393270954": 1,
-    "3525045000518035782": 1,
-    "3525045000540756094": 1,
-    "3525045000068536437": 1,
-    "3525045000555178278": 5,
-    "3525045000502956105": 1,
     "3525045000546325033": 1,
+    "3525045000518035782": 1,
     "3525045000544680587": 2,
-    "3525045000560331298": 1,
-    "3525045000518381480": 1,
-    "3525045000375387064": 1,
-    "3525045000551150124": 1,
+    "3525045000417780328": 1,
+    "3525045000555178278": 5,
+    "3525045000571370193": 2,
+    "3525045000393270954": 1,
     "3525045000550487339": 1,
-    "3525045000558472543": 1,
     "3525045000548627594": 1,
     "3525045000548725405": 1,
+    "3525045000560331298": 1,
+    "3525045000375387064": 1,
+    "3525045000551150124": 1,
     "3525045000533674268": 1,
-    "3525045000561231540": 1,
-    "3525045000524890802": 1,
-    "3525045000575010551": 1,
-    "3525045000570622533": 1,
     "3525045000551934673": 1,
+    "3525045000570622533": 1,
+    "3525045000575010551": 1,
+    "3525045000561231540": 1,
+    "3525045000540756094": 1,
+    "3525045000558472543": 1,
     "3525045000244460061": 1,
-    "3525045000577650270": 1,
+    "3525045000524890802": 1,
     "3525045000521739559": 1,
-    "3525045000508295196": 1,
+    "3525045000577650270": 1,
     "3525045000025416632": 1,
     "3525045000533201089": 1,
-    "3525045000513109886": 1,
-    "3525045000508358018": 2,
-    "3525045000511180274": 1,
-    "3525045000528255980": 1,
     "3525045000459175562": 2,
+    "3525045000508358018": 2,
+    "3525045000533201920": 1,
+    "3525045000461676230": 3,
+    "3525045000511180274": 1,
+    "3525045000508295196": 1,
+    "3525045000513109886": 1,
+    "3525045000487258080": 1,
+    "3525045000363350205": 1,
+    "3525045000528255980": 1,
     "3525045000495419503": 2,
     "3525045000495404771": 1,
-    "3525045000533201920": 1,
     "3525045000522024087": 1,
+    "3525045000506213377": 2,
     "3525045000521214256": 1,
+    "3525045000502787792": 1,
+    "3525045000516029681": 1,
+    "3525045000480962031": 3,
+    "3525045000516683281": 1,
+    "3525045000474892437": 1,
     "3525045000283615289": 1,
     "3525045000285149779": 1,
     "3525045000273201025": 1,
@@ -16274,6 +16349,7 @@
     "3525045000223883010": 1,
     "3525045000267012407": 1,
     "3525045000273583071": 1,
+    "3525045000271013014": 1,
     "3525045000256954023": 3,
     "3525045000271164010": 1,
     "3525045000262583065": 1,
@@ -16323,6 +16399,125 @@
     "3525045000118304484": 2,
     "3525045000297139312": 3,
     "3525045000136022031": 1,
+    "3525045000493980360": 1,
+    "3525045000485523432": 1,
+    "3525045000496045152": 1,
+    "3525045000416193121": 1,
+    "3525045000496031529": 2,
+    "3525045000489102394": 1,
+    "3525045000118266356": 1,
+    "3525045000439364137": 1,
+    "3525045000493783261": 1,
+    "3525045000475481802": 1,
+    "3525045000472081471": 1,
+    "3525045000470731263": 1,
+    "3525045000480768693": 1,
+    "3525045000481159391": 1,
+    "3525045000476572360": 1,
+    "3525045000444479020": 1,
+    "3525045000240002125": 1,
+    "3525045000444464521": 1,
+    "3525045000415003356": 3,
+    "3525045000467374314": 2,
+    "3525045000471379141": 1,
+    "3525045000458170452": 1,
+    "3525045000480204467": 2,
+    "3525045000468073092": 1,
+    "3525045000478422670": 2,
+    "3525045000449381320": 2,
+    "3525045000483500498": 1,
+    "3525045000389123147": 1,
+    "3525045000457440491": 1,
+    "3525045000432988699": 1,
+    "3525045000271929046": 2,
+    "3525045000118231219": 3,
+    "3525045000256468003": 1,
+    "3525045000272607068": 3,
+    "3525045000347552003": 1,
+    "3525045000437102308": 1,
+    "3525045000242976354": 3,
+    "3525045000339943001": 1,
+    "3525045000397673553": 3,
+    "3525045000606476589": 1,
+    "3525045000427802077": 1,
+    "3525045000434973052": 1,
+    "3525045000269312009": 1,
+    "3525045000235830314": 3,
+    "3525045000402924413": 1,
+    "3525045000344765038": 3,
+    "3525045000403780168": 1,
+    "3525045000324636081": 2,
+    "3525045000407862390": 1,
+    "3525045000664793653": 1,
+    "3525045000684462054": 1,
+    "3525045000676278494": 2,
+    "3525045000118274992": 1,
+    "3525045000647219467": 1,
+    "3525045000687137956": 1,
+    "3525045000646690022": 2,
+    "3525045000660585218": 1,
+    "3525045000677206660": 1,
+    "3525045000684325337": 1,
+    "3525045000678740272": 1,
+    "3525045000335018351": 1,
+    "3525045000625553101": 1,
+    "3525045000665863776": 1,
+    "3525045000670730133": 1,
+    "3525045000290684093": 2,
+    "3525045000335205136": 2,
+    "3525045000349800122": 3,
+    "3525045000674466460": 1,
+    "3525045000668541840": 1,
+    "3525045000668240238": 1,
+    "3525045000641973236": 3,
+    "3525045000584443150": 1,
+    "3525045000443231435": 1,
+    "3525045000667186013": 1,
+    "3525045000625528007": 2,
+    "3525045000191388216": 2,
+    "3525045000629830440": 1,
+    "3525045000399720662": 1,
+    "3525045000643797007": 1,
+    "3525045000583818812": 1,
+    "3525045000428236104": 2,
+    "3525045000482034184": 1,
+    "3525045000499080748": 1,
+    "3525045000617025181": 2,
+    "3525045000555859681": 1,
+    "3525045000626243105": 1,
+    "3525045000551076108": 1,
+    "3525045000507887414": 1,
+    "3525045000626989025": 1,
+    "3525045000621373229": 1,
+    "3525045000623155264": 1,
+    "3525045000561747184": 1,
+    "3525045000642369739": 1,
+    "3525045000569606644": 1,
+    "3525045000587091816": 1,
+    "3525045000561747482": 1,
+    "3525045000348478718": 2,
+    "3525045000467366531": 1,
+    "3525045000303849074": 3,
+    "3525045000301269624": 1,
+    "3525045000625269083": 1,
+    "3525045000488758744": 1,
+    "3525045000442696001": 1,
+    "3525045000459277323": 1,
+    "3525045000471154192": 1,
+    "3525045000623181266": 1,
+    "3525045000593375398": 1,
+    "3525045000519554305": 1,
+    "3525045000572133720": 1,
+    "3525045000606902354": 1,
+    "3525045000577042586": 2,
+    "3525045000577488751": 1,
+    "3525045000551150373": 1,
+    "3525045000596280292": 3,
+    "3525045000579154448": 1,
+    "3525045000635125136": 1,
+    "3525045000351895249": 1,
+    "3525045000573782741": 1,
+    "3525045000385457715": 2,
     "3525045000549648908": 1,
     "3525045000549648344": 1,
     "3525045000502748290": 1,
@@ -16342,16 +16537,13 @@
     "3525045000247249776": 1,
     "3525045000261149070": 1,
     "3525045000491803044": 1,
-    "3525045000242976354": 3,
     "3525045000078370651": 1,
     "3525045000340439439": 2,
-    "3525045000235830314": 3,
     "3525045000500942241": 1,
     "3525045000500411407": 1,
     "3525045000467844987": 1,
     "3525045000492261727": 1,
     "3525045000108772285": 1,
-    "3525045000191388216": 2,
     "3525045000239239614": 2,
     "3525045000217718003": 1,
     "3525045000133022386": 1,
@@ -16368,13 +16560,11 @@
     "3525045000408565357": 1,
     "3525045000471437903": 1,
     "3525045000526284836": 1,
-    "3525045000344765038": 3,
     "3525045000324139116": 1,
     "3525045000305828699": 1,
     "3525045000108826075": 1,
     "3525045000275157109": 1,
     "3525045000448981092": 1,
-    "3525045000428236104": 2,
     "3525045000328800276": 1,
     "3525045000400243068": 1,
     "3525045000478518621": 1,
@@ -16384,9 +16574,7 @@
     "3525045000251705447": 1,
     "3525045000237706001": 1,
     "3525045000242331429": 1,
-    "3525045000449381320": 2,
     "3525045000462868775": 1,
-    "3525045000118231219": 3,
     "3525045000305241333": 1,
     "3525045000305862252": 1,
     "3525045000235830157": 1,
@@ -16395,32 +16583,24 @@
     "3525045000273615028": 2,
     "3525045000462922105": 1,
     "3525045000480204642": 1,
-    "3525045000506213377": 2,
     "3525045000348478781": 1,
     "3525045000468030353": 1,
     "3525045000397959202": 1,
     "3525045000459406125": 1,
-    "3525045000349800122": 3,
     "3525045000497957033": 1,
     "3525045000438529467": 2,
     "3525045000316185373": 1,
-    "3525045000467374314": 2,
     "3525045000343636571": 1,
-    "3525045000480204467": 2,
     "3525045000370967163": 1,
     "3525045000272342072": 1,
     "3525045000468058327": 1,
     "3525045000450288323": 1,
-    "3525045000415003356": 3,
     "3525045000212428171": 1,
     "3525045000185322073": 1,
-    "3525045000348478718": 2,
     "3525045000409940100": 1,
     "3525045000416558176": 1,
     "3525045000414155312": 2,
     "3525045000407719946": 2,
-    "3525045000397673553": 3,
-    "3525045000324636081": 2,
     "3525045000278421021": 1,
     "3525045000310206169": 1,
     "3525045000330710682": 1,
@@ -16435,17 +16615,14 @@
     "3525045000305241089": 1,
     "3525045000273930332": 1,
     "3525045000190806015": 1,
-    "3525045000290684093": 2,
     "3525045000272438148": 1,
     "3525045000299511291": 1,
     "3525045000300440282": 1,
     "3525045000269328164": 1,
-    "3525045000271929046": 2,
     "3525045000269769123": 1,
     "3525045000297996101": 1,
     "3525045000290867113": 1,
     "3525045000337786975": 1,
-    "3525045000303849074": 3,
     "3525045000245690057": 1,
     "3525045000273421025": 1,
     "3525045000284088656": 1,
@@ -16468,149 +16645,10 @@
     "3525045000259942184": 1,
     "3525045000189394046": 1,
     "3525045000249988478": 1,
-    "3525045000271013014": 1,
     "3525045000252648254": 1,
-    "3525045000255069448": 1,
-    "3525045000461676230": 3,
-    "3525045000363350205": 1,
-    "3525045000487258080": 1,
-    "3525045000516683281": 1,
-    "3525045000516029681": 1,
-    "3525045000480962031": 3,
-    "3525045000502787792": 1,
-    "3525045000474892437": 1,
-    "3525045000493980360": 1,
-    "3525045000496045152": 1,
-    "3525045000416193121": 1,
-    "3525045000485523432": 1,
-    "3525045000496031529": 2,
-    "3525045000118266356": 1,
-    "3525045000489102394": 1,
-    "3525045000439364137": 1,
-    "3525045000493783261": 1,
-    "3525045000475481802": 1,
-    "3525045000472081471": 1,
-    "3525045000470731263": 1,
-    "3525045000480768693": 1,
-    "3525045000481159391": 1,
-    "3525045000240002125": 1,
-    "3525045000444464521": 1,
-    "3525045000471379141": 1,
-    "3525045000458170452": 1,
-    "3525045000476572360": 1,
-    "3525045000444479020": 1,
-    "3525045000468073092": 1,
-    "3525045000483500498": 1,
-    "3525045000256468003": 1,
-    "3525045000389123147": 1,
-    "3525045000457440491": 1,
-    "3525045000432988699": 1,
-    "3525045000437102308": 1,
-    "3525045000347552003": 1,
-    "3525045000339943001": 1,
-    "3525045000606476589": 1,
-    "3525045000427802077": 1,
-    "3525045000434973052": 1,
-    "3525045000269312009": 1,
-    "3525045000403780168": 1,
-    "3525045000402924413": 1,
-    "3525045000407862390": 1,
-    "3525045000687137956": 1,
-    "3525045000646690022": 2,
-    "3525045000660585218": 1,
-    "3525045000677206660": 1,
-    "3525045000684325337": 1,
-    "3525045000678740272": 1,
-    "3525045000335018351": 1,
-    "3525045000625553101": 1,
-    "3525045000665863776": 1,
-    "3525045000670730133": 1,
-    "3525045000335205136": 2,
-    "3525045000674466460": 1,
-    "3525045000668541840": 1,
-    "3525045000668240238": 1,
-    "3525045000641973236": 3,
-    "3525045000584443150": 1,
-    "3525045000443231435": 1,
-    "3525045000667186013": 1,
-    "3525045000625528007": 2,
-    "3525045000629830440": 1,
-    "3525045000399720662": 1,
-    "3525045000643797007": 1,
-    "3525045000583818812": 1,
-    "3525045000482034184": 1,
-    "3525045000499080748": 1,
-    "3525045000617025181": 2,
-    "3525045000555859681": 1,
-    "3525045000626243105": 1,
-    "3525045000551076108": 1,
-    "3525045000507887414": 1,
-    "3525045000626989025": 1,
-    "3525045000621373229": 1,
-    "3525045000623155264": 1,
-    "3525045000561747184": 1,
-    "3525045000642369739": 1,
-    "3525045000569606644": 1,
-    "3525045000587091816": 1,
-    "3525045000561747482": 1,
-    "3525045000467366531": 1,
-    "3525045000301269624": 1,
-    "3525045000625269083": 1,
-    "3525045000488758744": 1,
-    "3525045000442696001": 1,
-    "3525045000459277323": 1,
-    "3525045000471154192": 1,
-    "3525045000623181266": 1,
-    "3525045000593375398": 1,
-    "3525045000519554305": 1,
-    "3525045000572133720": 1,
-    "3525045000606902354": 1,
-    "3525045000577042586": 2,
-    "3525045000577488751": 1,
-    "3525045000551150373": 1,
-    "3525045000596280292": 3,
-    "3525045000579154448": 1,
-    "3525045000635125136": 1,
-    "3525045000351895249": 1,
-    "3525045000573782741": 1,
-    "3525045000385457715": 2
+    "3525045000255069448": 1
   },
   "implementaciones_resumen": {
-    "3525045000272607068": [
-      3,
-      1,
-      2
-    ],
-    "3525045000616641169": [
-      2,
-      1,
-      0
-    ],
-    "3525045000633910449": [
-      1,
-      1,
-      0
-    ],
-    "3525045000681840460": [
-      1,
-      1,
-      0
-    ],
-    "3525045000664793653": [
-      1,
-      1,
-      0
-    ],
-    "3525045000687897077": [
-      1,
-      1,
-      0
-    ],
-    "3525045000628074709": [
-      3,
-      1,
-      1
-    ],
     "3525045000647972055": [
       1,
       1,
@@ -16618,105 +16656,15 @@
     ],
     "3525045000675403136": [
       2,
-      1,
+      0,
       0
     ],
-    "3525045000684462054": [
-      1,
-      1,
-      0
-    ],
-    "3525045000676278494": [
-      2,
-      1,
-      0
-    ],
-    "3525045000118274992": [
+    "3525045000687897077": [
       1,
       1,
       0
     ],
-    "3525045000678091042": [
-      2,
-      1,
-      0
-    ],
-    "3525045000648820001": [
-      1,
-      1,
-      0
-    ],
-    "3525045000647219467": [
-      1,
-      1,
-      0
-    ],
-    "3525045000478422670": [
-      2,
-      1,
-      1
-    ],
-    "3525045000673842457": [
-      1,
-      1,
-      0
-    ],
-    "3525045000672920081": [
-      3,
-      1,
-      0
-    ],
-    "3525045000630204344": [
-      2,
-      1,
-      0
-    ],
-    "3525045000645829047": [
-      1,
-      1,
-      0
-    ],
-    "3525045000664574077": [
-      1,
-      1,
-      0
-    ],
-    "3525045000661710158": [
-      1,
-      1,
-      0
-    ],
-    "3525045000672390408": [
-      2,
-      1,
-      0
-    ],
-    "3525045000669488208": [
-      1,
-      1,
-      0
-    ],
-    "3525045000094546145": [
-      4,
-      1,
-      1
-    ],
-    "3525045000674491198": [
-      1,
-      1,
-      0
-    ],
-    "3525045000660101549": [
-      1,
-      1,
-      0
-    ],
-    "3525045000678740369": [
-      2,
-      1,
-      0
-    ],
-    "3525045000667573186": [
+    "3525045000674627018": [
       1,
       1,
       0
@@ -16726,22 +16674,127 @@
       1,
       0
     ],
+    "3525045000648820001": [
+      1,
+      1,
+      0
+    ],
+    "3525045000676853936": [
+      1,
+      1,
+      0
+    ],
+    "3525045000678091042": [
+      2,
+      1,
+      0
+    ],
+    "3525045000664574077": [
+      1,
+      1,
+      0
+    ],
+    "3525045000673842457": [
+      1,
+      1,
+      0
+    ],
+    "3525045000681840460": [
+      1,
+      1,
+      0
+    ],
+    "3525045000635884135": [
+      1,
+      1,
+      0
+    ],
+    "3525045000666619636": [
+      1,
+      1,
+      0
+    ],
     "3525045000668118093": [
       2,
       1,
       0
     ],
-    "3525045000576839450": [
+    "3525045000637601153": [
+      2,
+      1,
+      0
+    ],
+    "3525045000627573323": [
       1,
       1,
       0
     ],
-    "3525045000674530014": [
+    "3525045000629322699": [
       1,
       1,
       0
     ],
-    "3525045000668929159": [
+    "3525045000630204344": [
+      2,
+      1,
+      0
+    ],
+    "3525045000297122001": [
+      1,
+      1,
+      0
+    ],
+    "3525045000656218114": [
+      1,
+      1,
+      0
+    ],
+    "3525045000094546145": [
+      4,
+      1,
+      1
+    ],
+    "3525045000094546230": [
+      1,
+      1,
+      0
+    ],
+    "3525045000672390408": [
+      2,
+      1,
+      0
+    ],
+    "3525045000669488110": [
+      1,
+      1,
+      0
+    ],
+    "3525045000645829047": [
+      1,
+      1,
+      0
+    ],
+    "3525045000653007084": [
+      2,
+      1,
+      0
+    ],
+    "3525045000653101267": [
+      1,
+      1,
+      0
+    ],
+    "3525045000664574094": [
+      1,
+      1,
+      0
+    ],
+    "3525045000650473001": [
+      3,
+      1,
+      0
+    ],
+    "3525045000672861200": [
       1,
       1,
       0
@@ -16751,18 +16804,128 @@
       1,
       0
     ],
+    "3525045000598015098": [
+      1,
+      0,
+      1
+    ],
+    "3525045000642410276": [
+      1,
+      1,
+      0
+    ],
+    "3525045000659754080": [
+      1,
+      1,
+      0
+    ],
+    "3525045000661710158": [
+      1,
+      1,
+      0
+    ],
+    "3525045000672920081": [
+      3,
+      1,
+      0
+    ],
+    "3525045000589982025": [
+      1,
+      1,
+      0
+    ],
+    "3525045000674491198": [
+      1,
+      1,
+      0
+    ],
+    "3525045000669488208": [
+      1,
+      1,
+      0
+    ],
+    "3525045000660101549": [
+      1,
+      1,
+      0
+    ],
+    "3525045000667573186": [
+      1,
+      1,
+      0
+    ],
+    "3525045000631723177": [
+      3,
+      0,
+      1
+    ],
+    "3525045000600047493": [
+      1,
+      0,
+      1
+    ],
+    "3525045000674530014": [
+      1,
+      1,
+      0
+    ],
+    "3525045000645797107": [
+      4,
+      0,
+      2
+    ],
+    "3525045000678740369": [
+      2,
+      1,
+      0
+    ],
+    "3525045000616641169": [
+      2,
+      1,
+      0
+    ],
+    "3525045000657233438": [
+      3,
+      0,
+      1
+    ],
+    "3525045000647219305": [
+      1,
+      0,
+      1
+    ],
+    "3525045000634837015": [
+      1,
+      1,
+      0
+    ],
+    "3525045000633910449": [
+      1,
+      1,
+      0
+    ],
+    "3525045000576839450": [
+      1,
+      1,
+      0
+    ],
     "3525045000676870182": [
       1,
       1,
       0
     ],
-    "3525045000297122001": [
+    "3525045000641620017": [
       1,
       1,
       0
     ],
-    "3525045000666619636": [
+    "3525045000668929159": [
       1,
+      1,
+      0
+    ],
+    "3525045000647219629": [
+      3,
       1,
       0
     ],
@@ -16776,32 +16939,12 @@
       1,
       0
     ],
-    "3525045000627573323": [
-      1,
-      1,
-      0
-    ],
-    "3525045000676853936": [
-      1,
+    "3525045000657179255": [
+      3,
       1,
       0
     ],
     "3525045000672591418": [
-      1,
-      1,
-      0
-    ],
-    "3525045000653101267": [
-      1,
-      1,
-      0
-    ],
-    "3525045000666610145": [
-      1,
-      1,
-      0
-    ],
-    "3525045000629322699": [
       1,
       1,
       0
@@ -16811,47 +16954,27 @@
       1,
       0
     ],
+    "3525045000488297431": [
+      1,
+      0,
+      1
+    ],
     "3525045000661355382": [
       1,
       1,
       0
     ],
-    "3525045000635884135": [
+    "3525045000634119041": [
       1,
       1,
       0
     ],
-    "3525045000656218114": [
+    "3525045000636267094": [
       1,
       1,
       0
     ],
-    "3525045000653007084": [
-      2,
-      1,
-      0
-    ],
-    "3525045000672861200": [
-      1,
-      1,
-      0
-    ],
-    "3525045000637601153": [
-      2,
-      1,
-      0
-    ],
-    "3525045000669488110": [
-      1,
-      1,
-      0
-    ],
-    "3525045000664574094": [
-      1,
-      1,
-      0
-    ],
-    "3525045000659754080": [
+    "3525045000666610145": [
       1,
       1,
       0
@@ -16861,15 +16984,25 @@
       1,
       0
     ],
-    "3525045000647681177": [
+    "3525045000629049003": [
       1,
       0,
       1
     ],
-    "3525045000589982025": [
+    "3525045000651533322": [
+      2,
+      1,
+      0
+    ],
+    "3525045000612121530": [
       1,
       1,
       0
+    ],
+    "3525045000646996779": [
+      1,
+      0,
+      1
     ],
     "3525045000637352158": [
       1,
@@ -16881,12 +17014,17 @@
       1,
       0
     ],
-    "3525045000598015098": [
+    "3525045000260992026": [
+      12,
+      2,
+      6
+    ],
+    "3525045000636164502": [
       1,
       0,
       1
     ],
-    "3525045000094546230": [
+    "3525045000602058423": [
       1,
       1,
       0
@@ -16896,8 +17034,23 @@
       0,
       1
     ],
-    "3525045000657233438": [
+    "3525045000647681177": [
+      1,
+      0,
+      1
+    ],
+    "3525045000628074709": [
       3,
+      1,
+      1
+    ],
+    "3525045000394740282": [
+      1,
+      0,
+      1
+    ],
+    "3525045000380249726": [
+      2,
       0,
       1
     ],
@@ -16906,77 +17059,12 @@
       1,
       0
     ],
-    "3525045000642410276": [
-      1,
-      1,
-      0
-    ],
-    "3525045000650473001": [
-      3,
-      1,
-      0
-    ],
-    "3525045000647219305": [
+    "3525045000631372459": [
       1,
       0,
       1
     ],
-    "3525045000646996779": [
-      1,
-      0,
-      1
-    ],
-    "3525045000651533322": [
-      2,
-      1,
-      0
-    ],
-    "3525045000647219629": [
-      3,
-      1,
-      0
-    ],
-    "3525045000602058423": [
-      1,
-      1,
-      0
-    ],
-    "3525045000645797107": [
-      4,
-      0,
-      2
-    ],
-    "3525045000629886007": [
-      2,
-      1,
-      0
-    ],
-    "3525045000638366322": [
-      1,
-      0,
-      1
-    ],
-    "3525045000634837015": [
-      1,
-      1,
-      0
-    ],
-    "3525045000657179255": [
-      3,
-      1,
-      0
-    ],
-    "3525045000634303511": [
-      1,
-      0,
-      1
-    ],
-    "3525045000641620017": [
-      1,
-      1,
-      0
-    ],
-    "3525045000635505348": [
+    "3525045000577986714": [
       2,
       0,
       1
@@ -16991,62 +17079,17 @@
       1,
       0
     ],
-    "3525045000634119041": [
+    "3525045000627032188": [
       1,
       1,
       0
     ],
-    "3525045000488297431": [
-      1,
-      0,
-      1
-    ],
-    "3525045000641985007": [
-      1,
-      1,
-      0
-    ],
-    "3525045000394740282": [
-      1,
-      0,
-      1
-    ],
-    "3525045000620978660": [
-      1,
-      0,
-      1
-    ],
-    "3525045000260992026": [
-      12,
-      2,
-      6
-    ],
-    "3525045000636647300": [
-      2,
-      1,
-      0
-    ],
-    "3525045000644833146": [
+    "3525045000566681116": [
       2,
       0,
       1
     ],
-    "3525045000380249726": [
-      2,
-      0,
-      1
-    ],
-    "3525045000600047493": [
-      1,
-      0,
-      1
-    ],
-    "3525045000636267094": [
-      1,
-      1,
-      0
-    ],
-    "3525045000636164502": [
+    "3525045000573928378": [
       1,
       0,
       1
@@ -17056,7 +17099,82 @@
       0,
       1
     ],
+    "3525045000638366322": [
+      1,
+      0,
+      1
+    ],
+    "3525045000629886007": [
+      2,
+      1,
+      0
+    ],
     "3525045000618987130": [
+      1,
+      0,
+      1
+    ],
+    "3525045000633910128": [
+      2,
+      0,
+      1
+    ],
+    "3525045000536386049": [
+      1,
+      1,
+      0
+    ],
+    "3525045000635505348": [
+      2,
+      0,
+      1
+    ],
+    "3525045000634303511": [
+      1,
+      0,
+      1
+    ],
+    "3525045000551532404": [
+      1,
+      1,
+      0
+    ],
+    "3525045000620620931": [
+      1,
+      0,
+      1
+    ],
+    "3525045000641985007": [
+      1,
+      1,
+      0
+    ],
+    "3525045000545668197": [
+      3,
+      1,
+      0
+    ],
+    "3525045000639884293": [
+      1,
+      0,
+      1
+    ],
+    "3525045000620978660": [
+      1,
+      0,
+      1
+    ],
+    "3525045000644833146": [
+      2,
+      0,
+      1
+    ],
+    "3525045000625100316": [
+      1,
+      0,
+      1
+    ],
+    "3525045000631328402": [
       1,
       0,
       1
@@ -17066,70 +17184,35 @@
       0,
       1
     ],
-    "3525045000631372459": [
+    "3525045000628609615": [
+      2,
       1,
-      0,
       1
     ],
-    "3525045000629049003": [
-      1,
-      0,
-      1
-    ],
-    "3525045000536386049": [
+    "3525045000618029667": [
       1,
       1,
       0
     ],
-    "3525045000577986714": [
-      2,
-      0,
-      1
+    "3525045000614159505": [
+      1,
+      1,
+      0
     ],
-    "3525045000631328402": [
+    "3525045000511880161": [
       1,
       0,
       1
     ],
-    "3525045000631723177": [
-      3,
-      0,
-      1
+    "3525045000636647300": [
+      2,
+      1,
+      0
     ],
     "3525045000640256202": [
       1,
       0,
       0
-    ],
-    "3525045000612121530": [
-      1,
-      1,
-      0
-    ],
-    "3525045000627032188": [
-      1,
-      1,
-      0
-    ],
-    "3525045000625100622": [
-      1,
-      0,
-      1
-    ],
-    "3525045000630418441": [
-      3,
-      1,
-      1
-    ],
-    "3525045000633910128": [
-      2,
-      0,
-      1
-    ],
-    "3525045000566681116": [
-      2,
-      0,
-      1
     ],
     "3525045000578056486": [
       1,
@@ -17146,72 +17229,12 @@
       1,
       0
     ],
-    "3525045000511880161": [
-      1,
-      0,
-      1
-    ],
-    "3525045000614159505": [
-      1,
-      1,
-      0
-    ],
-    "3525045000626460093": [
-      1,
-      0,
-      1
-    ],
-    "3525045000628609615": [
-      2,
-      1,
-      1
-    ],
-    "3525045000573928378": [
-      1,
-      0,
-      1
-    ],
-    "3525045000551532404": [
-      1,
-      1,
-      0
-    ],
-    "3525045000516354275": [
-      1,
-      0,
-      0
-    ],
-    "3525045000620620931": [
-      1,
-      0,
-      1
-    ],
-    "3525045000408599588": [
+    "3525045000611857693": [
       2,
       0,
       1
     ],
-    "3525045000639884293": [
-      1,
-      0,
-      1
-    ],
-    "3525045000636380233": [
-      1,
-      0,
-      1
-    ],
-    "3525045000545668197": [
-      3,
-      1,
-      0
-    ],
-    "3525045000631372239": [
-      1,
-      1,
-      0
-    ],
-    "3525045000620547457": [
+    "3525045000625100622": [
       1,
       0,
       1
@@ -17221,18 +17244,23 @@
       0,
       1
     ],
-    "3525045000611857693": [
+    "3525045000620547457": [
+      1,
+      0,
+      1
+    ],
+    "3525045000613613127": [
+      1,
+      0,
+      1
+    ],
+    "3525045000630418441": [
+      3,
+      1,
+      1
+    ],
+    "3525045000408599588": [
       2,
-      0,
-      1
-    ],
-    "3525045000612031877": [
-      1,
-      0,
-      1
-    ],
-    "3525045000625100316": [
-      1,
       0,
       1
     ],
@@ -17241,22 +17269,22 @@
       1,
       0
     ],
-    "3525045000618029667": [
+    "3525045000516354275": [
+      1,
+      0,
+      0
+    ],
+    "3525045000631372239": [
       1,
       1,
       0
     ],
-    "3525045000584582097": [
+    "3525045000578206456": [
       1,
       0,
       1
     ],
-    "3525045000582917522": [
-      3,
-      0,
-      2
-    ],
-    "3525045000613613127": [
+    "3525045000636380233": [
       1,
       0,
       1
@@ -17266,12 +17294,22 @@
       0,
       1
     ],
-    "3525045000566038619": [
+    "3525045000612031877": [
       1,
       0,
       1
     ],
-    "3525045000574224853": [
+    "3525045000626460093": [
+      1,
+      0,
+      1
+    ],
+    "3525045000582917522": [
+      3,
+      0,
+      2
+    ],
+    "3525045000584582097": [
       1,
       0,
       1
@@ -17281,12 +17319,17 @@
       0,
       1
     ],
-    "3525045000578206456": [
+    "3525045000574224853": [
       1,
       0,
       1
     ],
-    "3525045000587145112": [
+    "3525045000566038619": [
+      1,
+      0,
+      1
+    ],
+    "3525045000068536437": [
       1,
       0,
       1
@@ -17296,12 +17339,42 @@
       0,
       1
     ],
+    "3525045000576815598": [
+      1,
+      0,
+      1
+    ],
     "3525045000606936298": [
       1,
       0,
       0
     ],
-    "3525045000576815598": [
+    "3525045000600341137": [
+      2,
+      0,
+      1
+    ],
+    "3525045000518381480": [
+      1,
+      0,
+      1
+    ],
+    "3525045000584897633": [
+      2,
+      0,
+      1
+    ],
+    "3525045000587145112": [
+      1,
+      0,
+      1
+    ],
+    "3525045000502956105": [
+      1,
+      0,
+      1
+    ],
+    "3525045000583179634": [
       1,
       0,
       1
@@ -17316,62 +17389,7 @@
       0,
       1
     ],
-    "3525045000417780328": [
-      1,
-      1,
-      0
-    ],
     "3525045000574325023": [
-      1,
-      0,
-      1
-    ],
-    "3525045000600341137": [
-      2,
-      0,
-      1
-    ],
-    "3525045000571370193": [
-      2,
-      0,
-      1
-    ],
-    "3525045000584897633": [
-      2,
-      0,
-      1
-    ],
-    "3525045000583179634": [
-      1,
-      0,
-      1
-    ],
-    "3525045000393270954": [
-      1,
-      0,
-      1
-    ],
-    "3525045000518035782": [
-      1,
-      0,
-      1
-    ],
-    "3525045000540756094": [
-      1,
-      0,
-      1
-    ],
-    "3525045000068536437": [
-      1,
-      0,
-      1
-    ],
-    "3525045000555178278": [
-      5,
-      1,
-      1
-    ],
-    "3525045000502956105": [
       1,
       0,
       1
@@ -17381,37 +17399,37 @@
       0,
       1
     ],
+    "3525045000518035782": [
+      1,
+      0,
+      1
+    ],
     "3525045000544680587": [
       2,
       0,
       2
     ],
-    "3525045000560331298": [
+    "3525045000417780328": [
       1,
+      1,
+      0
+    ],
+    "3525045000555178278": [
+      5,
+      1,
+      1
+    ],
+    "3525045000571370193": [
+      2,
       0,
       1
     ],
-    "3525045000518381480": [
-      1,
-      0,
-      1
-    ],
-    "3525045000375387064": [
-      1,
-      0,
-      1
-    ],
-    "3525045000551150124": [
+    "3525045000393270954": [
       1,
       0,
       1
     ],
     "3525045000550487339": [
-      1,
-      0,
-      1
-    ],
-    "3525045000558472543": [
       1,
       0,
       1
@@ -17426,27 +17444,22 @@
       0,
       1
     ],
+    "3525045000560331298": [
+      1,
+      0,
+      1
+    ],
+    "3525045000375387064": [
+      1,
+      0,
+      1
+    ],
+    "3525045000551150124": [
+      1,
+      0,
+      1
+    ],
     "3525045000533674268": [
-      1,
-      0,
-      1
-    ],
-    "3525045000561231540": [
-      1,
-      0,
-      1
-    ],
-    "3525045000524890802": [
-      1,
-      0,
-      0
-    ],
-    "3525045000575010551": [
-      1,
-      0,
-      1
-    ],
-    "3525045000570622533": [
       1,
       0,
       1
@@ -17456,22 +17469,47 @@
       0,
       1
     ],
+    "3525045000570622533": [
+      1,
+      0,
+      1
+    ],
+    "3525045000575010551": [
+      1,
+      0,
+      1
+    ],
+    "3525045000561231540": [
+      1,
+      0,
+      1
+    ],
+    "3525045000540756094": [
+      1,
+      0,
+      1
+    ],
+    "3525045000558472543": [
+      1,
+      0,
+      1
+    ],
     "3525045000244460061": [
       1,
       0,
       1
     ],
-    "3525045000577650270": [
+    "3525045000524890802": [
       1,
       0,
-      1
+      0
     ],
     "3525045000521739559": [
       1,
       0,
       1
     ],
-    "3525045000508295196": [
+    "3525045000577650270": [
       1,
       0,
       1
@@ -17486,13 +17524,23 @@
       0,
       1
     ],
-    "3525045000513109886": [
+    "3525045000459175562": [
+      2,
       1,
-      0,
       1
     ],
     "3525045000508358018": [
       2,
+      0,
+      1
+    ],
+    "3525045000533201920": [
+      1,
+      0,
+      1
+    ],
+    "3525045000461676230": [
+      3,
       0,
       1
     ],
@@ -17501,14 +17549,29 @@
       0,
       0
     ],
-    "3525045000528255980": [
+    "3525045000508295196": [
       1,
       0,
       1
     ],
-    "3525045000459175562": [
-      2,
+    "3525045000513109886": [
       1,
+      0,
+      1
+    ],
+    "3525045000487258080": [
+      1,
+      0,
+      1
+    ],
+    "3525045000363350205": [
+      1,
+      0,
+      1
+    ],
+    "3525045000528255980": [
+      1,
+      0,
       1
     ],
     "3525045000495419503": [
@@ -17521,13 +17584,13 @@
       0,
       1
     ],
-    "3525045000533201920": [
+    "3525045000522024087": [
       1,
       0,
       1
     ],
-    "3525045000522024087": [
-      1,
+    "3525045000506213377": [
+      2,
       0,
       1
     ],
@@ -17535,6 +17598,31 @@
       1,
       0,
       1
+    ],
+    "3525045000502787792": [
+      1,
+      0,
+      1
+    ],
+    "3525045000516029681": [
+      1,
+      0,
+      1
+    ],
+    "3525045000480962031": [
+      3,
+      1,
+      1
+    ],
+    "3525045000516683281": [
+      1,
+      0,
+      1
+    ],
+    "3525045000474892437": [
+      1,
+      0,
+      0
     ],
     "3525045000283615289": [
       1,
@@ -17572,6 +17660,11 @@
       1
     ],
     "3525045000273583071": [
+      1,
+      0,
+      1
+    ],
+    "3525045000271013014": [
       1,
       0,
       1
@@ -17821,6 +17914,601 @@
       0,
       1
     ],
+    "3525045000493980360": [
+      1,
+      0,
+      1
+    ],
+    "3525045000485523432": [
+      1,
+      0,
+      1
+    ],
+    "3525045000496045152": [
+      1,
+      0,
+      1
+    ],
+    "3525045000416193121": [
+      1,
+      0,
+      1
+    ],
+    "3525045000496031529": [
+      2,
+      1,
+      0
+    ],
+    "3525045000489102394": [
+      1,
+      0,
+      1
+    ],
+    "3525045000118266356": [
+      1,
+      0,
+      0
+    ],
+    "3525045000439364137": [
+      1,
+      0,
+      1
+    ],
+    "3525045000493783261": [
+      1,
+      0,
+      0
+    ],
+    "3525045000475481802": [
+      1,
+      0,
+      0
+    ],
+    "3525045000472081471": [
+      1,
+      0,
+      1
+    ],
+    "3525045000470731263": [
+      1,
+      0,
+      1
+    ],
+    "3525045000480768693": [
+      1,
+      0,
+      1
+    ],
+    "3525045000481159391": [
+      1,
+      0,
+      0
+    ],
+    "3525045000476572360": [
+      1,
+      0,
+      1
+    ],
+    "3525045000444479020": [
+      1,
+      0,
+      1
+    ],
+    "3525045000240002125": [
+      1,
+      0,
+      1
+    ],
+    "3525045000444464521": [
+      1,
+      0,
+      1
+    ],
+    "3525045000415003356": [
+      3,
+      0,
+      1
+    ],
+    "3525045000467374314": [
+      2,
+      0,
+      1
+    ],
+    "3525045000471379141": [
+      1,
+      0,
+      1
+    ],
+    "3525045000458170452": [
+      1,
+      0,
+      1
+    ],
+    "3525045000480204467": [
+      2,
+      0,
+      1
+    ],
+    "3525045000468073092": [
+      1,
+      0,
+      1
+    ],
+    "3525045000478422670": [
+      2,
+      1,
+      1
+    ],
+    "3525045000449381320": [
+      2,
+      0,
+      1
+    ],
+    "3525045000483500498": [
+      1,
+      0,
+      1
+    ],
+    "3525045000389123147": [
+      1,
+      0,
+      1
+    ],
+    "3525045000457440491": [
+      1,
+      0,
+      1
+    ],
+    "3525045000432988699": [
+      1,
+      0,
+      1
+    ],
+    "3525045000271929046": [
+      2,
+      0,
+      2
+    ],
+    "3525045000118231219": [
+      3,
+      0,
+      1
+    ],
+    "3525045000256468003": [
+      1,
+      0,
+      1
+    ],
+    "3525045000272607068": [
+      3,
+      1,
+      2
+    ],
+    "3525045000347552003": [
+      1,
+      0,
+      1
+    ],
+    "3525045000437102308": [
+      1,
+      0,
+      1
+    ],
+    "3525045000242976354": [
+      3,
+      0,
+      2
+    ],
+    "3525045000339943001": [
+      1,
+      0,
+      1
+    ],
+    "3525045000397673553": [
+      3,
+      0,
+      2
+    ],
+    "3525045000606476589": [
+      1,
+      0,
+      1
+    ],
+    "3525045000427802077": [
+      1,
+      0,
+      1
+    ],
+    "3525045000434973052": [
+      1,
+      0,
+      1
+    ],
+    "3525045000269312009": [
+      1,
+      0,
+      1
+    ],
+    "3525045000235830314": [
+      3,
+      1,
+      1
+    ],
+    "3525045000402924413": [
+      1,
+      0,
+      1
+    ],
+    "3525045000344765038": [
+      3,
+      0,
+      3
+    ],
+    "3525045000403780168": [
+      1,
+      0,
+      1
+    ],
+    "3525045000324636081": [
+      2,
+      0,
+      1
+    ],
+    "3525045000407862390": [
+      1,
+      0,
+      1
+    ],
+    "3525045000664793653": [
+      1,
+      1,
+      0
+    ],
+    "3525045000684462054": [
+      1,
+      1,
+      0
+    ],
+    "3525045000676278494": [
+      2,
+      1,
+      0
+    ],
+    "3525045000118274992": [
+      1,
+      1,
+      0
+    ],
+    "3525045000647219467": [
+      1,
+      1,
+      0
+    ],
+    "3525045000687137956": [
+      1,
+      1,
+      0
+    ],
+    "3525045000646690022": [
+      2,
+      1,
+      0
+    ],
+    "3525045000660585218": [
+      1,
+      0,
+      0
+    ],
+    "3525045000677206660": [
+      1,
+      1,
+      0
+    ],
+    "3525045000684325337": [
+      1,
+      1,
+      0
+    ],
+    "3525045000678740272": [
+      1,
+      1,
+      0
+    ],
+    "3525045000335018351": [
+      1,
+      1,
+      0
+    ],
+    "3525045000625553101": [
+      1,
+      1,
+      0
+    ],
+    "3525045000665863776": [
+      1,
+      1,
+      0
+    ],
+    "3525045000670730133": [
+      1,
+      1,
+      0
+    ],
+    "3525045000290684093": [
+      2,
+      1,
+      1
+    ],
+    "3525045000335205136": [
+      2,
+      1,
+      0
+    ],
+    "3525045000349800122": [
+      3,
+      1,
+      1
+    ],
+    "3525045000674466460": [
+      1,
+      1,
+      0
+    ],
+    "3525045000668541840": [
+      1,
+      1,
+      0
+    ],
+    "3525045000668240238": [
+      1,
+      0,
+      1
+    ],
+    "3525045000641973236": [
+      3,
+      0,
+      0
+    ],
+    "3525045000584443150": [
+      1,
+      0,
+      1
+    ],
+    "3525045000443231435": [
+      1,
+      0,
+      1
+    ],
+    "3525045000667186013": [
+      1,
+      1,
+      0
+    ],
+    "3525045000625528007": [
+      2,
+      0,
+      0
+    ],
+    "3525045000191388216": [
+      2,
+      1,
+      0
+    ],
+    "3525045000629830440": [
+      1,
+      0,
+      0
+    ],
+    "3525045000399720662": [
+      1,
+      0,
+      1
+    ],
+    "3525045000643797007": [
+      1,
+      0,
+      0
+    ],
+    "3525045000583818812": [
+      1,
+      0,
+      1
+    ],
+    "3525045000428236104": [
+      2,
+      0,
+      1
+    ],
+    "3525045000482034184": [
+      1,
+      0,
+      1
+    ],
+    "3525045000499080748": [
+      1,
+      0,
+      1
+    ],
+    "3525045000617025181": [
+      2,
+      0,
+      0
+    ],
+    "3525045000555859681": [
+      1,
+      0,
+      0
+    ],
+    "3525045000626243105": [
+      1,
+      0,
+      0
+    ],
+    "3525045000551076108": [
+      1,
+      0,
+      0
+    ],
+    "3525045000507887414": [
+      1,
+      0,
+      1
+    ],
+    "3525045000626989025": [
+      1,
+      0,
+      0
+    ],
+    "3525045000621373229": [
+      1,
+      0,
+      0
+    ],
+    "3525045000623155264": [
+      1,
+      0,
+      0
+    ],
+    "3525045000561747184": [
+      1,
+      0,
+      0
+    ],
+    "3525045000642369739": [
+      1,
+      0,
+      0
+    ],
+    "3525045000569606644": [
+      1,
+      0,
+      0
+    ],
+    "3525045000587091816": [
+      1,
+      0,
+      0
+    ],
+    "3525045000561747482": [
+      1,
+      0,
+      1
+    ],
+    "3525045000348478718": [
+      2,
+      0,
+      1
+    ],
+    "3525045000467366531": [
+      1,
+      0,
+      1
+    ],
+    "3525045000303849074": [
+      3,
+      1,
+      1
+    ],
+    "3525045000301269624": [
+      1,
+      0,
+      0
+    ],
+    "3525045000625269083": [
+      1,
+      0,
+      0
+    ],
+    "3525045000488758744": [
+      1,
+      0,
+      1
+    ],
+    "3525045000442696001": [
+      1,
+      0,
+      1
+    ],
+    "3525045000459277323": [
+      1,
+      0,
+      0
+    ],
+    "3525045000471154192": [
+      1,
+      0,
+      1
+    ],
+    "3525045000623181266": [
+      1,
+      0,
+      0
+    ],
+    "3525045000593375398": [
+      1,
+      0,
+      0
+    ],
+    "3525045000519554305": [
+      1,
+      0,
+      0
+    ],
+    "3525045000572133720": [
+      1,
+      0,
+      0
+    ],
+    "3525045000606902354": [
+      1,
+      0,
+      1
+    ],
+    "3525045000577042586": [
+      2,
+      0,
+      0
+    ],
+    "3525045000577488751": [
+      1,
+      0,
+      1
+    ],
+    "3525045000551150373": [
+      1,
+      0,
+      1
+    ],
+    "3525045000596280292": [
+      3,
+      0,
+      0
+    ],
+    "3525045000579154448": [
+      1,
+      0,
+      0
+    ],
+    "3525045000635125136": [
+      1,
+      0,
+      0
+    ],
+    "3525045000351895249": [
+      1,
+      1,
+      0
+    ],
+    "3525045000573782741": [
+      1,
+      0,
+      0
+    ],
+    "3525045000385457715": [
+      2,
+      0,
+      1
+    ],
     "3525045000549648908": [
       1,
       0,
@@ -17916,11 +18604,6 @@
       0,
       0
     ],
-    "3525045000242976354": [
-      3,
-      0,
-      2
-    ],
     "3525045000078370651": [
       1,
       0,
@@ -17929,11 +18612,6 @@
     "3525045000340439439": [
       2,
       0,
-      1
-    ],
-    "3525045000235830314": [
-      3,
-      1,
       1
     ],
     "3525045000500942241": [
@@ -17960,11 +18638,6 @@
       1,
       0,
       1
-    ],
-    "3525045000191388216": [
-      2,
-      1,
-      0
     ],
     "3525045000239239614": [
       2,
@@ -18046,11 +18719,6 @@
       0,
       1
     ],
-    "3525045000344765038": [
-      3,
-      0,
-      3
-    ],
     "3525045000324139116": [
       1,
       0,
@@ -18073,11 +18741,6 @@
     ],
     "3525045000448981092": [
       1,
-      0,
-      1
-    ],
-    "3525045000428236104": [
-      2,
       0,
       1
     ],
@@ -18126,18 +18789,8 @@
       0,
       1
     ],
-    "3525045000449381320": [
-      2,
-      0,
-      1
-    ],
     "3525045000462868775": [
       1,
-      0,
-      1
-    ],
-    "3525045000118231219": [
-      3,
       0,
       1
     ],
@@ -18181,11 +18834,6 @@
       0,
       0
     ],
-    "3525045000506213377": [
-      2,
-      0,
-      1
-    ],
     "3525045000348478781": [
       1,
       0,
@@ -18206,11 +18854,6 @@
       0,
       1
     ],
-    "3525045000349800122": [
-      3,
-      1,
-      1
-    ],
     "3525045000497957033": [
       1,
       0,
@@ -18226,18 +18869,8 @@
       0,
       1
     ],
-    "3525045000467374314": [
-      2,
-      0,
-      1
-    ],
     "3525045000343636571": [
       1,
-      0,
-      1
-    ],
-    "3525045000480204467": [
-      2,
       0,
       1
     ],
@@ -18261,11 +18894,6 @@
       0,
       0
     ],
-    "3525045000415003356": [
-      3,
-      0,
-      1
-    ],
     "3525045000212428171": [
       1,
       0,
@@ -18273,11 +18901,6 @@
     ],
     "3525045000185322073": [
       1,
-      0,
-      1
-    ],
-    "3525045000348478718": [
-      2,
       0,
       1
     ],
@@ -18297,16 +18920,6 @@
       0
     ],
     "3525045000407719946": [
-      2,
-      0,
-      1
-    ],
-    "3525045000397673553": [
-      3,
-      0,
-      2
-    ],
-    "3525045000324636081": [
       2,
       0,
       1
@@ -18381,11 +18994,6 @@
       0,
       1
     ],
-    "3525045000290684093": [
-      2,
-      1,
-      1
-    ],
     "3525045000272438148": [
       1,
       0,
@@ -18406,11 +19014,6 @@
       0,
       1
     ],
-    "3525045000271929046": [
-      2,
-      0,
-      2
-    ],
     "3525045000269769123": [
       1,
       0,
@@ -18429,11 +19032,6 @@
     "3525045000337786975": [
       1,
       0,
-      1
-    ],
-    "3525045000303849074": [
-      3,
-      1,
       1
     ],
     "3525045000245690057": [
@@ -18546,11 +19144,6 @@
       0,
       1
     ],
-    "3525045000271013014": [
-      1,
-      0,
-      1
-    ],
     "3525045000252648254": [
       1,
       0,
@@ -18558,521 +19151,6 @@
     ],
     "3525045000255069448": [
       1,
-      0,
-      1
-    ],
-    "3525045000461676230": [
-      3,
-      0,
-      1
-    ],
-    "3525045000363350205": [
-      1,
-      0,
-      1
-    ],
-    "3525045000487258080": [
-      1,
-      0,
-      1
-    ],
-    "3525045000516683281": [
-      1,
-      0,
-      1
-    ],
-    "3525045000516029681": [
-      1,
-      0,
-      1
-    ],
-    "3525045000480962031": [
-      3,
-      1,
-      1
-    ],
-    "3525045000502787792": [
-      1,
-      0,
-      1
-    ],
-    "3525045000474892437": [
-      1,
-      0,
-      0
-    ],
-    "3525045000493980360": [
-      1,
-      0,
-      1
-    ],
-    "3525045000496045152": [
-      1,
-      0,
-      1
-    ],
-    "3525045000416193121": [
-      1,
-      0,
-      1
-    ],
-    "3525045000485523432": [
-      1,
-      0,
-      1
-    ],
-    "3525045000496031529": [
-      2,
-      1,
-      0
-    ],
-    "3525045000118266356": [
-      1,
-      0,
-      0
-    ],
-    "3525045000489102394": [
-      1,
-      0,
-      1
-    ],
-    "3525045000439364137": [
-      1,
-      0,
-      1
-    ],
-    "3525045000493783261": [
-      1,
-      0,
-      0
-    ],
-    "3525045000475481802": [
-      1,
-      0,
-      0
-    ],
-    "3525045000472081471": [
-      1,
-      0,
-      1
-    ],
-    "3525045000470731263": [
-      1,
-      0,
-      1
-    ],
-    "3525045000480768693": [
-      1,
-      0,
-      1
-    ],
-    "3525045000481159391": [
-      1,
-      0,
-      0
-    ],
-    "3525045000240002125": [
-      1,
-      0,
-      1
-    ],
-    "3525045000444464521": [
-      1,
-      0,
-      1
-    ],
-    "3525045000471379141": [
-      1,
-      0,
-      1
-    ],
-    "3525045000458170452": [
-      1,
-      0,
-      1
-    ],
-    "3525045000476572360": [
-      1,
-      0,
-      1
-    ],
-    "3525045000444479020": [
-      1,
-      0,
-      1
-    ],
-    "3525045000468073092": [
-      1,
-      0,
-      1
-    ],
-    "3525045000483500498": [
-      1,
-      0,
-      1
-    ],
-    "3525045000256468003": [
-      1,
-      0,
-      1
-    ],
-    "3525045000389123147": [
-      1,
-      0,
-      1
-    ],
-    "3525045000457440491": [
-      1,
-      0,
-      1
-    ],
-    "3525045000432988699": [
-      1,
-      0,
-      1
-    ],
-    "3525045000437102308": [
-      1,
-      0,
-      1
-    ],
-    "3525045000347552003": [
-      1,
-      0,
-      1
-    ],
-    "3525045000339943001": [
-      1,
-      0,
-      1
-    ],
-    "3525045000606476589": [
-      1,
-      0,
-      1
-    ],
-    "3525045000427802077": [
-      1,
-      0,
-      1
-    ],
-    "3525045000434973052": [
-      1,
-      0,
-      1
-    ],
-    "3525045000269312009": [
-      1,
-      0,
-      1
-    ],
-    "3525045000403780168": [
-      1,
-      0,
-      1
-    ],
-    "3525045000402924413": [
-      1,
-      0,
-      1
-    ],
-    "3525045000407862390": [
-      1,
-      0,
-      1
-    ],
-    "3525045000687137956": [
-      1,
-      1,
-      0
-    ],
-    "3525045000646690022": [
-      2,
-      1,
-      0
-    ],
-    "3525045000660585218": [
-      1,
-      0,
-      0
-    ],
-    "3525045000677206660": [
-      1,
-      1,
-      0
-    ],
-    "3525045000684325337": [
-      1,
-      1,
-      0
-    ],
-    "3525045000678740272": [
-      1,
-      1,
-      0
-    ],
-    "3525045000335018351": [
-      1,
-      1,
-      0
-    ],
-    "3525045000625553101": [
-      1,
-      1,
-      0
-    ],
-    "3525045000665863776": [
-      1,
-      1,
-      0
-    ],
-    "3525045000670730133": [
-      1,
-      1,
-      0
-    ],
-    "3525045000335205136": [
-      2,
-      1,
-      0
-    ],
-    "3525045000674466460": [
-      1,
-      1,
-      0
-    ],
-    "3525045000668541840": [
-      1,
-      1,
-      0
-    ],
-    "3525045000668240238": [
-      1,
-      0,
-      1
-    ],
-    "3525045000641973236": [
-      3,
-      0,
-      0
-    ],
-    "3525045000584443150": [
-      1,
-      0,
-      1
-    ],
-    "3525045000443231435": [
-      1,
-      0,
-      1
-    ],
-    "3525045000667186013": [
-      1,
-      1,
-      0
-    ],
-    "3525045000625528007": [
-      2,
-      0,
-      0
-    ],
-    "3525045000629830440": [
-      1,
-      0,
-      0
-    ],
-    "3525045000399720662": [
-      1,
-      0,
-      1
-    ],
-    "3525045000643797007": [
-      1,
-      0,
-      0
-    ],
-    "3525045000583818812": [
-      1,
-      0,
-      1
-    ],
-    "3525045000482034184": [
-      1,
-      0,
-      1
-    ],
-    "3525045000499080748": [
-      1,
-      0,
-      1
-    ],
-    "3525045000617025181": [
-      2,
-      0,
-      0
-    ],
-    "3525045000555859681": [
-      1,
-      0,
-      0
-    ],
-    "3525045000626243105": [
-      1,
-      0,
-      0
-    ],
-    "3525045000551076108": [
-      1,
-      0,
-      0
-    ],
-    "3525045000507887414": [
-      1,
-      0,
-      1
-    ],
-    "3525045000626989025": [
-      1,
-      0,
-      0
-    ],
-    "3525045000621373229": [
-      1,
-      0,
-      0
-    ],
-    "3525045000623155264": [
-      1,
-      0,
-      0
-    ],
-    "3525045000561747184": [
-      1,
-      0,
-      0
-    ],
-    "3525045000642369739": [
-      1,
-      0,
-      0
-    ],
-    "3525045000569606644": [
-      1,
-      0,
-      0
-    ],
-    "3525045000587091816": [
-      1,
-      0,
-      0
-    ],
-    "3525045000561747482": [
-      1,
-      0,
-      1
-    ],
-    "3525045000467366531": [
-      1,
-      0,
-      1
-    ],
-    "3525045000301269624": [
-      1,
-      0,
-      0
-    ],
-    "3525045000625269083": [
-      1,
-      0,
-      0
-    ],
-    "3525045000488758744": [
-      1,
-      0,
-      1
-    ],
-    "3525045000442696001": [
-      1,
-      0,
-      1
-    ],
-    "3525045000459277323": [
-      1,
-      0,
-      0
-    ],
-    "3525045000471154192": [
-      1,
-      0,
-      1
-    ],
-    "3525045000623181266": [
-      1,
-      0,
-      0
-    ],
-    "3525045000593375398": [
-      1,
-      0,
-      0
-    ],
-    "3525045000519554305": [
-      1,
-      0,
-      0
-    ],
-    "3525045000572133720": [
-      1,
-      0,
-      0
-    ],
-    "3525045000606902354": [
-      1,
-      0,
-      1
-    ],
-    "3525045000577042586": [
-      2,
-      0,
-      0
-    ],
-    "3525045000577488751": [
-      1,
-      0,
-      1
-    ],
-    "3525045000551150373": [
-      1,
-      0,
-      1
-    ],
-    "3525045000596280292": [
-      3,
-      0,
-      0
-    ],
-    "3525045000579154448": [
-      1,
-      0,
-      0
-    ],
-    "3525045000635125136": [
-      1,
-      0,
-      0
-    ],
-    "3525045000351895249": [
-      1,
-      1,
-      0
-    ],
-    "3525045000573782741": [
-      1,
-      0,
-      0
-    ],
-    "3525045000385457715": [
-      2,
       0,
       1
     ]
