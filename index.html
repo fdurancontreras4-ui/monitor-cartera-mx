@@ -2604,7 +2604,10 @@ function metaTiersHTML(achieved,m1,m2,m3,sim,abierto){
       ${sim?`<div style="position:absolute;left:0;top:0;bottom:0;width:${pct(achieved)}%;background:repeating-linear-gradient(135deg,${color} 0 6px,${color}66 6px 12px);border-radius:6px;transition:width .3s" title="Simulado con los deals seleccionados: ${fmtMXN(sim)}"></div>`:''}
       <div style="position:absolute;left:0;top:0;bottom:0;width:${pct(real)}%;background:${color};border-radius:6px;transition:width .3s" title="Facturado: ${fmtMXN(real)}"></div>
       ${marks.map(([v,l])=>`<div style="position:absolute;left:${pct(v)}%;top:-6px;bottom:-6px;width:2px;background:var(--color-border-primary)"></div><div style="position:absolute;left:${pct(v)}%;top:-19px;transform:translateX(-50%);font-size:10px;color:var(--color-text-secondary);white-space:nowrap">${l}</div><div style="position:absolute;left:${pct(v)}%;bottom:-20px;transform:translateX(-50%);font-size:10px;color:var(--color-text-secondary);white-space:nowrap">${fmtMXN(v)}</div>`).join('')}
-      <div style="position:absolute;left:${pct(achieved)}%;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:600;color:${pct(achieved)>12?'#fff':'var(--color-text-primary)'};white-space:nowrap">${fmtMXN(achieved)}</div>
+      ${(()=>{const p=pct(achieved),dentro=p>=22;
+        // el monto va DENTRO de la barra (alineado a su borde derecho) si cabe; si no, justo a la derecha.
+        // Fondo tipo pastilla para que se lea sobre cualquier color y sobre las líneas de las metas.
+        return`<div style="position:absolute;left:${p}%;top:50%;transform:translate(${dentro?'calc(-100% - 6px)':'6px'},-50%);z-index:2;font-size:12px;font-weight:700;white-space:nowrap;padding:2px 8px;border-radius:999px;${dentro?'background:rgba(0,0,0,.38);color:#fff':'background:var(--color-background-primary);color:var(--color-text-primary);border:1px solid var(--color-border-primary)'}">${fmtMXN(achieved)}</div>`;})()}
     </div>
     <div class="stat3">${tierCell(m1,'Meta 1')}${tierCell(m2,'Meta 2')}${tierCell(m3,'Meta 3')}</div>
   </div>`;
